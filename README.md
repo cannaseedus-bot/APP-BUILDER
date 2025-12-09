@@ -1,19 +1,23 @@
+<table align="center">
+  <tr>
+    <td align="center">
+      <img
+        alt="XJSON ASX"
+        src="https://github.com/user-attachments/assets/4572be60-c0e4-4ac4-bd4e-aa820a5ebb4c"
+        width="320"
+      />
+    </td>
+    <td align="center">
+      <img
+        alt="PI GOAT Polyglot Security"
+        src="./cluster/pi-goat.svg"
+        width="320"
+      />
+    </td>
+  </tr>
+</table>
 
-<div align="center" style="display:flex;gap:24px;align-items:center;justify-content:center;flex-wrap:wrap;">
-
-  <img
-    alt="XJSON ASX"
-    src="https://github.com/user-attachments/assets/4572be60-c0e4-4ac4-bd4e-aa820a5ebb4c"
-    style="width:320px;max-width:45vw;"
-  />
-
-  <img
-    alt="PI GOAT Polyglot Security"
-    src="./cluster/pi-goat.svg"
-    style="width:320px;max-width:45vw;"
-  />
-
-</div>
+<h2 align="center">ASX · XJSON · PI GOAT Security Stack</h2>
 
 
 # ASX XJSON App Builder
