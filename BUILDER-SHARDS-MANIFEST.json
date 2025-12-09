@@ -13,8 +13,8 @@
     "@communication": "REST mesh with XJSON payloads",
     "@orchestration": "MX2LM coordinates all builder shards",
 
-    "total_shards": 14,
-    "active_shards": 7,
+    "total_shards": 16,
+    "active_shards": 9,
     "pending_deployment": 7,
 
     "mesh_topology": {
@@ -1039,6 +1039,348 @@
         "Component composition testing",
         "K'uhul DOM operation validation",
         "UI style variation exploration"
+      ]
+    },
+
+    "shard_15_design_ai_specialist": {
+      "@name": "Design AI Specialist Shard",
+      "@status": "ACTIVE",
+      "@endpoint": "https://script.google.com/macros/s/AKfycbzSODEEviqciu-cFlQ0IvxTNIE4CbjGjY7r8FY_cG4AwntFv1L24zdpbkgVAO86EnNK/exec",
+      "@description": "Dedicated Design AI Specialist for Visual Design & 3D Graphics generation",
+
+      "builder_type": "agent",
+      "specialization": "design_3d_graphics",
+
+      "agent": {
+        "id": "design_specialist",
+        "emoji": "🎯",
+        "role": "Design AI Specialist",
+        "domain": "Visual Design & 3D Graphics",
+        "token_cost": 9,
+        "pipeline": "[Pop design_expert] [Wo design_brief]→[Ch'en brief] [Yax brief]→[Sek generate_design_system] [Yax design_system]→[Sek create_3d_elements] [Sek apply_animations] [Xul]"
+      },
+
+      "capabilities": [
+        "design_system_generation",
+        "3d_scene_creation",
+        "threejs_specification",
+        "animation_timeline_generation",
+        "color_palette_generation",
+        "typography_system_creation",
+        "visual_design_tokens"
+      ],
+
+      "supported_design_types": [
+        "product-showcase",
+        "landing-scene",
+        "interactive-display",
+        "visual-dashboard",
+        "3d-portfolio",
+        "animated-hero"
+      ],
+
+      "supported_styles": [
+        "futuristic",
+        "minimal",
+        "glass",
+        "neon",
+        "cyberpunk",
+        "retro"
+      ],
+
+      "supported_3d_elements": [
+        "floating",
+        "animated",
+        "rotating",
+        "pulsing",
+        "interactive",
+        "particles"
+      ],
+
+      "design_system_output": {
+        "palette": "Background, primary, secondary, accent colors",
+        "typography": "Heading and body font stacks",
+        "style_tokens": "Complete design token system"
+      },
+
+      "threejs_scene_output": {
+        "camera": "Perspective camera with FOV and position",
+        "lights": "Ambient and directional lighting configuration",
+        "objects": "3D mesh objects (spheres, boxes, custom) with positions and motions",
+        "format": "Three.js-compatible scene specification"
+      },
+
+      "animation_output": {
+        "timeline": "Loop or linear animation timeline",
+        "tracks": "Per-object animation tracks (rotation, position, scale)",
+        "duration": "Per-track duration and easing"
+      },
+
+      "kuhul_pipeline": {
+        "Pop": "Initialize design_expert context",
+        "Wo": "Bind design_brief from input parameters",
+        "Ch'en": "Validate and normalize design brief",
+        "Yax": "Transform brief into design_system AST",
+        "Sek": "Execute: generate_design_system → create_3d_elements → apply_animations",
+        "Xul": "Finalize and return complete design package"
+      },
+
+      "api_routes": {
+        "GET ?path=status": "System status and agent info",
+        "GET ?path=tokens": "Token balance management (action=balance|add, amount=N)",
+        "GET ?path=agents": "List micro-agents (design_specialist)",
+        "GET ?path=design/create-3d": "Create 3D design (type, style, elements params)",
+        "GET ?path=create-3d": "Shorthand for design/create-3d"
+      },
+
+      "example_request": {
+        "url": "?path=create-3d&type=product-showcase&style=futuristic&elements=floating,animated",
+        "params": {
+          "type": "product-showcase (default: product-showcase)",
+          "style": "futuristic (default: futuristic)",
+          "elements": "floating,animated (comma-separated, default: floating,animated)"
+        },
+        "cost": 9,
+        "returns": {
+          "success": true,
+          "shard": "DESIGN_AI_SPECIALIST",
+          "cost": 9,
+          "remainingTokens": 91,
+          "design_system": {
+            "type": "product-showcase",
+            "style": "futuristic",
+            "palette": {
+              "background": "#02030a",
+              "primary": "#39ffb6",
+              "secondary": "#00c9ff",
+              "accent": "#ff4ef5"
+            },
+            "typography": {
+              "heading": "Orbitron, system-ui",
+              "body": "Inter, system-ui"
+            }
+          },
+          "three_scene": {
+            "scene": {
+              "camera": {
+                "type": "perspective",
+                "fov": 60,
+                "position": [0, 2, 6]
+              },
+              "lights": [
+                {
+                  "type": "ambient",
+                  "color": "#ffffff",
+                  "intensity": 0.4
+                },
+                {
+                  "type": "directional",
+                  "color": "#39ffb6",
+                  "intensity": 1.0,
+                  "position": [3, 4, 2]
+                }
+              ],
+              "objects": [
+                {
+                  "id": "obj_0",
+                  "kind": "mesh_sphere",
+                  "position": [-1, 0, 0],
+                  "motion": "float-y"
+                },
+                {
+                  "id": "obj_1",
+                  "kind": "mesh_box",
+                  "position": [0, 0, 0],
+                  "motion": "loop-rotate-y"
+                }
+              ]
+            }
+          },
+          "animations": {
+            "timeline": "loop",
+            "tracks": [
+              {
+                "target": "obj_0",
+                "type": "position",
+                "axis": "y",
+                "range": [0, 0.3],
+                "duration": 4
+              },
+              {
+                "target": "obj_1",
+                "type": "rotation",
+                "axis": "y",
+                "range": [0, 6.283185307179586],
+                "duration": 5
+              }
+            ]
+          }
+        }
+      },
+
+      "token_cost": {
+        "generation": 9,
+        "description": "Fixed cost per 3D design generation"
+      },
+
+      "integration": {
+        "tokens": "Uses same token system as other MX2LM agent shards",
+        "kuhul": "Generates K'uhul-compatible design operations",
+        "mesh": "Can be called directly or via Foreman Coordinator router",
+        "threejs": "Outputs Three.js-compatible scene specifications",
+        "output": "Returns design system + 3D scene + animations for complete visual package"
+      },
+
+      "use_cases": [
+        "Product showcase 3D scenes",
+        "Landing page hero animations",
+        "Interactive 3D portfolios",
+        "Visual design system generation",
+        "Animation timeline creation",
+        "3D element composition"
+      ]
+    },
+
+    "shard_16_backend_ai_specialist": {
+      "@name": "Backend AI Specialist Shard",
+      "@status": "ACTIVE",
+      "@endpoint": "https://script.google.com/macros/s/AKfycbxCkCm0kG-1vy1q1M-e12xOsgAdvAvjmye1kti3rNnu4NMC7fW_TJ1MK4TToT37PVua/exec",
+      "@description": "Dedicated Backend AI Specialist for APIs & Data Logic with XJSON generation",
+
+      "builder_type": "agent",
+      "specialization": "backend_api_generation",
+
+      "agent": {
+        "id": "backend_specialist",
+        "emoji": "⚡",
+        "role": "Backend AI Specialist",
+        "domain": "APIs & Data Logic",
+        "token_cost": 7,
+        "pipeline": "[Pop backend_expert] [Wo api_spec]→[Ch'en spec] [Yax spec]→[Sek generate_xjson_api] [Yax xjson_api]→[Sek deploy_virtual_server] [Sek register_routes] [Xul]"
+      },
+
+      "capabilities": [
+        "xjson_api_generation",
+        "virtual_server_configuration",
+        "route_handler_creation",
+        "rest_endpoint_scaffolding",
+        "kuhul_execution_engine_integration",
+        "automatic_handler_naming"
+      ],
+
+      "input_formats": {
+        "json_spec": "Full JSON spec with endpoints array: {endpoints: [{path: '/users', method: 'GET'}]}",
+        "simple_string": "Simple string format: '/users:GET;/orders:POST'",
+        "default": "Auto-generates /users (GET) and /orders (POST) if no input"
+      },
+
+      "xjson_api_output": {
+        "@context": "xjson://api",
+        "@description": "Auto-generated XJSON API specification",
+        "@routes": "Array of route specifications with @path, @method, @handler, @input, @output"
+      },
+
+      "virtual_server_output": {
+        "name": "mx2lm_virtual_server",
+        "engine": "K'uhul Execution Engine",
+        "routes": "Simplified route configuration for browser-based virtual server"
+      },
+
+      "handler_naming": {
+        "pattern": "handler_{method}_{clean_path}",
+        "examples": [
+          "/users + GET = handler_get_users",
+          "/orders + POST = handler_post_orders",
+          "/api/v1/products + GET = handler_get_api_v1_products"
+        ]
+      },
+
+      "kuhul_pipeline": {
+        "Pop": "Initialize backend_expert context",
+        "Wo": "Bind api_spec from input parameters",
+        "Ch'en": "Validate and normalize API spec",
+        "Yax": "Transform spec into XJSON API AST",
+        "Sek": "Execute: generate_xjson_api → deploy_virtual_server → register_routes",
+        "Xul": "Finalize and return complete API package"
+      },
+
+      "api_routes": {
+        "GET ?path=status": "System status and agent info",
+        "GET ?path=tokens": "Token balance management (action=balance|add, amount=N)",
+        "GET ?path=agents": "List micro-agents (backend_specialist)",
+        "GET ?path=backend/create-api": "Create API (spec or endpoints params)",
+        "GET ?path=create-api": "Shorthand for backend/create-api"
+      },
+
+      "example_request": {
+        "url_json": "?path=create-api&spec={\"endpoints\":[{\"path\":\"/users\",\"method\":\"GET\"},{\"path\":\"/orders\",\"method\":\"POST\"}]}",
+        "url_simple": "?path=create-api&endpoints=/users:GET;/orders:POST",
+        "url_default": "?path=create-api (uses default endpoints)",
+        "cost": 7,
+        "returns": {
+          "success": true,
+          "shard": "BACKEND_AI_SPECIALIST",
+          "cost": 7,
+          "remainingTokens": 93,
+          "xjson_api": {
+            "@context": "xjson://api",
+            "@description": "Auto-generated XJSON API spec from Backend AI Specialist shard",
+            "@routes": [
+              {
+                "@path": "/users",
+                "@method": "GET",
+                "@handler": "handler_get_users",
+                "@input": "query",
+                "@output": "json"
+              },
+              {
+                "@path": "/orders",
+                "@method": "POST",
+                "@handler": "handler_post_orders",
+                "@input": "body",
+                "@output": "json"
+              }
+            ]
+          },
+          "virtual_server": {
+            "name": "mx2lm_virtual_server",
+            "engine": "K'uhul Execution Engine",
+            "routes": [
+              {
+                "path": "/users",
+                "method": "GET",
+                "handler": "handler_get_users"
+              },
+              {
+                "path": "/orders",
+                "method": "POST",
+                "handler": "handler_post_orders"
+              }
+            ]
+          }
+        }
+      },
+
+      "token_cost": {
+        "generation": 7,
+        "description": "Fixed cost per API generation"
+      },
+
+      "integration": {
+        "tokens": "Uses same token system as other MX2LM agent shards",
+        "kuhul": "Generates K'uhul Execution Engine-compatible configurations",
+        "mesh": "Can be called directly or via Foreman Coordinator router",
+        "xjson": "Outputs XJSON-compliant API specifications",
+        "output": "Returns XJSON API + virtual server config for complete backend package"
+      },
+
+      "use_cases": [
+        "REST API scaffolding",
+        "Virtual server configuration",
+        "Route handler generation",
+        "XJSON API specification",
+        "Browser-based backend creation",
+        "K'uhul execution engine integration"
       ]
     }
   },
