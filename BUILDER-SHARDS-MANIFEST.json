@@ -13,8 +13,8 @@
     "@communication": "REST mesh with XJSON payloads",
     "@orchestration": "MX2LM coordinates all builder shards",
 
-    "total_shards": 9,
-    "active_shards": 2,
+    "total_shards": 11,
+    "active_shards": 4,
     "pending_deployment": 7,
 
     "mesh_topology": {
@@ -440,6 +440,147 @@
           "step_4": "KUHUL Compiler → Compress all CSS",
           "step_5": "ASX Runtime → Deploy to browser OS"
         }
+      }
+    },
+
+    "shard_10_manifest_agent": {
+      "@name": "Manifest Agent Shard",
+      "@status": "ACTIVE",
+      "@endpoint": "https://script.google.com/macros/s/AKfycby_XiNPlU7KxrcXWzIB7eBFf8q1BiTUIbAitjkKi31nJtd3DvFK9k7Z7nIiFwJ4Py48/exec",
+      "@description": "Per-user manifest extensions, cloud tape storage, and settings sync",
+
+      "builder_type": "agent",
+      "specialization": "manifest_management",
+
+      "capabilities": [
+        "manifest_extension_sync",
+        "cloud_tape_storage",
+        "user_profile_management",
+        "multi_device_sync",
+        "manifest_backup_restore"
+      ],
+
+      "api_routes": {
+        "GET ?action=getManifest": "Fetch user's manifest extensions from cloud",
+        "GET ?action=saveManifest": "Save manifest updates to cloud (pass data param)",
+        "GET ?action=listTapes": "List cloud-stored tapes",
+        "GET ?action=getUserData": "Get user profile and settings"
+      },
+
+      "use_cases": [
+        "Sync manifest across multiple devices",
+        "Store large tape files in cloud (Google Sheets)",
+        "Backup user configuration",
+        "Share tapes with other users"
+      ],
+
+      "storage": {
+        "backend": "Google Sheets",
+        "sheets": {
+          "manifest": "Key-value pairs of manifest extensions",
+          "tapes": "Cloud tape storage with metadata",
+          "users": "User profiles and settings"
+        }
+      }
+    },
+
+    "shard_11_mx2lm_crown_foreman": {
+      "@name": "MX2LM Crown Foreman Agent Shard",
+      "@status": "ACTIVE",
+      "@endpoint": "https://script.google.com/macros/s/AKfycbypsqwHCxSrN_oYnDehoX3Wyl-Uj29zytP_6DwKcnTYoS4Jv2iraqn2Iz0k3Vh9UMts/exec",
+      "@description": "AI orchestration with Crown agents, QWENF1 model, token system, and tape management",
+
+      "builder_type": "agent",
+      "specialization": "ai_orchestration",
+
+      "crowns": {
+        "mx2lm": {
+          "name": "MX2LM",
+          "style": "general",
+          "token_cost": 0,
+          "description": "General purpose AI crown (free)"
+        },
+        "developer": {
+          "name": "Developer",
+          "style": "technical",
+          "token_cost": 10,
+          "description": "Technical responses optimized for code"
+        },
+        "creative": {
+          "name": "Creative",
+          "style": "creative",
+          "token_cost": 5,
+          "description": "Creative responses for design and content"
+        },
+        "analyst": {
+          "name": "Analyst",
+          "style": "analytical",
+          "token_cost": 15,
+          "description": "Analytical responses for data insights"
+        }
+      },
+
+      "qwenf1_model": {
+        "name": "QWENF1 (ASX Fine-Tuned)",
+        "backend": "colab",
+        "token_cost": 25,
+        "drive_folder": "1DlNkskGibmCfHfG3XzstP4KUkXNy0sEC",
+        "files": {
+          "model": "1EK4X6V1-WSsbZtBzhnCm4KVnGXzj8iGj",
+          "optimizer": "1od43CLcg3jqKKtmfyj4DskOOJ5aP6YmV"
+        },
+        "status": "offline (requires Colab/TPU endpoint configuration)"
+      },
+
+      "tapes": {
+        "studio-web": {
+          "name": "Web Studio",
+          "token_cost": 50
+        },
+        "studio-data": {
+          "name": "Data Studio",
+          "token_cost": 75
+        },
+        "studio-docs": {
+          "name": "Docs Studio",
+          "token_cost": 30
+        }
+      },
+
+      "capabilities": [
+        "ai_chat_with_crowns",
+        "qwenf1_model_inference",
+        "token_system_management",
+        "tape_management",
+        "ngram_learning",
+        "google_sheets_analysis"
+      ],
+
+      "api_routes": {
+        "GET ?path=chat": "Chat with AI crowns (specify crown param)",
+        "GET ?path=qwenf1": "Verify QWENF1 model files on Google Drive",
+        "GET ?path=status": "Get system status and metrics",
+        "GET ?path=tokens": "Manage token balance (action=balance|add)",
+        "GET ?path=crowns": "List available AI crowns",
+        "GET ?path=tapes": "Load/list cloud tapes (action=load, tapeId param)",
+        "GET ?path=analyze": "Analyze Google Sheets data (sheetId param)"
+      },
+
+      "token_system": {
+        "initial_balance": 100,
+        "currency": "ASX Tokens",
+        "address_format": "gas_[32_char_uuid]",
+        "deduction": "automatic on crown/model usage",
+        "addition": "manual via tokens?action=add endpoint"
+      },
+
+      "learning": {
+        "ngrams": {
+          "bigrams": "2-word phrase frequency tracking",
+          "trigrams": "3-word phrase frequency tracking"
+        },
+        "updates": "automatic from user chat interactions",
+        "storage": "Script Properties (persistent)"
       }
     }
   },
