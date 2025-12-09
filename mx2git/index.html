@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MX2GIT • GitHub Sync OS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg:#020308;
+      --panel:#050915;
+      --accent:#00eaff;
+      --accent-soft:rgba(0,234,255,.18);
+      --text:#e8fff6;
+      --success:#16f2aa;
+    }
+
+    * { box-sizing:border-box; margin:0; padding:0; }
+
+    body {
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
+      background:radial-gradient(circle at top,#071221,#010308 60%,#000 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    header {
+      padding:14px 20px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      backdrop-filter:blur(18px);
+      background:linear-gradient(120deg,rgba(0,234,255,.18),rgba(3,12,30,.9));
+      border-bottom:1px solid rgba(0,234,255,.4);
+    }
+
+    .logo {
+      font-weight:700;
+      letter-spacing:3px;
+      font-size:16px;
+      color:var(--accent);
+      text-shadow:0 0 10px var(--accent);
+    }
+
+    nav a {
+      margin-left:16px;
+      font-size:13px;
+      text-decoration:none;
+      color:var(--text);
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid transparent;
+      transition:all 0.2s;
+    }
+
+    nav a.active, nav a:hover {
+      border-color:rgba(0,234,255,.7);
+      background:radial-gradient(circle at top,var(--accent-soft),transparent);
+    }
+
+    main {
+      padding:20px;
+      max-width:1400px;
+      margin:0 auto;
+    }
+
+    .hero {
+      text-align:center;
+      padding:40px 20px;
+      margin-bottom:30px;
+    }
+
+    .hero h1 {
+      font-size:42px;
+      font-weight:800;
+      color:var(--accent);
+      margin-bottom:12px;
+      text-shadow:0 0 20px var(--accent);
+    }
+
+    .hero p {
+      font-size:16px;
+      opacity:.8;
+      max-width:600px;
+      margin:0 auto 30px;
+    }
+
+    .stats {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+      gap:16px;
+      margin-bottom:30px;
+    }
+
+    .stat-card {
+      background:linear-gradient(145deg,#050915,#040711);
+      border-radius:16px;
+      border:1px solid rgba(0,234,255,.35);
+      padding:20px;
+      text-align:center;
+    }
+
+    .stat-value {
+      font-size:32px;
+      font-weight:700;
+      color:var(--accent);
+      margin-bottom:8px;
+    }
+
+    .stat-label {
+      font-size:12px;
+      opacity:.7;
+      text-transform:uppercase;
+      letter-spacing:1px;
+    }
+
+    .card {
+      background:linear-gradient(145deg,#050915,#040711);
+      border-radius:16px;
+      border:1px solid rgba(0,234,255,.35);
+      box-shadow:0 0 24px rgba(0,0,0,.8),0 0 18px var(--accent-soft);
+      padding:20px;
+      margin-bottom:20px;
+    }
+
+    .card-title {
+      font-size:20px;
+      font-weight:650;
+      color:var(--accent);
+      margin-bottom:12px;
+    }
+
+    .feature-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+      gap:16px;
+    }
+
+    .feature {
+      background:rgba(0,234,255,.08);
+      border:1px solid rgba(0,234,255,.25);
+      border-radius:12px;
+      padding:16px;
+    }
+
+    .feature-icon {
+      font-size:32px;
+      margin-bottom:10px;
+    }
+
+    .feature-title {
+      font-size:14px;
+      font-weight:600;
+      margin-bottom:6px;
+      color:var(--success);
+    }
+
+    .feature-desc {
+      font-size:12px;
+      opacity:.8;
+      line-height:1.5;
+    }
+
+    button {
+      padding:12px 20px;
+      border-radius:999px;
+      border:none;
+      background:linear-gradient(120deg,#00eaff,#16f2aa);
+      color:#020308;
+      font-size:14px;
+      font-weight:600;
+      cursor:pointer;
+      box-shadow:0 0 20px rgba(0,234,255,.65);
+      transition:all 0.2s;
+    }
+
+    button:hover {
+      box-shadow:0 0 28px rgba(0,234,255,.85);
+      transform:translateY(-2px);
+    }
+
+    button:active {
+      transform:scale(.98);
+    }
+
+    .status-indicator {
+      display:inline-block;
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--success);
+      box-shadow:0 0 10px var(--success);
+      animation:pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity:1; }
+      50% { opacity:0.5; }
+    }
+
+    .api-docs {
+      background:rgba(0,0,0,.5);
+      border-radius:8px;
+      padding:16px;
+      font-family:ui-monospace,Consolas,monospace;
+      font-size:12px;
+      border:1px solid rgba(255,255,255,.1);
+    }
+
+    .api-endpoint {
+      margin-bottom:12px;
+      padding-bottom:12px;
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+
+    .api-endpoint:last-child {
+      border-bottom:none;
+      margin-bottom:0;
+      padding-bottom:0;
+    }
+
+    .api-method {
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:4px;
+      font-size:10px;
+      font-weight:600;
+      margin-right:8px;
+    }
+
+    .method-post { background:#16f2aa; color:#000; }
+    .method-get { background:#00eaff; color:#000; }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size:32px; }
+      .stats { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">⚛️ MX2GIT</div>
+    <nav>
+      <a href="index.html" class="active">Dashboard</a>
+      <a href="github.html">Import GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h1>MX2GIT Micro-ASXR</h1>
+      <p>
+        Standalone GitHub ↔ ASX-RAM synchronization engine. Secure, agent-driven,
+        credential-safe GitHub operations with KUHUL ⊗ XJSON ⊗ XCFE governance.
+      </p>
+      <button onclick="window.location.href='github.html'">
+        🚀 Import GitHub Repository
+      </button>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-value" id="project-count">0</div>
+        <div class="stat-label">Projects</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">
+          <span class="status-indicator"></span>
+        </div>
+        <div class="stat-label">Kernel Status</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">v1.0.0</div>
+        <div class="stat-label">Version</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Features</div>
+      <div class="feature-grid">
+        <div class="feature">
+          <div class="feature-icon">🔒</div>
+          <div class="feature-title">Secure Token Storage</div>
+          <div class="feature-desc">
+            GitHub tokens stored securely in ASX-RAM virtual filesystem, never exposed to network.
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title">Pull / Push Sync</div>
+          <div class="feature-desc">
+            Bidirectional sync between GitHub repos and ASX-RAM with automatic conflict detection.
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">📦</div>
+          <div class="feature-title">Full Repository Clone</div>
+          <div class="feature-desc">
+            Clone entire repositories into ASX-RAM for offline editing and multi-file operations.
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🤖</div>
+          <div class="feature-title">Agent-Driven Operations</div>
+          <div class="feature-desc">
+            agent.git.sync handles all GitHub operations with KUHUL pipeline integration.
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">📋</div>
+          <div class="feature-title">XJSON Everywhere</div>
+          <div class="feature-desc">
+            All data stored in XJSON format with @context, @law, @v for semantic clarity.
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🌐</div>
+          <div class="feature-title">Offline-First</div>
+          <div class="feature-desc">
+            Service worker architecture ensures full functionality offline with cache-first strategy.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">API Endpoints</div>
+      <div class="api-docs">
+        <div class="api-endpoint">
+          <span class="api-method method-post">POST</span>
+          <span>/api/mx2git/save-credentials</span>
+          <div style="margin-top:6px;opacity:0.7;">Save GitHub token to ASX-RAM</div>
+        </div>
+
+        <div class="api-endpoint">
+          <span class="api-method method-post">POST</span>
+          <span>/api/mx2git/pull</span>
+          <div style="margin-top:6px;opacity:0.7;">Pull file from GitHub to ASX-RAM</div>
+        </div>
+
+        <div class="api-endpoint">
+          <span class="api-method method-post">POST</span>
+          <span>/api/mx2git/push</span>
+          <div style="margin-top:6px;opacity:0.7;">Push file from ASX-RAM to GitHub</div>
+        </div>
+
+        <div class="api-endpoint">
+          <span class="api-method method-post">POST</span>
+          <span>/api/mx2git/clone</span>
+          <div style="margin-top:6px;opacity:0.7;">Clone full repository to ASX-RAM</div>
+        </div>
+
+        <div class="api-endpoint">
+          <span class="api-method method-post">POST</span>
+          <span>/api/mx2git/import-github</span>
+          <div style="margin-top:6px;opacity:0.7;">Register repository as project</div>
+        </div>
+
+        <div class="api-endpoint">
+          <span class="api-method method-get">GET</span>
+          <span>/api/mx2git/projects</span>
+          <div style="margin-top:6px;opacity:0.7;">List all registered projects</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('✅ MX2GIT SW registered:', reg.scope))
+        .catch(err => console.error('❌ SW registration failed:', err));
+    }
+
+    // Load project count
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/mx2git/projects');
+        const data = await res.json();
+
+        if (data.ok) {
+          document.getElementById('project-count').textContent = data.projects.length;
+        }
+      } catch (e) {
+        console.error('Failed to load stats:', e);
+      }
+    }
+
+    // Load stats on page load
+    setTimeout(loadStats, 1000);
+
+    // Refresh stats every 30 seconds
+    setInterval(loadStats, 30000);
+  </script>
+</body>
+</html>
