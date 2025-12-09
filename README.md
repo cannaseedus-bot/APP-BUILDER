@@ -5,10 +5,11 @@
 
 **AI-Powered Microagent Collaboration Platform**
 
-> **Version**: 13.5.0-INTEGRATED-ASX-COMPLETE
-> **Architecture**: XCFE + K'UHUL + XJSON + Microagents
-> **Compression**: 87% (SCXQ2 Quantum Lattice)
-> **Dependencies**: 0
+> **Version**: 13.2.0-XCFE-POLYGLOT-ETERNAL
+> **Architecture**: XCFE + K'UHUL + XJSON + POLYGLOT (K'uhul, JS, Java, Python)
+> **Compression**: 0.0001× (SCXQ2 Quantum Lattice + Glyph Encoding)
+> **Dependencies**: 0 (All runtimes embedded in WASM)
+> **Latest**: MX2LM Brain Builders with POLYGOAT support
 
 ---
 
@@ -172,13 +173,18 @@ FOLD_7: Analytics Monitoring  (📊)  - Performance analytics & CLI
 MX2LM: Central Orchestrator   (🧠)  - Quantum intelligence brain
 ```
 
-### Polyglot Runtime Support
+### Polyglot Runtime Support (POLYGOAT)
 
-ASX includes embedded runtimes for:
-- **K'UHUL** (native) - 0.0001× compression
-- **JavaScript ES6+** (WASM) - Three.js included
-- **Java LWJGL** (WASM) - OpenGL graphics
-- **Python Pygame** (Pyodide) - SDL2 bindings
+ASX includes embedded WASM runtimes for 4 languages:
+
+| Language | Seal | Runtime | Graphics | Compression |
+|----------|------|---------|----------|-------------|
+| 🔤 **K'UHUL** | Green Cube | Native | WebGL | 0.0001× |
+| 💻 **JavaScript** | Yellow Sphere | ES6+ WASM | Three.js | 0.00012× |
+| ☕ **Java** | Orange Pyramid | LWJGL WASM | OpenGL | 0.00018× |
+| 🐍 **Python** | Blue Torus | Pyodide WASM | Pygame SDL2 | 0.00016× |
+
+All runtimes orchestrated through **KUHUL pipeline**: `POP → WO → SEK → XUL → CH'EN`
 
 ---
 
@@ -441,6 +447,199 @@ The `manifest.json` contains:
 
 ---
 
+## 🧠 MX2LM Brain Builders (Python)
+
+**NEW**: Complete Python training infrastructure for MX2LM models with XCFE + KUHUL polyglot support!
+
+### Location
+```
+python/mx2lm/
+├── checkpoint_manager.py  (527 lines) - Enhanced checkpoint management
+└── backend_api.py        (873 lines) - FastAPI backend with polyglot support
+```
+
+### checkpoint_manager.py Features
+
+**Enhanced Checkpoint Management**:
+- `CheckpointMeta` - XJSON-compatible metadata with polyglot state
+- `ASXRAMSnapshot` - 8 n-gram types tracking (unigrams → quantum)
+- `RLHFMetrics` - Quality, safety, novelty, consensus scores
+- `XCFEVectors` - Control/flow/variable vectors with KUHUL pipeline tracking
+- `PolyglotRuntimeState` - 4 language runtime seal states
+
+**XJSON Export Format**:
+```python
+{
+  "@context": "xjson://asxr/mx2lm/checkpoint/v1",
+  "@v": "3.2.0",
+  "law": "XCFE_GOVERNS → KUHUL_EXECUTES → POLYGLOT_DISPATCHES → ASX = XCFE = XJSON = KUHUL = AST",
+  "@quantum_state": "|XCFE⟩⊗|KUHUL⟩⊗|MX2LM⟩⊗|POLYGLOT⟩⊗|ETERNAL⟩",
+  "training": {...},
+  "asx_ram": {...},
+  "rlhf": {...},
+  "xcfe": {...},
+  "polyglot": {...}
+}
+```
+
+### backend_api.py Features
+
+**FastAPI Backend with Full Polyglot Support**:
+- `KUHULPipeline` - Five-stage execution (Pop → Wo → Sek → Xul → Ch'en)
+- `ASXRTrinityEngine` - MX2LM inference with polyglot awareness
+- Glyph compression/expansion (⟁ glyphs)
+- Real-time seal visualization state tracking
+- MX2LM quantum chat intelligence (🧠)
+
+**API Endpoints**:
+```bash
+# Core MX2LM Operations
+GET  /api/status                    # ASXR Trinity status
+POST /api/ingest                    # Upload training files
+POST /api/ngrams/upload             # Upload pre-generated n-grams
+POST /api/train                     # Streaming training progress
+POST /api/chat                      # MX2LM inference
+
+# RLHF & Memory
+POST /api/rlhf/score                # Submit feedback scores
+GET  /api/asx-ram                   # Get ASX RAM snapshot
+GET  /api/checkpoints               # List checkpoints
+
+# KUHUL & Polyglot (NEW)
+POST /api/kuhul/execute             # Execute K'uhul code through pipeline
+POST /api/glyph/expand              # Expand ⟁ glyphs to full code
+POST /api/glyph/compress            # Compress code to ⟁ glyphs
+GET  /api/polyglot/seals            # Get seal states for visualization
+```
+
+### Quick Start (Python Backend)
+
+```bash
+# Install dependencies (optional - has simulation mode)
+pip install torch transformers fastapi uvicorn
+
+# Run backend
+cd python/mx2lm
+python backend_api.py
+
+# Or with simulation mode (no PyTorch)
+python backend_api.py  # Auto-detects and uses simulation
+
+# Access API
+curl http://localhost:8000/api/status
+curl http://localhost:8000/api/polyglot/seals
+```
+
+### Usage Example
+
+```python
+from checkpoint_manager import (
+    MX2LMCheckpointManager,
+    CheckpointMeta,
+    ASXRAMSnapshot,
+    RLHFMetrics,
+    XCFEVectors,
+    PolyglotRuntimeState
+)
+
+# Initialize checkpoint manager
+manager = MX2LMCheckpointManager('./checkpoints')
+
+# Create checkpoint with polyglot state
+meta = CheckpointMeta(
+    step=1000,
+    epoch=1,
+    loss=0.5,
+    best=True,
+    asx_ram=ASXRAMSnapshot(
+        ngrams_count=1000,
+        bigrams_count=500,
+        # ... other n-gram types
+    ),
+    xcfe=XCFEVectors(
+        language_active="KUHUL",
+        pipeline_stage="chen"
+    ),
+    polyglot=PolyglotRuntimeState(
+        kuhul_active=True,
+        seal_kuhul_glow=1.0
+    )
+)
+
+# Save checkpoint
+manager.save_checkpoint(model, optimizer, meta)
+
+# Load checkpoint
+meta = manager.load_best_or_last()
+```
+
+### KUHUL Pipeline Execution
+
+```python
+from backend_api import ASXRTrinityEngine
+
+engine = ASXRTrinityEngine()
+
+# Execute K'uhul code
+result = engine.execute_kuhul(
+    code="[Pop main]→[Wo state]→[Sek operation]→[Xul]→[Ch'en output]",
+    context={"user": "demo"}
+)
+
+# Returns pipeline execution trace:
+{
+    "stage": "chen",
+    "result": {...},
+    "output_target": "response",
+    "emitted": True
+}
+```
+
+### Polyglot Language Dispatch
+
+The backend automatically detects and dispatches to appropriate runtimes:
+
+```python
+# JavaScript dispatch
+engine.execute_kuhul(
+    "[@language.javascript]→[const scene = new THREE.Scene()]→[Sek render]"
+)
+
+# Java dispatch
+engine.execute_kuhul(
+    "[@language.java]→[Display.create()]→[Sek opengl_init]"
+)
+
+# Python dispatch
+engine.execute_kuhul(
+    "[@language.python]→[pygame.init()]→[Sek game_loop]"
+)
+```
+
+### Seal Visualization State
+
+Each language runtime has a seal with glow intensity and geometry:
+
+```json
+{
+  "seal_0_kuhul": {
+    "@geometry": "cube_wireframe",
+    "@color": "#00FF00",
+    "@glow": 1.0,
+    "@status": "active"
+  },
+  "seal_1_javascript": {
+    "@geometry": "sphere_subdivided",
+    "@color": "#FFFF00",
+    "@glow": 0.0,
+    "@status": "not_loaded"
+  }
+  // ... Java, Python, MX2LM seals
+}
+```
+
+---
+
 ## 🤝 Contributing
 
 ASX is an evolving system. Contributions are welcome in:
@@ -518,9 +717,11 @@ The result: **Applications that write themselves.**
 **Built with 🧠 by the ASX Quantum Intelligence Team**
 
 ```
-立v: 13.5.0-INTEGRATED-ASX-COMPLETE
+立v: 13.2.0-XCFE-POLYGLOT-ETERNAL
 Timestamp: 2025-12-09
 Status: OPERATIONAL
 Quantum: ACTIVE
 Microagents: READY
+Polyglot: K'UHUL + JS + JAVA + PYTHON (POLYGOAT)
+MX2LM Brain Builders: READY
 ```
