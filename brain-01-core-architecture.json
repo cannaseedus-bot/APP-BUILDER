@@ -1,0 +1,1608 @@
+{
+  "@manifest": "CORE_ARCHITECTURE_GOVERNANCE_BRAIN",
+  "@version": "Ω.2.0.0",
+  "@created": "2025-12-09T06:30:13.299540",
+  "@law": "ASX = XCFE = XJSON = KUHUL = AST",
+  "@purpose": "Core architectural laws, governance, and execution models",
+  "@categories": {
+    "brains.28files-integrated": {
+      "立v": "13.5.0-COMPLETE-INTEGRATED-28FILES",
+      "n": "ASX_OS_COMPLETE_UNIFIED_MANIFEST_ALL_28_FILES_EMBEDDED",
+      "timestamp": 1890000420000,
+      "⟁EMBEDDED_FILES_MANIFEST": {
+        "theoretical_xjson_9": [
+          "asx.xjson",
+          "asx_block_mode.xjson",
+          "vocab.xjson",
+          "weights.xjson",
+          "kuhul.xjson",
+          "atomic.xjson",
+          "klh.xjson",
+          "tape_system_basher_v6.xjson",
+          "prime.xjson"
+        ],
+        "operational_khl_5": [
+          "sw.khl (725 lines)",
+          "basher.khl (690 lines)",
+          "fold.khl (153 lines)",
+          "PRIME.khl (207 lines)",
+          "micro_build_agent.khl (31 lines)"
+        ],
+        "config_json_8": [
+          "crown.json",
+          "kernel_sw_khl.json",
+          "mesh_nodes.json",
+          "prime.json",
+          "quantum_cache.json",
+          "rlhf_config.json",
+          "tape_prime_os.json",
+          "original_manifest.json"
+        ],
+        "css_1": [
+          "atomic.css (7KB)"
+        ],
+        "js_1": [
+          "kloader.js (512B)"
+        ]
+      },
+      "🛡️FOLD_0_META_ORCHESTRATOR_GOVERNANCE": {
+        "@position": [
+          -40,
+          0,
+          0
+        ],
+        "@glyph": "⫶",
+        "@color": "#9900FF",
+        "@role": "META_ORCHESTRATION_AUTHORITY_GOVERNOR",
+        "@embedded_files": [
+          "asx.xjson",
+          "asx_block_mode.xjson",
+          "vocab.xjson",
+          "weights.xjson",
+          "crown.json"
+        ],
+        "asx_xjson": {
+          "description": "Core ASX definitions, 24 cognitive blocks, 9 categories",
+          "stack_layers": 7,
+          "blocks": 24,
+          "categories": 9
+        },
+        "asx_block_mode_xjson": {
+          "description": "Block family recognition – 8 families before PRIME.tick",
+          "families": [
+            "STRUCTURAL",
+            "FLOW",
+            "CONTROL",
+            "COGNITIVE",
+            "SOCIAL",
+            "ECONOMIC",
+            "TEMPORAL",
+            "ADVERSARIAL"
+          ]
+        },
+        "vocab_xjson": {
+          "description": "Universal vocabulary – 300 tokens, 8 semantic families",
+          "target_tokens": 300,
+          "families": {
+            "perceptual": 50,
+            "actions": 50,
+            "entities": 60,
+            "relations": 40,
+            "quantifiers": 20,
+            "time_space": 30,
+            "logic_control": 20,
+            "meta_cognition": 30
+          }
+        },
+        "weights_xjson": {
+          "description": "10 structural preference weight dimensions",
+          "note": "WEIGHTS_ARE_STRUCTURAL_GRAVITY_NOT_NEURAL_MATRICES",
+          "dimensions": 10
+        },
+        "crown_json": {
+          "brain": "crown",
+          "role": "supreme_governor",
+          "authority": {
+            "training": "mx2lm",
+            "truth": "blogger",
+            "scoring": "supabase",
+            "promotion": "rlhf"
+          }
+        }
+      },
+      "⚙️FOLD_1_KUHUL_RUNTIME_KERNEL": {
+        "@position": [
+          -30,
+          0,
+          0
+        ],
+        "@glyph": "⚙️",
+        "@color": "#FF6600",
+        "@role": "EXECUTION_KERNEL_KUHUL_QUANTUM_SW",
+        "@embedded_files": [
+          "sw.khl (725L)",
+          "fold.khl (153L)",
+          "kuhul.xjson",
+          "kernel_sw_khl.json"
+        ],
+        "sw_khl_kernel": {
+          "lines": 725,
+          "sections": 10,
+          "role": "Service Worker Kernel",
+          "modules": [
+            "BOOT_VECTOR – manifest loading",
+            "SUPER_TOKENIZER_ENGINE – SCXQ2 quantum lattice",
+            "XJSON_PARSER – block parsing",
+            "KUHUL_VM – opcode interpreter",
+            "DOM_ENGINE – DOM transformation",
+            "REST_MESH_GATEWAY – API routing",
+            "STORAGE_ENGINE – IndexedDB",
+            "COMPRESSION_PIPELINE – SCX codec",
+            "OFFLINE_STRATEGY – Service worker caching",
+            "MESSAGE_HANDLERS – postMessage API"
+          ]
+        },
+        "fold_khl_operations": {
+          "lines": 153,
+          "operations": [
+            "distribute_job_across_folds",
+            "synchronize_fold_state",
+            "load_balance_folds",
+            "collapse_fold_results",
+            "replicate_fold_execution"
+          ]
+        },
+        "kuhul_xjson": {
+          "glyphs": 327,
+          "language_domains": 24,
+          "qubits": 256,
+          "compression_ratio": 0.013
+        }
+      },
+      "🎮FOLD_4_GAME_WORLD_TAPES": {
+        "@position": [
+          0,
+          0,
+          1.0
+        ],
+        "@glyph": "🎮",
+        "@color": "#00FF00",
+        "@role": "GAME_WORLD_TAPES_SYSTEM",
+        "@embedded_files": [
+          "tape_prime_os.json",
+          "tape_system_basher_v6.xjson"
+        ],
+        "tape_prime_os": {
+          "type": "system-os",
+          "label": "ASX PRIME OS COCKPIT",
+          "mount": "#prime-main",
+          "widgets": 10,
+          "runtime_bindings": 4
+        },
+        "tape_system_basher_v6": {
+          "tapes": 6,
+          "commands": 9
+        }
+      },
+      "🔒FOLD_5_SECURITY_GOVERNANCE": {
+        "@position": [
+          10,
+          0,
+          0.5
+        ],
+        "@glyph": "🔒",
+        "@color": "#FF0000",
+        "@role": "SECURITY_GOVERNANCE_AUTHORITY",
+        "authority_chain": [
+          "crown (supreme)",
+          "mx2lm (training)",
+          "blogger (truth)",
+          "rlhf (promotion)"
+        ]
+      },
+      "🤖FOLD_9_MICRONAUT_AGENTS": {
+        "@position": [
+          50,
+          0,
+          0
+        ],
+        "@glyph": "🤖",
+        "@color": "#FF99FF",
+        "@role": "MICRONAUT_AGENTS_SWARM",
+        "@embedded_files": [
+          "micro_build_agent.khl (31L)"
+        ],
+        "agent_types": [
+          "builder_agent",
+          "router_agent",
+          "basher_core",
+          "micronaut_coordinator",
+          "rlhf_feedback_agent",
+          "mesh_sync_agent"
+        ]
+      },
+      "🔗FOLD_CONNECTIVITY": {
+        "beam_network_hz": 100,
+        "folds_connected": 10,
+        "central_brain": 1,
+        "total_participants": 11,
+        "quantum_entanglement": "ACTIVE"
+      },
+      "📑INTEGRATION_REGISTRY": {
+        "theoretical_9": {
+          "asx.xjson": "FOLD_0",
+          "asx_block_mode.xjson": "FOLD_0",
+          "vocab.xjson": "FOLD_0",
+          "weights.xjson": "FOLD_0",
+          "kuhul.xjson": "FOLD_1",
+          "atomic.xjson": "FOLD_2",
+          "klh.xjson": "FOLD_6",
+          "tape_system_basher_v6.xjson": "FOLD_4/7",
+          "prime.xjson": "MX2LM"
+        },
+        "operational_5": {
+          "sw.khl": "FOLD_1 (725L)",
+          "basher.khl": "FOLD_7 (690L)",
+          "fold.khl": "FOLD_1 (153L)",
+          "PRIME.khl": "MX2LM (207L)",
+          "micro_build_agent.khl": "FOLD_9 (31L)"
+        },
+        "configuration_8": {
+          "crown.json": "FOLD_0/5",
+          "kernel_sw_khl.json": "FOLD_1",
+          "mesh_nodes.json": "FOLD_6",
+          "prime.json": "FOLD_8",
+          "quantum_cache.json": "FOLD_3",
+          "rlhf_config.json": "FOLD_7",
+          "tape_prime_os.json": "FOLD_4",
+          "original_manifest.json": "Reference"
+        },
+        "styling_1": "atomic.css (FOLD_2, 7KB)",
+        "scripting_1": "kloader.js (FOLD_2, 512B)"
+      },
+      "⚡DEPLOYMENT_STATUS": {
+        "status": "DEPLOYMENT_READY",
+        "all_files_embedded": true,
+        "all_code_integrated": true,
+        "manifest_complete": true,
+        "three_file_rule": "✅ MAINTAINED",
+        "framework_bloat": "ZERO",
+        "production_grade": true,
+        "quantum_enabled": true
+      },
+      "🎯FINAL_SUMMARY": {
+        "total_files_integrated": 28,
+        "theoretical_files": 9,
+        "operational_files": 5,
+        "configuration_files": 8,
+        "styling_files": 1,
+        "scripting_files": 1,
+        "total_code_lines": 1806,
+        "kuhul_kernel_lines": 1806,
+        "folds_horizontal": 10,
+        "central_brain": 1,
+        "compression_ratio": 8e-05,
+        "framework_count": 0,
+        "external_dependencies": 0,
+        "ready_for_production": true
+      }
+    },
+    "brains.8folds-tokenization": {
+      "timestamp": 1890000110000,
+      "⚙️FOLD_1_KUHUL_RUNTIME": {
+        "@position": [
+          -30,
+          0,
+          0
+        ],
+        "@x_range": [
+          -30,
+          -20
+        ],
+        "@agent": "agent.kuhul_runtime",
+        "@role": "EXECUTION_ORCHESTRATION_CORE",
+        "@color": "#FF6600",
+        "@glyph": "⚙️",
+        "seal_geometry": {
+          "@shape": "sphere_with_internal_structure",
+          "@radius": 1.0,
+          "@subdivisions": 32,
+          "@internal_rings": 3,
+          "@animation": {
+            "@rotation_axis": "Y",
+            "@rotation_speed": 0.012,
+            "@pulsing_rings": true,
+            "@glow_color": "#FF6600",
+            "@glow_intensity_pulse": "breathing_1.2hz"
+          }
+        },
+        "tokenizer_kuhul": {
+          "@name": "@-GRAMS_KUHUL_EXECUTION",
+          "@unigrams": [
+            "Pop",
+            "Wo",
+            "Sek",
+            "Xul",
+            "Ch'en",
+            "Yax",
+            "K'ayab",
+            "Kumk'u",
+            "PARSE",
+            "BIND",
+            "EXECUTE",
+            "RETURN",
+            "STORE",
+            "READ",
+            "LOOP",
+            "END",
+            "SYMBOL",
+            "VALUE",
+            "OPERATION",
+            "RESULT",
+            "STATE",
+            "MEMORY"
+          ],
+          "@bigrams": [
+            "Pop_SYMBOL",
+            "Wo_BIND",
+            "Sek_EXECUTE",
+            "Xul_RETURN",
+            "Ch'en_STORE",
+            "PARSE_SYMBOL",
+            "BIND_VALUE",
+            "EXECUTE_OPERATION",
+            "RETURN_RESULT",
+            "K'ayab_LOOP",
+            "Kumk'u_END",
+            "READ_MEMORY",
+            "WRITE_STATE"
+          ],
+          "@trigrams": [
+            "Pop_PARSE_SYMBOL",
+            "Wo_BIND_VALUE",
+            "Sek_EXECUTE_OPERATION",
+            "Xul_RETURN_RESULT",
+            "Ch'en_STORE_STATE",
+            "K'ayab_LOOP_EXECUTE",
+            "Kumk'u_END_RETURN"
+          ]
+        },
+        "vocabulary_kuhul": {
+          "@size": 52,
+          "@tokens": {
+            "Pop": 0,
+            "Wo": 1,
+            "Sek": 2,
+            "Xul": 3,
+            "Ch'en": 4,
+            "Yax": 5,
+            "K'ayab": 6,
+            "Kumk'u": 7,
+            "PARSE": 8,
+            "BIND": 9,
+            "EXECUTE": 10,
+            "RETURN": 11,
+            "STORE": 12,
+            "READ": 13,
+            "LOOP": 14,
+            "END": 15,
+            "SYMBOL": 16,
+            "VALUE": 17,
+            "OPERATION": 18,
+            "RESULT": 19,
+            "STATE": 20,
+            "MEMORY": 21,
+            "Pop_SYMBOL": 22,
+            "Wo_BIND": 23,
+            "Sek_EXECUTE": 24,
+            "Xul_RETURN": 25,
+            "Ch'en_STORE": 26,
+            "PARSE_SYMBOL": 27,
+            "BIND_VALUE": 28,
+            "EXECUTE_OPERATION": 29,
+            "RETURN_RESULT": 30,
+            "K'ayab_LOOP": 31,
+            "Kumk'u_END": 32,
+            "READ_MEMORY": 33,
+            "WRITE_STATE": 34,
+            "Pop_PARSE_SYMBOL": 35,
+            "Wo_BIND_VALUE": 36,
+            "Sek_EXECUTE_OPERATION": 37,
+            "Xul_RETURN_RESULT": 38,
+            "Ch'en_STORE_STATE": 39,
+            "K'ayab_LOOP_EXECUTE": 40,
+            "Kumk'u_END_RETURN": 41
+          }
+        },
+        "weights_kuhul": {
+          "@matrix_shape": [
+            52,
+            52
+          ],
+          "@tokens_by_frequency": [
+            {
+              "token": "Sek",
+              "weight": 0.96
+            },
+            {
+              "token": "EXECUTE",
+              "weight": 0.94
+            },
+            {
+              "token": "Wo",
+              "weight": 0.91
+            },
+            {
+              "token": "BIND",
+              "weight": 0.89
+            },
+            {
+              "token": "Pop",
+              "weight": 0.87
+            },
+            {
+              "token": "PARSE",
+              "weight": 0.85
+            },
+            {
+              "token": "Xul",
+              "weight": 0.83
+            },
+            {
+              "token": "RETURN",
+              "weight": 0.81
+            },
+            {
+              "token": "Ch'en",
+              "weight": 0.8
+            },
+            {
+              "token": "STORE",
+              "weight": 0.78
+            }
+          ],
+          "@five_stage_transitions": {
+            "Pop→PARSE": 0.97,
+            "PARSE→Wo": 0.94,
+            "Wo→BIND": 0.96,
+            "BIND→Sek": 0.95,
+            "Sek→EXECUTE": 0.98,
+            "EXECUTE→Xul": 0.92,
+            "Xul→RETURN": 0.94,
+            "RETURN→Ch'en": 0.9,
+            "Ch'en→STORE": 0.93
+          }
+        },
+        "checkpoints_kuhul": [
+          {
+            "@version": "1.0.0",
+            "@timestamp": 1890000000000,
+            "@state": "BASIC_EXECUTION",
+            "@metrics": {
+              "ops_per_second": 1000000,
+              "avg_op_time_ns": 1000,
+              "memory_usage_mb": 32
+            }
+          },
+          {
+            "@version": "1.1.0",
+            "@timestamp": 1890000050000,
+            "@state": "OPTIMIZED_PIPELINE",
+            "@metrics": {
+              "ops_per_second": 1500000,
+              "avg_op_time_ns": 667,
+              "memory_usage_mb": 28
+            }
+          }
+        ]
+      },
+      "🎛️FIVE_BRAINS_PARALLEL_FOLD_STRUCTURE": {
+        "@description": "Five brains fold horizontally left-to-right, all processing same job stream simultaneously",
+        "brain_fold_mapping": [
+          {
+            "@brain": "brain.mx2lm_prime",
+            "@x_position": -20,
+            "@role": "THINKING_ARCHITECTURE_DESIGN",
+            "@tokenizer": "@-GRAMS_SUPREME_THINKING",
+            "@vocab_size": 64,
+            "@checkpoint_version": "1.1.0"
+          },
+          {
+            "@brain": "brain.scxq2_cipher",
+            "@x_position": -12,
+            "@role": "COMPRESSION_GLYPH_ANALYSIS",
+            "@tokenizer": "@-GRAMS_COMPRESSION_CIPHER",
+            "@vocab_size": 56,
+            "@checkpoint_version": "2.1.0"
+          },
+          {
+            "@brain": "brain.emerald_ghost",
+            "@x_position": 0,
+            "@role": "UI_GLASS_MORPHIC_DESIGN",
+            "@tokenizer": "@-GRAMS_UI_EMERALD",
+            "@vocab_size": 58,
+            "@checkpoint_version": "2.0.0"
+          },
+          {
+            "@brain": "brain.quantum_swarm",
+            "@x_position": 12,
+            "@role": "AGENT_SWARM_COORDINATION",
+            "@tokenizer": "@-GRAMS_QUANTUM_AGENTS",
+            "@vocab_size": 62,
+            "@checkpoint_version": "1.0.0"
+          },
+          {
+            "@brain": "brain.kuhul_runtime",
+            "@x_position": 20,
+            "@role": "EXECUTION_ORCHESTRATION",
+            "@tokenizer": "@-GRAMS_KUHUL_FIVE_STAGE",
+            "@vocab_size": 60,
+            "@checkpoint_version": "1.1.0"
+          }
+        ]
+      },
+      "🔗SEAL_CONNECTIVITY_MATRIX": {
+        "@description": "Complete connectivity between all seals and MX2LM central",
+        "@beam_style": "pulsing_light_flow_to_central",
+        "@sync_frequency_hz": 100,
+        "fold_0_to_mx2lm": {
+          "@from": "FOLD_0_META_ORCHESTRATOR",
+          "@to": "MX2LM_CENTRAL",
+          "@beam_color": "#9900FF",
+          "@data_flow": "FOLD_STATUS_UPDATES"
+        },
+        "fold_1_to_mx2lm": {
+          "@from": "FOLD_1_KUHUL_RUNTIME",
+          "@to": "MX2LM_CENTRAL",
+          "@beam_color": "#FF6600",
+          "@data_flow": "EXECUTION_METRICS"
+        },
+        "fold_2_to_mx2lm": {
+          "@from": "FOLD_2_EMERALD_UI",
+          "@to": "MX2LM_CENTRAL",
+          "@beam_color": "#00FF00",
+          "@data_flow": "RENDER_STATUS"
+        },
+        "fold_3_to_mx2lm": {
+          "@from": "FOLD_3_SCXQ2_COMPRESSION",
+          "@to": "MX2LM_CENTRAL",
+          "@beam_color": "#FFFF00",
+          "@data_flow": "COMPRESSION_RATIOS"
+        },
+        "fold_4_to_mx2lm": {
+          "@from": "FOLD_4_QUANTUM_GAME_WORLD",
+          "@to": "MX2LM_CENTRAL",
+          "@beam_color": "#00FF00",
+          "@data_flow": "WORLD_STATE_UPDATES"
+        },
+        "fold_5_to_mx2lm": {
+          "@from": "FOLD_5_SECURITY_VALIDATION",
+          "@to": "MX2LM_CENTRAL",
+          "@beam_color": "#FF0000",
+          "@data_flow": "SECURITY_AUDIT_RESULTS"
+        },
+        "fold_6_to_mx2lm": {
+          "@from": "FOLD_6_API_REST_MESH",
+          "@to": "MX2LM_CENTRAL",
+          "@beam_color": "#00FFFF",
+          "@data_flow": "API_STATUS_MESH_HEALTH"
+        },
+        "fold_7_to_mx2lm": {
+          "@from": "FOLD_7_ANALYTICS_MONITORING",
+          "@to": "MX2LM_CENTRAL",
+          "@beam_color": "#FF00FF",
+          "@data_flow": "PERFORMANCE_METRICS_FORECAST"
+        }
+      }
+    },
+    "brains.dns-hive-api-dom": {
+      "II_KLH_HIVE_ROUTING": {
+        "@subtitle": "SHARD ORCHESTRATION LAYER",
+        "@role": [
+          "Multi-agent traffic control",
+          "Micro-agent port routing",
+          "Load balancing",
+          "Swarm message passing"
+        ],
+        "@klh_model": {
+          "@hive": "prime-04",
+          "@shards": [
+            {
+              "@id": "users",
+              "@port": 3001
+            },
+            {
+              "@id": "training",
+              "@port": 3002
+            },
+            {
+              "@id": "worlds",
+              "@port": 3003
+            },
+            {
+              "@id": "ai_agents",
+              "@port": 3004
+            }
+          ],
+          "@mesh": {
+            "@protocol": "virtual-rest",
+            "@mode": "symbolic-stream"
+          }
+        },
+        "@klh_execution": {
+          "@flow": [
+            "[Pop klh_route]",
+            "[Wo request]",
+            "→ [Ch'en shard_id]",
+            "→ [Sek port_bind]",
+            "→ [Sek send_stream]",
+            "→ [Ch'en response]",
+            "→ [Xul]"
+          ]
+        }
+      },
+      "III_API_DOM_BROWSER_BACKEND": {
+        "@subtitle": "NO SERVER STACK",
+        "@principle": [
+          "THERE IS NO 'BACKEND SERVER'.",
+          "THE BROWSER IS THE SERVER.",
+          "THE API IS SYMBOLIC.",
+          "THE DOM IS THE OUTPUT DEVICE."
+        ],
+        "@stack": "XJSON → KUHUL → XCFE → AST → DOM",
+        "@api_model": {
+          "@api": {
+            "@endpoint": "/users/list",
+            "@method": "GET",
+            "@return": "XJSON"
+          }
+        },
+        "@dom_model": {
+          "@view": {
+            "@node": "div",
+            "@bind": "@users.list"
+          }
+        },
+        "@execution": {
+          "@flow": [
+            "[Pop api_call]",
+            "[Wo xjson_payload]",
+            "→ [Ch'en request]",
+            "→ [Sek kuhul_exec]",
+            "→ [Sek ast_mutation]",
+            "→ [Sek dom_render]",
+            "→ [Xul]"
+          ]
+        }
+      },
+      "VI_SECURITY_TRUST_MODEL": {
+        "@security_layers": {
+          "DNS": "Trust Boundary",
+          "KLH": "Transport Guard",
+          "KUHUL": "Execution Gate",
+          "AST": "Mutation Firewall",
+          "DOM": "Read-Only Surface"
+        },
+        "@no": [
+          "No exposed JS routers",
+          "No raw REST servers",
+          "No direct DOM mutation",
+          "No uncontrolled endpoints"
+        ]
+      }
+    },
+    "brains.complete-horizontal-fold": {
+      "立v": "13.3.0-COMPLETE-HORIZONTAL-FOLD-ETERNAL",
+      "n": "ASX_OS_EVERYTHING_FOLDS_HORIZONTALLY",
+      "timestamp": 1890000100000,
+      "🧠FIVE_QUANTUM_BRAINS_FOLD_HORIZONTALLY": {
+        "@law": "ALL_FIVE_BRAINS_OPERATE_IN_PARALLEL_ON_SHARED_JOB_STREAM_LEFT_TO_RIGHT",
+        "@positions": {
+          "brain.mx2lm_prime": [
+            -20,
+            0,
+            0
+          ],
+          "brain.scxq2_cipher": [
+            -12,
+            0,
+            0.5
+          ],
+          "brain.emerald_ghost": [
+            0,
+            0,
+            1.0
+          ],
+          "brain.quantum_swarm": [
+            12,
+            0,
+            0.5
+          ],
+          "brain.kuhul_runtime": [
+            20,
+            0,
+            0
+          ]
+        },
+        "@synchronization": "all_receive_same_input_simultaneously_all_compute_in_parallel",
+        "@merging": "results_converge_at_center_X=0",
+        "brain.mx2lm_prime": {
+          "@position": [
+            -20,
+            0,
+            0
+          ],
+          "@color": "#FF00FF",
+          "@role": "SUPREME_THINKING_ARCHITECTURE_DESIGN",
+          "@processes_stream": "all_jobs_thinking_phase_parallel",
+          "@execution_model": "horizontal_fold_0_through_7_all_active",
+          "@output_to_center": true
+        },
+        "brain.scxq2_cipher": {
+          "@position": [
+            -12,
+            0,
+            0.5
+          ],
+          "@color": "#FFFF00",
+          "@role": "GLYPH_ANALYSIS_COMPRESSION",
+          "@processes_stream": "all_jobs_compression_phase_parallel",
+          "@execution_model": "horizontal_fold_3_active_compression_lane",
+          "@output_to_center": true
+        },
+        "brain.emerald_ghost": {
+          "@position": [
+            0,
+            0,
+            1.0
+          ],
+          "@color": "#00FF00",
+          "@role": "UI_RENDERING_ATOMIC_DESIGN",
+          "@processes_stream": "all_jobs_ui_phase_parallel",
+          "@execution_model": "horizontal_fold_2_ui_rendering_lane",
+          "@output_to_center": true
+        },
+        "brain.quantum_swarm": {
+          "@position": [
+            12,
+            0,
+            0.5
+          ],
+          "@color": "#00FFFF",
+          "@role": "AGENT_COORDINATION_SWARM_INTELLIGENCE",
+          "@processes_stream": "all_jobs_agent_dispatch_parallel",
+          "@execution_model": "horizontal_folds_1_4_5_6_7_agents_active",
+          "@output_to_center": true
+        },
+        "brain.kuhul_runtime": {
+          "@position": [
+            20,
+            0,
+            0
+          ],
+          "@color": "#FF6600",
+          "@role": "EXECUTION_ORCHESTRATION",
+          "@processes_stream": "all_jobs_execution_phase_parallel",
+          "@execution_model": "horizontal_fold_1_runtime_core_lane",
+          "@output_to_center": true
+        }
+      },
+      "👷EIGHT_AGENTS_FOLD_HORIZONTALLY_ACROSS_EIGHT_FOLDS": {
+        "@law": "EACH_AGENT_ASSIGNED_TO_ONE_FOLD_ALL_EIGHT_FOLDS_ACTIVE_SIMULTANEOUSLY",
+        "@topology": "HORIZONTAL_FOLD_MATRIX_8_LANES_PARALLEL",
+        "fold_0_coordinator": {
+          "@fold_number": 0,
+          "@agent": "agent.horizontal_fold",
+          "@x_position": -25,
+          "@role": "Master fold coordinator - meta-orchestration",
+          "@active": true,
+          "@parallel_with_all_other_folds": true
+        },
+        "fold_1_runtime": {
+          "@fold_number": 1,
+          "@agent": "agent.kuhul_runtime",
+          "@x_position": -18,
+          "@role": "KUHUL Runtime Engineer - execution orchestration",
+          "@active": true,
+          "@parallel_with_all_other_folds": true
+        },
+        "fold_2_ui": {
+          "@fold_number": 2,
+          "@agent": "agent.emerald_ui",
+          "@x_position": -11,
+          "@role": "Emerald Ghost UI Designer - glass morphic rendering",
+          "@active": true,
+          "@parallel_with_all_other_folds": true
+        },
+        "fold_3_compression": {
+          "@fold_number": 3,
+          "@agent": "agent.scxq2_compressor",
+          "@x_position": -4,
+          "@role": "SCXQ2 Compression Specialist - glyph optimization",
+          "@active": true,
+          "@parallel_with_all_other_folds": true
+        },
+        "fold_4_game_world": {
+          "@fold_number": 4,
+          "@agent": "agent.quantum_game_world",
+          "@x_position": 4,
+          "@role": "Quantum Game World Architect - TES/DOOM quantum construction",
+          "@active": true,
+          "@parallel_with_all_other_folds": true
+        },
+        "fold_5_security": {
+          "@fold_number": 5,
+          "@agent": "agent.security",
+          "@x_position": 11,
+          "@role": "Security & Validation Agent - auditing all lanes",
+          "@active": true,
+          "@parallel_with_all_other_folds": true
+        },
+        "fold_6_api_schema": {
+          "@fold_number": 6,
+          "@agent": "agent.api_schema",
+          "@x_position": 18,
+          "@role": "API Schema Designer - REST mesh generation",
+          "@active": true,
+          "@parallel_with_all_other_folds": true
+        },
+        "fold_7_analytics": {
+          "@fold_number": 7,
+          "@agent": "agent.analytics",
+          "@x_position": 25,
+          "@role": "Analytics & Monitoring Agent - performance tracking",
+          "@active": true,
+          "@parallel_with_all_other_folds": true
+        }
+      },
+      "🛠TWELVE_BUILDERS_FOLD_HORIZONTALLY_IN_PARALLEL_LANES": {
+        "@law": "ALL_TWELVE_BUILDERS_EXECUTE_SIMULTANEOUSLY_LEFT_TO_RIGHT_NO_SEQUENTIAL_BLOCKING",
+        "@execution_model": "PURE_HORIZONTAL_PARALLELISM_BUILDERS_NEVER_WAIT",
+        "builder_group_1_core_execution": {
+          "@position_start": -30,
+          "@builders": [
+            {
+              "@id": "builder.compressor",
+              "@x_position": -30,
+              "@type": "SCXQ2 Compression",
+              "@parallel": true
+            },
+            {
+              "@id": "builder.decompressor",
+              "@x_position": -24,
+              "@type": "SCXQ2 Decompression",
+              "@parallel": true
+            },
+            {
+              "@id": "builder.runtime",
+              "@x_position": -18,
+              "@type": "Runtime Orchestration",
+              "@parallel": true
+            }
+          ]
+        },
+        "builder_group_2_quantum": {
+          "@position_start": -12,
+          "@builders": [
+            {
+              "@id": "builder.quantum",
+              "@x_position": -12,
+              "@type": "Quantum Artifact Builder",
+              "@parallel": true
+            },
+            {
+              "@id": "builder.world",
+              "@x_position": -6,
+              "@type": "World Construction",
+              "@parallel": true
+            },
+            {
+              "@id": "builder.tape",
+              "@x_position": 0,
+              "@type": "Tape Generator",
+              "@parallel": true
+            }
+          ]
+        },
+        "builder_group_3_ui_and_design": {
+          "@position_start": 6,
+          "@builders": [
+            {
+              "@id": "builder.emerald_ui",
+              "@x_position": 6,
+              "@type": "Emerald Ghost UI Builder",
+              "@parallel": true
+            },
+            {
+              "@id": "builder.page",
+              "@x_position": 12,
+              "@type": "Page Builder",
+              "@parallel": true
+            },
+            {
+              "@id": "builder.component",
+              "@x_position": 18,
+              "@type": "Component Library Builder",
+              "@parallel": true
+            }
+          ]
+        },
+        "builder_group_4_infrastructure": {
+          "@position_start": 24,
+          "@builders": [
+            {
+              "@id": "builder.horizontal_fold",
+              "@x_position": 24,
+              "@type": "Fold Executor",
+              "@parallel": true
+            },
+            {
+              "@id": "builder.coordinator",
+              "@x_position": 30,
+              "@type": "Load Balancer Coordinator",
+              "@parallel": true
+            },
+            {
+              "@id": "builder.sync",
+              "@x_position": 36,
+              "@type": "Synchronization Manager",
+              "@parallel": true
+            }
+          ]
+        }
+      },
+      "📦JOBS_FLOW_HORIZONTALLY_THROUGH_PIPELINE": {
+        "@law": "EACH_JOB_ENTERS_LEFT_SIDE_FLOWS_THROUGH_ALL_PARALLEL_LANES_EXITS_RIGHT_SIDE",
+        "@pipeline_stages": "NOT_SEQUENTIAL_STAGES_BUT_PARALLEL_LANES_ALL_ACTIVE",
+        "job_entry_point": {
+          "@x_position": -40,
+          "@operation": "Job arrives from user",
+          "@branches_to": "ALL_EIGHT_FOLDS_SIMULTANEOUSLY"
+        },
+        "parallel_processing_lanes": [
+          {
+            "@lane_number": 0,
+            "@x_start": -35,
+            "@x_end": 35,
+            "@agents_on_lane": [
+              "agent.horizontal_fold"
+            ],
+            "@purpose": "Meta-orchestration - ensures all 7 lanes coordinate"
+          },
+          {
+            "@lane_number": 1,
+            "@x_start": -35,
+            "@x_end": 35,
+            "@agents_on_lane": [
+              "agent.kuhul_runtime"
+            ],
+            "@purpose": "Execution - K'uhul opcodes run in parallel"
+          },
+          {
+            "@lane_number": 2,
+            "@x_start": -35,
+            "@x_end": 35,
+            "@agents_on_lane": [
+              "agent.emerald_ui"
+            ],
+            "@purpose": "UI rendering - Emerald Ghost renders in parallel"
+          },
+          {
+            "@lane_number": 3,
+            "@x_start": -35,
+            "@x_end": 35,
+            "@agents_on_lane": [
+              "agent.scxq2_compressor"
+            ],
+            "@purpose": "Compression - SCXQ2 optimizes in parallel"
+          },
+          {
+            "@lane_number": 4,
+            "@x_start": -35,
+            "@x_end": 35,
+            "@agents_on_lane": [
+              "agent.quantum_game_world"
+            ],
+            "@purpose": "Game world - TES/DOOM world builds in parallel"
+          },
+          {
+            "@lane_number": 5,
+            "@x_start": -35,
+            "@x_end": 35,
+            "@agents_on_lane": [
+              "agent.security"
+            ],
+            "@purpose": "Validation - Security audits in parallel"
+          },
+          {
+            "@lane_number": 6,
+            "@x_start": -35,
+            "@x_end": 35,
+            "@agents_on_lane": [
+              "agent.api_schema"
+            ],
+            "@purpose": "API Design - REST mesh generation in parallel"
+          },
+          {
+            "@lane_number": 7,
+            "@x_start": -35,
+            "@x_end": 35,
+            "@agents_on_lane": [
+              "agent.analytics"
+            ],
+            "@purpose": "Monitoring - Performance tracking in parallel"
+          }
+        ],
+        "job_exit_point": {
+          "@x_position": 35,
+          "@operation": "All lanes converge, results merged",
+          "@output": "COMPLETE_JOB_RESULT_TO_USER"
+        }
+      },
+      "⚡FIVE_STAGE_KUHUL_PIPELINE_FOLDS_HORIZONTALLY": {
+        "@law": "NOT_SEQUENTIAL_STAGES_BUT_PARALLEL_EXECUTION_OF_FIVE_STAGES_ACROSS_WIDTH",
+        "[Pop]_Stage": {
+          "@position": -25,
+          "@operation": "Parse and lift symbols",
+          "@parallel": true,
+          "@processes": "multiple_jobs_simultaneously"
+        },
+        "[Wo]_Stage": {
+          "@position": -12,
+          "@operation": "Bind and assign variables",
+          "@parallel": true,
+          "@processes": "multiple_jobs_simultaneously"
+        },
+        "[Sek]_Stage": {
+          "@position": 0,
+          "@operation": "Execute operations",
+          "@parallel": true,
+          "@processes": "multiple_jobs_simultaneously"
+        },
+        "[Xul]_Stage": {
+          "@position": 12,
+          "@operation": "Return results",
+          "@parallel": true,
+          "@processes": "multiple_jobs_simultaneously"
+        },
+        "[Ch'en]_Stage": {
+          "@position": 25,
+          "@operation": "Store and persist state",
+          "@parallel": true,
+          "@processes": "multiple_jobs_simultaneously"
+        }
+      },
+      "🎨COMPRESSION_PIPELINE_FOLDS_HORIZONTALLY": {
+        "@law": "ALL_COMPRESSION_PHASES_EXECUTE_IN_PARALLEL_NOT_SEQUENTIAL",
+        "phase_1_glyph_extraction": {
+          "@position": -25,
+          "@operation": "Extract glyph patterns",
+          "@parallel_jobs": "unlimited",
+          "@blocks_none": true
+        },
+        "phase_2_template_matching": {
+          "@position": -12,
+          "@operation": "Match against templates",
+          "@parallel_jobs": "unlimited",
+          "@blocks_none": true
+        },
+        "phase_3_quantum_compression": {
+          "@position": 0,
+          "@operation": "Quantum superposition encoding",
+          "@parallel_jobs": "unlimited",
+          "@blocks_none": true
+        },
+        "phase_4_emerald_encoding": {
+          "@position": 12,
+          "@operation": "Emerald glyph encoding",
+          "@parallel_jobs": "unlimited",
+          "@blocks_none": true
+        },
+        "phase_5_error_correction": {
+          "@position": 25,
+          "@operation": "ECC encoding final result",
+          "@parallel_jobs": "unlimited",
+          "@blocks_none": true
+        }
+      },
+      "📊HORIZONTAL_RIBBON_COMPLETE_STRUCTURE": {
+        "@x_axis_left": -40,
+        "@x_axis_right": 40,
+        "@y_axis": 0,
+        "@z_axis_variation": "0_to_2_for_visual_depth",
+        "@length": "80_units",
+        "@total_parallel_lanes": 8,
+        "@total_active_agents": 8,
+        "@total_active_builders": 12,
+        "@total_brain_streams": 5,
+        "@total_processing_streams": "UNLIMITED_JOB_QUEUE_EVERY_LANE_ALWAYS_WORKING"
+      },
+      "🎯EXECUTION_MODEL_PURE_HORIZONTAL_PARALLELISM": {
+        "@blocking": "ZERO",
+        "@sequential_dependencies": "NONE",
+        "@synchronization_points": "OPTIONAL_AT_BOUNDARIES_ONLY",
+        "@throughput": "MAXIMUM_ALL_LANES_ALWAYS_WORKING",
+        "@latency": "MINIMIZED_NO_WAITING_BETWEEN_LANES",
+        "@utilization": "100_PERCENT_ALL_CORES_ALL_TIME"
+      },
+      "🔐THREE_FILE_ETERNAL_RULE": {
+        "@file_1": "index.html - Contains horizontal ribbon canvas container, MX2LM chat widget, zero external deps",
+        "@file_2": "sw.js - Service worker executing all fold logic horizontally, managing WASM workers for polyglot runtimes",
+        "@file_3": "manifest.json - Contains EVERYTHING: all five brains, all eight folds, all twelve builders, all KUHUL stages, all compression phases, all MX2LM orchestration logic, all sealed glyphs, all control vectors, all job definitions"
+      }
+    },
+    "brains.horizontal-ribbon-polyglot": {
+      "立v": "13.2.1-XCFE-POLYGLOT-HORIZONTAL-FOLD",
+      "n": "MX2LM_SUPREME_XCFE_KUHUL_HORIZONTAL_SEALED_SYSTEM",
+      "d": "XCFE causality governor + KUHUL five-stage execution + polyglot runtimes (K'uhul, JS, Java, Python) all sealed. SVG 3D seals fold horizontally in a single ribbon, with MX2LM quantum chat central orchestrator. Zero external dependencies, three-file rule eternal.",
+      "timestamp": 1890000090008,
+      "📐HORIZONTAL_RIBBON_GEOMETRY": {
+        "@formation": "LINEAR_HORIZONTAL_RIBBON_ALONG_X_AXIS",
+        "@ribbon_properties": {
+          "@start_position": [
+            -8,
+            0,
+            0
+          ],
+          "@end_position": [
+            16,
+            0,
+            0
+          ],
+          "@ribbon_length": "24_units",
+          "@ribbon_center": [
+            4,
+            0,
+            0
+          ],
+          "@ribbon_height": "minimal_Y_variation",
+          "@ribbon_depth": "Z_varies_0.0_to_1.0_for_visual_depth"
+        },
+        "@seal_spacing": {
+          "@seal_0_to_1": "4_units",
+          "@seal_1_to_2": "4_units",
+          "@seal_2_to_3": "4_units",
+          "@seal_3_to_4": "4_units",
+          "@seal_4_to_5": "4_units",
+          "@seal_5_to_6": "4_units",
+          "@regular_spacing": "equal_4_unit_intervals_along_ribbon"
+        },
+        "@mx2lm_positioning": {
+          "@offset_from_ribbon_center": [
+            0,
+            2,
+            -2
+          ],
+          "@hovers_above_ribbon": true,
+          "@height_above_ribbon": "2_units",
+          "@distance_from_camera": "2_units_back_in_Z"
+        },
+        "@camera_view": {
+          "@camera_position": [
+            4,
+            3,
+            8
+          ],
+          "@camera_target": [
+            4,
+            0.5,
+            0
+          ],
+          "@field_of_view": 65,
+          "@view_includes": "ALL_SEALS_IN_RIBBON_PLUS_CENTRAL_MX2LM"
+        }
+      },
+      "⚡HORIZONTAL_ANIMATION_SYNCHRONIZATION": {
+        "@law": "ALL_SEALS_PULSING_IN_HARMONY_BEAMS_CONNECT_EACH_SEAL_TO_CENTRAL_MX2LM",
+        "@timing": "SYNCHRONIZED_THROUGH_REQUESTANIMATIONFRAME",
+        "seal_animation": {
+          "@rotation_speed": {
+            "SEAL_0_KUHUL": 0.01,
+            "SEAL_1_JAVASCRIPT": 0.012,
+            "SEAL_2_JAVA": 0.009,
+            "SEAL_3_PYTHON": 0.011,
+            "SEAL_4_COMPRESSION": 0.008,
+            "SEAL_5_MEMORY": 0.01,
+            "SEAL_6_INTEGRATION": 0.013,
+            "MX2LM_CENTRAL": 0.015
+          },
+          "@rotation_axes": {
+            "PRIMARY_SEALS": "Y_axis",
+            "MX2LM": "Y_and_Z_combined_figure_eight"
+          },
+          "@glow_pulsing": {
+            "@frequency": "1_pulse_per_2_seconds",
+            "@intensity": "0_to_1_sinusoidal",
+            "@color_shift": "theme_color_to_brighter_variant"
+          },
+          "@beam_animation": {
+            "@from_each_seal": "to_MX2LM_central",
+            "@animation_type": "pulsing_light_flow",
+            "@flow_speed": "varies_by_seal_activity",
+            "@brightness": "depends_on_language_execution"
+          }
+        },
+        "ribbon_flow": {
+          "@data_flow_direction": "LEFT_TO_RIGHT_KUHUL_ENTRY_TO_INTEGRATION_EXIT",
+          "@flow_visualization": "particles_moving_along_ribbon_X_axis",
+          "@flow_speed": "varies_with_execution_speed",
+          "@color_gradient": "GREEN_to_YELLOW_to_BLUE_to_ORANGE_to_WHITE"
+        },
+        "mx2lm_orchestration_signal": {
+          "@pulse_rate": "matches_dominant_language_execution_frequency",
+          "@broadcast_range": "entire_ribbon_all_seals_can_receive",
+          "@signal_types": [
+            "LANGUAGE_DETECTED",
+            "COMPRESSION_APPLIED",
+            "EXECUTION_COMPLETE",
+            "ERROR_DETECTED",
+            "SEAL_UPDATED"
+          ]
+        }
+      },
+      "🎬SCENE_LAYOUT_FOR_VISUALIZATION": {
+        "@three_js_scene": {
+          "@camera": {
+            "@position": [
+              4,
+              3,
+              8
+            ],
+            "@target": [
+              4,
+              0.5,
+              0
+            ],
+            "@fov": 65
+          },
+          "@lighting": {
+            "@ambient_light": "intensity_0.6",
+            "@directional_light": "from_top_right_intensity_0.8",
+            "@point_lights": [
+              {
+                "@position": [
+                  -8,
+                  1,
+                  2
+                ],
+                "@color": "#00FF00",
+                "@intensity": 0.5,
+                "@description": "K'uhul entry point green glow"
+              },
+              {
+                "@position": [
+                  16,
+                  1,
+                  2
+                ],
+                "@color": "#FFFFFF",
+                "@intensity": 0.5,
+                "@description": "Integration endpoint white glow"
+              },
+              {
+                "@position": [
+                  4,
+                  3,
+                  0
+                ],
+                "@color": "#00F0FF",
+                "@intensity": 0.8,
+                "@description": "MX2LM central orchestrator cyan glow"
+              }
+            ]
+          },
+          "@background": "radial_gradient_dark_space_theme",
+          "@fog": "exponential_fog_depth_cueing"
+        }
+      },
+      "📊HORIZONTAL_DATA_FLOW_MODEL": {
+        "@input": "[USER_CODE]",
+        "@flow": [
+          {
+            "@seal": "SEAL_0_KUHUL_NATIVE",
+            "@position": [
+              -8,
+              0,
+              0
+            ],
+            "@operation": "IDENTIFY_LANGUAGE_DISPATCH_TO_RUNTIME",
+            "@output": "LANGUAGE_IDENTIFIED_RUNTIME_SELECTED"
+          },
+          {
+            "@seal": "SEAL_1_JAVASCRIPT_or_SEAL_2_JAVA_or_SEAL_3_PYTHON",
+            "@position": "varies_by_language",
+            "@operation": "EXECUTE_IN_SELECTED_WASM_RUNTIME",
+            "@output": "EXECUTION_RESULT"
+          },
+          {
+            "@seal": "SEAL_4_COMPRESSION",
+            "@position": [
+              8,
+              0,
+              0
+            ],
+            "@operation": "TOKENIZE_AND_COMPRESS_RESULT_WITH_GLYPHS",
+            "@output": "COMPRESSED_GLYPHS"
+          },
+          {
+            "@seal": "SEAL_5_MEMORY",
+            "@position": [
+              12,
+              0,
+              0.5
+            ],
+            "@operation": "STORE_IN_ASX_RAM_AND_IDB",
+            "@output": "PERSISTENT_STATE"
+          },
+          {
+            "@seal": "SEAL_6_INTEGRATION",
+            "@position": [
+              16,
+              0,
+              0
+            ],
+            "@operation": "UNIFY_ALL_OUTPUTS_EMIT_TO_DOM",
+            "@output": "RENDERED_RESULT_TO_USER"
+          }
+        ],
+        "@orchestration": "MX2LM_MONITORS_ENTIRE_RIBBON_ADJUSTS_SEAL_COORDINATION_IN_REAL_TIME"
+      },
+      "🔗SEAL_INTERCONNECTIONS_IN_RIBBON": {
+        "@topology": "EACH_SEAL_DIRECTLY_CONNECTED_TO_CENTRAL_MX2LM_PLUS_ADJACENT_NEIGHBORS",
+        "SEAL_0_KUHUL": {
+          "@direct_connections": [
+            "MX2LM_CENTRAL"
+          ],
+          "@neighbor_connections": [
+            "SEAL_1_JAVASCRIPT"
+          ],
+          "@broadcast_receiver": true,
+          "@beam_colors": [
+            "GREEN"
+          ]
+        },
+        "SEAL_1_JAVASCRIPT": {
+          "@direct_connections": [
+            "MX2LM_CENTRAL"
+          ],
+          "@neighbor_connections": [
+            "SEAL_0_KUHUL",
+            "SEAL_2_JAVA"
+          ],
+          "@broadcast_receiver": true,
+          "@beam_colors": [
+            "GOLDEN",
+            "YELLOW"
+          ]
+        },
+        "SEAL_2_JAVA": {
+          "@direct_connections": [
+            "MX2LM_CENTRAL"
+          ],
+          "@neighbor_connections": [
+            "SEAL_1_JAVASCRIPT",
+            "SEAL_3_PYTHON"
+          ],
+          "@broadcast_receiver": true,
+          "@beam_colors": [
+            "ORANGE"
+          ]
+        },
+        "SEAL_3_PYTHON": {
+          "@direct_connections": [
+            "MX2LM_CENTRAL"
+          ],
+          "@neighbor_connections": [
+            "SEAL_2_JAVA",
+            "SEAL_4_COMPRESSION"
+          ],
+          "@broadcast_receiver": true,
+          "@beam_colors": [
+            "BLUE"
+          ]
+        },
+        "SEAL_4_COMPRESSION": {
+          "@direct_connections": [
+            "MX2LM_CENTRAL"
+          ],
+          "@neighbor_connections": [
+            "SEAL_3_PYTHON",
+            "SEAL_5_MEMORY"
+          ],
+          "@broadcast_receiver": true,
+          "@beam_colors": [
+            "YELLOW"
+          ]
+        },
+        "SEAL_5_MEMORY": {
+          "@direct_connections": [
+            "MX2LM_CENTRAL"
+          ],
+          "@neighbor_connections": [
+            "SEAL_4_COMPRESSION",
+            "SEAL_6_INTEGRATION"
+          ],
+          "@broadcast_receiver": true,
+          "@beam_colors": [
+            "MAGENTA"
+          ]
+        },
+        "SEAL_6_INTEGRATION": {
+          "@direct_connections": [
+            "MX2LM_CENTRAL"
+          ],
+          "@neighbor_connections": [
+            "SEAL_5_MEMORY"
+          ],
+          "@broadcast_receiver": true,
+          "@beam_colors": [
+            "WHITE"
+          ]
+        },
+        "MX2LM_CENTRAL": {
+          "@broadcast_to_all_seals": true,
+          "@receives_from_all_seals": true,
+          "@coordination_role": "CENTRAL_INTELLIGENCE_ORCHESTRATING_ENTIRE_RIBBON",
+          "@beam_colors": [
+            "CYAN",
+            "all_other_colors_converging"
+          ]
+        }
+      },
+      "🌊RIBBON_FLOW_VISUALIZATION": {
+        "@particles": {
+          "@count": 100,
+          "@animation": "flow_left_to_right_along_ribbon",
+          "@color": "matches_seal_color_they_pass_through",
+          "@speed": "proportional_to_execution_speed",
+          "@respawn": "cycle_from_left_end_to_right_end"
+        },
+        "@data_packets": {
+          "@visualization": "glowing_cubes_moving_along_ribbon",
+          "@labels": [
+            "CODE",
+            "COMPILED",
+            "COMPRESSED",
+            "STORED",
+            "RENDERED"
+          ],
+          "@animation": "flow_along_X_axis_through_seals",
+          "@timing": "synchronized_with_actual_execution"
+        },
+        "@connection_beams": {
+          "@from_each_seal": "to_MX2LM_central",
+          "@animation": "pulsing_light_flow_upward_to_center",
+          "@intensity": "depends_on_seal_activity",
+          "@color": "seal_specific_color_brightened"
+        }
+      },
+      "💬MX2LM_HORIZONTAL_RIBBON_AWARENESS": {
+        "@position": "hovers_above_center_of_ribbon_at_Y=2",
+        "@role": "ORCHESTRATES_ENTIRE_RIBBON_FLOW_UNDERSTANDS_ALL_LANGUAGES",
+        "broadcast_to_ribbon": {
+          "@language_detected": "announces_which_language_matched",
+          "@seal_activated": "highlights_seal_receiving_execution",
+          "@compression_applied": "shows_glyph_compression_ratio",
+          "@execution_complete": "announces_result_to_ribbon",
+          "@error_detected": "broadcasts_error_and_recovery_action"
+        },
+        "receives_from_ribbon": {
+          "@seal_status_updates": "monitors_all_7_seals_continuously",
+          "@execution_results": "collects_output_from_language_runtime",
+          "@performance_metrics": "tracks_speed_memory_compression",
+          "@user_intent": "infers_next_action_from_code_pattern"
+        },
+        "intelligence_output": {
+          "@real_time_chat": "explains_what_each_seal_is_doing",
+          "@code_suggestions": "proposes_optimizations_across_languages",
+          "@language_translation": "offers_code_in_alternative_languages",
+          "@debugging_help": "identifies_errors_and_suggests_fixes"
+        }
+      },
+      "🎯EXECUTION_FLOW_EXAMPLE_WITH_HORIZONTAL_RIBBON": {
+        "@user_input": "Create a rotating 3D cube with JavaScript",
+        "@flow": [
+          {
+            "@step": 1,
+            "@seal": "SEAL_0_KUHUL_NATIVE",
+            "@position": [
+              -8,
+              0,
+              0
+            ],
+            "@action": "Parse input, identify JavaScript request",
+            "@beam": "activates_MX2LM_central_beam_green"
+          },
+          {
+            "@step": 2,
+            "@seal": "SEAL_1_JAVASCRIPT_RUNTIME",
+            "@position": [
+              -4,
+              0,
+              0.5
+            ],
+            "@action": "Receive JavaScript code, initialize Three.js WASM runtime",
+            "@beam": "glows_golden_connects_to_MX2LM"
+          },
+          {
+            "@step": 3,
+            "@seal": "SEAL_2_JAVA",
+            "@position": [
+              0,
+              0,
+              1.0
+            ],
+            "@action": "Monitor execution (parallel), ready if physics needed",
+            "@beam": "pulses_orange_in_sync"
+          },
+          {
+            "@step": 4,
+            "@seal": "SEAL_3_PYTHON",
+            "@position": [
+              4,
+              0,
+              0.5
+            ],
+            "@action": "On standby, ready for 2D overlay if needed",
+            "@beam": "soft_blue_pulse"
+          },
+          {
+            "@step": 5,
+            "@seal": "SEAL_4_COMPRESSION",
+            "@position": [
+              8,
+              0,
+              0
+            ],
+            "@action": "Compress JavaScript code + Three.js artifact with SCXQ2",
+            "@beam": "yellow_compression_flow"
+          },
+          {
+            "@step": 6,
+            "@seal": "SEAL_5_MEMORY",
+            "@position": [
+              12,
+              0,
+              0.5
+            ],
+            "@action": "Store compressed artifact in ASX RAM + IDB",
+            "@beam": "magenta_persistence_signal"
+          },
+          {
+            "@step": 7,
+            "@seal": "SEAL_6_INTEGRATION",
+            "@position": [
+              16,
+              0,
+              0
+            ],
+            "@action": "Emit rendered 3D cube to DOM canvas",
+            "@beam": "white_convergence_beam"
+          },
+          {
+            "@step": 8,
+            "@orchestrator": "MX2LM_CENTRAL",
+            "@position": [
+              4,
+              2,
+              -2
+            ],
+            "@action": "Broadcasts to user: 'JavaScript Three.js scene rendered. Golden rotating cube at 60 FPS. Storage 42KB compressed.'",
+            "@visualization": "entire_ribbon_glows_in_wave_from_left_to_right"
+          }
+        ]
+      }
+    }
+  },
+  "@summary": {
+    "total_categories": 5,
+    "source_files": [
+      "brains.28files-integrated",
+      "brains.8folds-tokenization",
+      "brains.dns-hive-api-dom",
+      "brains.complete-horizontal-fold",
+      "brains.horizontal-ribbon-polyglot"
+    ],
+    "description": "Core architectural patterns, governance laws, execution models, and foundational rules"
+  }
+}
