@@ -13,8 +13,8 @@
     "@communication": "REST mesh with XJSON payloads",
     "@orchestration": "MX2LM coordinates all builder shards",
 
-    "total_shards": 16,
-    "active_shards": 9,
+    "total_shards": 17,
+    "active_shards": 10,
     "pending_deployment": 7,
 
     "mesh_topology": {
@@ -1381,6 +1381,238 @@
         "XJSON API specification",
         "Browser-based backend creation",
         "K'uhul execution engine integration"
+      ]
+    },
+
+    "shard_17_api_infrastructure": {
+      "@name": "API Infrastructure Shard - Virtual REST Server & Marketplace",
+      "@status": "ACTIVE",
+      "@endpoint": "https://script.google.com/macros/s/AKfycbxobM8hJAp29aX__-CCK3vvjCOeqML73nkG50jUQa_XzIJr3QT0o7ciYmuddLrRNPyqoA/exec",
+      "@description": "INFRASTRUCTURE LAYER: Virtual REST server with dynamic routing + user-defined API provider marketplace. Transforms ASX from 'collection of tools' into 'platform economy'.",
+
+      "builder_type": "infrastructure",
+      "specialization": "api_gateway_marketplace",
+
+      "significance": {
+        "paradigm_shift": "Upgrades architecture from 'local logic' to 'global microservice platform'",
+        "enables": [
+          "Users can define & host their own APIs",
+          "API marketplace with token pricing",
+          "API chaining and composition",
+          "Decentralized API economy",
+          "User-owned cloud functions"
+        ],
+        "comparison": "Decentralized Firebase + Vercel + Stripe + OpenAI — but user-owned"
+      },
+
+      "core_capabilities": {
+        "dynamic_routing": [
+          "Runtime route registration/unregistration",
+          "Method-based routing (GET, POST, PUT, PATCH, DELETE)",
+          "Handler function mapping",
+          "Route discovery endpoint"
+        ],
+        "provider_marketplace": [
+          "User API registration (providers)",
+          "Provider metadata (name, url, category, description)",
+          "Token-based pricing (priceTokens)",
+          "Public/private visibility control",
+          "Owner attribution via Google account"
+        ],
+        "api_proxy_gateway": [
+          "Proxy requests to registered provider APIs",
+          "Query parameter passthrough (q_* → *)",
+          "Method forwarding (GET, POST, PUT, PATCH)",
+          "JSON body parsing and forwarding",
+          "HTTP status and header capture",
+          "Response body parsing (raw + JSON)"
+        ]
+      },
+
+      "default_routes": {
+        "/health": {
+          "method": "GET",
+          "handler": "apiHealth",
+          "returns": "Shard status, version, route count, provider count"
+        },
+        "/echo": {
+          "method": "GET",
+          "handler": "apiEcho",
+          "returns": "Echo input parameters for testing"
+        },
+        "/routes": {
+          "method": "GET",
+          "handler": "apiListRoutes",
+          "returns": "List all registered routes"
+        },
+        "/register": {
+          "method": "POST",
+          "handler": "apiRegisterRoute",
+          "params": "path, method, handler",
+          "returns": "Registers new route at runtime"
+        },
+        "/unregister": {
+          "method": "POST",
+          "handler": "apiUnregisterRoute",
+          "params": "path",
+          "returns": "Removes route from registry"
+        },
+        "/providers": {
+          "method": "GET",
+          "handler": "apiListProviders",
+          "returns": "List all registered API providers"
+        },
+        "/providers/register": {
+          "method": "POST",
+          "handler": "apiRegisterProvider",
+          "params": "id, name, url, category, description, priceTokens, public",
+          "returns": "Registers user API as marketplace provider"
+        },
+        "/providers/call": {
+          "method": "POST",
+          "handler": "apiCallProvider",
+          "params": "providerId, method, body, q_*",
+          "returns": "Proxies request to provider API, returns response"
+        }
+      },
+
+      "provider_registration_flow": {
+        "step_1": "User creates their own API (any hosting: GAS, Vercel, custom server)",
+        "step_2": "User registers API via POST to /providers/register with metadata",
+        "step_3": "System assigns unique provider ID (prov_XXXXXXXXXXXX)",
+        "step_4": "Provider appears in marketplace listing at /providers",
+        "step_5": "Other users can call provider via /providers/call with providerId",
+        "step_6": "System tracks owner, pricing, public/private status"
+      },
+
+      "provider_metadata": {
+        "id": "Unique provider ID (auto-generated if not provided)",
+        "name": "Provider display name (required)",
+        "url": "API endpoint URL (required, auto-normalized to https://)",
+        "category": "API category (default: general)",
+        "description": "Provider description",
+        "priceTokens": "Cost in ASX tokens per call (default: 0)",
+        "public": "Visibility (true/false, default: true)",
+        "owner": "Google account email of provider owner",
+        "updated": "Last update timestamp (ISO 8601)"
+      },
+
+      "api_proxy_features": {
+        "method_forwarding": "Forwards GET, POST, PUT, PATCH to provider",
+        "query_params": "Parameters starting with q_* are forwarded (q_userId → userId)",
+        "body_forwarding": "JSON bodies are parsed and forwarded for POST/PUT/PATCH",
+        "response_capture": "Captures HTTP status, headers, raw body, parsed JSON",
+        "error_handling": "Returns structured error on provider failure"
+      },
+
+      "example_provider_registration": {
+        "request": "POST ?route=/providers/register",
+        "body": {
+          "name": "My Weather API",
+          "url": "https://my-weather-api.vercel.app",
+          "category": "weather",
+          "description": "Real-time weather data for 100+ cities",
+          "priceTokens": 5,
+          "public": true
+        },
+        "response": {
+          "success": true,
+          "message": "Provider registered/updated",
+          "provider": {
+            "id": "prov_a3f8b2c1d9e4",
+            "name": "My Weather API",
+            "url": "https://my-weather-api.vercel.app",
+            "category": "weather",
+            "description": "Real-time weather data for 100+ cities",
+            "priceTokens": 5,
+            "public": true,
+            "owner": "user@example.com",
+            "updated": "2025-12-09T12:34:56.789Z"
+          }
+        }
+      },
+
+      "example_provider_call": {
+        "request": "POST ?route=/providers/call",
+        "body": {
+          "providerId": "prov_a3f8b2c1d9e4",
+          "method": "GET",
+          "q_city": "San Francisco"
+        },
+        "response": {
+          "success": true,
+          "providerId": "prov_a3f8b2c1d9e4",
+          "provider": {
+            "id": "prov_a3f8b2c1d9e4",
+            "name": "My Weather API",
+            "category": "weather",
+            "priceTokens": 5,
+            "public": true,
+            "owner": "user@example.com"
+          },
+          "httpStatus": 200,
+          "headers": {},
+          "bodyRaw": "{\"city\":\"San Francisco\",\"temp\":18,\"conditions\":\"Cloudy\"}",
+          "bodyJson": {
+            "city": "San Francisco",
+            "temp": 18,
+            "conditions": "Cloudy"
+          },
+          "timestamp": "2025-12-09T12:35:10.123Z"
+        }
+      },
+
+      "example_route_registration": {
+        "request": "POST ?route=/register",
+        "body": {
+          "path": "/users",
+          "method": "GET",
+          "handler": "apiSampleUsers"
+        },
+        "response": {
+          "success": true,
+          "message": "Route registered",
+          "path": "/users",
+          "method": "GET",
+          "handler": "apiSampleUsers"
+        },
+        "usage": "GET ?route=/users → calls apiSampleUsers() handler"
+      },
+
+      "platform_economy_enablement": {
+        "user_owned_apis": "Users host APIs anywhere, register them, get paid",
+        "token_pricing": "Each provider sets priceTokens for their API",
+        "marketplace_discovery": "/providers endpoint lists all public APIs",
+        "api_chaining": "Providers can call other providers, creating compositions",
+        "monetization": "Foundation for billing users based on provider token costs",
+        "decentralization": "APIs owned by users, not platform"
+      },
+
+      "infrastructure_foundation": {
+        "current_layer": "Dynamic routing + provider marketplace",
+        "future_layers": [
+          "auth.gs → API keys + per-route access control",
+          "usage.gs → Request metering + billing",
+          "market.gs → API marketplace UI + discovery"
+        ],
+        "purpose": "Foundation for API economy and user-owned cloud functions"
+      },
+
+      "integration": {
+        "specialist_shards": "Specialists can register as providers, exposing their capabilities to marketplace",
+        "mx2lm_orchestration": "MX2LM can route to providers, meter usage, bundle APIs into products",
+        "mesh_network": "Providers can be hosted on P2P mesh or centralized servers",
+        "token_economy": "Integrates with ASX token system for provider pricing"
+      },
+
+      "use_cases": [
+        "User registers their own API as marketplace provider",
+        "Platform routes traffic to user APIs with metering",
+        "Multiple APIs chained into orchestrated products",
+        "Users discover and consume public APIs",
+        "Decentralized API marketplace",
+        "User-owned cloud function platform",
+        "Token-based API monetization"
       ]
     }
   },
