@@ -1,6 +1,27 @@
 
-<img width="75%" alt="json-asx" src="https://github.com/user-attachments/assets/4572be60-c0e4-4ac4-bd4e-aa820a5ebb4c" />
-<img style="width:75%;" src="./cluster/pi-goat.svg">
+<div style="
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+">
+
+  <img
+    alt="json-asx"
+    src="https://github.com/user-attachments/assets/4572be60-c0e4-4ac4-bd4e-aa820a5ebb4c"
+    style="width: 45%; max-width: 420px;"
+  />
+
+  <img
+    src="./cluster/pi-goat.svg"
+    alt="PI GOAT Polyglot Security"
+    style="width: 45%; max-width: 420px;"
+  />
+
+</div>
+
 # ASX XJSON App Builder
 
 **AI-Powered Microagent Collaboration Platform**
