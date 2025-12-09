@@ -13,8 +13,8 @@
     "@communication": "REST mesh with XJSON payloads",
     "@orchestration": "MX2LM coordinates all builder shards",
 
-    "total_shards": 11,
-    "active_shards": 4,
+    "total_shards": 12,
+    "active_shards": 5,
     "pending_deployment": 7,
 
     "mesh_topology": {
@@ -581,6 +581,113 @@
         },
         "updates": "automatic from user chat interactions",
         "storage": "Script Properties (persistent)"
+      }
+    },
+
+    "shard_12_frontend_builder": {
+      "@name": "MX2LM Frontend Builder Agent Shard",
+      "@status": "ACTIVE",
+      "@endpoint": "https://script.google.com/macros/s/AKfycbyWBaO1s-y1LZizMkqcB8mHtbWEcgngj4-rwGHCLaC3N-No2pn1OzYOvzdH-c89p6DM/exec",
+      "@description": "AI-powered frontend generation with 5 micro-agents (prompt-to-UI pipeline)",
+
+      "builder_type": "agent",
+      "specialization": "frontend_generation",
+
+      "micro_agents": {
+        "layout_architect": {
+          "id": "layout",
+          "role": "Layout Architect",
+          "builds": ["grid", "columns", "dashboards"],
+          "description": "Generates responsive grid structures based on prompt"
+        },
+        "theme_stylist": {
+          "id": "style",
+          "role": "Theme Stylist",
+          "builds": ["colors", "fonts", "glass", "neon"],
+          "description": "Creates theme systems (glass, neon, dark) with palettes"
+        },
+        "component_engineer": {
+          "id": "components",
+          "role": "Component Engineer",
+          "builds": ["buttons", "cards", "forms", "chat"],
+          "description": "Builds UI components from prompt requirements"
+        },
+        "behavior_engineer": {
+          "id": "logic",
+          "role": "Behavior Engineer",
+          "builds": ["events", "state", "routing"],
+          "description": "Adds JavaScript events and state management"
+        },
+        "export_agent": {
+          "id": "exporter",
+          "role": "ASX Export Agent",
+          "builds": ["html", "pwa", "tape", "manifest"],
+          "description": "Exports as complete HTML + asx-tape.json bundle"
+        }
+      },
+
+      "capabilities": [
+        "prompt_to_ui_generation",
+        "multi_agent_coordination",
+        "theme_generation",
+        "component_composition",
+        "event_binding",
+        "asx_tape_export"
+      ],
+
+      "api_routes": {
+        "GET ?path=builder": "Generate frontend from prompt (requires prompt param)",
+        "GET ?path=chat": "Chat with AI crowns (for collaborative building)",
+        "GET ?path=qwenf1": "Verify QWENF1 model integration",
+        "GET ?path=status": "System and micro-agent status",
+        "GET ?path=tokens": "Manage token balance"
+      },
+
+      "build_cost": {
+        "tokens": 20,
+        "description": "Cost per frontend generation with all 5 micro-agents"
+      },
+
+      "example_request": {
+        "url": "?path=builder&prompt=Create a dark dashboard with sidebar and analytics&crown=developer&tape=studio-web",
+        "response": {
+          "success": true,
+          "buildCost": 20,
+          "layout": {
+            "type": "grid",
+            "structure": {
+              "header": true,
+              "sidebar": true,
+              "main": true,
+              "footer": true
+            }
+          },
+          "style": {
+            "theme": "dark",
+            "palette": {
+              "bg": "#050505",
+              "accent": "#00bcd4"
+            }
+          },
+          "components": ["card", "button", "stat-widget"],
+          "files": [
+            {
+              "name": "index.html",
+              "content": "<!DOCTYPE html>..."
+            },
+            {
+              "name": "asx-tape.json",
+              "content": "{\"tape\":\"studio-web\"...}"
+            }
+          ]
+        }
+      },
+
+      "integration": {
+        "crowns": "Uses MX2LM, Developer, Creative, Analyst crowns for style decisions",
+        "tapes": "Exports to studio-web, studio-data, studio-docs tapes",
+        "qwenf1": "Can use QWENF1 model for advanced prompt understanding",
+        "tokens": "Requires 20 tokens per build, integrates with token system"
       }
     }
   },
