@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>ASX • Form Generator (Power-of-3 + K'uhul)</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    /* ATOMIC-ish CSS TOKENS */
+    :root{
+      --bg:#05070b;
+      --pane:#0b1017;
+      --glass:rgba(255,255,255,.06);
+      --ink:#e9fff7;
+      --mut:#a7c7bd;
+      --accent:#16f2aa;
+      --accent2:#35d1ff;
+      --warn:#ff6b6b;
+      --ok:#19d37f;
+      --bad:#ff5577;
+      --stroke:rgba(255,255,255,.125);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 800px at 20% -10%,#0b1420 0%,#05070b 60%),
+        #05070b;
+      color:var(--ink);
+      font:14px/1.6 system-ui,Segoe UI,Roboto,sans-serif;
+    }
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    .bar{display:flex;gap:12px;align-items:center;margin-bottom:16px}
+    .logo{font-weight:700;letter-spacing:.5px}
+    .logo b{color:var(--accent)}
+    .chip{
+      padding:6px 10px;
+      border:1px solid var(--stroke);
+      border-radius:999px;
+      opacity:.85;
+      background:rgba(4,10,20,.8);
+    }
+    .grid{display:grid;grid-template-columns:360px 1fr;gap:16px}
+    .panel{
+      background:linear-gradient(180deg,var(--pane),#0a1016);
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      padding:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+    }
+    h2{margin:0 0 8px 0;font-size:16px;font-weight:700}
+    label{display:block;margin:10px 0 4px 0;color:var(--mut)}
+    input[type=text],select,textarea{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--stroke);
+      background:#0d141d;
+      color:var(--ink);
+      outline:none;
+    }
+    textarea{min-height:80px;resize:vertical}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg,#0f1822,#0a1118);
+      padding:10px 14px;
+      border-radius:12px;
+      color:var(--ink);
+      cursor:pointer;
+      font-size:13px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+    .btn.primary{
+      border-color:transparent;
+      background:linear-gradient(180deg,var(--accent),#12c995);
+      color:#001b12;
+      font-weight:700;
+    }
+    .btn.ghost{background:transparent}
+    .mut{color:var(--mut)}
+    .tabs{display:flex;gap:8px;margin-bottom:8px}
+    .tab{
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid var(--stroke);
+      cursor:pointer;
+      font-weight:600;
+      font-size:13px;
+    }
+    .tab.on{
+      background:#101a24;
+      color:var(--accent2);
+      border-color:rgba(53,209,255,.4);
+    }
+    .tree{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;font-size:12px}
+    .file{
+      padding:6px 8px;
+      border:1px solid var(--stroke);
+      border-radius:8px;
+      margin:6px 0;
+      background:#0a121a;
+    }
+    .file pre{margin:6px 0 0 0;max-height:200px;overflow:auto}
+    .badge{font-size:11px;padding:2px 6px;border-radius:20px;border:1px solid var(--stroke);opacity:.8}
+    kbd{
+      border:1px solid var(--stroke);
+      border-bottom-width:2px;
+      border-radius:8px;
+      padding:0 6px;
+      background:#0a1118;
+      font-size:11px;
+    }
+    .out{
+      white-space:pre;
+      overflow:auto;
+      background:#071019;
+      border-radius:12px;
+      padding:12px;
+      border:1px dashed var(--stroke);
+      min-height:140px;
+      font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:12px;
+    }
+    .ok{color:var(--ok)} .bad{color:var(--bad)}
+    iframe{
+      width:100%;
+      height:420px;
+      border:1px solid var(--stroke);
+      border-radius:12px;
+      background:#000;
+    }
+    .footer{margin-top:14px;opacity:.7;font-size:12px}
+    @media (max-width:900px){
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <!-- GHOST SHELL: UI only, all "OS logic" lives in sw.js (K'uhul) + manifest.json (ASXR DB) -->
+  <div class="wrap">
+    <div class="bar">
+      <div class="logo">
+        ASX <b>Form-Generator</b> <span class="badge">Power-of-3 + K'uhul</span>
+      </div>
+      <div class="chip">index.html (Ghost)</div>
+      <div class="chip">sw.js (K'uhul Kernel)</div>
+      <div class="chip">manifest.json (ASXR DB)</div>
+      <div style="margin-left:auto" class="mut">
+        PWA: <kbd>Edge/Chrome Menu</kbd> → "Install Citi OS Form Generator"
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT: Hybrid "chat-like" form for project spec -->
+      <div class="panel">
+        <h2>Project Wizard</h2>
+        <p class="mut" style="margin-top:0">
+          Fill this mini-brief. The kernel will emit a 3-file ASX app (index, manifest, sw)
+          you can drop onto any ASX-ready host.
+        </p>
+
+        <label>Project Name</label>
+        <input id="name" type="text" placeholder="e.g., rocket-notes" value="rocket-notes">
+
+        <label>Project Type</label>
+        <select id="type">
+          <option value="webapp">Web App</option>
+          <option value="game">Mini-Game</option>
+          <option value="site">Marketing Site</option>
+          <option value="dashboard">Admin / Dashboard</option>
+        </select>
+
+        <label>Primary Goal</label>
+        <textarea id="goal" placeholder="What should this app do?">Collect notes and render them as cards; offline-first; shareable as static bundle.</textarea>
+
+        <label>Target Stack</label>
+        <select id="stack">
+          <option value="pure">Pure ASX (Power-of-3)</option>
+          <option value="asx+ollama">ASX + Local Ollama (JSON-OS)</option>
+          <option value="asx+llm-cloud">ASX + Cloud LLM (future)</option>
+        </select>
+
+        <label>Security / Data Handling</label>
+        <select id="security">
+          <option value="local">Local-only (localStorage)</option>
+          <option value="zk">Zero-Knowledge (encrypt before send)</option>
+          <option value="server">Server-side (ASX Engine)</option>
+        </select>
+
+        <h2 style="margin-top:18px">Controls</h2>
+        <div class="row">
+          <button class="btn primary" id="btnGenerate">
+            ⚙ Generate 3-File App
+          </button>
+          <button class="btn" id="btnPreview">
+            👁 Preview index.html
+          </button>
+          <button class="btn ghost" id="btnPublish">
+            ⬆ Publish JSON (copy)
+          </button>
+          <button class="btn ghost" id="btnReset">
+            ⟳ Reset
+          </button>
+        </div>
+
+        <div class="footer mut">
+          Kernel routes:
+          <span class="badge">POST /api/generate</span>
+          <span class="badge">POST /api/publish</span>
+          (ASXR / K'uhul lives entirely in <code>sw.js</code>.)
+        </div>
+      </div>
+
+      <!-- RIGHT: Files / Preview / Log -->
+      <div class="panel">
+        <div class="tabs">
+          <div class="tab on" data-tab="files">Files</div>
+          <div class="tab" data-tab="preview">Preview</div>
+          <div class="tab" data-tab="log">Log</div>
+        </div>
+
+        <div id="panel-files">
+          <div class="tree" id="files"></div>
+        </div>
+
+        <div id="panel-preview" style="display:none">
+          <iframe id="frame"></iframe>
+        </div>
+
+        <div id="panel-log" style="display:none">
+          <div class="out" id="log">• Ghost shell ready. Waiting for K'uhul kernel…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- SERVICE WORKER BOOT (K'uhul kernel) ---
+    (async () => {
+      if (!('serviceWorker' in navigator)) {
+        log('ServiceWorker not supported in this browser', true);
+        return;
+      }
+      try {
+        const reg = await navigator.serviceWorker.register('sw.js');
+        log('K\'uhul kernel registered: ' + (reg.active ? 'active' : 'installing…'));
+      } catch (e) {
+        log('SW error: ' + e, true);
+      }
+    })();
+
+    const $ = (s)=>document.querySelector(s);
+    const log = (m, bad=false)=>{
+      const el = $('#log');
+      el.textContent += '\\n' + (bad? '✖ ':'• ') + m;
+      el.scrollTop = el.scrollHeight;
+    };
+
+    // Simple tab switcher
+    document.querySelectorAll('.tab').forEach(t=>{
+      t.onclick = ()=>{
+        document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+        t.classList.add('on');
+        const id = t.dataset.tab;
+        $('#panel-files').style.display   = (id==='files')   ? 'block':'none';
+        $('#panel-preview').style.display = (id==='preview') ? 'block':'none';
+        $('#panel-log').style.display     = (id==='log')     ? 'block':'none';
+      };
+    });
+
+    // Generate
+    $('#btnGenerate').onclick = async ()=>{
+      const payload = {
+        name: $('#name').value.trim(),
+        type: $('#type').value,
+        goal: $('#goal').value.trim(),
+        stack: $('#stack').value,
+        security: $('#security').value
+      };
+      if (!payload.name) {
+        alert('Project name required');
+        return;
+      }
+      log('Calling /api/generate…');
+      try{
+        const res = await fetch('/api/generate', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(payload)
+        });
+        const j = await res.json();
+        if (!j.ok) {
+          log('Generate failed: '+j.error, true);
+          return;
+        }
+        window.__FILES__ = j.files;
+        renderFiles(j.files);
+        log('Generated '+Object.keys(j.files).length+' files for "'+payload.name+'"');
+      }catch(e){
+        log('Generate error: '+e, true);
+      }
+    };
+
+    // Preview
+    $('#btnPreview').onclick = ()=>{
+      if (!window.__FILES__) {
+        alert('Generate first');
+        return;
+      }
+      const html = window.__FILES__['index.html'] || '<h1>No index.html</h1>';
+      const blob = new Blob([html], {type:'text/html'});
+      const url  = URL.createObjectURL(blob);
+      $('#frame').src = url;
+      document.querySelector('[data-tab="preview"]').click();
+      log('Preview loaded.');
+    };
+
+    // Publish (copy JSON so Basher / ASX-Engine / cPanel can use it)
+    $('#btnPublish').onclick = async ()=>{
+      if (!window.__FILES__) {
+        alert('Generate first');
+        return;
+      }
+      const payload = {
+        kind: 'asx-app-bundle',
+        createdAt: new Date().toISOString(),
+        files: window.__FILES__
+      };
+      const txt = JSON.stringify(payload, null, 2);
+      try{
+        await navigator.clipboard.writeText(txt);
+        log('Bundle JSON copied to clipboard (ready for /api/publish/remote or cPanel upload).');
+      }catch(e){
+        log('Clipboard error: '+e, true);
+      }
+    };
+
+    // Reset
+    $('#btnReset').onclick = ()=>{
+      $('#files').innerHTML = '';
+      $('#frame').src = 'about:blank';
+      window.__FILES__ = null;
+      log('State reset.');
+    };
+
+    function renderFiles(map){
+      const t = $('#files');
+      t.innerHTML = '';
+      Object.entries(map).forEach(([k,v])=>{
+        const d = document.createElement('div');
+        d.className = 'file';
+        d.innerHTML =
+          '<b>'+k+'</b> ' +
+          '<button class="btn" data-k="'+k+'">Copy</button>' +
+          '<pre>'+escapeHtml(v).slice(0,1500)+'</pre>';
+        t.appendChild(d);
+      });
+      t.querySelectorAll('button[data-k]').forEach(b=>{
+        b.onclick = ()=>{
+          const k = b.getAttribute('data-k');
+          navigator.clipboard.writeText(map[k]);
+          b.textContent='Copied!';
+          setTimeout(()=>b.textContent='Copy', 900);
+        };
+      });
+    }
+
+    function escapeHtml(s){
+      return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+    }
+  </script>
+</body>
+</html>
