@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MX2LM Brain Builders • AI Training Runtimes</title>
+  <style>
+    :root {
+      --bg: #000;
+      --panel: #04170a;
+      --border: #0f3d22;
+      --text: #16f2aa;
+      --accent: #39ff14;
+      --danger: #ff1744;
+      --warning: #ffc107;
+      --info: #00bcd4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .container { max-width: 1600px; margin: 0 auto; }
+
+    header {
+      background: var(--panel);
+      border: 2px solid var(--border);
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: var(--accent);
+      font-size: 2.5rem;
+      text-shadow: 0 0 10px var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: var(--text);
+      opacity: 0.7;
+      font-size: 1rem;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 2px solid var(--border);
+      padding: 20px;
+    }
+
+    .panel-title {
+      color: var(--accent);
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    .tab {
+      background: transparent;
+      border: 2px solid var(--border);
+      color: var(--text);
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+
+    .tab:hover {
+      background: var(--border);
+      border-color: var(--text);
+    }
+
+    .tab.active {
+      background: var(--border);
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .runtime-card {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid var(--border);
+      padding: 20px;
+      margin-bottom: 15px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .runtime-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 15px rgba(57, 242, 20, 0.3);
+    }
+
+    .runtime-card.selected {
+      border-color: var(--accent);
+      background: rgba(57, 242, 20, 0.1);
+    }
+
+    .runtime-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .runtime-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    .runtime-status {
+      padding: 3px 10px;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .status-available { background: var(--accent); color: #000; }
+    .status-coming-soon { background: var(--warning); color: #000; }
+    .status-pro { background: var(--info); color: #000; }
+
+    .runtime-specs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .spec {
+      background: rgba(22, 242, 170, 0.1);
+      padding: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .spec-label {
+      opacity: 0.7;
+      font-size: 0.8rem;
+    }
+
+    .spec-value {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .runtime-description {
+      margin-top: 10px;
+      opacity: 0.8;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .cta-section {
+      background: linear-gradient(135deg, var(--panel), #000);
+      border: 3px solid var(--accent);
+      padding: 30px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px rgba(57, 242, 20, 0.3);
+    }
+
+    .cta-title {
+      font-size: 2rem;
+      color: var(--accent);
+      margin-bottom: 15px;
+      text-shadow: 0 0 15px var(--accent);
+    }
+
+    .cta-subtitle {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      opacity: 0.9;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: var(--border);
+      border: 2px solid var(--text);
+      color: var(--text);
+      padding: 12px 24px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+      font-weight: bold;
+      box-shadow: 0 0 15px rgba(57, 242, 20, 0.5);
+    }
+
+    button.primary:hover {
+      box-shadow: 0 0 25px rgba(57, 242, 20, 0.8);
+      transform: scale(1.05);
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .pricing-card {
+      background: var(--panel);
+      border: 2px solid var(--border);
+      padding: 25px;
+      text-align: center;
+    }
+
+    .pricing-card.featured {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(57, 242, 20, 0.3);
+    }
+
+    .pricing-name {
+      font-size: 1.5rem;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .pricing-price {
+      font-size: 2.5rem;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+
+    .pricing-period {
+      opacity: 0.7;
+      margin-bottom: 20px;
+    }
+
+    .pricing-features {
+      list-style: none;
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .pricing-features li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pricing-features li:before {
+      content: "✓ ";
+      color: var(--accent);
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .stat-card {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid var(--border);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      color: var(--accent);
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .feature-item {
+      background: rgba(22, 242, 170, 0.05);
+      border: 1px solid var(--border);
+      padding: 15px;
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .feature-title {
+      color: var(--accent);
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .feature-desc {
+      opacity: 0.8;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 768px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 { font-size: 2rem; }
+
+      .tabs {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🧠 MX2LM Brain Builders</h1>
+      <div class="subtitle">AI Training Runtimes • KUHUL ⊗ XJSON ⊗ XCFE ⊗ ASX-RAM</div>
+    </header>
+
+    <!-- CTA Section -->
+    <div class="cta-section">
+      <div class="cta-title">⚡ Choose Your Training Runtime</div>
+      <div class="cta-subtitle">
+        Train AI models with POLYGOAT polyglot runtimes. Browser-native, cloud-accelerated, or enterprise-scale.
+      </div>
+      <div class="cta-buttons">
+        <button class="primary" onclick="selectTab('browser')">🌐 Start Free (Browser)</button>
+        <button onclick="selectTab('cloud')">☁️ Cloud GPU</button>
+        <button onclick="selectTab('enterprise')">🏢 Enterprise</button>
+      </div>
+    </div>
+
+    <!-- Stats Dashboard -->
+    <div class="panel">
+      <div class="panel-title">📊 System Status</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">4</div>
+          <div class="stat-label">Available Runtimes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Browser Uptime</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">∞</div>
+          <div class="stat-label">Training Capacity</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">0.0001×</div>
+          <div class="stat-label">K'UHUL Compression</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <!-- Runtime Selection Panel -->
+      <div class="panel" style="grid-column: 1 / -1;">
+        <div class="panel-title">
+          <span>⚙️ Training Runtimes</span>
+          <span style="font-size: 0.9rem; opacity: 0.7;">Select your preferred execution environment</span>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" onclick="selectTab('browser')" data-tab="browser">
+            🌐 Browser Runtime
+          </button>
+          <button class="tab" onclick="selectTab('cloud')" data-tab="cloud">
+            ☁️ Cloud GPU
+          </button>
+          <button class="tab" onclick="selectTab('wasm')" data-tab="wasm">
+            ⚡ WASM Accelerated
+          </button>
+          <button class="tab" onclick="selectTab('enterprise')" data-tab="enterprise">
+            🏢 Enterprise
+          </button>
+        </div>
+
+        <!-- Browser Runtime Tab -->
+        <div class="tab-content active" id="browser-content">
+          <div class="runtime-card selected" onclick="selectRuntime('browser-native')">
+            <div class="runtime-header">
+              <div class="runtime-name">🌐 Browser Native (Free)</div>
+              <div class="runtime-status status-available">AVAILABLE</div>
+            </div>
+            <div class="runtime-specs">
+              <div class="spec">
+                <div class="spec-label">CPU</div>
+                <div class="spec-value">Client Device</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Memory</div>
+                <div class="spec-value">ASX-RAM</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Languages</div>
+                <div class="spec-value">JS, WASM</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Cost</div>
+                <div class="spec-value">FREE</div>
+              </div>
+            </div>
+            <div class="runtime-description">
+              Train AI models directly in your browser using JavaScript and WebAssembly. Perfect for prototyping,
+              small models, and privacy-first training. All data stays on your device in ASX-RAM.
+            </div>
+          </div>
+
+          <div class="runtime-card" onclick="selectRuntime('browser-webgpu')">
+            <div class="runtime-header">
+              <div class="runtime-name">🎮 Browser + WebGPU</div>
+              <div class="runtime-status status-available">AVAILABLE</div>
+            </div>
+            <div class="runtime-specs">
+              <div class="spec">
+                <div class="spec-label">GPU</div>
+                <div class="spec-value">WebGPU</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Acceleration</div>
+                <div class="spec-value">10-50x</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Languages</div>
+                <div class="spec-value">JS, WASM, GLSL</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Cost</div>
+                <div class="spec-value">FREE</div>
+              </div>
+            </div>
+            <div class="runtime-description">
+              Leverage your GPU for accelerated training using WebGPU. Significantly faster than CPU-only training
+              for neural networks. Requires modern browser with WebGPU support (Chrome 113+, Edge 113+).
+            </div>
+          </div>
+        </div>
+
+        <!-- Cloud GPU Tab -->
+        <div class="tab-content" id="cloud-content">
+          <div class="runtime-card" onclick="selectRuntime('cloud-basic')">
+            <div class="runtime-header">
+              <div class="runtime-name">☁️ Cloud Basic (T4 GPU)</div>
+              <div class="runtime-status status-pro">PRO</div>
+            </div>
+            <div class="runtime-specs">
+              <div class="spec">
+                <div class="spec-label">GPU</div>
+                <div class="spec-value">NVIDIA T4</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">VRAM</div>
+                <div class="spec-value">16 GB</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Speed</div>
+                <div class="spec-value">100x Browser</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Cost</div>
+                <div class="spec-value">$0.50/hr</div>
+              </div>
+            </div>
+            <div class="runtime-description">
+              Train on cloud GPUs with NVIDIA T4. Ideal for medium-sized models and faster iteration cycles.
+              Automatic checkpoint sync to GitHub via MX2GIT. SECURITY-GOAT validated environment.
+            </div>
+          </div>
+
+          <div class="runtime-card" onclick="selectRuntime('cloud-advanced')">
+            <div class="runtime-header">
+              <div class="runtime-name">⚡ Cloud Advanced (A100 GPU)</div>
+              <div class="runtime-status status-pro">PRO</div>
+            </div>
+            <div class="runtime-specs">
+              <div class="spec">
+                <div class="spec-label">GPU</div>
+                <div class="spec-value">NVIDIA A100</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">VRAM</div>
+                <div class="spec-value">80 GB</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Speed</div>
+                <div class="spec-value">500x Browser</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Cost</div>
+                <div class="spec-value">$2.50/hr</div>
+              </div>
+            </div>
+            <div class="runtime-description">
+              Professional-grade training with NVIDIA A100 GPUs. Train large language models, diffusion models,
+              and multi-modal architectures. Full POLYGOAT runtime support (K'uhul, Python, Java, JavaScript).
+            </div>
+          </div>
+        </div>
+
+        <!-- WASM Accelerated Tab -->
+        <div class="tab-content" id="wasm-content">
+          <div class="runtime-card" onclick="selectRuntime('wasm-pyodide')">
+            <div class="runtime-header">
+              <div class="runtime-name">🐍 Pyodide WASM (Python)</div>
+              <div class="runtime-status status-available">AVAILABLE</div>
+            </div>
+            <div class="runtime-specs">
+              <div class="spec">
+                <div class="spec-label">Runtime</div>
+                <div class="spec-value">Pyodide</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Libraries</div>
+                <div class="spec-value">NumPy, SciPy</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Speed</div>
+                <div class="spec-value">5x JS Native</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Cost</div>
+                <div class="spec-value">FREE</div>
+              </div>
+            </div>
+            <div class="runtime-description">
+              Run Python ML code in the browser via Pyodide WASM. Full NumPy and SciPy support. Train scikit-learn
+              models, PyTorch (limited), and TensorFlow.js. POLYGOAT Blue Torus seal (Python runtime).
+            </div>
+          </div>
+
+          <div class="runtime-card" onclick="selectRuntime('wasm-java')">
+            <div class="runtime-header">
+              <div class="runtime-name">☕ Java WASM (LWJGL)</div>
+              <div class="runtime-status status-coming-soon">COMING SOON</div>
+            </div>
+            <div class="runtime-specs">
+              <div class="spec">
+                <div class="spec-label">Runtime</div>
+                <div class="spec-value">LWJGL WASM</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Graphics</div>
+                <div class="spec-value">OpenGL ES</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Speed</div>
+                <div class="spec-value">3x JS Native</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Cost</div>
+                <div class="spec-value">FREE</div>
+              </div>
+            </div>
+            <div class="runtime-description">
+              Compile Java ML frameworks to WASM for browser execution. DeepLearning4J, ND4J support.
+              POLYGOAT Orange Pyramid seal (Java runtime). Ideal for enterprise Java ML pipelines.
+            </div>
+          </div>
+
+          <div class="runtime-card" onclick="selectRuntime('wasm-kuhul')">
+            <div class="runtime-header">
+              <div class="runtime-name">🔤 K'UHUL Native</div>
+              <div class="runtime-status status-available">AVAILABLE</div>
+            </div>
+            <div class="runtime-specs">
+              <div class="spec">
+                <div class="spec-label">Runtime</div>
+                <div class="spec-value">K'UHUL VM</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Compression</div>
+                <div class="spec-value">0.0001×</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Graphics</div>
+                <div class="spec-value">WebGL Native</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Cost</div>
+                <div class="spec-value">FREE</div>
+              </div>
+            </div>
+            <div class="runtime-description">
+              Native K'UHUL language runtime with extreme compression (0.0001×). ASXR's custom language for
+              AI training. POLYGOAT Green Cube seal. Maximum efficiency for large-scale training.
+            </div>
+          </div>
+        </div>
+
+        <!-- Enterprise Tab -->
+        <div class="tab-content" id="enterprise-content">
+          <div class="runtime-card" onclick="selectRuntime('enterprise-dedicated')">
+            <div class="runtime-header">
+              <div class="runtime-name">🏢 Dedicated Cluster</div>
+              <div class="runtime-status status-pro">ENTERPRISE</div>
+            </div>
+            <div class="runtime-specs">
+              <div class="spec">
+                <div class="spec-label">GPUs</div>
+                <div class="spec-value">8× A100 80GB</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Total VRAM</div>
+                <div class="spec-value">640 GB</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Networking</div>
+                <div class="spec-value">InfiniBand</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Cost</div>
+                <div class="spec-value">Custom</div>
+              </div>
+            </div>
+            <div class="runtime-description">
+              Dedicated GPU cluster for enterprise AI training. Multi-node distributed training with InfiniBand.
+              Custom XCFE governance policies. SOC 2 compliant. 24/7 support. MX2GIT auto-backup.
+            </div>
+          </div>
+
+          <div class="runtime-card" onclick="selectRuntime('enterprise-on-prem')">
+            <div class="runtime-header">
+              <div class="runtime-name">🏭 On-Premise Deployment</div>
+              <div class="runtime-status status-pro">ENTERPRISE</div>
+            </div>
+            <div class="runtime-specs">
+              <div class="spec">
+                <div class="spec-label">Deployment</div>
+                <div class="spec-value">Your Infrastructure</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Control</div>
+                <div class="spec-value">100% On-Prem</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Support</div>
+                <div class="spec-value">24/7 Dedicated</div>
+              </div>
+              <div class="spec">
+                <div class="spec-label">Cost</div>
+                <div class="spec-value">Contact Sales</div>
+              </div>
+            </div>
+            <div class="runtime-description">
+              Deploy MX2LM Brain Builders on your own infrastructure. Full air-gapped deployment option.
+              Custom KUHUL pipeline integration. XCFE + SECURITY-GOAT enterprise suite. White-label available.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing Section -->
+    <div class="panel">
+      <div class="panel-title">💰 Runtime Pricing</div>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="pricing-name">Free</div>
+          <div class="pricing-price">$0</div>
+          <div class="pricing-period">forever</div>
+          <ul class="pricing-features">
+            <li>Browser Native Runtime</li>
+            <li>WebGPU Acceleration</li>
+            <li>ASX-RAM Storage</li>
+            <li>POLYGOAT JS/WASM</li>
+            <li>Community Support</li>
+          </ul>
+          <button class="primary">Get Started</button>
+        </div>
+
+        <div class="pricing-card featured">
+          <div class="pricing-name">Pro</div>
+          <div class="pricing-price">$49</div>
+          <div class="pricing-period">per month + compute</div>
+          <ul class="pricing-features">
+            <li>All Free Features</li>
+            <li>Cloud GPU Access</li>
+            <li>MX2GIT Auto-Backup</li>
+            <li>POLYGOAT Full Stack</li>
+            <li>Priority Support</li>
+            <li>Advanced Analytics</li>
+          </ul>
+          <button class="primary">Start Pro Trial</button>
+        </div>
+
+        <div class="pricing-card">
+          <div class="pricing-name">Enterprise</div>
+          <div class="pricing-price">Custom</div>
+          <div class="pricing-period">contact sales</div>
+          <ul class="pricing-features">
+            <li>All Pro Features</li>
+            <li>Dedicated Clusters</li>
+            <li>On-Premise Deployment</li>
+            <li>Custom XCFE Policies</li>
+            <li>SOC 2 Compliance</li>
+            <li>24/7 Dedicated Support</li>
+            <li>White-Label Option</li>
+          </ul>
+          <button>Contact Sales</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="panel">
+      <div class="panel-title">✨ Runtime Features</div>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <div class="feature-icon">🔒</div>
+          <div class="feature-title">SECURITY-GOAT Protected</div>
+          <div class="feature-desc">
+            All runtimes include malware detection and threat validation before code execution.
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">💾</div>
+          <div class="feature-title">ASX-RAM Native</div>
+          <div class="feature-desc">
+            Store checkpoints, n-grams, and training data in ASX-RAM virtual filesystem.
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">🔄</div>
+          <div class="feature-title">MX2GIT Sync</div>
+          <div class="feature-desc">
+            Automatic checkpoint backup to GitHub. Version control your model training.
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title">KUHUL Pipeline</div>
+          <div class="feature-desc">
+            Execute training through KUHUL: SECURITY → POP → WO → SEK → XUL → CH'EN
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">📊</div>
+          <div class="feature-title">RLHF Integration</div>
+          <div class="feature-desc">
+            Built-in reinforcement learning from human feedback annotation tools.
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">🌐</div>
+          <div class="feature-title">POLYGOAT Runtime</div>
+          <div class="feature-desc">
+            Train in K'uhul, JavaScript, Java, or Python - all from one interface.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedRuntime = 'browser-native';
+
+    function selectTab(tabName) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+
+      // Remove active class from all tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      // Show selected tab content
+      document.getElementById(tabName + '-content').classList.add('active');
+
+      // Add active class to selected tab
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+    }
+
+    function selectRuntime(runtimeId) {
+      selectedRuntime = runtimeId;
+
+      // Remove selected class from all runtime cards
+      document.querySelectorAll('.runtime-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+
+      // Add selected class to clicked card
+      event.currentTarget.classList.add('selected');
+
+      console.log('Selected runtime:', runtimeId);
+
+      // You can add API call here to save selection
+      // await fetch('/api/mx2lm/select-runtime', {
+      //   method: 'POST',
+      //   body: JSON.stringify({ runtime: runtimeId })
+      // });
+    }
+
+    // Initialize with browser runtime selected
+    console.log('MX2LM Brain Builders - Runtimes loaded');
+    console.log('Default runtime:', selectedRuntime);
+  </script>
+</body>
+</html>
