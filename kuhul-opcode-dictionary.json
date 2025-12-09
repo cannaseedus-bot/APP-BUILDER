@@ -1,0 +1,144 @@
+{
+  "@context": "xjson://kuhul/opcodes/creative_stack/v1",
+  "@n": "KUHUL_OPCODE_DICT_CREATIVE_STACK",
+  "@d": "K'UHUL opcode dictionary derived from control/flow/view/variable word clusters.",
+  "@version": "1.0.0",
+
+  "opcodes": [
+    {
+      "id": "op.ui.render_page",
+      "word_root": "page",
+      "xcfe_vector": "@view.surface.primary",
+      "domain": "ui/websites",
+      "signature": "(page_id, state) -> dom_tree",
+      "description": "Render a page surface from state into the DOM.",
+      "kuhul_code": "⟁Wo⟁ op.ui.render_page := (page_id, state) -> dom\n  ⟁Sek⟁ layout := fn.xjson.get('pages', page_id)\n  ⟁Sek⟁ dom := fn.dom.render(layout, state)\n  ⟁Wo⟁ return dom"
+    },
+    {
+      "id": "op.app.transition_state",
+      "word_root": "workflow",
+      "xcfe_vector": "@flow.transition",
+      "domain": "apps/state",
+      "signature": "(from_state, event) -> to_state",
+      "description": "Apply a state machine transition for an app workflow.",
+      "kuhul_code": "⟁Wo⟁ op.app.transition_state := (from_state, event) -> to_state\n  ⟁Sek⟁ rule := fn.sm.lookup(from_state, event)\n  ⟁Sek⟁ to_state := rule.target\n  ⟁Wo⟁ return to_state"
+    },
+    {
+      "id": "op.game.update_hud",
+      "word_root": "hud",
+      "xcfe_vector": "@view.hud",
+      "domain": "games/ui",
+      "signature": "(game_state) -> hud_state",
+      "description": "Project game state onto HUD elements.",
+      "kuhul_code": "⟁Wo⟁ op.game.update_hud := (game_state) -> hud\n  ⟁Sek⟁ hud.health := game_state.player.health\n  ⟁Sek⟁ hud.score  := game_state.player.score\n  ⟁Sek⟁ hud.ammo   := game_state.player.ammo\n  ⟁Wo⟁ return hud"
+    },
+    {
+      "id": "op.builder.assemble_block",
+      "word_root": "block",
+      "xcfe_vector": "@control.layout",
+      "domain": "builder/asx_blocks",
+      "signature": "(blueprint) -> asx_block",
+      "description": "Assemble an ASX block from a blueprint.",
+      "kuhul_code": "⟁Wo⟁ op.builder.assemble_block := (blueprint) -> blk\n  ⟁Sek⟁ blk.id      := fn.uuid.short()\n  ⟁Sek⟁ blk.type    := blueprint.type\n  ⟁Sek⟁ blk.inputs  := blueprint.inputs\n  ⟁Sek⟁ blk.outputs := blueprint.outputs\n  ⟁Sek⟁ blk.meta    := blueprint.meta\n  ⟁Wo⟁ return blk"
+    },
+    {
+      "id": "op.math.compute_vector",
+      "word_root": "vector",
+      "xcfe_vector": "@variable.metrics",
+      "domain": "math",
+      "signature": "(components) -> vector",
+      "description": "Compute a normalized vector from given components.",
+      "kuhul_code": "⟁Wo⟁ op.math.compute_vector := (c) -> v\n  ⟁Sek⟁ mag := fn.math.sqrt(c.x*c.x + c.y*c.y + c.z*c.z)\n  ⟁Wo⟁ if mag == 0\n    ⟁Wo⟁ return {x:0,y:0,z:0}\n  ⟁Sek⟁ v.x := c.x / mag\n  ⟁Sek⟁ v.y := c.y / mag\n  ⟁Sek⟁ v.z := c.z / mag\n  ⟁Wo⟁ return v"
+    },
+    {
+      "id": "op.xjson.route_pipeline",
+      "word_root": "pipeline",
+      "xcfe_vector": "@flow.data",
+      "domain": "xjson/runtime",
+      "signature": "(payload, route) -> result",
+      "description": "Route payload through an XJSON pipeline route.",
+      "kuhul_code": "⟁Wo⟁ op.xjson.route_pipeline := (payload, route) -> out\n  ⟁Sek⟁ stages := fn.xjson.get('pipelines', route).stages\n  ⟁Sek⟁ out := payload\n  ⟁Sek⟁ each stages as s\n    ⟁Sek⟁ out := fn.stage.exec(s, out)\n  ⟁Wo⟁ return out"
+    },
+    {
+      "id": "op.kuhul.exec_scene",
+      "word_root": "scene",
+      "xcfe_vector": "@view.surface.primary",
+      "domain": "kuhul/svg3d",
+      "signature": "(scene_id, state) -> frame",
+      "description": "Execute a K'UHUL SVG-3D scene step.",
+      "kuhul_code": "⟁Wo⟁ op.kuhul.exec_scene := (scene_id, state) -> frame\n  ⟁Sek⟁ scene := fn.scene.load(scene_id)\n  ⟁Sek⟁ frame := fn.scene.step(scene, state)\n  ⟁Wo⟁ return frame"
+    },
+    {
+      "id": "op.xcfe.apply_control",
+      "word_root": "control",
+      "xcfe_vector": "@control.nav",
+      "domain": "xcfe/router",
+      "signature": "(flow_state, control_vector) -> next_state",
+      "description": "Apply XCFE control vector to a flow state.",
+      "kuhul_code": "⟁Wo⟁ op.xcfe.apply_control := (flow_state, cvec) -> next\n  ⟁Sek⟁ rule := fn.xcfe.lookup(cvec, flow_state.phase)\n  ⟁Sek⟁ next := fn.xcfe.transition(flow_state, rule)\n  ⟁Wo⟁ return next"
+    },
+    {
+      "id": "op.tokenizer.encode",
+      "word_root": "encode",
+      "xcfe_vector": "@flow.data",
+      "domain": "lm/tokenizer",
+      "signature": "(text) -> tokens",
+      "description": "Encode text into token IDs using tokenizer vocab.",
+      "kuhul_code": "⟁Wo⟁ op.tokenizer.encode := (text) -> tokens\n  ⟁Sek⟁ vocab := fn.lm.get_vocab()\n  ⟁Sek⟁ tokens := []\n  ⟁Sek⟁ each word in text.split()\n    ⟁Sek⟁ token_id := vocab.get(word, vocab['[UNK]'])\n    ⟁Sek⟁ tokens.append(token_id)\n  ⟁Wo⟁ return tokens"
+    },
+    {
+      "id": "op.ngram.build_table",
+      "word_root": "table",
+      "xcfe_vector": "@control.schema",
+      "domain": "lm/ngrams",
+      "signature": "(tokens, n) -> ngram_table",
+      "description": "Build n-gram count table from token sequence.",
+      "kuhul_code": "⟁Wo⟁ op.ngram.build_table := (tokens, n) -> table\n  ⟁Sek⟁ table := {}\n  ⟁Sek⟁ for i in 0..(len(tokens) - n)\n    ⟁Sek⟁ gram := tokens[i:i+n]\n    ⟁Sek⟁ key := gram.join('|')\n    ⟁Sek⟁ table[key] := (table[key] || 0) + 1\n  ⟁Wo⟁ return table"
+    },
+    {
+      "id": "op.agent.select",
+      "word_root": "agent",
+      "xcfe_vector": "@control.state-machine",
+      "domain": "mx2lm/swarm",
+      "signature": "(job) -> agent",
+      "description": "Select optimal micro-agent for job based on domain.",
+      "kuhul_code": "⟁Wo⟁ op.agent.select := (job) -> agent\n  ⟁Sek⟁ agents := fn.swarm.get_agents()\n  ⟁Sek⟁ candidates := agents.filter(a => a.domain == job.domain)\n  ⟁Sek⟁ agent := candidates.sort_by('priority').first()\n  ⟁Wo⟁ return agent"
+    },
+    {
+      "id": "op.builder.execute",
+      "word_root": "execute",
+      "xcfe_vector": "@flow.transition",
+      "domain": "mx2lm/swarm",
+      "signature": "(builder, blueprint) -> artifact",
+      "description": "Execute builder with blueprint to produce artifact.",
+      "kuhul_code": "⟁Wo⟁ op.builder.execute := (builder, blueprint) -> artifact\n  ⟁Sek⟁ artifact := builder.build(blueprint)\n  ⟁Sek⟁ fn.db.insert(builder.fold_target, artifact)\n  ⟁Wo⟁ return artifact"
+    },
+    {
+      "id": "op.css.apply_theme",
+      "word_root": "theme",
+      "xcfe_vector": "@variable.theme",
+      "domain": "ui/styling",
+      "signature": "(theme_vars) -> void",
+      "description": "Apply CSS theme variables to document root.",
+      "kuhul_code": "⟁Wo⟁ op.css.apply_theme := (theme_vars) -> void\n  ⟁Sek⟁ root := document.documentElement\n  ⟁Sek⟁ each (key, val) in theme_vars\n    ⟁Sek⟁ root.style.setProperty(key, val)\n  ⟁Wo⟁ return"
+    },
+    {
+      "id": "op.form.validate",
+      "word_root": "validate",
+      "xcfe_vector": "@control.form",
+      "domain": "ui/forms",
+      "signature": "(form_data, rules) -> result",
+      "description": "Validate form data against validation rules.",
+      "kuhul_code": "⟁Wo⟁ op.form.validate := (data, rules) -> result\n  ⟁Sek⟁ errors := []\n  ⟁Sek⟁ each rule in rules\n    ⟁Sek⟁ valid := rule.check(data[rule.field])\n    ⟁Wo⟁ if !valid\n      ⟁Sek⟁ errors.append({field: rule.field, message: rule.error})\n  ⟁Wo⟁ return {valid: errors.length == 0, errors: errors}"
+    },
+    {
+      "id": "op.grid.layout",
+      "word_root": "grid",
+      "xcfe_vector": "@view.grid",
+      "domain": "ui/layout",
+      "signature": "(items, columns) -> grid",
+      "description": "Layout items into CSS grid with specified columns.",
+      "kuhul_code": "⟁Wo⟁ op.grid.layout := (items, cols) -> grid\n  ⟁Sek⟁ grid := document.createElement('div')\n  ⟁Sek⟁ grid.className = 'asx-grid'\n  ⟁Sek⟁ grid.style.setProperty('--asx-grid-columns', cols)\n  ⟁Sek⟁ each item in items\n    ⟁Sek⟁ grid.appendChild(item)\n  ⟁Wo⟁ return grid"
+    }
+  ]
+}
