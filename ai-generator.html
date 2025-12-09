@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🍦 Ice Cream AI Generator - Build Your Dream ASXR</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: radial-gradient(circle at 50% 50%, #020617, #0f172a, #1e293b);
+      color: #e2e8f0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem 2rem;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(22, 242, 170, 0.15), transparent 70%);
+      pointer-events: none;
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: translateX(-50%) scale(1); }
+      50% { opacity: 0.6; transform: translateX(-50%) scale(1.1); }
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #16f2aa, #38bdf8, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero .emoji {
+      font-size: 4rem;
+      display: block;
+      margin-bottom: 1rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: #94a3b8;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tagline {
+      font-size: 1.5rem;
+      color: #16f2aa;
+      font-weight: 600;
+      margin-bottom: 3rem;
+      text-shadow: 0 0 20px rgba(22, 242, 170, 0.5);
+    }
+
+    /* Container */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+
+    /* Form Card */
+    .form-card {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(22, 242, 170, 0.2);
+      border-radius: 24px;
+      padding: 3rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #16f2aa, #38bdf8, #a855f7, #16f2aa);
+      background-size: 200% 100%;
+      animation: shimmer 3s linear infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    /* Form Sections */
+    .form-section {
+      margin-bottom: 3rem;
+    }
+
+    .form-section h2 {
+      font-size: 1.75rem;
+      color: #16f2aa;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-section h2 .icon {
+      font-size: 2rem;
+    }
+
+    .form-section p {
+      color: #94a3b8;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Input Groups */
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 12px;
+      color: #e2e8f0;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #16f2aa;
+      box-shadow: 0 0 0 3px rgba(22, 242, 170, 0.1);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    /* Flavor Picker */
+    .flavor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .flavor-option {
+      background: rgba(30, 41, 59, 0.8);
+      border: 2px solid rgba(148, 163, 184, 0.2);
+      border-radius: 16px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .flavor-option:hover {
+      transform: translateY(-4px);
+      border-color: #16f2aa;
+      box-shadow: 0 8px 24px rgba(22, 242, 170, 0.2);
+    }
+
+    .flavor-option.selected {
+      border-color: #16f2aa;
+      background: rgba(22, 242, 170, 0.1);
+      box-shadow: 0 0 20px rgba(22, 242, 170, 0.3);
+    }
+
+    .flavor-option .emoji {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .flavor-option .name {
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 0.25rem;
+    }
+
+    .flavor-option .desc {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    /* Checkbox Grid */
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .checkbox-item {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 12px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .checkbox-item:hover {
+      border-color: #16f2aa;
+      background: rgba(22, 242, 170, 0.05);
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .checkbox-item .content {
+      flex: 1;
+    }
+
+    .checkbox-item .title {
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 0.25rem;
+    }
+
+    .checkbox-item .subtitle {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    /* Slider */
+    .slider-group {
+      margin-top: 1rem;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .slider-value {
+      color: #16f2aa;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 4px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #16f2aa;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(22, 242, 170, 0.5);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: #16f2aa;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 10px rgba(22, 242, 170, 0.5);
+    }
+
+    /* CTA Button */
+    .cta-container {
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    .generate-btn {
+      background: linear-gradient(135deg, #16f2aa, #38bdf8);
+      color: #020617;
+      font-size: 1.5rem;
+      font-weight: 900;
+      padding: 1.25rem 3rem;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 40px rgba(22, 242, 170, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .generate-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .generate-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 50px rgba(22, 242, 170, 0.6);
+    }
+
+    .generate-btn:active {
+      transform: translateY(0);
+    }
+
+    .generate-btn .emoji {
+      display: inline-block;
+      margin-left: 0.5rem;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Output Section */
+    .output-section {
+      margin-top: 3rem;
+      display: none;
+    }
+
+    .output-section.visible {
+      display: block;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .output-card {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #16f2aa;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-top: 1rem;
+    }
+
+    .output-card h3 {
+      color: #16f2aa;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .output-card pre {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 1.5rem;
+      border-radius: 12px;
+      overflow-x: auto;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .download-btn {
+      background: #38bdf8;
+      color: #020617;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .download-btn:hover {
+      background: #0ea5e9;
+      transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .form-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .flavor-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .checkbox-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero Section -->
+  <div class="hero">
+    <span class="emoji">🍦</span>
+    <h1>Ice Cream AI Generator</h1>
+    <p class="tagline">Build Your Dream ASXR in Minutes</p>
+    <p>Design a custom AI-powered operating system with multi-agent intelligence, cognitive memory, and self-training capabilities. No coding required.</p>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <div class="form-card">
+      <form id="aiGeneratorForm">
+
+        <!-- Section 1: AI Flavor/Personality -->
+        <div class="form-section">
+          <h2><span class="icon">🎨</span> Choose Your AI Flavor</h2>
+          <p>Select the personality and style of your AI</p>
+
+          <div class="flavor-grid">
+            <div class="flavor-option" data-flavor="creative">
+              <span class="emoji">🎨</span>
+              <div class="name">Creative</div>
+              <div class="desc">Artistic & Innovative</div>
+            </div>
+            <div class="flavor-option" data-flavor="analytical">
+              <span class="emoji">🔬</span>
+              <div class="name">Analytical</div>
+              <div class="desc">Data-Driven & Logical</div>
+            </div>
+            <div class="flavor-option" data-flavor="friendly">
+              <span class="emoji">😊</span>
+              <div class="name">Friendly</div>
+              <div class="desc">Warm & Conversational</div>
+            </div>
+            <div class="flavor-option" data-flavor="professional">
+              <span class="emoji">💼</span>
+              <div class="name">Professional</div>
+              <div class="desc">Formal & Precise</div>
+            </div>
+            <div class="flavor-option" data-flavor="gaming">
+              <span class="emoji">🎮</span>
+              <div class="name">Gaming</div>
+              <div class="desc">NPC & Game AI</div>
+            </div>
+            <div class="flavor-option" data-flavor="quantum">
+              <span class="emoji">⚛️</span>
+              <div class="name">Quantum</div>
+              <div class="desc">Advanced & Experimental</div>
+            </div>
+          </div>
+          <input type="hidden" name="flavor" id="flavorInput" required>
+        </div>
+
+        <!-- Section 2: AI Name & Description -->
+        <div class="form-section">
+          <h2><span class="icon">✏️</span> Name Your AI</h2>
+
+          <div class="input-group">
+            <label for="aiName">AI Name *</label>
+            <input type="text" id="aiName" name="aiName" placeholder="e.g., MintChip Assistant" required>
+          </div>
+
+          <div class="input-group">
+            <label for="aiDescription">Description</label>
+            <textarea id="aiDescription" name="aiDescription" placeholder="Describe what your AI will do..."></textarea>
+          </div>
+        </div>
+
+        <!-- Section 3: Capabilities (Tapes) -->
+        <div class="form-section">
+          <h2><span class="icon">📼</span> Select Capabilities (Tapes)</h2>
+          <p>Choose which system tapes to include</p>
+
+          <div class="checkbox-grid">
+            <label class="checkbox-item">
+              <input type="checkbox" name="tapes" value="auto_recovery" checked>
+              <div class="content">
+                <div class="title">Auto Recovery</div>
+                <div class="subtitle">Self-healing & diagnostics</div>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="tapes" value="trinity_runtime" checked>
+              <div class="content">
+                <div class="title">Trinity Runtime</div>
+                <div class="subtitle">CPU/GPU/TPU orchestration</div>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="tapes" value="asx_ram" checked>
+              <div class="content">
+                <div class="title">ASX RAM</div>
+                <div class="subtitle">Cognitive memory system</div>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="tapes" value="user_profile">
+              <div class="content">
+                <div class="title">User Profiles</div>
+                <div class="subtitle">Persistent user data</div>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="tapes" value="rlhf_visualizer">
+              <div class="content">
+                <div class="title">RLHF Visualizer</div>
+                <div class="subtitle">Training metrics dashboard</div>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="tapes" value="memory_heatmap">
+              <div class="content">
+                <div class="title">Memory Heatmap</div>
+                <div class="subtitle">Visual memory analysis</div>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="tapes" value="training_cockpit">
+              <div class="content">
+                <div class="title">Training Cockpit</div>
+                <div class="subtitle">Central training dashboard</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Section 4: Agents -->
+        <div class="form-section">
+          <h2><span class="icon">🤖</span> Configure Agents</h2>
+          <p>Select specialized agents for your AI</p>
+
+          <div class="checkbox-grid">
+            <label class="checkbox-item">
+              <input type="checkbox" name="agents" value="ui" checked>
+              <div class="content">
+                <div class="title">UI Agent</div>
+                <div class="subtitle">Interface rendering</div>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="agents" value="memory_trainer">
+              <div class="content">
+                <div class="title">Memory Trainer</div>
+                <div class="subtitle">RAM optimization</div>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="agents" value="rlhf_reinforcer">
+              <div class="content">
+                <div class="title">RLHF Reinforcer</div>
+                <div class="subtitle">Learning feedback</div>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="agents" value="profile_manager">
+              <div class="content">
+                <div class="title">Profile Manager</div>
+                <div class="subtitle">User data handler</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Section 5: Memory Settings -->
+        <div class="form-section">
+          <h2><span class="icon">🧠</span> Memory Configuration</h2>
+
+          <div class="slider-group">
+            <div class="slider-label">
+              <label>Memory Size (n-gram stores)</label>
+              <span class="slider-value" id="memoryValue">5</span>
+            </div>
+            <input type="range" name="memorySize" id="memorySlider" min="3" max="8" value="5" step="1">
+          </div>
+
+          <div class="input-group" style="margin-top: 1.5rem;">
+            <label for="learningMode">Learning Mode</label>
+            <select id="learningMode" name="learningMode">
+              <option value="continuous">Continuous (Always Learning)</option>
+              <option value="scheduled">Scheduled (Periodic Training)</option>
+              <option value="manual">Manual (User-Triggered)</option>
+              <option value="off">Off (Static)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Section 6: Training Settings -->
+        <div class="form-section">
+          <h2><span class="icon">📊</span> Training Preferences</h2>
+
+          <div class="slider-group">
+            <div class="slider-label">
+              <label>Training Intensity</label>
+              <span class="slider-value" id="intensityValue">50%</span>
+            </div>
+            <input type="range" name="trainingIntensity" id="intensitySlider" min="0" max="100" value="50" step="10">
+          </div>
+
+          <div class="slider-group" style="margin-top: 1.5rem;">
+            <div class="slider-label">
+              <label>Update Frequency (ms)</label>
+              <span class="slider-value" id="frequencyValue">3000ms</span>
+            </div>
+            <input type="range" name="updateFrequency" id="frequencySlider" min="1000" max="10000" value="3000" step="500">
+          </div>
+        </div>
+
+        <!-- Section 7: Runtime -->
+        <div class="form-section">
+          <h2><span class="icon">⚡</span> Runtime Configuration</h2>
+
+          <div class="checkbox-grid">
+            <label class="checkbox-item">
+              <input type="checkbox" name="runtime" value="cpu" checked disabled>
+              <div class="content">
+                <div class="title">CPU Runtime</div>
+                <div class="subtitle">Browser VM (Required)</div>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="runtime" value="gpu" checked>
+              <div class="content">
+                <div class="title">GPU Runtime</div>
+                <div class="subtitle">WebGL/WebGPU acceleration</div>
+              </div>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="runtime" value="tpu">
+              <div class="content">
+                <div class="title">TPU Runtime</div>
+                <div class="subtitle">Training acceleration</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- CTA Button -->
+        <div class="cta-container">
+          <button type="submit" class="generate-btn">
+            🍦 Generate My AI
+            <span class="emoji">✨</span>
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Output Section (Hidden Initially) -->
+      <div class="output-section" id="outputSection">
+        <h2 style="color: #16f2aa; text-align: center; margin-bottom: 2rem;">
+          🎉 Your AI is Ready!
+        </h2>
+
+        <div class="output-card">
+          <h3>📄 manifest.json</h3>
+          <pre id="manifestOutput"></pre>
+          <button class="download-btn" onclick="downloadFile('manifest.json', document.getElementById('manifestOutput').textContent)">
+            Download manifest.json
+          </button>
+        </div>
+
+        <div class="output-card">
+          <h3>⚙️ sw.js Configuration</h3>
+          <pre id="swOutput"></pre>
+          <button class="download-btn" onclick="downloadFile('sw-config.js', document.getElementById('swOutput').textContent)">
+            Download SW Config
+          </button>
+        </div>
+
+        <div class="output-card">
+          <h3>📋 Integration Instructions</h3>
+          <pre id="instructionsOutput"></pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Flavor selection
+    document.querySelectorAll('.flavor-option').forEach(option => {
+      option.addEventListener('click', () => {
+        document.querySelectorAll('.flavor-option').forEach(o => o.classList.remove('selected'));
+        option.classList.add('selected');
+        document.getElementById('flavorInput').value = option.dataset.flavor;
+      });
+    });
+
+    // Slider updates
+    document.getElementById('memorySlider').addEventListener('input', (e) => {
+      document.getElementById('memoryValue').textContent = e.target.value;
+    });
+
+    document.getElementById('intensitySlider').addEventListener('input', (e) => {
+      document.getElementById('intensityValue').textContent = e.target.value + '%';
+    });
+
+    document.getElementById('frequencySlider').addEventListener('input', (e) => {
+      document.getElementById('frequencyValue').textContent = e.target.value + 'ms';
+    });
+
+    // Form submission
+    document.getElementById('aiGeneratorForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      generateASXR();
+    });
+
+    function generateASXR() {
+      const formData = new FormData(document.getElementById('aiGeneratorForm'));
+
+      // Collect form data
+      const config = {
+        flavor: formData.get('flavor'),
+        aiName: formData.get('aiName'),
+        aiDescription: formData.get('aiDescription'),
+        tapes: formData.getAll('tapes'),
+        agents: formData.getAll('agents'),
+        memorySize: parseInt(formData.get('memorySize')),
+        learningMode: formData.get('learningMode'),
+        trainingIntensity: parseInt(formData.get('trainingIntensity')),
+        updateFrequency: parseInt(formData.get('updateFrequency')),
+        runtime: {
+          cpu: true,
+          gpu: formData.getAll('runtime').includes('gpu'),
+          tpu: formData.getAll('runtime').includes('tpu')
+        }
+      };
+
+      // Generate manifest
+      const manifest = generateManifest(config);
+      const swConfig = generateSWConfig(config);
+      const instructions = generateInstructions(config);
+
+      // Display output
+      document.getElementById('manifestOutput').textContent = JSON.stringify(manifest, null, 2);
+      document.getElementById('swOutput').textContent = swConfig;
+      document.getElementById('instructionsOutput').textContent = instructions;
+
+      // Show output section
+      document.getElementById('outputSection').classList.add('visible');
+
+      // Scroll to output
+      setTimeout(() => {
+        document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+
+    function generateManifest(config) {
+      const memoryStores = {};
+      const storeTypes = ['ngrams', '@grams', 'quadragrams', 'pentagrams', 'supagrams', 'glyphgrams', 'reinforcement', 'agent_experience'];
+
+      for (let i = 0; i < Math.min(config.memorySize, storeTypes.length); i++) {
+        memoryStores[storeTypes[i]] = `/usr/ram/${storeTypes[i]}.json`;
+      }
+
+      const manifest = {
+        "@context": "xjson://asxr/trinity/os/v3",
+        "@v": "3.2.0",
+        "n": config.aiName,
+        "d": config.aiDescription || `${config.flavor} AI powered by ASXR Trinity`,
+        "flavor": config.flavor,
+        "law": "ASX = XCFE = XJSON = KUHUL = AST",
+
+        "runtime": {
+          "cpu": { "id": "asxr_cpu_runtime", "mode": "browser_vm", "status": "active" },
+          "gpu": config.runtime.gpu ? { "id": "asxr_gpu_runtime", "mode": "webgl_webgpu", "status": "ready" } : null,
+          "tpu": config.runtime.tpu ? { "id": "asxr_tpu_runtime", "mode": "trainer_node", "status": "standby" } : null
+        },
+
+        "asx_ram": {
+          "type": "volatile_cognitive_memory",
+          "backing": "user_store",
+          "stores": memoryStores,
+          "learning_mode": config.learningMode
+        },
+
+        "user_backing": {
+          "enabled": true,
+          "mount": "/usr",
+          "agent_data_pattern": "MX2LM://<agent_id>/DATA/"
+        },
+
+        "vfs": {
+          "mounts": {
+            "/sys": { "type": "ro", "driver": "scx_sys" },
+            "/tapes": { "type": "ro", "driver": "tape_cache" },
+            "/usr": { "type": "rw", "driver": "usr_store" },
+            "/tmp": { "type": "vol", "driver": "mem" }
+          }
+        },
+
+        "tapes": {},
+        "agents": {},
+
+        "training": {
+          "intensity": config.trainingIntensity / 100,
+          "update_frequency_ms": config.updateFrequency,
+          "rlhf_enabled": config.tapes.includes('rlhf_visualizer')
+        },
+
+        "xcfe": {
+          "control_vectors": ["@control.nav", "@control.layout", "@control.state", "@control.runtime"],
+          "flow_vectors": ["@flow.scroll", "@flow.transition", "@flow.data", "@flow.runtime"],
+          "variable_vectors": ["@variable.state", "@variable.metrics", "@variable.entropy"]
+        },
+
+        "boot_sequence": [
+          "kernel.init",
+          "runtime.mount_cpu",
+          config.runtime.gpu ? "runtime.mount_gpu" : null,
+          config.runtime.tpu ? "runtime.mount_tpu" : null,
+          "vfs.mount",
+          "user_store.mount",
+          "asx_ram.mount",
+          "tapes.preload",
+          "agents.bootstrap",
+          "tapes.autoboot",
+          "asxr.ready"
+        ].filter(Boolean),
+
+        "metadata": {
+          "generated_by": "Ice Cream AI Generator",
+          "generated_at": new Date().toISOString(),
+          "version": "1.0.0"
+        }
+      };
+
+      // Add selected tapes
+      const tapeConfigs = {
+        auto_recovery: {
+          id: "tape_system_auto_recovery_v1",
+          role: "system_recovery",
+          entry: "/tapes/tape_system_auto_recovery_v1.asxr.json",
+          agents: ["agent.repair", "agent.diagnostics"],
+          shards: ["cpu"],
+          boot: true
+        },
+        trinity_runtime: {
+          id: "tape_system_trinity_runtime_v1",
+          role: "trinity_orchestrator",
+          entry: "/tapes/tape_system_trinity_runtime_v1.asxr.json",
+          agents: ["agent.trinity", "agent.metrics"],
+          shards: ["cpu", "gpu"].filter(s => config.runtime[s]),
+          boot: true
+        },
+        asx_ram: {
+          id: "tape_system_asx_ram_manager_v1",
+          role: "ram_manager",
+          entry: "/tapes/tape_system_asx_ram_manager_v1.asxr.json",
+          agents: ["agent.memory.trainer"],
+          shards: ["cpu"],
+          boot: true
+        },
+        user_profile: {
+          id: "tape_system_user_profile_v1",
+          role: "user_profile",
+          entry: "/tapes/tape_system_user_profile_v1.asxr.json",
+          agents: ["agent.profile.manager"],
+          shards: ["cpu"],
+          boot: true
+        },
+        rlhf_visualizer: {
+          id: "tape_system_rlhf_visualizer_v1",
+          role: "rlhf_visualization",
+          entry: "/tapes/tape_system_rlhf_visualizer_v1.asxr.json",
+          agents: ["agent.rlhf.visualizer"],
+          shards: ["cpu", "gpu"].filter(s => config.runtime[s]),
+          boot: false
+        },
+        memory_heatmap: {
+          id: "tape_system_memory_heatmap_v1",
+          role: "memory_heatmap_ui",
+          entry: "/tapes/tape_system_memory_heatmap_v1.asxr.json",
+          agents: ["agent.memory.heatmap"],
+          shards: ["cpu"],
+          boot: false
+        },
+        training_cockpit: {
+          id: "tape_system_training_cockpit_v1",
+          role: "training_cockpit",
+          entry: "/tapes/tape_system_training_cockpit_v1.asxr.json",
+          agents: ["agent.cockpit.trainer"],
+          shards: ["cpu"],
+          boot: true
+        }
+      };
+
+      config.tapes.forEach(tapeId => {
+        if (tapeConfigs[tapeId]) {
+          manifest.tapes[tapeConfigs[tapeId].id] = tapeConfigs[tapeId];
+        }
+      });
+
+      // Add selected agents
+      const agentConfigs = {
+        ui: { role: "ui_runtime" },
+        memory_trainer: { role: "asx_ram_trainer" },
+        rlhf_reinforcer: { role: "reinforcement_engine" },
+        profile_manager: { role: "user_profile_api" }
+      };
+
+      config.agents.forEach(agentId => {
+        if (agentConfigs[agentId]) {
+          manifest.agents[`agent.${agentId}`] = agentConfigs[agentId];
+        }
+      });
+
+      return manifest;
+    }
+
+    function generateSWConfig(config) {
+      return `// ASXR Trinity Service Worker Configuration
+// Generated by Ice Cream AI Generator
+
+const ASXR_CONFIG = {
+  OS_ID: 'ASXR_${config.aiName.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()}_v1_0_0',
+  FLAVOR: '${config.flavor}',
+  LEARNING_MODE: '${config.learningMode}',
+  TRAINING_INTENSITY: ${config.trainingIntensity / 100},
+  UPDATE_FREQUENCY: ${config.updateFrequency},
+
+  RUNTIME: {
+    CPU: true,
+    GPU: ${config.runtime.gpu},
+    TPU: ${config.runtime.tpu}
+  },
+
+  MEMORY_SIZE: ${config.memorySize},
+
+  ENABLED_TAPES: ${JSON.stringify(config.tapes, null, 2)},
+  ENABLED_AGENTS: ${JSON.stringify(config.agents, null, 2)}
+};
+
+// Export for integration with sw.js
+export default ASXR_CONFIG;`;
+    }
+
+    function generateInstructions(config) {
+      return `🍦 Ice Cream AI Generator - Integration Instructions
+${'='.repeat(60)}
+
+Your ${config.flavor} AI "${config.aiName}" is ready!
+
+📦 GENERATED FILES:
+  • manifest.json - Core ASXR configuration
+  • sw-config.js - Service Worker settings
+
+🚀 QUICK START:
+
+1. Download both files using the buttons above
+
+2. Place them in your project root:
+   your-project/
+   ├── manifest.json
+   ├── sw.js (use from APP-BUILDER repo)
+   ├── index.html
+   └── tapes/
+       └── (tape files from APP-BUILDER/tapes/)
+
+3. Update your index.html to register the service worker:
+   <script>
+     if ('serviceWorker' in navigator) {
+       navigator.serviceWorker.register('/sw.js')
+         .then(reg => console.log('ASXR booted:', reg))
+         .catch(err => console.error('ASXR boot failed:', err));
+     }
+   </script>
+
+4. Test by accessing: http://localhost:8000/api/asxr/status
+
+⚙️ CONFIGURATION SUMMARY:
+  • Flavor: ${config.flavor}
+  • Memory Size: ${config.memorySize} n-gram stores
+  • Learning Mode: ${config.learningMode}
+  • Training Intensity: ${config.trainingIntensity}%
+  • Update Frequency: ${config.updateFrequency}ms
+  • Runtime: CPU${config.runtime.gpu ? ' + GPU' : ''}${config.runtime.tpu ? ' + TPU' : ''}
+
+📼 ENABLED TAPES:
+${config.tapes.map(t => `  ✓ ${t}`).join('\n')}
+
+🤖 ENABLED AGENTS:
+${config.agents.map(a => `  ✓ ${a}`).join('\n')}
+
+📚 NEXT STEPS:
+  1. Customize your tapes in /tapes/ directory
+  2. Add custom agents to the manifest
+  3. Configure ASX RAM patterns
+  4. Enable RLHF training data collection
+  5. Build your UI on top of ASXR
+
+🔗 DOCUMENTATION:
+  • ASXR Trinity Docs: https://docs.asxr.io
+  • Examples: https://github.com/asxr/examples
+  • Community: https://discord.gg/asxr
+
+Built with 🍦 Ice Cream AI Generator
+Powered by ASXR Trinity Multi-Agent OS v3.2.0`;
+    }
+
+    function downloadFile(filename, content) {
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+
+</body>
+</html>
