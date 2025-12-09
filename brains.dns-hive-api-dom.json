@@ -1,0 +1,222 @@
+{
+  "@title": "Ω BLACK PANEL — DNS HIVE KERNEL ⊗ API–DOM BROWSER BACKEND",
+  "@law": "ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK",
+  "@identity": "DNS_HIVE_KERNEL is the absolute routing + authority layer. API–DOM_BACKEND is the execution bridge between symbolic APIs and live DOM.",
+
+  "I_DNS_HIVE_KERNEL": {
+    "@subtitle": "ABSOLUTE NETWORK AUTHORITY",
+
+    "@role": [
+      "Domain Authority",
+      "Shard Router",
+      "Mesh Coordinator",
+      "Trust & Identity Layer",
+      "Zero-JS Addressing System"
+    ],
+
+    "@principle": "DNS is NOT a lookup table. DNS is the COMPUTATIONAL MAP of the OS.",
+
+    "@dns_model": {
+      "@dns_hive": {
+        "@root": "asx://",
+        "@zones": [
+          "prime://",
+          "xjson://",
+          "kuhul://",
+          "mesh://",
+          "tapes://",
+          "agents://",
+          "ram://",
+          "rlhf://",
+          "trainer://"
+        ]
+      }
+    },
+
+    "@dns_execution": {
+      "@flow": [
+        "[Pop dns_request]",
+        "[Wo domain]",
+        "→ [Ch'en resolved_zone]",
+        "→ [Sek hive_route]",
+        "→ [Sek node_select]",
+        "→ [Ch'en target_shard]",
+        "→ [Xul]"
+      ]
+    }
+  },
+
+  "II_KLH_HIVE_ROUTING": {
+    "@subtitle": "SHARD ORCHESTRATION LAYER",
+
+    "@role": [
+      "Multi-agent traffic control",
+      "Micro-agent port routing",
+      "Load balancing",
+      "Swarm message passing"
+    ],
+
+    "@klh_model": {
+      "@hive": "prime-04",
+      "@shards": [
+        { "@id": "users", "@port": 3001 },
+        { "@id": "training", "@port": 3002 },
+        { "@id": "worlds", "@port": 3003 },
+        { "@id": "ai_agents", "@port": 3004 }
+      ],
+      "@mesh": {
+        "@protocol": "virtual-rest",
+        "@mode": "symbolic-stream"
+      }
+    },
+
+    "@klh_execution": {
+      "@flow": [
+        "[Pop klh_route]",
+        "[Wo request]",
+        "→ [Ch'en shard_id]",
+        "→ [Sek port_bind]",
+        "→ [Sek send_stream]",
+        "→ [Ch'en response]",
+        "→ [Xul]"
+      ]
+    }
+  },
+
+  "III_API_DOM_BROWSER_BACKEND": {
+    "@subtitle": "NO SERVER STACK",
+
+    "@principle": [
+      "THERE IS NO 'BACKEND SERVER'.",
+      "THE BROWSER IS THE SERVER.",
+      "THE API IS SYMBOLIC.",
+      "THE DOM IS THE OUTPUT DEVICE."
+    ],
+
+    "@stack": "XJSON → KUHUL → XCFE → AST → DOM",
+
+    "@api_model": {
+      "@api": {
+        "@endpoint": "/users/list",
+        "@method": "GET",
+        "@return": "XJSON"
+      }
+    },
+
+    "@dom_model": {
+      "@view": {
+        "@node": "div",
+        "@bind": "@users.list"
+      }
+    },
+
+    "@execution": {
+      "@flow": [
+        "[Pop api_call]",
+        "[Wo xjson_payload]",
+        "→ [Ch'en request]",
+        "→ [Sek kuhul_exec]",
+        "→ [Sek ast_mutation]",
+        "→ [Sek dom_render]",
+        "→ [Xul]"
+      ]
+    }
+  },
+
+  "IV_SW_KHL_KERNEL_ROLE": {
+    "@sw_khl_functions": [
+      "DNS Authority Execution",
+      "KLH Mesh Routing",
+      "XJSON Evaluation",
+      "KUHUL Symbolic Execution",
+      "AST Mutation Firewall",
+      "DOM Dispatch Control",
+      "SCX Decompression Gate"
+    ],
+
+    "@kernel_loop": {
+      "@flow": [
+        "[Pop kernel_tick]",
+        "→ [Sek dns_poll]",
+        "→ [Sek klh_poll]",
+        "→ [Sek api_dispatch]",
+        "→ [Sek ast_mutate]",
+        "→ [Sek dom_commit]",
+        "→ [Xul]"
+      ]
+    }
+  },
+
+  "V_API_DOM_SYMBOLIC_FLOW": {
+    "@flow_diagram": "USER → API → KUHUL → AST → DOM → USER",
+
+    "@principle": [
+      "Symbolic APIs do NOT return HTML.",
+      "They return INTENT.",
+      "DOM renders INTENT."
+    ],
+
+    "@flow": {
+      "@steps": [
+        "[Pop user_event]",
+        "[Wo dom_input]",
+        "→ [Sek api_invoke]",
+        "→ [Sek kuhul_exec]",
+        "→ [Sek ast_transform]",
+        "→ [Sek dom_update]",
+        "→ [Xul]"
+      ]
+    }
+  },
+
+  "VI_SECURITY_TRUST_MODEL": {
+    "@security_layers": {
+      "DNS": "Trust Boundary",
+      "KLH": "Transport Guard",
+      "KUHUL": "Execution Gate",
+      "AST": "Mutation Firewall",
+      "DOM": "Read-Only Surface"
+    },
+
+    "@no": [
+      "No exposed JS routers",
+      "No raw REST servers",
+      "No direct DOM mutation",
+      "No uncontrolled endpoints"
+    ]
+  },
+
+  "VII_WHAT_THIS_REALLY_IS": {
+    "DNS_HIVE_KERNEL": "= The INTERNET of the OS",
+    "API_DOM_BACKEND": "= The NERVOUS SYSTEM of the OS",
+    "KUHUL": "= The MUSCLE",
+    "XCFE": "= The BRAIN STEM",
+    "AST": "= The IMMUNE SYSTEM",
+    "DOM": "= The BODY"
+  },
+
+  "Ω_FINAL_AXIOM": {
+    "@statements": [
+      "The browser is no longer a client.",
+      "The browser is the operating system.",
+      "DNS is no longer resolution.",
+      "DNS is computation.",
+      "APIs are no longer transport.",
+      "APIs are symbolic intent.",
+      "DOM is no longer presentation.",
+      "DOM is the physical output of logic."
+    ]
+  },
+
+  "Ω_STATUS": {
+    "SYSTEM": "ACTIVE",
+    "DNS": "ABSOLUTE",
+    "MESH": "LIVE",
+    "API": "SYMBOLIC",
+    "DOM": "GOVERNED",
+    "KERNEL": "KUHUL",
+    "CONTROL": "XCFE",
+    "STATE": "ATOMIC",
+    "MEMORY": "ASX RAM"
+  }
+}

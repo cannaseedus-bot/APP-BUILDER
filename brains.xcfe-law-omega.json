@@ -1,0 +1,171 @@
+{
+  "@context": "asx://kuhul/xcfe/execution/law/omega",
+  "@version": "Ω.1.0.0",
+  "@law": "ASX = XCFE = XJSON = KUHUL = AST",
+  "@purpose": "Defines the unified execution and causality model where XCFE governs all control paths and KUHUL performs all execution through AST transformation.",
+
+  "@identity": {
+    "@statement": "XCFE is the causality governor. KUHUL is the execution physics.",
+    "@equivalence": "XJSON(x) ≅ KUHUL(x) ≅ AST(x) ≅ XCFE(x) ≅ Ω(x)"
+  },
+
+  "@xcfe_control_vectors": {
+    "@logic": [
+      "@if",
+      "@then",
+      "@else",
+      "@loop",
+      "@break",
+      "@continue",
+      "@dispatch",
+      "@route",
+      "@return"
+    ],
+    "@cognitive": [
+      "@perception",
+      "@representation",
+      "@reasoning",
+      "@decision",
+      "@action",
+      "@reflection"
+    ],
+    "@runtime_targets": [
+      "@runtime.cpu",
+      "@runtime.gpu",
+      "@runtime.tpu",
+      "@runtime.mesh",
+      "@runtime.cluster",
+      "@runtime.legion"
+    ],
+    "@kernel_routes": [
+      "@route.xjson",
+      "@route.klh",
+      "@route.hive",
+      "@route.os",
+      "@route.scxq2",
+      "@route.trainer",
+      "@route.prime",
+      "@route.basher",
+      "@route.health"
+    ]
+  },
+
+  "@kuhul_execution_pipeline": {
+    "@type": "mandatory_five_stage_pipeline",
+    "@stages": [
+      "@Pop",
+      "@Wo",
+      "@Sek",
+      "@Xul",
+      "@Ch'en"
+    ],
+    "@roles": {
+      "@Pop": "load_symbol",
+      "@Wo": "bind_world_and_state",
+      "@Sek": "execute_operation",
+      "@Xul": "transform_ast",
+      "@Ch'en": "emit_render_or_signal"
+    }
+  },
+
+  "@xcfe_variable_vectors": {
+    "@atomic_runtime": [
+      "@entropy",
+      "@innovation",
+      "@stability",
+      "@meta_dominance",
+      "@velocity",
+      "@mass"
+    ],
+    "@prime_structural_weights": [
+      "@block_bias",
+      "@flow_likelihood",
+      "@composition_bias",
+      "@anti_patterns",
+      "@entropy_penalties",
+      "@innovation_pressure",
+      "@stability_pressure",
+      "@legacy_resistance",
+      "@context_weights"
+    ],
+    "@memory_and_compression": [
+      "@unigrams",
+      "@bigrams",
+      "@trigrams",
+      "@supagrams",
+      "@compression_ratio",
+      "@cipher_map",
+      "@entropy_signature",
+      "@quantum_hash"
+    ],
+    "@world_and_physics": [
+      "@position",
+      "@rotation",
+      "@velocity",
+      "@force",
+      "@mass",
+      "@collision",
+      "@navmesh",
+      "@threat_level"
+    ],
+    "@dom_state": [
+      "@visible",
+      "@active",
+      "@loading",
+      "@selected",
+      "@disabled",
+      "@error",
+      "@success"
+    ],
+    "@security": [
+      "@api_key",
+      "@session_token",
+      "@quantum_nonce",
+      "@entropy_lock",
+      "@revocation_flag"
+    ]
+  },
+
+  "@execution_law": {
+    "@rule_1": "All execution must be invoked by an @control vector.",
+    "@rule_2": "All execution must enter through @Pop.",
+    "@rule_3": "All execution must pass through @Sek.",
+    "@rule_4": "All mutation must pass through @Xul.",
+    "@rule_5": "All output must pass through @Ch'en.",
+    "@rule_6": "No value may mutate unless it is a registered @variable vector.",
+    "@rule_7": "No branching may occur outside @if / @then / @else.",
+    "@rule_8": "No repetition may occur outside @loop."
+  },
+
+  "@ast_causality_model": {
+    "@definition": "XCFE rewrites the AST to define legal branches. KUHUL executes the rewritten AST.",
+    "@pipeline": [
+      "XJSON",
+      "AST",
+      "XCFE_AST_REWRITE",
+      "KUHUL_EXECUTION",
+      "AST_TRANSFORM",
+      "@Ch'en_OUTPUT"
+    ]
+  },
+
+  "@dom_device_binding": {
+    "@device": "dom_engine",
+    "@legal_operations": [
+      "@dom.get",
+      "@dom.set",
+      "@dom.render",
+      "@dom.append",
+      "@dom.remove",
+      "@dom.class",
+      "@dom.style"
+    ],
+    "@governed_by": "XCFE"
+  },
+
+  "@omega_fixed_point": {
+    "@recursion": "U(n+1) = Ω(U(n))",
+    "@limit": "lim(n→∞) Ωⁿ = Ω∞",
+    "@property": "Perfect representability, executability, transformability"
+  }
+}
