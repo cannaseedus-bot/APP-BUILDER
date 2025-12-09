@@ -11,13 +11,13 @@
   <img
     alt="json-asx"
     src="https://github.com/user-attachments/assets/4572be60-c0e4-4ac4-bd4e-aa820a5ebb4c"
-    style="width: 25%; max-width: 220px; merge:auto;"
+    style="width: 25%; max-width: 220px; "
   />
 
   <img
     src="./cluster/pi-goat.svg"
     alt="PI GOAT Polyglot Security"
-    style="width: 25%; max-width: 220px; merge:auto;"
+    style="width: 25%; max-width: 220px; "
   />
 
 </div>
