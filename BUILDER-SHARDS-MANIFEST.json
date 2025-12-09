@@ -584,14 +584,14 @@
       }
     },
 
-    "shard_12_frontend_builder": {
-      "@name": "MX2LM Frontend Builder Agent Shard",
+    "shard_12_mx2lm_full_merged": {
+      "@name": "MX2LM Full Merged Build - Helper Agent & Model Router",
       "@status": "ACTIVE",
       "@endpoint": "https://script.google.com/macros/s/AKfycbyWBaO1s-y1LZizMkqcB8mHtbWEcgngj4-rwGHCLaC3N-No2pn1OzYOvzdH-c89p6DM/exec",
-      "@description": "AI-powered frontend generation with 5 micro-agents (prompt-to-UI pipeline)",
+      "@description": "Full merged build: MX2LM + QWENF1 + Frontend micro-agents. Helper agent for deep thinking, NOT a main builder. Temporary model router for inference tokens/weights until dedicated servers.",
 
-      "builder_type": "agent",
-      "specialization": "frontend_generation",
+      "builder_type": "helper_agent",
+      "specialization": "ai_assistance_and_inference",
 
       "micro_agents": {
         "layout_architect": {
@@ -627,13 +627,38 @@
       },
 
       "capabilities": [
-        "prompt_to_ui_generation",
+        "deep_thinking_and_reasoning",
+        "qwenf1_model_inference",
+        "ai_assisted_decision_making",
+        "model_weight_routing",
+        "temporary_inference_endpoint",
         "multi_agent_coordination",
-        "theme_generation",
-        "component_composition",
-        "event_binding",
-        "asx_tape_export"
+        "prompt_understanding",
+        "context_aware_assistance"
       ],
+
+      "helper_role": {
+        "primary_function": "AI assistance and deep thinking, NOT primary building",
+        "provides": [
+          "Deep reasoning for complex decisions",
+          "QWENF1 model inference (25 tokens)",
+          "Temporary model router for inference tokens/weights",
+          "AI-assisted prompt understanding",
+          "Context and strategy recommendations"
+        ],
+        "does_not_provide": [
+          "Primary building functionality",
+          "Direct code generation (use specialist shards instead)",
+          "Production deployment (temporary inference solution)"
+        ]
+      },
+
+      "temporary_infrastructure": {
+        "purpose": "Temporary model router until dedicated server infrastructure deployed",
+        "provides": "Inference tokens and model weights access",
+        "transition_plan": "Will be replaced by dedicated servers for production workloads",
+        "current_use": "Development and prototyping inference endpoint"
+      },
 
       "api_routes": {
         "GET ?path=builder": "Generate frontend from prompt (requires prompt param)",
@@ -643,9 +668,11 @@
         "GET ?path=tokens": "Manage token balance"
       },
 
-      "build_cost": {
-        "tokens": 20,
-        "description": "Cost per frontend generation with all 5 micro-agents"
+      "inference_cost": {
+        "qwenf1_inference": 25,
+        "chat_assistance": "0-15 tokens (varies by crown)",
+        "deep_thinking": 20,
+        "description": "Helper agent costs for AI assistance and model inference"
       },
 
       "example_request": {
@@ -684,10 +711,13 @@
       },
 
       "integration": {
-        "crowns": "Uses MX2LM, Developer, Creative, Analyst crowns for style decisions",
-        "tapes": "Exports to studio-web, studio-data, studio-docs tapes",
-        "qwenf1": "Can use QWENF1 model for advanced prompt understanding",
-        "tokens": "Requires 20 tokens per build, integrates with token system"
+        "role": "HELPER AGENT - Provides AI assistance, NOT primary building",
+        "crowns": "MX2LM, Developer, Creative, Analyst crowns for deep thinking",
+        "qwenf1": "QWENF1 fine-tuned model for advanced inference (25 tokens)",
+        "tokens": "Integrates with ASX token system for inference costs",
+        "model_routing": "Temporary model router for inference tokens and weights",
+        "use_with": "Combine with specialist shards (Frontend Specialist, Foreman Coordinator) for actual building",
+        "transition": "Temporary infrastructure until dedicated server deployment"
       }
     },
 
