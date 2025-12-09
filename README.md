@@ -1,26 +1,20 @@
 
-<div style="
-  display: flex;
-  gap: 24px;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  width: 100%;
-">
+<div align="center" style="display:flex;gap:24px;align-items:center;justify-content:center;flex-wrap:wrap;">
 
   <img
-    alt="json-asx"
+    alt="XJSON ASX"
     src="https://github.com/user-attachments/assets/4572be60-c0e4-4ac4-bd4e-aa820a5ebb4c"
-    style="width: 25%; max-width: 220px; "
+    style="width:320px;max-width:45vw;"
   />
 
   <img
-    src="./cluster/pi-goat.svg"
     alt="PI GOAT Polyglot Security"
-    style="width: 25%; max-width: 220px; "
+    src="./cluster/pi-goat.svg"
+    style="width:320px;max-width:45vw;"
   />
 
 </div>
+
 
 # ASX XJSON App Builder
 
