@@ -13,8 +13,8 @@
     "@communication": "REST mesh with XJSON payloads",
     "@orchestration": "MX2LM coordinates all builder shards",
 
-    "total_shards": 13,
-    "active_shards": 6,
+    "total_shards": 14,
+    "active_shards": 7,
     "pending_deployment": 7,
 
     "mesh_topology": {
@@ -820,6 +820,171 @@
         "coordination": "Central foreman router dispatches to appropriate specialist",
         "fallback": "Returns error if insufficient tokens or specialist unavailable"
       }
+    },
+
+    "shard_14_frontend_ai_specialist": {
+      "@name": "Frontend AI Specialist Shard",
+      "@status": "ACTIVE",
+      "@endpoint": "https://script.google.com/macros/s/AKfycbyK5kmpLi6vubXodytm23YruT-V-dt9IdKf20kP8pwKCxC--mpEpnr5R4gQlZ_CmQD2Pg/exec",
+      "@description": "Dedicated single-purpose Frontend AI Specialist for UI/UX generation with K'uhul DOM",
+
+      "builder_type": "agent",
+      "specialization": "frontend_ui_generation",
+
+      "agent": {
+        "id": "frontend_specialist",
+        "emoji": "🎨",
+        "role": "Frontend AI Specialist",
+        "domain": "UI/UX & K'uhul DOM",
+        "token_cost": 5,
+        "pipeline": "[Pop frontend_expert] [Wo design_spec]→[Ch'en spec] [Yax spec]→[Sek generate_ui_ast] [Yax ui_ast]→[Sek compile_to_kuhul] [Sek deploy_interface] [Xul]"
+      },
+
+      "capabilities": [
+        "ui_ast_generation",
+        "kuhul_dom_operations",
+        "html_preview_rendering",
+        "component_composition",
+        "responsive_layout_generation",
+        "style_variation_support"
+      ],
+
+      "supported_ui_types": [
+        "dashboard",
+        "landing",
+        "app",
+        "portal",
+        "admin",
+        "ecommerce"
+      ],
+
+      "supported_styles": [
+        "modern",
+        "minimal",
+        "glass",
+        "neon",
+        "brutalist",
+        "neumorphic"
+      ],
+
+      "supported_components": [
+        "charts",
+        "navigation",
+        "cards",
+        "forms",
+        "tables",
+        "modals",
+        "sidebars",
+        "headers",
+        "footers"
+      ],
+
+      "kuhul_pipeline": {
+        "Pop": "Initialize frontend_expert context",
+        "Wo": "Bind design_spec from input parameters",
+        "Ch'en": "Validate and normalize spec",
+        "Yax": "Transform spec into UI AST",
+        "Sek": "Execute: generate_ui_ast → compile_to_kuhul → deploy_interface",
+        "Xul": "Finalize and return complete UI package"
+      },
+
+      "api_routes": {
+        "GET ?path=status": "System status and agent info",
+        "GET ?path=tokens": "Token balance management (action=balance|add, amount=N)",
+        "GET ?path=agents": "List micro-agents (frontend_specialist)",
+        "GET ?path=frontend/generate-ui": "Generate UI (type, style, components params)",
+        "GET ?path=generate-ui": "Shorthand for frontend/generate-ui"
+      },
+
+      "example_request": {
+        "url": "?path=generate-ui&type=dashboard&style=modern&components=charts,navigation",
+        "params": {
+          "type": "dashboard (default: dashboard)",
+          "style": "modern (default: modern)",
+          "components": "charts,navigation (comma-separated, default: charts,navigation)"
+        },
+        "cost": 5,
+        "returns": {
+          "success": true,
+          "shard": "FRONTEND_AI_SPECIALIST",
+          "cost": 5,
+          "remainingTokens": 95,
+          "ui_ast": {
+            "type": "dashboard",
+            "style": "modern",
+            "layout": {
+              "root": "app",
+              "regions": ["header", "main", "sidebar", "footer"]
+            },
+            "components": [
+              {
+                "id": "cmp_0",
+                "type": "charts",
+                "region": "main",
+                "props": {}
+              },
+              {
+                "id": "cmp_1",
+                "type": "navigation",
+                "region": "header",
+                "props": {}
+              }
+            ]
+          },
+          "kuhul_dom": {
+            "@pipeline": "[K'uhul pipeline string]",
+            "@ui_ast_ref": "ui_ast",
+            "@ops": [
+              {
+                "@op": "dom.set",
+                "@target": "#app",
+                "@data": "ui_ast"
+              },
+              {
+                "@op": "dom.render",
+                "@target": "#app"
+              }
+            ]
+          },
+          "html_preview": "<!DOCTYPE html>..."
+        }
+      },
+
+      "layout_structure": {
+        "grid_system": "CSS Grid with 4 regions (header, main, sidebar, footer)",
+        "header": "Full-width top bar (grid-column: 1 / -1)",
+        "sidebar": "Left column navigation (260px)",
+        "main": "Primary content area",
+        "footer": "Full-width bottom bar (grid-column: 1 / -1)",
+        "responsive": "Adapts to component types and count"
+      },
+
+      "output_format": {
+        "ui_ast": "Complete UI Abstract Syntax Tree with layout and components",
+        "kuhul_dom": "K'uhul DOM operations for browser rendering",
+        "html_preview": "Fully rendered HTML preview with embedded styles"
+      },
+
+      "token_cost": {
+        "generation": 5,
+        "description": "Fixed cost per UI generation regardless of complexity"
+      },
+
+      "integration": {
+        "tokens": "Uses same token system as other MX2LM agent shards",
+        "kuhul": "Generates K'uhul-compatible DOM operations",
+        "mesh": "Can be called directly or via Foreman Coordinator router",
+        "output": "Returns UI AST + K'uhul DOM + HTML preview for flexibility"
+      },
+
+      "use_cases": [
+        "Quick dashboard prototyping",
+        "Landing page generation",
+        "Admin panel layouts",
+        "Component composition testing",
+        "K'uhul DOM operation validation",
+        "UI style variation exploration"
+      ]
     }
   },
 
