@@ -1,0 +1,612 @@
+{
+  "@manifest": "QUANTUM_INFERENCE_ENGINE_BRAIN",
+  "@version": "Ω.6.1.0",
+  "@created": "2025-12-09T08:00:00.000Z",
+  "@law": "ASX = XCFE = KUHUL = INFERENCE = QUANTUM = GLYPHS",
+  "@purpose": "Quantum-accelerated chat inference with K'UHUL glyph language and SCXQ2 compression",
+
+  "@summary": {
+    "engine": "KUHUL_QUANTUM_INFERENCE_v6.1",
+    "tokenizer": "SCXQ2_QUANTUM_LATTICE",
+    "glyph_count": 327,
+    "inference_glyphs": 15,
+    "compression_target": 0.015,
+    "max_context": 8192,
+    "quantum_bits": 128,
+    "capabilities": ["chat", "streaming", "embeddings", "multimodal", "rlhf_safety"]
+  },
+
+  "INFERENCE_GLYPH_SYSTEM": {
+    "@total_glyphs": 327,
+    "@glyph_categories": [
+      "control_flow", "conditional", "error_handling", "mathematical",
+      "quantum_states", "quantum_algorithms", "spatial_3d", "cryptographic",
+      "compression_algorithms", "tokenization_glyphs", "quantum_token_operators",
+      "token_lattices", "inference_glyphs", "neural_extended", "io_operations",
+      "network", "time_sync", "memory", "visualization", "database", "audio"
+    ],
+
+    "INFERENCE_GLYPHS": {
+      "💬": {
+        "unicode": "U+1F4AC",
+        "meaning": "CHAT / CONVERSATION",
+        "usage": "Chat inference operation",
+        "example": "prompt 💬 context → response",
+        "token_id": 1
+      },
+      "🧠→": {
+        "composition": "🧠 + →",
+        "meaning": "NEURAL INFERENCE WITH OUTPUT",
+        "usage": "Neural network inference",
+        "example": "input 🧠→ model → output",
+        "token_id": 2
+      },
+      "🔍": {
+        "unicode": "U+1F50D",
+        "meaning": "SEARCH / RETRIEVE CONTEXT",
+        "usage": "Context retrieval",
+        "example": "query 🔍 knowledge_base → context",
+        "token_id": 3
+      },
+      "🎯": {
+        "unicode": "U+1F3AF",
+        "meaning": "TARGETED GENERATION",
+        "usage": "Target-aware generation",
+        "example": "prompt 🎯 target_style → response",
+        "token_id": 4
+      },
+      "🌀": {
+        "unicode": "U+1F300",
+        "meaning": "CREATIVE GENERATION",
+        "usage": "Creative/divergent thinking",
+        "example": "seed 🌀 creativity=0.8 → ideas",
+        "token_id": 5
+      },
+      "⚖️": {
+        "unicode": "U+2696",
+        "meaning": "BALANCED GENERATION",
+        "usage": "Balance creativity/factuality",
+        "example": "query ⚖️ balance=0.5 → response",
+        "token_id": 6
+      },
+      "📊": {
+        "unicode": "U+1F4CA",
+        "meaning": "CONFIDENCE / PROBABILITY",
+        "usage": "Output confidence scores",
+        "example": "response 📊 → confidence_scores",
+        "token_id": 7
+      },
+      "🔗": {
+        "unicode": "U+1F517",
+        "meaning": "CONTEXT CHAINING",
+        "usage": "Chain multiple contexts",
+        "example": "context1 🔗 context2 → combined",
+        "token_id": 8
+      },
+      "🎭": {
+        "unicode": "U+1F3AD",
+        "meaning": "PERSONA / STYLE",
+        "usage": "Apply persona/style",
+        "example": "text 🎭 persona='expert' → styled",
+        "token_id": 9
+      },
+      "✨": {
+        "unicode": "U+2728",
+        "meaning": "ENHANCEMENT / POLISH",
+        "usage": "Polish/enhance output",
+        "example": "draft ✨ → polished",
+        "token_id": 10
+      },
+      "🔣": {
+        "unicode": "U+1F523",
+        "meaning": "TOKENIZATION",
+        "usage": "Convert text to tokens",
+        "example": "text 🔣 → tokens",
+        "token_id": 11
+      },
+      "⚛": {
+        "unicode": "U+269B",
+        "meaning": "QUANTUM ENCODING",
+        "usage": "Quantum state encoding",
+        "example": "tokens ⚛ → quantum_state",
+        "token_id": 12
+      },
+      "🎲": {
+        "unicode": "U+1F3B2",
+        "meaning": "COMPRESSION",
+        "usage": "SCXQ2 compression",
+        "example": "tokens 🎲 → compressed",
+        "token_id": 13
+      },
+      "↻": {
+        "unicode": "U+21BB",
+        "meaning": "DECOMPRESS",
+        "usage": "Reverse compression",
+        "example": "compressed ↻ → tokens",
+        "token_id": 14
+      },
+      "⚡": {
+        "unicode": "U+26A1",
+        "meaning": "STREAMING",
+        "usage": "Stream generation",
+        "example": "prompt ⚡ → token_stream",
+        "token_id": 15
+      }
+    },
+
+    "KUHUL_GLYPHS": {
+      "⟁": "Start/end block delimiter",
+      "⟁Wo⟁": "World state binding",
+      "⟁Sek⟁": "Execute operation",
+      "⟁Xul⟁": "Transform/return",
+      "⟁Ch'en⟁": "Emit/output",
+      "⟁Yax⟁": "Variable access",
+      "⟁K'uh⟁": "Embedding operation",
+      "⟁Tzik⟁": "Position encoding",
+      "⟁K'ayab⟁": "Loop start",
+      "⟁Kumk'u⟁": "Loop end",
+      "⟁Shen⟁": "Conditional if",
+      "⟁Ajaw⟁": "Load from store",
+      "💾": "Persist to storage",
+      "🟣": "Attention mechanism",
+      "🟡": "Transformer layer",
+      "⚫": "Dense embedding"
+    }
+  },
+
+  "INFERENCE_CONFIGURATIONS": {
+    "ultra_fast_mode": {
+      "model": "quantum_fast_v1",
+      "tokenizer": "scxq2_streaming",
+      "max_tokens": 1024,
+      "temperature": 0.7,
+      "compression": "light",
+      "quantum_bits": 64,
+      "use_case": "Real-time chat, low latency",
+      "target_latency": "< 50ms first token"
+    },
+    "high_quality_mode": {
+      "model": "quantum_accurate_v1",
+      "tokenizer": "scxq2_precise",
+      "max_tokens": 4096,
+      "temperature": 0.3,
+      "compression": "optimal",
+      "quantum_bits": 256,
+      "use_case": "Technical analysis, high accuracy",
+      "target_accuracy": "> 98% factual"
+    },
+    "creative_mode": {
+      "model": "quantum_creative_v1",
+      "tokenizer": "scxq2_divergent",
+      "max_tokens": 2048,
+      "temperature": 0.9,
+      "compression": "adaptive",
+      "quantum_bits": 128,
+      "use_case": "Creative writing, brainstorming",
+      "target_diversity": "high novelty"
+    },
+    "multimodal_mode": {
+      "model": "quantum_multimodal_v1",
+      "tokenizer": "scxq2_universal",
+      "max_tokens": 3072,
+      "temperature": 0.5,
+      "compression": "per_modality",
+      "quantum_bits": 512,
+      "use_case": "Image+text, audio+text analysis",
+      "modalities": ["text", "image", "audio", "video"]
+    }
+  },
+
+  "INFERENCE_METRICS": {
+    "latency_metrics": {
+      "end_to_end_latency": "< 100ms for 1k tokens",
+      "first_token_time": "< 20ms",
+      "tokens_per_second": "> 10k tokens/s",
+      "streaming_latency": "< 50ms per chunk",
+      "quantum_speedup": "100-1000x over classical"
+    },
+    "quality_metrics": {
+      "response_relevance": "> 0.95 cosine similarity",
+      "factual_accuracy": "> 0.98 verified facts",
+      "creativity_score": "0-1 adjustable",
+      "coherence_score": "> 0.9 paragraph coherence",
+      "accuracy_improvement": "15-30% over baseline"
+    },
+    "efficiency_metrics": {
+      "tokens_per_query": "Adaptive based on complexity",
+      "compression_ratio": "98.7% average (0.013x size)",
+      "memory_usage": "< 2GB for 1M context",
+      "quantum_efficiency": "> 0.9 qubit utilization",
+      "efficiency_gain": "90% reduction in computational cost"
+    },
+    "scalability_metrics": {
+      "concurrent_sessions": "> 1M simultaneous",
+      "requests_per_second": "> 100k RPS",
+      "context_window": "Up to 2^31 tokens (quantum)",
+      "model_size": "Compressed to 2% of original"
+    }
+  },
+
+  "INFERENCE_OPTIMIZATIONS": {
+    "quantum_attention": {
+      "algorithm": "Quantum Approximate Attention",
+      "improvement": "O(√N) vs O(N²) classical",
+      "description": "Use quantum superposition to compute attention scores in parallel",
+      "speedup": "100x for long contexts"
+    },
+    "token_superposition": {
+      "algorithm": "Token Quantum Superposition",
+      "improvement": "Exponential compression",
+      "description": "Multiple token possibilities encoded in single quantum state",
+      "compression_gain": "40-60% additional over classical"
+    },
+    "context_compression": {
+      "algorithm": "Quantum Context Compression",
+      "improvement": "98.7% compression",
+      "description": "Store conversation context in compressed quantum memory",
+      "memory_saving": "50x reduction"
+    },
+    "adaptive_inference": {
+      "algorithm": "Real-time Model Adaptation",
+      "improvement": "30% latency reduction",
+      "description": "Dynamically switch models based on query characteristics",
+      "modes": ["fast", "accurate", "creative", "multimodal"]
+    },
+    "speculative_decoding": {
+      "algorithm": "Quantum Speculative Decoding",
+      "improvement": "2-3x speedup",
+      "description": "Generate multiple token possibilities in superposition, verify classically",
+      "accuracy": "Maintains quality"
+    }
+  },
+
+  "KUHUL_INFERENCE_ENGINE": {
+    "@engine_id": "KUHUL_QUANTUM_INFERENCE_v6.1",
+    "@port": 8080,
+    "@protocol": "K'UHUL + gRPC + REST",
+
+    "INITIALIZATION": {
+      "mount": {
+        "@operation": "inference.mount",
+        "@parameters": {
+          "engine_id": "KUHUL_QUANTUM_INFERENCE_v6.1",
+          "tokenizer": "SCXQ2_QUANTUM_LATTICE",
+          "compression_target": 0.015,
+          "max_context": 8192,
+          "quantum_bits": 128,
+          "attention_heads": 16,
+          "transformer_layers": 12,
+          "embedding_dimension": 1024,
+          "context_memory": "ring_buffer=unlimited",
+          "conversation_graph": "initialized"
+        },
+        "@kuhul_format": "[⟁ inference.mount][⟁Wo⟁ engine_id tokenizer compression_target max_context quantum_bits]→[⟁Wo⟁ attention 🟣 heads=16]→[⟁Wo⟁ transformer 🟡 layers=12]→[⟁Wo⟁ embedding ⚫ dimension=1024]→[⟁Ch'en⟁ inference.engine_id][⟁Xul⟁]"
+      },
+      "activate": {
+        "@operation": "inference.activate",
+        "@steps": [
+          "tokenizer.load_vocab",
+          "quantum.warmup",
+          "cache.initialize",
+          "schedule: optimize every 60s",
+          "schedule: metrics every 120s"
+        ]
+      }
+    },
+
+    "RLHF_SAFETY_GATE": {
+      "@operation": "inference.rlhf_gate",
+      "@role": "Human feedback safety filter",
+      "@threshold": 0.85,
+      "@inputs": ["input", "uid"],
+      "@output": "block_status",
+
+      "workflow": {
+        "@step_1": "lookup_safety_score(uid)",
+        "@step_2": "if score < 0.85: block request",
+        "@step_3": "return {blocked: false} if safe"
+      },
+
+      "@kuhul_format": "[⟁ inference.rlhf_gate(input, uid)][⟁Wo⟁ safety_score ⟁Sek⟁ rlhf.lookup(uid)]→[⟁Shen⟁ ⟁Yax⟁ safety_score < 0.85]→[⟁then⟁ return block]→[⟁Xul⟁]"
+    },
+
+    "CHAT_INFERENCE": {
+      "@endpoint": "/chat",
+      "@operation": "inference.chat",
+      "@method": "POST",
+      "@inputs": {
+        "uid": "string (user id)",
+        "prompt": "string (user question)",
+        "context": "string[] (conversation history)",
+        "persona": "string (optional style)",
+        "creativity": "float (0.0-1.0, default 0.7)"
+      },
+      "@output": {
+        "response": "string (generated answer)",
+        "compressed": "string (SCXQ2 compressed)",
+        "confidence": "float (0.0-1.0)",
+        "tokens": "int (token count)",
+        "latency": "float (milliseconds)",
+        "engine": "string (engine id)"
+      },
+
+      "workflow": {
+        "@step_1_safety": "RLHF gate check",
+        "@step_2_tokenize": "prompt 🔣 → tokens",
+        "@step_3_compress": "tokens 🎲 → compressed",
+        "@step_4_retrieve": "compressed 🔍 knowledge_base → base_ctx",
+        "@step_5_chain": "base_ctx 🔗 context → merged_ctx",
+        "@step_6_style": "if persona: merged_ctx 🎭 persona → styled",
+        "@step_7_embed": "styled ⟁K'uh⟁ → embed",
+        "@step_8_position": "embed ⟁Tzik⟁ → pos",
+        "@step_9_attention": "for layer in range(12): pos 🟣 → att → att 🟡 → pos",
+        "@step_10_generate": "if creativity > 0.8: pos 🌀 → raw else: pos ⚖️ balance → raw",
+        "@step_11_polish": "raw ✨ → polished",
+        "@step_12_confidence": "polished 📊 → confidence",
+        "@step_13_compress": "polished ↻ → compressed_out",
+        "@step_14_log": "conversation_graph + conversation_history 💾",
+        "@step_15_respond": "return response + metadata"
+      },
+
+      "@kuhul_format": "[⟁ inference.chat(request, response)][⟁Wo⟁ uid prompt context persona creativity]→[⟁Wo⟁ gate ⟁Sek⟁ inference.rlhf_gate]→[⟁Wo⟁ tokens ⟁Yax⟁ prompt 🔣]→[⟁Wo⟁ compressed ⟁Yax⟁ tokens 🎲]→[⟁Wo⟁ base_ctx ⟁Yax⟁ compressed 🔍 knowledge_base]→[⟁Wo⟁ merged_ctx ⟁Yax⟁ base_ctx 🔗 context]→[⟁Shen⟁ persona: styled ⟁Yax⟁ merged_ctx 🎭 persona]→[⟁Wo⟁ embed ⟁Yax⟁ styled ⟁K'uh⟁]→[⟁Wo⟁ pos ⟁Tzik⟁ embed]→[⟁K'ayab⟁ layer in range(12): att ⟁Yax⟁ pos 🟣 → pos ⟁Yax⟁ att 🟡]→[⟁Kumk'u⟁]→[⟁Shen⟁ creativity > 0.8: raw ⟁Yax⟁ pos 🌀]→[⟁else⟁ raw ⟁Yax⟁ pos ⚖️]→[⟁Wo⟁ polished ⟁Yax⟁ raw ✨]→[⟁Wo⟁ confidence ⟁Yax⟁ polished 📊]→[⟁Wo⟁ compressed_out ⟁Yax⟁ polished ↻]→[⟁Wo⟁ log conversation_graph]→[⟁Yax⟁ response.body]→[respond]→[⟁Xul⟁]"
+    },
+
+    "EMBEDDING_SERVICE": {
+      "@endpoint": "/embed",
+      "@operation": "inference.embed",
+      "@method": "POST",
+      "@inputs": {
+        "text": "string (text to embed)"
+      },
+      "@output": {
+        "dense": "float[] (1024-dim vector)",
+        "sparse": "int[] (top_k=100 sparse indices)",
+        "compressed": "string (SCXQ2 compressed)"
+      },
+
+      "workflow": {
+        "@step_1": "text 🔣 → tokens",
+        "@step_2": "tokens ⚛ → quantum_encoded",
+        "@step_3": "quantum_encoded 🧠→ enhancement → enhanced",
+        "@step_4": "enhanced ⚫ 1024 → dense",
+        "@step_5": "enhanced 🔍 top_k=100 → sparse",
+        "@step_6": "dense ↻ → compressed"
+      },
+
+      "@kuhul_format": "[⟁ inference.embed(request, response)][⟁Wo⟁ text]→[⟁Wo⟁ tokens ⟁Yax⟁ text 🔣]→[⟁Wo⟁ qe ⟁Yax⟁ tokens ⚛]→[⟁Wo⟁ enhanced ⟁Yax⟁ qe 🧠→ enhancement]→[⟁Wo⟁ dense ⟁Yax⟁ enhanced ⚫ 1024]→[⟁Wo⟁ sparse ⟁Yax⟁ enhanced 🔍 top_k=100]→[⟁Wo⟁ compressed ⟁Yax⟁ dense ↻]→[⟁Yax⟁ response.body {dense, sparse, compressed}]→[respond]→[⟁Xul⟁]"
+    },
+
+    "STREAMING_CHAT": {
+      "@endpoint": "/stream_chat",
+      "@operation": "inference.stream_chat",
+      "@method": "POST",
+      "@streaming": true,
+      "@inputs": {
+        "prompt": "string"
+      },
+      "@output": "Server-Sent Events stream of tokens",
+
+      "workflow": {
+        "@step_1": "prompt ⚡ → stream_tokens",
+        "@step_2": "for chunk in stream_tokens:",
+        "@step_3": "  chunk 🔣 → tok",
+        "@step_4": "  buffer.append(tok)",
+        "@step_5": "  if len(buffer) > 256:",
+        "@step_6": "    buffer 🧠→ stream_model → partial",
+        "@step_7": "    stream.write(partial)",
+        "@step_8": "    buffer = buffer[128:]",
+        "@step_9": "buffer 🧠→ completion_model → final",
+        "@step_10": "stream.write(final)",
+        "@step_11": "stream.end()"
+      },
+
+      "@kuhul_format": "[⟁ inference.stream_chat(request, response, stream)][⟁Wo⟁ buffer []]→[⟁Wo⟁ stream_tokens ⟁Yax⟁ request.body.prompt ⚡]→[⟁K'ayab⟁ chunk in stream_tokens]→[⟁Wo⟁ tok ⟁Yax⟁ chunk 🔣]→[⟁Yax⟁ buffer ⟁K'at⟁ tok]→[⟁Shen⟁ length(buffer) > 256]→[⟁Wo⟁ partial ⟁Yax⟁ buffer 🧠→ stream_model]→[⟁Yax⟁ stream.write(partial)]→[⟁Wo⟁ buffer buffer[128:]]→[⟁Kumk'u⟁]→[⟁Wo⟁ final ⟁Yax⟁ buffer 🧠→ completion_model]→[⟁Yax⟁ stream.write(final)]→[⟁Yax⟁ stream.end()]→[⟁Xul⟁]"
+    },
+
+    "MULTIMODAL_CHAT": {
+      "@endpoint": "/multimodal_chat",
+      "@operation": "inference.multimodal_chat",
+      "@method": "POST",
+      "@inputs": {
+        "text": "string",
+        "media": "bytes (image/audio/video)"
+      },
+      "@output": {
+        "response": "string (multimodal response)"
+      },
+
+      "workflow": {
+        "@step_1": "if is_image(media): media 🧠→ vision_encoder → vision",
+        "@step_2": "text ⟁K'uh⟁ → text_embed",
+        "@step_3": "text_embed 🔗 vision → fused",
+        "@step_4": "fused 🧠→ multimodal_model → out"
+      },
+
+      "@kuhul_format": "[⟁ inference.multimodal_chat(request, response)][⟁Wo⟁ text media]→[⟁Shen⟁ is_image(media)]→[⟁then⟁ ⟁Wo⟁ vision ⟁Yax⟁ media 🧠→ vision_encoder]→[⟁Wo⟁ text_embed ⟁Yax⟁ text ⟁K'uh⟁]→[⟁Wo⟁ fused ⟁Yax⟁ text_embed 🔗 vision]→[⟁Wo⟁ out ⟁Yax⟁ fused 🧠→ multimodal_model]→[⟁Yax⟁ response.body {response: out}]→[respond]→[⟁Xul⟁]"
+    }
+  },
+
+  "INFERENCE_TOKENIZATION": {
+    "@name": "@-GRAMS_INFERENCE",
+
+    "@unigrams": [
+      "INFERENCE",
+      "QUANTUM",
+      "CHAT",
+      "STREAM",
+      "EMBED",
+      "MULTIMODAL",
+      "GLYPH",
+      "TOKEN",
+      "COMPRESS",
+      "DECOMPRESS",
+      "ENCODE",
+      "DECODE",
+      "ATTENTION",
+      "TRANSFORMER",
+      "RLHF",
+      "SAFETY",
+      "CONTEXT",
+      "PERSONA",
+      "CREATIVE",
+      "BALANCE",
+      "POLISH",
+      "CONFIDENCE",
+      "LATENCY",
+      "THROUGHPUT",
+      "OPTIMIZE"
+    ],
+
+    "@bigrams": [
+      "QUANTUM_INFERENCE",
+      "CHAT_INFERENCE",
+      "STREAM_CHAT",
+      "MULTIMODAL_CHAT",
+      "EMBEDDING_SERVICE",
+      "TOKEN_COMPRESS",
+      "CONTEXT_RETRIEVE",
+      "RLHF_SAFETY",
+      "ATTENTION_MECHANISM",
+      "TRANSFORMER_LAYER",
+      "CREATIVE_MODE",
+      "BALANCE_MODE",
+      "CONFIDENCE_SCORE",
+      "LATENCY_OPTIMIZE"
+    ],
+
+    "@trigrams": [
+      "QUANTUM_CHAT_INFERENCE",
+      "MULTIMODAL_EMBEDDING_SERVICE",
+      "RLHF_SAFETY_GATE",
+      "ATTENTION_TRANSFORMER_LAYER",
+      "CREATIVE_BALANCE_MODE"
+    ],
+
+    "vocabulary_inference": {
+      "@size": 143,
+      "@special_tokens": {
+        "inference_glyphs": 15,
+        "kuhul_glyphs": 16,
+        "operators": 25
+      }
+    },
+
+    "weights_inference": {
+      "@matrix_shape": [143, 143],
+      "@tokens_by_frequency": [
+        {"token": "INFERENCE", "weight": 0.98},
+        {"token": "CHAT", "weight": 0.96},
+        {"token": "TOKEN", "weight": 0.94},
+        {"token": "QUANTUM", "weight": 0.92},
+        {"token": "COMPRESS", "weight": 0.90},
+        {"token": "EMBED", "weight": 0.88},
+        {"token": "ATTENTION", "weight": 0.86},
+        {"token": "CONTEXT", "weight": 0.84},
+        {"token": "STREAM", "weight": 0.82},
+        {"token": "MULTIMODAL", "weight": 0.80}
+      ],
+
+      "@workflow_transitions": {
+        "PROMPT→TOKEN": 0.95,
+        "TOKEN→COMPRESS": 0.93,
+        "COMPRESS→CONTEXT": 0.91,
+        "CONTEXT→EMBED": 0.94,
+        "EMBED→ATTENTION": 0.92,
+        "ATTENTION→TRANSFORM": 0.93,
+        "TRANSFORM→GENERATE": 0.90,
+        "GENERATE→POLISH": 0.89,
+        "POLISH→CONFIDENCE": 0.91,
+        "CONFIDENCE→RESPONSE": 0.94
+      }
+    }
+  },
+
+  "DEPLOYMENT_CONFIGURATION": {
+    "@mode": "KUHUL_GRPC_REST_HYBRID",
+    "@port": 8080,
+    "@endpoints": [
+      "/chat",
+      "/stream_chat",
+      "/embed",
+      "/multimodal_chat",
+      "/metrics",
+      "/optimize"
+    ],
+
+    "requirements": {
+      "runtime": "K'UHUL PI Engine",
+      "quantum_backend": "SCXQ2 Quantum Lattice",
+      "models": ["quantum_fast_v1", "quantum_accurate_v1", "quantum_creative_v1", "quantum_multimodal_v1"],
+      "memory": "< 2GB for 1M context",
+      "gpu": "Optional (CUDA for acceleration)"
+    },
+
+    "startup": {
+      "@command": "kuhul exec inference.khl",
+      "@initialization": [
+        "inference.mount",
+        "inference.activate",
+        "load models",
+        "warmup quantum backend"
+      ]
+    },
+
+    "integration_with_asx_os": {
+      "@dns": "inference://quantum/",
+      "@klh_route": "@route.inference",
+      "@xcfe_control": "@inference.chat",
+      "@kuhul_execution": "[Pop quantum_inference][Wo prompt context]→[Sek rlhf_gate]→[Sek tokenize_compress]→[Sek retrieve_context]→[Sek embed_attention]→[Sek transform_generate]→[Sek polish_confidence]→[Ch'en response][Xul]"
+    }
+  },
+
+  "INTEGRATION_WITH_EXISTING_BRAINS": {
+    "@merges_into": "brain-02-specialized-systems.json",
+    "@category": "QUANTUM_INFERENCE_ENGINE",
+
+    "connections": {
+      "TO_brain-01-core": {
+        "@xcfe_governance": "Controls inference modes and safety gates",
+        "@kuhul_execution": "Executes K'UHUL inference pipeline"
+      },
+      "TO_brain-02-specialized": {
+        "@tokenization": "Extends with 15 inference glyphs + 327 K'UHUL glyphs",
+        "@compression": "Integrates SCXQ2 compression (98.7%)",
+        "@api": "Adds /chat, /stream_chat, /embed, /multimodal_chat endpoints"
+      },
+      "TO_brain-03-python-janus": {
+        "@multimodal": "Janus vision feeds into inference.multimodal_chat",
+        "@embedding": "Shared embedding space"
+      },
+      "TO_brain-04-cline": {
+        "@chat": "CLINE uses inference engine for AI responses",
+        "@context": "Shared conversation graph"
+      }
+    }
+  },
+
+  "PERFORMANCE_METRICS": {
+    "@latency": "< 100ms end-to-end",
+    "@throughput": "> 10k tokens/s",
+    "@compression": "98.7% (0.013x)",
+    "@memory": "< 2GB for 1M context",
+    "@scalability": "> 1M concurrent sessions",
+    "@quantum_speedup": "100-1000x vs classical"
+  },
+
+  "@xcfe_integration": {
+    "@perception": "Prompt + context + persona",
+    "@representation": "Quantum-compressed embeddings",
+    "@reasoning": "Attention + transformer layers",
+    "@decision": "Mode selection (fast/accurate/creative)",
+    "@action": "Generate with glyphs (🌀/⚖️/✨)",
+    "@reflection": "Confidence scoring 📊"
+  },
+
+  "@kuhul_pipeline": {
+    "@Pop": "Load prompt and parameters",
+    "@Wo": "Bind context, persona, creativity",
+    "@Sek": "Execute inference (attention → transform → generate)",
+    "@Xul": "Transform output (polish ✨ → compress ↻)",
+    "@Ch'en": "Emit response with metadata"
+  }
+}
