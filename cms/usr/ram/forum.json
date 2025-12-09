@@ -1,0 +1,35 @@
+[
+  {
+    "id": "thread-001",
+    "title": "Welcome to ASXR Micro CMS Forum",
+    "content": "This is the first thread in the ASXR Micro CMS unified content system. Discussion topics include KUHUL pipeline architecture, XJSON data formats, XCFE control flow, and ASX-RAM memory management.",
+    "author": "user-001",
+    "mode": "forum",
+    "created_at": "2025-12-09T00:00:00.000Z",
+    "updated_at": "2025-12-09T00:00:00.000Z",
+    "views": 42,
+    "replies": 3
+  },
+  {
+    "id": "thread-002",
+    "title": "KUHUL Pipeline Best Practices",
+    "content": "Share your experiences with the five-stage KUHUL pipeline: POP → WO → SEK → XUL → CH'EN. What patterns work best for your use cases?",
+    "author": "user-002",
+    "mode": "forum",
+    "created_at": "2025-12-09T01:30:00.000Z",
+    "updated_at": "2025-12-09T01:30:00.000Z",
+    "views": 28,
+    "replies": 5
+  },
+  {
+    "id": "thread-003",
+    "title": "XCFE Control Vectors Discussion",
+    "content": "Let's discuss advanced XCFE control patterns and how to optimize causality governance in complex applications.",
+    "author": "user-002",
+    "mode": "forum",
+    "created_at": "2025-12-09T03:00:00.000Z",
+    "updated_at": "2025-12-09T03:00:00.000Z",
+    "views": 15,
+    "replies": 2
+  }
+]

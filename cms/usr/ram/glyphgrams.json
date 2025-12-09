@@ -1,0 +1,35 @@
+[
+  {
+    "ts": 1733788800000,
+    "glyphs": ["⚛️", "⟁", "⊗", "🔒", "🧠"],
+    "source": "ui_symbols",
+    "context": {
+      "domain": "asxr_cms",
+      "usage": "visual_identity",
+      "semantic": "atom_kuhul_xjson_security_intelligence"
+    },
+    "frequency": 100
+  },
+  {
+    "ts": 1733788900000,
+    "glyphs": ["→", "⟁", "⊗", "✅", "❌"],
+    "source": "pipeline_flow",
+    "context": {
+      "domain": "kuhul_pipeline",
+      "usage": "flow_notation",
+      "semantic": "arrow_kuhul_xjson_success_failure"
+    },
+    "frequency": 85
+  },
+  {
+    "ts": 1733789000000,
+    "glyphs": ["🔐", "🛡️", "⚠️", "🚨", "✓"],
+    "source": "security_states",
+    "context": {
+      "domain": "security_goat",
+      "usage": "threat_indicators",
+      "semantic": "secure_protected_warning_critical_approved"
+    },
+    "frequency": 75
+  }
+]

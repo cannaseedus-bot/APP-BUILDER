@@ -1,0 +1,50 @@
+[
+  {
+    "id": "rlhf-001",
+    "title": "KUHUL Pipeline Optimization",
+    "content": "Training case for optimizing KUHUL pipeline execution. Test various control flow patterns and measure performance.",
+    "case_id": "kuhul-opt-001",
+    "reward": 1.5,
+    "created_at": "2025-12-09T00:00:00.000Z",
+    "updated_at": "2025-12-09T00:00:00.000Z",
+    "author": "user-002",
+    "status": "active",
+    "annotations": 12,
+    "meta": {
+      "category": "optimization",
+      "difficulty": "medium"
+    }
+  },
+  {
+    "id": "rlhf-002",
+    "title": "XJSON Schema Validation",
+    "content": "Training case for validating complex XJSON documents with nested @context and @law declarations.",
+    "case_id": "xjson-val-001",
+    "reward": 2.0,
+    "created_at": "2025-12-09T01:00:00.000Z",
+    "updated_at": "2025-12-09T01:00:00.000Z",
+    "author": "user-003",
+    "status": "active",
+    "annotations": 8,
+    "meta": {
+      "category": "validation",
+      "difficulty": "hard"
+    }
+  },
+  {
+    "id": "rlhf-003",
+    "title": "Security Pattern Detection",
+    "content": "Training case for improving SECURITY-GOAT malware pattern detection accuracy. Focus on reducing false positives.",
+    "case_id": "sec-pattern-001",
+    "reward": 3.0,
+    "created_at": "2025-12-09T02:00:00.000Z",
+    "updated_at": "2025-12-09T02:00:00.000Z",
+    "author": "user-001",
+    "status": "active",
+    "annotations": 15,
+    "meta": {
+      "category": "security",
+      "difficulty": "hard"
+    }
+  }
+]

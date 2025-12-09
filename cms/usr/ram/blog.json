@@ -1,0 +1,35 @@
+[
+  {
+    "id": "article-001",
+    "title": "Introducing ASXR Micro Super CMS",
+    "content": "Today we're launching ASXR Micro Super CMS Ω - a unified content operating system built on KUHUL pipeline architecture, XJSON data formats, XCFE control flow governance, and ASX-RAM native memory storage.\n\nKey features:\n- Forum system for community discussions\n- Marketplace for plugins and licenses\n- Plugin directory with version management\n- Blog publishing system\n- User management and permissions\n- RLHF training and annotation\n- Memory heatmap visualization\n- Agent-based automation\n\nThe entire system runs in-browser with service worker architecture and progressive web app capabilities.",
+    "author": "user-001",
+    "created_at": "2025-12-09T00:00:00.000Z",
+    "updated_at": "2025-12-09T00:00:00.000Z",
+    "published": true,
+    "views": 567,
+    "tags": ["announcement", "asxr", "cms"]
+  },
+  {
+    "id": "article-002",
+    "title": "Understanding the KUHUL Pipeline",
+    "content": "The KUHUL pipeline is a five-stage execution model:\n\n1. POP - Parse and initialize\n2. WO - Bind world state\n3. SEK - Execute core logic\n4. XUL - Transform output\n5. CH'EN - Emit results\n\nThis pipeline ensures causality governance through XCFE control vectors and enables polyglot language support (K'uhul, JavaScript, Java, Python).",
+    "author": "user-002",
+    "created_at": "2025-12-09T02:00:00.000Z",
+    "updated_at": "2025-12-09T02:00:00.000Z",
+    "published": true,
+    "views": 342,
+    "tags": ["tutorial", "kuhul", "architecture"]
+  },
+  {
+    "id": "article-003",
+    "title": "SECURITY-GOAT: Protecting Your GAS Plugins",
+    "content": "SECURITY-GOAT provides comprehensive malware detection for GAS plugins:\n\n- 15+ malware pattern detectors (eval, Function, XSS)\n- Threat scoring (0.0 = safe, 1.0 = critical)\n- Quarantine management\n- Approval workflows\n- XCFE enforcement\n\nAll plugins are validated before registration and execution through the enhanced KUHUL pipeline: SECURITY → POP → WO → SEK → XUL → CH'EN",
+    "author": "user-001",
+    "created_at": "2025-12-09T04:00:00.000Z",
+    "updated_at": "2025-12-09T04:00:00.000Z",
+    "published": true,
+    "views": 198,
+    "tags": ["security", "plugins", "validation"]
+  }
+]
