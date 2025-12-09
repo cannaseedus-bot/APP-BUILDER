@@ -797,6 +797,53 @@
       </div>
     </div>
 
+    <!-- Backend Model Status Panel -->
+    <div class="panel" id="backend-status-panel">
+      <h2>
+        <span class="icon">🌐</span>
+        Backend AI Models
+        <span id="backend-status-indicator" style="font-size: 0.8rem; margin-left: auto;">⏳ Loading...</span>
+      </h2>
+
+      <div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(22, 242, 170, 0.1); border-radius: 10px; border: 1px solid rgba(22, 242, 170, 0.3);">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span><strong>API Gateway:</strong></span>
+          <span style="color: var(--accent-primary);">api.asxtoken.com</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span><strong>Backend Base:</strong></span>
+          <span style="color: var(--accent-primary);">backend.refluxedpc.com</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span><strong>Total Models:</strong></span>
+          <span style="color: var(--accent-secondary);" id="backend-model-count">11</span>
+        </div>
+      </div>
+
+      <div id="backend-models-grid" class="features" style="max-height: 400px; overflow-y: auto;">
+        <!-- Models will be loaded dynamically -->
+        <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🔄</div>
+          <div>Loading backend models...</div>
+          <div style="font-size: 0.8rem; margin-top: 0.5rem;">Querying PHP API Gateway</div>
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top: 1.5rem;">
+        <button class="btn btn-primary" onclick="testBackendConnection()">
+          🧪 Test Connection
+        </button>
+        <button class="btn btn-secondary" onclick="refreshBackendModels()">
+          🔄 Refresh Models
+        </button>
+        <button class="btn btn-secondary" onclick="window.open('BACKEND-SETUP.md', '_blank')">
+          📚 Setup Guide
+        </button>
+      </div>
+
+      <div id="backend-test-result" style="margin-top: 1.5rem; display: none;"></div>
+    </div>
+
     <!-- Output Panel -->
     <div class="panel" id="output-panel" style="display:none;">
       <h2>
@@ -1280,6 +1327,161 @@ if ('serviceWorker' in navigator) {
     function demonstrateAgent(agentName) {
       alert(`${agentName.toUpperCase()} AI Agent\\n\\nThis microagent is part of the collaborative swarm. Click "Generate App" to see them work together!`);
     }
+
+    // ========== BACKEND MODEL MANAGEMENT ==========
+
+    async function loadBackendModels() {
+      const statusIndicator = document.getElementById('backend-status-indicator');
+      const modelsGrid = document.getElementById('backend-models-grid');
+
+      try {
+        statusIndicator.textContent = '🔄 Loading...';
+        statusIndicator.style.color = 'var(--accent-secondary)';
+
+        const response = await fetch('/__api__/backendModels', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const result = await response.json();
+
+        if (result.error) {
+          throw new Error(result.message || 'Failed to load models');
+        }
+
+        const models = result.data?.models || getDefaultModels();
+        displayBackendModels(models);
+
+        statusIndicator.textContent = '✅ Connected';
+        statusIndicator.style.color = 'var(--accent-primary)';
+
+      } catch (error) {
+        console.error('[ASX-BACKEND] Error loading models:', error);
+        statusIndicator.textContent = '⚠️ Awaiting Setup';
+        statusIndicator.style.color = '#ff6b6b';
+
+        // Show default model list with "awaiting download" status
+        displayBackendModels(getDefaultModels(), true);
+      }
+    }
+
+    function getDefaultModels() {
+      return [
+        { name: 'Janus Pro', type: 'quantum_llm', status: 'awaiting_download', priority: 'critical', quantum: true },
+        { name: 'MX2 Inference', type: 'inference_engine', status: 'awaiting_download', priority: 'critical', quantum: true },
+        { name: "K'UHUL Quantum", type: 'quantum_engine', status: 'awaiting_download', priority: 'critical', quantum: true },
+        { name: 'DeepSeek R1', type: 'reasoning_llm', status: 'awaiting_download', priority: 'high', quantum: true },
+        { name: 'DeepSeek Coder', type: 'code_llm', status: 'awaiting_download', priority: 'high', quantum: true },
+        { name: 'Cline Agent', type: 'agentic_llm', status: 'awaiting_download', priority: 'high', quantum: true },
+        { name: 'Llama 3', type: 'general_llm', status: 'awaiting_download', priority: 'medium', quantum: false },
+        { name: 'CodeLlama', type: 'code_llm', status: 'awaiting_download', priority: 'medium', quantum: false },
+        { name: 'Qwen Coder', type: 'coding_llm', status: 'awaiting_download', priority: 'medium', quantum: false },
+        { name: 'Janus Flow', type: 'streaming_llm', status: 'awaiting_download', priority: 'medium', quantum: false },
+        { name: 'Mistral', type: 'efficient_llm', status: 'awaiting_download', priority: 'low', quantum: false }
+      ];
+    }
+
+    function displayBackendModels(models, isDefault = false) {
+      const modelsGrid = document.getElementById('backend-models-grid');
+      const modelCount = document.getElementById('backend-model-count');
+
+      modelCount.textContent = models.length;
+
+      const priorityColors = {
+        critical: '#ff0080',
+        high: '#16f2aa',
+        medium: '#38bdf8',
+        low: '#999999'
+      };
+
+      const statusIcons = {
+        ready: '✅',
+        awaiting_download: '⏳',
+        downloading: '🔄',
+        error: '❌'
+      };
+
+      modelsGrid.innerHTML = models.map(model => `
+        <div class="feature" style="border-left: 3px solid ${priorityColors[model.priority || 'medium']};">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+            <div class="feature-icon">${model.quantum ? '⚛️' : '🤖'}</div>
+            <span style="font-size: 0.8rem; padding: 0.2rem 0.6rem; background: rgba(22,242,170,0.2); border-radius: 999px;">
+              ${statusIcons[model.status] || '⏳'} ${model.status?.replace('_', ' ') || 'Unknown'}
+            </span>
+          </div>
+          <div class="feature-title">${model.name}</div>
+          <div class="feature-desc" style="font-size: 0.8rem;">
+            ${model.type?.replace(/_/g, ' ')} • Priority: ${model.priority || 'medium'}
+            ${model.quantum ? ' • Quantum Enhanced' : ''}
+          </div>
+        </div>
+      `).join('');
+
+      if (isDefault) {
+        modelsGrid.innerHTML += `
+          <div style="grid-column: 1/-1; text-align: center; padding: 1rem; margin-top: 1rem; background: rgba(255,107,107,0.1); border-radius: 10px; border: 1px solid rgba(255,107,107,0.3);">
+            <div style="font-size: 1rem; margin-bottom: 0.5rem;">⚠️ Models Awaiting Download</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              See <a href="BACKEND-SETUP.md" target="_blank" style="color: var(--accent-primary);">BACKEND-SETUP.md</a> for download instructions
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    async function testBackendConnection() {
+      const testResult = document.getElementById('backend-test-result');
+      testResult.style.display = 'block';
+      testResult.innerHTML = '<div style="text-align: center; padding: 1rem;"><div class="spinner"></div><p>Testing connection...</p></div>';
+
+      try {
+        const response = await fetch('/__api__/backendStatus', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const result = await response.json();
+
+        if (result.error) {
+          throw new Error(result.message || 'Connection failed');
+        }
+
+        testResult.innerHTML = `
+          <div style="padding: 1rem; background: rgba(22,242,170,0.1); border-radius: 10px; border: 1px solid rgba(22,242,170,0.3);">
+            <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">✅ Backend Connection Successful</div>
+            <div style="font-size: 0.9rem; color: var(--text-muted);">
+              <pre style="margin-top: 1rem; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 5px; overflow-x: auto;">${JSON.stringify(result.data, null, 2)}</pre>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        testResult.innerHTML = `
+          <div style="padding: 1rem; background: rgba(255,107,107,0.1); border-radius: 10px; border: 1px solid rgba(255,107,107,0.3);">
+            <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">❌ Connection Failed</div>
+            <div style="font-size: 0.9rem; color: var(--text-muted);">
+              ${error.message}
+              <br><br>
+              <strong>Troubleshooting:</strong>
+              <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                <li>Check that models are downloaded (see BACKEND-SETUP.md)</li>
+                <li>Verify PHP API is running at api.asxtoken.com</li>
+                <li>Ensure backend.refluxedpc.com is accessible</li>
+              </ul>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    async function refreshBackendModels() {
+      await loadBackendModels();
+      alert('Backend model list refreshed!');
+    }
+
+    // Load backend models on page load
+    window.addEventListener('load', () => {
+      loadBackendModels();
+    });
   </script>
 </body>
 </html>

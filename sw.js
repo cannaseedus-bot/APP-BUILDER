@@ -572,9 +572,28 @@ async function handleUnifiedAPI(request) {
   try {
     let result;
 
-    // Microagent orchestration actions
-    if (action === 'orchestrate' || action === 'teamCollaboration') {
-      result = await orchestrateMicroagentTeam(input.projectSpec || input);
+    // Backend PHP API Actions
+    if (action === 'backendModels') {
+      result = await backendProxyPHP('models.list');
+    } else if (action === 'backendModelInfo') {
+      result = await backendProxyPHP('model.info', { model: input.model });
+    } else if (action === 'backendChat') {
+      result = await backendProxyPHP('chat', {
+        model: input.model || 'janus-pro',
+        message: input.message,
+        stream: input.stream || false
+      });
+    } else if (action === 'backendBatch') {
+      result = await backendProxyPHP('batch.inference', input);
+    } else if (action === 'backendStatus') {
+      result = await backendProxyPHP('backend.status');
+    } else if (action === 'backendQuantumCompress') {
+      result = await backendProxyPHP('quantum.compress', { data: input.data });
+    }
+
+    // Microagent orchestration actions (with backend integration)
+    else if (action === 'orchestrate' || action === 'teamCollaboration') {
+      result = await orchestrateMicroagentTeam(input.projectSpec || input, input.useBackend);
     }
 
     // RLHF Actions
@@ -615,6 +634,8 @@ async function handleUnifiedAPI(request) {
       result = {
         error: 'Unknown action',
         supported: [
+          'backendModels', 'backendModelInfo', 'backendChat', 'backendBatch',
+          'backendStatus', 'backendQuantumCompress',
           'orchestrate', 'teamCollaboration',
           'submitScore', 'getUserScores',
           'meshRegister', 'meshSync',
@@ -629,6 +650,79 @@ async function handleUnifiedAPI(request) {
   } catch (error) {
     console.error('[ASX-API] Error:', error);
     return jsonResponse({ error: error.message, stack: error.stack }, 500);
+  }
+}
+
+// ========== BACKEND PHP PROXY ==========
+
+async function backendProxyPHP(route, params = {}) {
+  const baseURL = 'https://api.asxtoken.com/api.php';
+  const url = new URL(baseURL);
+  url.searchParams.set('route', route);
+
+  console.log('[ASX-BACKEND-PHP] Proxying to backend:', { route, params });
+
+  // For simple GET routes (list, status, info)
+  const isGETRoute = route.includes('.list') || route === 'backend.status' || route === 'model.info';
+
+  try {
+    let response;
+
+    if (isGETRoute) {
+      // Add params to query string for GET requests
+      if (params.model) url.searchParams.set('model', params.model);
+
+      response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'ASX-XJSON-App-Builder/13.5.0'
+        }
+      });
+    } else {
+      // POST for chat, batch, compression
+      if (params.model) url.searchParams.set('model', params.model);
+      if (params.stream) url.searchParams.set('stream', params.stream);
+
+      response = await fetch(url.toString(), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'User-Agent': 'ASX-XJSON-App-Builder/13.5.0'
+        },
+        body: JSON.stringify(params)
+      });
+    }
+
+    if (!response.ok) {
+      throw new Error(`Backend returned ${response.status}: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+
+    console.log('[ASX-BACKEND-PHP] ✅ Backend response received:', result);
+
+    return {
+      success: true,
+      backend: 'php_api',
+      route: route,
+      data: result,
+      timestamp: new Date().toISOString()
+    };
+
+  } catch (error) {
+    console.error('[ASX-BACKEND-PHP] ❌ Backend connection failed:', error);
+
+    return {
+      error: 'backend_connection_failed',
+      message: error.message,
+      backend: 'php_api',
+      route: route,
+      suggestion: 'Check BACKEND-SETUP.md to ensure models are downloaded and configured',
+      status: 'awaiting_model_download',
+      timestamp: new Date().toISOString()
+    };
   }
 }
 
