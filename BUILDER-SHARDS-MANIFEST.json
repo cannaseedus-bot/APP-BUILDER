@@ -653,19 +653,43 @@
         ]
       },
 
-      "temporary_infrastructure": {
-        "purpose": "Temporary model router until dedicated server infrastructure deployed",
-        "provides": "Inference tokens and model weights access",
-        "transition_plan": "Will be replaced by dedicated servers for production workloads",
+      "google_drive_integration": {
+        "critical_dependency": "MUST stay on GAS to access QWENF1 model files in Google Drive",
+        "drive_folder": "1DlNkskGibmCfHfG3XzstP4KUkXNy0sEC",
+        "model_file": "1EK4X6V1-WSsbZtBzhnCm4KVnGXzj8iGj",
+        "optimizer_file": "1od43CLcg3jqKKtmfyj4DskOOJ5aP6YmV",
+        "functions": [
+          "DriveApp.getFolderById() - Access QWENF1 model folder",
+          "DriveApp.getFileById() - Fetch model and optimizer files",
+          "Verify file metadata (size, last updated)",
+          "Dispatch file IDs to Colab/TPU inference endpoint"
+        ],
+        "why_gas_required": "Only GAS has direct Google Drive API access for user's drive"
+      },
+
+      "inference_endpoint": {
+        "purpose": "Routes inference requests to Colab/TPU with Drive file IDs",
+        "endpoint_config": "Set qwenf1Endpoint in script properties",
+        "payload": "Sends model/optimizer file IDs from Drive to inference server",
         "current_use": "Development and prototyping inference endpoint"
       },
 
       "api_routes": {
         "GET ?path=builder": "Generate frontend from prompt (requires prompt param)",
-        "GET ?path=chat": "Chat with AI crowns (for collaborative building)",
-        "GET ?path=qwenf1": "Verify QWENF1 model integration",
+        "GET ?path=chat": "Chat with AI crowns (message, crown params). Use model=qwenf1 to dispatch to QWENF1",
+        "GET ?path=qwenf1": "Verify QWENF1 model files in Google Drive (folder and file metadata)",
         "GET ?path=status": "System and micro-agent status",
-        "GET ?path=tokens": "Manage token balance"
+        "GET ?path=tokens": "Manage token balance (action=balance|add, amount param)"
+      },
+
+      "qwenf1_workflow": {
+        "step_1": "User calls ?path=chat&model=qwenf1&message=YOUR_PROMPT",
+        "step_2": "GAS verifies 25 tokens available, deducts from balance",
+        "step_3": "GAS accesses QWENF1 model files in Drive via DriveApp API",
+        "step_4": "GAS sends payload to configured qwenf1Endpoint (Colab/TPU) with Drive file IDs",
+        "step_5": "Inference server loads model from Drive IDs and processes prompt",
+        "step_6": "GAS returns inference result to user",
+        "setup_required": "Set qwenf1Endpoint in script properties to your Colab/TPU receiver URL"
       },
 
       "inference_cost": {
@@ -715,9 +739,10 @@
         "crowns": "MX2LM, Developer, Creative, Analyst crowns for deep thinking",
         "qwenf1": "QWENF1 fine-tuned model for advanced inference (25 tokens)",
         "tokens": "Integrates with ASX token system for inference costs",
-        "model_routing": "Temporary model router for inference tokens and weights",
+        "google_drive": "CRITICAL: Requires GAS for Drive API access to QWENF1 model files",
+        "model_routing": "Routes to user's QWENF1 model in Drive, dispatches to Colab/TPU endpoint",
         "use_with": "Combine with specialist shards (Frontend Specialist, Foreman Coordinator) for actual building",
-        "transition": "Temporary infrastructure until dedicated server deployment"
+        "permanence": "MUST remain on GAS for Drive integration; inference endpoint is configurable"
       }
     },
 
