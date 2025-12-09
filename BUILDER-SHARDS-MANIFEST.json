@@ -13,8 +13,8 @@
     "@communication": "REST mesh with XJSON payloads",
     "@orchestration": "MX2LM coordinates all builder shards",
 
-    "total_shards": 12,
-    "active_shards": 5,
+    "total_shards": 13,
+    "active_shards": 6,
     "pending_deployment": 7,
 
     "mesh_topology": {
@@ -688,6 +688,137 @@
         "tapes": "Exports to studio-web, studio-data, studio-docs tapes",
         "qwenf1": "Can use QWENF1 model for advanced prompt understanding",
         "tokens": "Requires 20 tokens per build, integrates with token system"
+      }
+    },
+
+    "shard_13_foreman_coordinator": {
+      "@name": "MX2LM Foreman Coordinator Agent Shard",
+      "@status": "ACTIVE",
+      "@endpoint": "https://script.google.com/macros/s/AKfycbyHFohuK7CGXRDPdHHZkBbNXl_dLGHmwy3eKMJEKJOD9imdLGpKJH4J31PrjQFkaTnEnA/exec",
+      "@description": "Central orchestrator/router for 3 specialized micro-agents using K'uhul pipeline",
+
+      "builder_type": "agent",
+      "specialization": "specialist_coordination",
+
+      "micro_agents": {
+        "frontend_specialist": {
+          "id": "frontend_specialist",
+          "emoji": "🎨",
+          "role": "Frontend AI Specialist",
+          "domain": "UI/UX & K'uhul DOM",
+          "token_cost": 15,
+          "pipeline": "[Pop frontend_expert] [Wo design_spec]→[Ch'en spec] [Yax spec]→[Sek generate_ui_ast] [Yax ui_ast]→[Sek compile_to_kuhul] [Sek deploy_interface] [Xul]",
+          "builds": [
+            "UI/UX design specifications",
+            "K'uhul DOM AST generation",
+            "Component interface compilation",
+            "Responsive layouts"
+          ]
+        },
+        "backend_specialist": {
+          "id": "backend_specialist",
+          "emoji": "⚡",
+          "role": "Backend AI Specialist",
+          "domain": "APIs & Data Logic",
+          "token_cost": 20,
+          "pipeline": "[Pop backend_expert] [Wo api_spec]→[Ch'en spec] [Yax spec]→[Sek generate_xjson_api] [Yax xjson_api]→[Sek deploy_virtual_server] [Sek register_routes] [Xul]",
+          "builds": [
+            "XJSON API specifications",
+            "Virtual server deployment",
+            "Route registration",
+            "Data logic orchestration"
+          ]
+        },
+        "design_specialist": {
+          "id": "design_specialist",
+          "emoji": "🎯",
+          "role": "Design AI Specialist",
+          "domain": "Visual Design & 3D Graphics",
+          "token_cost": 25,
+          "pipeline": "[Pop design_expert] [Wo design_brief]→[Ch'en brief] [Yax brief]→[Sek generate_design_system] [Yax design_system]→[Sek create_3d_elements] [Sek apply_animations] [Xul]",
+          "builds": [
+            "Complete design systems",
+            "3D element generation",
+            "Animation orchestration",
+            "Visual design briefs"
+          ]
+        }
+      },
+
+      "kuhul_pipeline": {
+        "stages": {
+          "Pop": "Initialize specialist agent context",
+          "Wo": "Bind input specification/brief",
+          "Ch'en": "Validate and normalize spec",
+          "Yax": "Transform spec into domain AST",
+          "Sek": "Execute specialist operations",
+          "Xul": "Finalize and return result"
+        },
+        "execution": "Each specialist follows K'uhul 6-stage pipeline",
+        "orchestration": "Foreman routes requests to appropriate specialist"
+      },
+
+      "capabilities": [
+        "multi_specialist_routing",
+        "kuhul_pipeline_execution",
+        "token_based_specialist_access",
+        "frontend_ui_generation",
+        "backend_api_creation",
+        "design_system_generation",
+        "3d_graphics_creation"
+      ],
+
+      "api_routes": {
+        "GET ?path=status": "System status and specialist availability",
+        "GET ?path=tokens": "Token balance management (action=balance|add)",
+        "GET ?path=agents": "List all micro-agents and their capabilities",
+        "GET ?path=frontend/generate-ui": "Frontend Specialist - Generate UI/UX (type, style params)",
+        "GET ?path=backend/create-api": "Backend Specialist - Create API (spec, routes params)",
+        "GET ?path=design/create-3d": "Design Specialist - Create 3D elements (elements, animations params)"
+      },
+
+      "token_costs": {
+        "frontend_specialist": 15,
+        "backend_specialist": 20,
+        "design_specialist": 25,
+        "description": "Each specialist deducts tokens per invocation"
+      },
+
+      "example_request": {
+        "frontend": {
+          "url": "?path=frontend/generate-ui&type=dashboard&style=modern&components=charts,navigation",
+          "cost": 15,
+          "returns": {
+            "ui_ast": "K'uhul DOM AST structure",
+            "kuhul_dom": "Compiled K'uhul operations",
+            "html_preview": "Rendered HTML preview"
+          }
+        },
+        "backend": {
+          "url": "?path=backend/create-api&spec={endpoints}&routes=users,posts",
+          "cost": 20,
+          "returns": {
+            "xjson_api": "XJSON API specification",
+            "routes": "Registered route handlers",
+            "virtual_server": "Server deployment config"
+          }
+        },
+        "design": {
+          "url": "?path=design/create-3d&elements=cube,sphere&animations=rotate,pulse",
+          "cost": 25,
+          "returns": {
+            "design_system": "Complete design tokens",
+            "3d_elements": "3D graphics specifications",
+            "animations": "Animation keyframes"
+          }
+        }
+      },
+
+      "integration": {
+        "tokens": "Uses same token system as Crown Foreman and Frontend Builder",
+        "kuhul": "All specialists use K'uhul 6-stage pipeline (Pop→Wo→Ch'en→Yax→Sek→Xul)",
+        "coordination": "Central foreman router dispatches to appropriate specialist",
+        "fallback": "Returns error if insufficient tokens or specialist unavailable"
       }
     }
   },
