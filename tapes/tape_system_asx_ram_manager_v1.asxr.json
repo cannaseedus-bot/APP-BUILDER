@@ -1,0 +1,45 @@
+{
+  "@tape": "tape_system_asx_ram_manager_v1",
+  "role": "ram_manager",
+  "description": "Manages ASX RAM n-grams, supagrams, glyphgrams, and reinforcement traces.",
+  "agents": ["agent.memory.trainer", "agent.rlhf.reinforcer"],
+  "autoloop": true,
+  "cycle_ms": 5000,
+
+  "pipeline": {
+    "@steps": [
+      {
+        "@id": "load_ram",
+        "@op": "vfs.read_all",
+        "@paths": [
+          "/usr/ram/ngrams.json",
+          "/usr/ram/supagrams.json",
+          "/usr/ram/glyphgrams.json",
+          "/usr/ram/reinforcement.json"
+        ]
+      },
+      {
+        "@id": "train_memory",
+        "@op": "agent.call",
+        "@agent": "agent.memory.trainer",
+        "@input": "ngrams"
+      },
+      {
+        "@id": "apply_reinforcement",
+        "@op": "agent.call",
+        "@agent": "agent.rlhf.reinforcer",
+        "@input": "reinforcement"
+      },
+      {
+        "@id": "store_ram",
+        "@op": "vfs.write_all",
+        "@targets": [
+          "/usr/ram/ngrams.json",
+          "/usr/ram/supagrams.json",
+          "/usr/ram/glyphgrams.json",
+          "/usr/ram/reinforcement.json"
+        ]
+      }
+    ]
+  }
+}

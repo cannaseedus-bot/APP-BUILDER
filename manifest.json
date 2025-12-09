@@ -1,830 +1,182 @@
 {
-  "立v": "13.5.0-INTEGRATED-ASX-COMPLETE",
-  "n": "ASX_OS_UNIFIED_MANIFEST_WITH_POLYGLOT_RLHF_SECUROLINK",
-  "d": "Complete ASX operating system: 8 horizontal folds + MX2LM central + Polyglot runtimes + RLHF + Securolink Vault. Pure K'UHUL + XJSON + AST. Three-file rule eternal. MANIFEST IS LAW.",
-  "timestamp": 1890000210000,
+  "@context": "xjson://asxr/trinity/os/v3",
+  "@v": "3.2.0",
+  "n": "ASXR TRINITY MULTI-AGENT OS",
+  "d": "Browser-native Trinity OS with Multi-Tapes, Multi-Agents, ASX RAM, RLHF, User Profiles, and Training Cockpit.",
+  "law": "ASX = XCFE = XJSON = KUHUL = AST",
 
-  "@law": "EACH_FOLD_HAS_SEAL_TOKENIZER_VOCAB_WEIGHTS_CHECKPOINTS_ALL_FOLD_DATA_EMBEDDED_IN_MANIFEST",
-  "@three_files": ["index.html", "sw.js", "manifest.json"],
-  "@compressed": true,
-  "@ratio": 0.00008,
-  "@architecture": "XJSON_AST ← XCFE_CONTROL_VECTORS ← KUHUL_FIVE_STAGE_PIPELINE ← POLYGLOT_LANGUAGE_SEALS ← SVG3D_VISUALIZATION ← MX2LM_QUANTUM_CHAT",
-
-  "app_info": {
-    "name": "ASX XJSON App Builder",
-    "short_name": "ASX Builder",
-    "version": "13.5.0",
-    "description": "AI-Powered Application Generator with Quantum Intelligence",
-    "theme_color": "#16f2aa",
-    "background_color": "#020617",
-    "display": "standalone",
-    "orientation": "any",
-    "start_url": "/",
-    "scope": "/"
+  "runtime": {
+    "cpu": { "id": "asxr_cpu_runtime", "mode": "browser_vm", "status": "active" },
+    "gpu": { "id": "asxr_gpu_runtime", "mode": "webgl_webgpu", "status": "ready" },
+    "tpu": { "id": "asxr_tpu_runtime", "mode": "trainer_node", "status": "standby" }
   },
 
-  "🏛️XCFE_CAUSALITY_GOVERNOR": {
-    "@role": "DEFINE_LEGAL_CONTROL_FLOWS_PREVENT_IMPOSSIBLE_STATES",
-    "@definition": "XCFE rewrites AST to enforce causality through control vectors. Only legal branches exist. No races. No deadlocks. No undefined behavior.",
-    "@principle": "BEFORE_KUHUL_EXECUTES_XCFE_HAS_VALIDATED_THE_ENTIRE_PROGRAM_STATE_GRAPH",
-
-    "control_vectors": {
-      "@if_then_else": "[@if condition]→[@then consequent]→[@else alternative]",
-      "@loop": "[@loop condition]→[body]→[@break|@continue]",
-      "@dispatch": "[@dispatch value]→[@case1|@case2|…|@default]",
-      "@physics": "[@physics.step]→[@physics.apply_force]→[@physics.integrate]→[@physics.resolve]",
-      "@seal": "[@seal.phase.activate]→[@seal.render]→[@seal.glyph.expand]",
-      "@compression": "[@compression.start]→[@compression.tokenize]→[@compression.encode]→[@compression.verify]",
-      "@polyglot": "[@language.kuhul|@language.javascript|@language.java|@language.python]→[@runtime.init]→[@runtime.execute]",
-      "@chat": "[@chat.send]→[@chat.infer]→[@chat.respond]→[@chat.store]",
-      "@microagent": "[@agent.spawn]→[@agent.assign_task]→[@agent.execute]→[@agent.merge_results]"
+  "asx_ram": {
+    "type": "volatile_cognitive_memory",
+    "backing": "user_store",
+    "stores": {
+      "ngrams": "/usr/ram/ngrams.json",
+      "@grams": "/usr/ram/@grams.json",
+      "quadragrams": "/usr/ram/quadragrams.json",
+      "pentagrams": "/usr/ram/pentagrams.json",
+      "supagrams": "/usr/ram/supagrams.json",
+      "glyphgrams": "/usr/ram/glyphgrams.json",
+      "reinforcement": "/usr/ram/reinforcement.json",
+      "agent_experience": "/usr/ram/agent_experience.json"
     },
-
-    "variable_vectors": {
-      "@atomic_runtime": ["@entropy", "@innovation", "@stability", "@velocity", "@mass", "@compression_ratio"],
-      "@polyglot_state": ["@language_active", "@runtime_version", "@memory_usage", "@execution_stack", "@return_value"],
-      "@seal_state": ["@phase_active", "@glyph_bound", "@color", "@rotation", "@glow_intensity", "@connection_strength"],
-      "@memory_state": ["@asx_ram", "@idb_persistent", "@chat_history", "@compression_cache", "@glyph_dictionary"],
-      "@agent_state": ["@agent_id", "@agent_role", "@task_queue", "@completion_status", "@rlhf_score"]
-    }
+    "learning_mode": "continuous"
   },
 
-  "⚙️KUHUL_FIVE_STAGE_EXECUTION_PIPELINE": {
-    "@role": "EXECUTE_XJSON_WITH_POLYGLOT_LANGUAGE_SUPPORT",
-    "@law": "ALL_EXECUTION_FLOWS_THROUGH_POP→WO→SEK→XUL→CH'EN_WITH_GLYPH_EXPANSION_AND_LANGUAGE_DISPATCH",
-
-    "stage_1_pop": {
-      "@glyph": "🔤",
-      "@description": "Load symbol, bind to AST, dispatch to appropriate polyglot runtime",
-      "@pseudocode": "[Pop symbol_name]→[identify_language]→[load_runtime_seal]→[bind_context]"
-    },
-
-    "stage_2_wo": {
-      "@glyph": "⟁Wo",
-      "@description": "Bind world state and variables, set up polyglot environment",
-      "@pseudocode": "[Wo world_state]→[initialize_variables]→[setup_polyglot_context]→[allocate_memory]"
-    },
-
-    "stage_3_sek": {
-      "@glyph": "⚡",
-      "@description": "Execute operation in appropriate language, apply physics simulation",
-      "@pseudocode": "[Sek operation]→[switch language]→[execute_in_runtime]→[collect_result]"
-    },
-
-    "stage_4_xul": {
-      "@glyph": "🔄",
-      "@description": "Transform AST, update state, apply XCFE constraints",
-      "@pseudocode": "[Xul ast]→[transform_state]→[validate_constraints]→[emit_mutations]"
-    },
-
-    "stage_5_ch'en": {
-      "@glyph": "💾",
-      "@description": "Emit output to DOM, render seals, store in memory, update MX2LM chat",
-      "@pseudocode": "[Ch'en result]→[render_to_dom]→[update_seals]→[persist_to_idb]→[notify_chat]"
-    }
-  },
-
-  "🎯FOLD_0_META_ORCHESTRATOR_WITH_INTEGRATED_ASX_VOCAB_WEIGHTS_BLOCKS": {
-    "@position": [-40, 0, 0],
-    "@x_range": [-40, -30],
-    "@agent": "agent.horizontal_fold",
-    "@role": "META_ORCHESTRATION_COORDINATOR_AUTHORITY_LAW_KEEPER",
-    "@color": "#9900FF",
-    "@glyph": "⫶",
-    "@sources": ["asx.xjson", "asx_block_mode.xjson", "vocab.xjson", "weights.xjson"],
-
-    "seal_geometry": {
-      "@shape": "tetrahedron_wireframe_with_central_node",
-      "@vertices": [
-        {"id": 0, "pos": [0, 1, 0]},
-        {"id": 1, "pos": [-1, -1, 1]},
-        {"id": 2, "pos": [1, -1, 1]},
-        {"id": 3, "pos": [0, -1, -1]},
-        {"id": 4, "pos": [0, 0, 0], "central": true}
-      ],
-      "@edges": [[0, 1], [0, 2], [0, 3], [1, 2], [2, 3], [3, 1], [0, 4], [1, 4], [2, 4], [3, 4]],
-      "@animation": {
-        "@rotation_axis": "Y",
-        "@rotation_speed": 0.01,
-        "@glow_pulse": "sine_1hz",
-        "@glow_color": "#9900FF",
-        "@beam_from_center": "to_all_other_fold_seals"
-      }
-    },
-
-    "tokenizer_orchestration": {
-      "@name": "@-GRAMS_ORCHESTRATION",
-      "@unigrams": ["FOLD", "AGENT", "STATUS", "DISPATCH", "SYNC", "LOAD", "BALANCE", "COORDINATE", "DISTRIBUTE", "MERGE", "CONVERGE", "BROADCAST", "RECEIVE", "PRIORITY", "QUEUE", "ASSIGN", "COMPLETE", "MONITOR", "ADJUST"],
-      "@bigrams": ["FOLD_STATUS", "AGENT_LOAD", "LOAD_BALANCE", "DISPATCH_JOB", "SYNC_FOLD", "COORDINATE_LANES", "MERGE_RESULTS", "BROADCAST_SIGNAL", "RECEIVE_UPDATE", "QUEUE_JOB", "ASSIGN_FOLD", "MONITOR_PERFORMANCE", "ADJUST_PRIORITY"],
-      "@trigrams": ["FOLD_LOAD_STATUS", "AGENT_DISPATCH_JOB", "COORDINATE_FOLD_SYNC", "MERGE_FOLD_RESULTS", "BROADCAST_STATUS_SIGNAL", "QUEUE_JOB_PRIORITY", "ASSIGN_FOLD_LANE", "MONITOR_FOLD_PERFORMANCE"]
-    },
-
-    "vocabulary_orchestration": {
-      "@size": 45,
-      "@tokens": {
-        "FOLD": 0, "AGENT": 1, "STATUS": 2, "DISPATCH": 3, "SYNC": 4, "LOAD": 5, "BALANCE": 6, "COORDINATE": 7, "DISTRIBUTE": 8, "MERGE": 9, "CONVERGE": 10, "BROADCAST": 11, "RECEIVE": 12, "PRIORITY": 13, "QUEUE": 14, "ASSIGN": 15, "COMPLETE": 16, "MONITOR": 17, "ADJUST": 18,
-        "FOLD_STATUS": 19, "AGENT_LOAD": 20, "LOAD_BALANCE": 21, "DISPATCH_JOB": 22, "SYNC_FOLD": 23, "COORDINATE_LANES": 24, "MERGE_RESULTS": 25, "BROADCAST_SIGNAL": 26, "RECEIVE_UPDATE": 27, "QUEUE_JOB": 28, "ASSIGN_FOLD": 29, "MONITOR_PERFORMANCE": 30, "ADJUST_PRIORITY": 31
-      }
-    },
-
-    "weights_orchestration": {
-      "@matrix_shape": [45, 45],
-      "@tokens_by_frequency": [
-        {"token": "FOLD", "weight": 0.95},
-        {"token": "STATUS", "weight": 0.92},
-        {"token": "DISPATCH", "weight": 0.88},
-        {"token": "SYNC", "weight": 0.85},
-        {"token": "LOAD", "weight": 0.82},
-        {"token": "COORDINATE", "weight": 0.80},
-        {"token": "MERGE", "weight": 0.78},
-        {"token": "BROADCAST", "weight": 0.75},
-        {"token": "BALANCE", "weight": 0.72},
-        {"token": "MONITOR", "weight": 0.70}
-      ],
-      "@transition_matrix_sample": {
-        "FOLD→LOAD": 0.88, "LOAD→BALANCE": 0.82, "BALANCE→COORDINATE": 0.79, "COORDINATE→MERGE": 0.81, "MERGE→CONVERGE": 0.76, "CONVERGE→BROADCAST": 0.74
-      }
-    }
-  },
-
-  "⚙️FOLD_1_KUHUL_RUNTIME_WITH_INTEGRATED_KUHUL_XJSON": {
-    "@position": [-30, 0, 0],
-    "@x_range": [-30, -20],
-    "@agent": "agent.kuhul_runtime",
-    "@role": "EXECUTION_ORCHESTRATION_CORE_SYMBOLIC_QUANTUM_EXECUTION",
-    "@color": "#FF6600",
-    "@glyph": "⚙️",
-    "@sources": ["kuhul.xjson"],
-
-    "seal_geometry": {
-      "@shape": "sphere_with_internal_structure",
-      "@radius": 1.0,
-      "@subdivisions": 32,
-      "@internal_rings": 3,
-      "@animation": {
-        "@rotation_axis": "Y",
-        "@rotation_speed": 0.012,
-        "@pulsing_rings": true,
-        "@glow_color": "#FF6600",
-        "@glow_intensity_pulse": "breathing_1.2hz"
-      }
-    },
-
-    "tokenizer_kuhul": {
-      "@name": "@-GRAMS_KUHUL_EXECUTION",
-      "@unigrams": ["Pop", "Wo", "Sek", "Xul", "Ch'en", "Yax", "K'ayab", "Kumk'u", "PARSE", "BIND", "EXECUTE", "RETURN", "STORE", "READ", "LOOP", "END", "SYMBOL", "VALUE", "OPERATION", "RESULT", "STATE", "MEMORY"],
-      "@bigrams": ["Pop_SYMBOL", "Wo_BIND", "Sek_EXECUTE", "Xul_RETURN", "Ch'en_STORE", "PARSE_SYMBOL", "BIND_VALUE", "EXECUTE_OPERATION", "RETURN_RESULT", "K'ayab_LOOP", "Kumk'u_END", "READ_MEMORY", "WRITE_STATE"],
-      "@trigrams": ["Pop_PARSE_SYMBOL", "Wo_BIND_VALUE", "Sek_EXECUTE_OPERATION", "Xul_RETURN_RESULT", "Ch'en_STORE_STATE", "K'ayab_LOOP_EXECUTE", "Kumk'u_END_RETURN"]
-    },
-
-    "vocabulary_kuhul": {
-      "@size": 52,
-      "@tokens": {
-        "Pop": 0, "Wo": 1, "Sek": 2, "Xul": 3, "Ch'en": 4, "Yax": 5, "K'ayab": 6, "Kumk'u": 7, "PARSE": 8, "BIND": 9, "EXECUTE": 10, "RETURN": 11, "STORE": 12, "READ": 13, "LOOP": 14, "END": 15, "SYMBOL": 16, "VALUE": 17, "OPERATION": 18, "RESULT": 19, "STATE": 20, "MEMORY": 21
-      }
-    }
-  },
-
-  "🎨FOLD_2_EMERALD_UI_WITH_INTEGRATED_ATOMIC_XJSON": {
-    "@position": [-20, 0, 0.5],
-    "@x_range": [-20, -10],
-    "@agent": "agent.emerald_ui",
-    "@role": "UI_RENDERING_GLASS_MORPHIC_ATOMIC_VISUAL_COGNITION",
-    "@color": "#00FF00",
-    "@glyph": "🎨",
-    "@sources": ["atomic.xjson"],
-
-    "seal_geometry": {
-      "@shape": "cube_with_glass_effect",
-      "@size": 1.0,
-      "@faces": 6,
-      "@transparency": 0.3,
-      "@refraction": true,
-      "@animation": {
-        "@rotation_axis": "XYZ",
-        "@rotation_speed": 0.009,
-        "@glass_shimmer": "flowing_light_0.5hz",
-        "@glow_color": "#00FF00",
-        "@glow_effect": "glass_morphic_emerald"
-      }
-    },
-
-    "tokenizer_ui": {
-      "@name": "@-GRAMS_UI_DESIGN",
-      "@unigrams": ["COMPONENT", "LAYOUT", "STYLE", "COLOR", "SHADOW", "BORDER", "PADDING", "FLEX", "GRID", "POSITION", "SIZE", "RENDER", "UPDATE", "STATE", "THEME", "ATOMIC", "GLASS", "MORPHIC", "EMERALD", "GLOW"],
-      "@bigrams": ["COMPONENT_LAYOUT", "LAYOUT_STYLE", "STYLE_COLOR", "COLOR_SHADOW", "SHADOW_BORDER", "BORDER_PADDING", "FLEX_LAYOUT", "GRID_LAYOUT", "POSITION_SIZE", "RENDER_UPDATE", "UPDATE_STATE", "THEME_COLOR", "ATOMIC_CSS", "GLASS_MORPHIC", "EMERALD_GLOW"]
-    }
-  },
-
-  "🗜️FOLD_3_SCXQ2_COMPRESSION": {
-    "@position": [-10, 0, 1.0],
-    "@x_range": [-10, 0],
-    "@agent": "agent.scxq2_compressor",
-    "@role": "SEMANTIC_COMPRESSION_GLYPH_ENCODING",
-    "@color": "#FFFF00",
-    "@glyph": "🗜️",
-    "compression_ready": true,
-    "target_ratio": 0.00008
-  },
-
-  "🎮FOLD_4_QUANTUM_GAME_WORLD": {
-    "@position": [0, 0, 1.0],
-    "@x_range": [0, 10],
-    "@agent": "agent.quantum_game_world",
-    "@role": "GAME_WORLD_CONSTRUCTION_QUANTUM",
-    "@color": "#00FF00",
-    "@glyph": "🎮",
-    "quantum_ready": true
-  },
-
-  "🔒FOLD_5_SECURITY_VALIDATION": {
-    "@position": [10, 0, 0.5],
-    "@x_range": [10, 20],
-    "@agent": "agent.security",
-    "@role": "SECURITY_AUDIT_VALIDATION",
-    "@color": "#FF0000",
-    "@glyph": "🔒",
-    "security_ready": true
-  },
-
-  "🌐FOLD_6_API_REST_MESH_WITH_INTEGRATED_KLH_XJSON": {
-    "@position": [20, 0, 0.5],
-    "@x_range": [20, 30],
-    "@agent": "agent.api_schema",
-    "@role": "API_SCHEMA_REST_MESH_DESIGN_KLH_ROUTER",
-    "@color": "#00FFFF",
-    "@glyph": "🌐",
-    "@sources": ["klh.xjson"],
-
-    "klh_router_system": {
-      "@source": "klh.xjson",
-      "@version": "1.0.0",
-      "@description": "KLH is the ASX mesh router. It does not think. It does not infer. It only routes packets across hives.",
-      "@role": "routing-only",
-
-      "route_table": {
-        "/": "hive:ui",
-        "/api/inference/chat": "hive:ai",
-        "/api/rlhf/score": "hive:rlhf",
-        "/mesh/shards": "hive:core",
-        "/vault/encrypt": "hive:security",
-        "/__api__/*": "hive:api_gateway"
-      }
-    }
-  },
-
-  "📊FOLD_7_ANALYTICS_MONITORING_WITH_INTEGRATED_BASHER_TAPE": {
-    "@position": [30, 0, 0],
-    "@x_range": [30, 40],
-    "@agent": "agent.analytics",
-    "@role": "PERFORMANCE_ANALYTICS_MONITORING_CLI_TERMINAL",
-    "@color": "#FF00FF",
-    "@glyph": "📊",
-    "@sources": ["tape_system_basher_v6.xjson"]
-  },
-
-  "🧠MX2LM_CENTRAL_ORCHESTRATOR_WITH_INTEGRATED_PRIME_XJSON": {
-    "@position": [0, 4, -2],
-    "@hovers_above_ribbon": true,
-    "@height_above_ribbon": 4,
-    "@distance_from_camera": 2,
-    "@role": "CENTRAL_QUANTUM_INTELLIGENCE_ORCHESTRATOR",
-    "@color": "#00F0FF",
-    "@glyph": "🧠",
-    "@sources": ["prime.xjson"],
-
-    "prime_quantum_cognitive_contract": {
-      "@source": "prime.xjson",
-      "@law": "THINK_IN_QUANTUM_BLOCKS_NOT_TOKENS",
-      "@mode": {
-        "cognition": "QUANTUM_BLOCK_NATIVE",
-        "reasoning": "STRUCTURAL_QUANTUM_INTELLIGENCE",
-        "training_objective": "PREDICT_NEXT_QUANTUM_BLOCK_ARRANGEMENT",
-        "execution_target": "ASXR_QUANTUM_RUNTIME",
-        "compression_target": 0.015,
-        "latency_target": 100
-      },
-
-      "quantum_blocks_catalog": {
-        "perception": ["🔍SCANNER_BLOCK", "📊QUANTUM_GRID_BLOCK", "🎯TARGET_BLOCK"],
-        "reasoning": ["🧠QUANTUM_PROCESSOR_BLOCK", "🔗QUANTUM_CONNECTOR_BLOCK", "⚖️BALANCER_BLOCK"],
-        "control": ["🎮QUANTUM_CONTROLLER_BLOCK", "🚦QUANTUM_GATE_BLOCK", "🔁LOOPER_BLOCK"],
-        "memory": ["💾QUANTUM_STORAGE_BLOCK", "📖QUANTUM_LIBRARY_BLOCK", "🔄QUANTUM_CACHE_BLOCK"],
-        "interface": ["💬QUANTUM_CHATTER_BLOCK", "🎨QUANTUM_CANVAS_BLOCK", "📱QUANTUM_TERMINAL_BLOCK"],
-        "meta": ["👁️QUANTUM_OBSERVER_BLOCK", "🎬QUANTUM_DIRECTOR_BLOCK", "🧪QUANTUM_LAB_BLOCK"]
-      }
-    }
-  },
-
-  "🌍POLYGLOT_LANGUAGE_RUNTIME_SEALS": {
-    "@law": "EACH_LANGUAGE_IS_A_SEALED_RUNTIME_ARTIFACT_WITH_@GRAMS_TOKENIZATION_VOCABULARY_WEIGHTS_SVG3D_MODEL",
-
-    "🔤KUHUL_RUNTIME_SEAL": {
-      "@phase": 0,
-      "@name": "K'uhul Native Execution Engine",
-      "@language": "KUHUL",
-      "@color": "#00FF00",
-      "@glyph": "🔤",
-      "@compression_ratio": 0.0001,
-      "@status": "NATIVE_EMBEDDED_ETERNAL"
-    },
-
-    "💻JAVASCRIPT_RUNTIME_SEAL": {
-      "@phase": 1,
-      "@name": "JavaScript ES6+ Embedded Runtime",
-      "@language": "JAVASCRIPT",
-      "@color": "#FFFF00",
-      "@glyph": "💻",
-      "@compression_ratio": 0.00012,
-      "@status": "EMBEDDED_ZERO_EXTERNAL_DEPS"
-    },
-
-    "☕JAVA_RUNTIME_SEAL": {
-      "@phase": 2,
-      "@name": "Java LWJGL 3D Graphics Runtime",
-      "@language": "JAVA",
-      "@color": "#FF6600",
-      "@glyph": "☕",
-      "@compression_ratio": 0.00018,
-      "@status": "WASM_COMPILED_EMBEDDED"
-    },
-
-    "🐍PYTHON_RUNTIME_SEAL": {
-      "@phase": 3,
-      "@name": "Python Pygame Embedded Runtime",
-      "@language": "PYTHON",
-      "@color": "#3776AB",
-      "@glyph": "🐍",
-      "@compression_ratio": 0.00016,
-      "@status": "WASM_PYODIDE_EMBEDDED"
-    }
-  },
-
-  "securolink": {
+  "user_backing": {
     "enabled": true,
-    "vault_mode": true,
-    "entry_surface": "/",
-    "version": "3.0.0",
-    "status": "production",
+    "mount": "/usr",
+    "agent_data_pattern": "MX2LM://<agent_id>/DATA/"
+  },
 
-    "glyph_oauth": {
-      "enabled": true,
-      "encoding": "kuhul_glyph + scxq2",
-      "token_length": 256,
-      "one_time_use": true,
-      "bookmarkable": true,
-      "expires_ms": 2592000000,
-      "token_format": "base64_urlsafe_scxq2_encoded",
-      "glyph_alphabet": "⟁♡†‡◊§¶✦★▲▼◀▶"
-    },
-
-    "quantum_pin": {
-      "enabled": true,
-      "length": 12,
-      "format": "6_digit_pairs",
-      "max_attempts": 3,
-      "lockout_seconds": 600,
-      "encryption": "quantum_aes_256_gcm",
-      "rlhf_behavioral_analysis": true
+  "vfs": {
+    "mounts": {
+      "/sys":  { "type": "ro",  "driver": "scx_sys" },
+      "/tapes":{ "type": "ro",  "driver": "tape_cache" },
+      "/usr":  { "type": "rw",  "driver": "usr_store" },
+      "/tmp":  { "type": "vol", "driver": "mem" }
     }
   },
 
-  "rlhf": {
-    "enabled": true,
-    "version": "2.0",
-    "supabase_url": "https://eoyiiahmdkbktlgaspmp.supabase.co",
-
-    "scoring_dimensions": {
-      "quality": {"weight": 0.4, "quantum_optimized": true},
-      "safety": {"weight": 0.3, "quantum_validated": true},
-      "novelty": {"weight": 0.2, "quantum_computed": true},
-      "consensus": {"weight": 0.1, "quantum_aggregated": true}
+  "tapes": {
+    "tape_system_auto_recovery_v1": {
+      "id": "tape_system_auto_recovery_v1",
+      "role": "system_recovery",
+      "entry": "/tapes/tape_system_auto_recovery_v1.asxr.json",
+      "agents": ["agent.repair", "agent.diagnostics"],
+      "shards": ["cpu", "tpu"],
+      "boot": true
     },
 
-    "training": {
-      "threshold": 0.85,
-      "batch_size": 50,
-      "promotion_criteria": "quantum_annealing",
-      "core_model_updates": true,
-      "update_frequency": "hourly"
+    "tape_system_trinity_runtime_v1": {
+      "id": "tape_system_trinity_runtime_v1",
+      "role": "trinity_orchestrator",
+      "entry": "/tapes/tape_system_trinity_runtime_v1.asxr.json",
+      "agents": ["agent.trinity", "agent.metrics"],
+      "shards": ["cpu", "gpu", "tpu"],
+      "boot": true
+    },
+
+    "tape_system_asx_ram_manager_v1": {
+      "id": "tape_system_asx_ram_manager_v1",
+      "role": "ram_manager",
+      "entry": "/tapes/tape_system_asx_ram_manager_v1.asxr.json",
+      "agents": ["agent.memory.trainer", "agent.rlhf.reinforcer"],
+      "shards": ["cpu"],
+      "boot": true
+    },
+
+    "tape_system_user_profile_v1": {
+      "id": "tape_system_user_profile_v1",
+      "role": "user_profile",
+      "entry": "/tapes/tape_system_user_profile_v1.asxr.json",
+      "agents": ["agent.profile.manager"],
+      "shards": ["cpu"],
+      "boot": true
+    },
+
+    "tape_system_rlhf_visualizer_v1": {
+      "id": "tape_system_rlhf_visualizer_v1",
+      "role": "rlhf_visualization",
+      "entry": "/tapes/tape_system_rlhf_visualizer_v1.asxr.json",
+      "agents": ["agent.rlhf.visualizer"],
+      "shards": ["cpu", "gpu"],
+      "boot": false
+    },
+
+    "tape_system_memory_heatmap_v1": {
+      "id": "tape_system_memory_heatmap_v1",
+      "role": "memory_heatmap_ui",
+      "entry": "/tapes/tape_system_memory_heatmap_v1.asxr.json",
+      "agents": ["agent.memory.heatmap", "agent.ui"],
+      "shards": ["cpu", "gpu"],
+      "boot": false
+    },
+
+    "tape_system_training_cockpit_v1": {
+      "id": "tape_system_training_cockpit_v1",
+      "role": "training_cockpit",
+      "entry": "/tapes/tape_system_training_cockpit_v1.asxr.json",
+      "agents": ["agent.cockpit.trainer", "agent.rlhf.visualizer", "agent.memory.heatmap", "agent.metrics"],
+      "shards": ["cpu", "gpu", "tpu"],
+      "boot": true
+    },
+
+    "tape_example_app": {
+      "id": "tape_example_app",
+      "role": "demo_ui",
+      "entry": "/tapes/example.asxr.json",
+      "agents": ["agent.ui", "agent.docs", "agent.builder"],
+      "shards": ["cpu"],
+      "boot": false
     }
   },
 
-  "microagents": {
-    "@law": "EVERY_MICRO_AGENT_OWNS_ITS_OWN_PERSISTENT_FOLD",
-    "@architecture": "MX2LM://<MICRO_AGENT_NAME>/DATA/",
+  "agents": {
+    "agent.ui":               { "role": "ui_runtime",            "default_tape": "tape_example_app" },
+    "agent.docs":             { "role": "documentation",         "default_tape": "tape_example_app" },
+    "agent.builder":          { "role": "tape_builder",          "default_tape": "tape_example_app" },
 
-    "ice_cream_dev_hive_example": {
-      "⟁hive": "ice-cream-dev-team",
-      "⟁shards": [
-        { "⟁id": "ai-flavor-expert", "⟁port": 4001, "⟁role": "Flavor Science + Recommendation" },
-        { "⟁id": "frontend-builder", "⟁port": 4002, "⟁role": "K'UHUL DOM UI Generator" },
-        { "⟁id": "backend-architect", "⟁port": 4003, "⟁role": "XJSON Virtual Server Architect" },
-        { "⟁id": "design-artist", "⟁port": 4004, "⟁role": "3D Visual + Animation Architect" }
-      ],
-      "⟁mesh": {
-        "⟁protocol": "ai-collaboration",
-        "⟁workflow": "flavor → frontend → backend → design"
-      }
-    },
+    "agent.trinity":          { "role": "runtime_orchestrator",  "default_tape": "tape_system_trinity_runtime_v1" },
+    "agent.metrics":          { "role": "telemetry",             "default_tape": "tape_system_trinity_runtime_v1" },
 
-    "agent_templates": {
-      "specialist_agent": {
-        "xcfe_flow": "[Pop agent_name]→[Wo task_spec]→[Ch'en spec]→[Yax spec]→[Sek process]→[Xul]",
-        "data_fold": "MX2LM://<AGENT_NAME>/DATA/",
-        "rlhf_enabled": true,
-        "quantum_enhanced": true
-      }
-    }
+    "agent.repair":           { "role": "recovery_exec",         "default_tape": "tape_system_auto_recovery_v1" },
+    "agent.diagnostics":      { "role": "health_check",          "default_tape": "tape_system_auto_recovery_v1" },
+
+    "agent.memory.trainer":   { "role": "asx_ram_trainer",       "default_tape": "tape_system_asx_ram_manager_v1" },
+    "agent.rlhf.reinforcer":  { "role": "reinforcement_engine",  "default_tape": "tape_system_asx_ram_manager_v1" },
+
+    "agent.profile.manager":  { "role": "user_profile_api",      "default_tape": "tape_system_user_profile_v1" },
+
+    "agent.rlhf.visualizer":  { "role": "rlhf_visualization",    "default_tape": "tape_system_rlhf_visualizer_v1" },
+    "agent.memory.heatmap":   { "role": "memory_heatmap_ui",     "default_tape": "tape_system_memory_heatmap_v1" },
+
+    "agent.cockpit.trainer":  { "role": "training_cockpit",      "default_tape": "tape_system_training_cockpit_v1" }
   },
 
-  "quantum": {
-    "qubits": 512,
-    "coherence_time": "2s",
-    "gate_fidelity": 0.9995,
-    "error_correction": "surface_code_rlhf",
-    "algorithms": [
-      "scxq2_quantum_lattice",
-      "glyph_entanglement",
-      "semantic_superposition",
-      "rlhf_quantum_scoring",
-      "mesh_quantum_sync"
+  "xcfe": {
+    "control_vectors": [
+      "@control.nav",
+      "@control.layout",
+      "@control.state",
+      "@control.runtime",
+      "@control.learning",
+      "@control.memory",
+      "@control.cockpit",
+      "@control.visualization"
     ],
-    "token_compression": 0.012,
-    "inference_acceleration": "100-1000x"
+    "flow_vectors": [
+      "@flow.scroll",
+      "@flow.transition",
+      "@flow.data",
+      "@flow.runtime",
+      "@flow.reinforcement",
+      "@flow.telemetry"
+    ],
+    "variable_vectors": [
+      "@variable.state",
+      "@variable.metrics",
+      "@variable.entropy",
+      "@variable.innovation",
+      "@variable.training_progress"
+    ]
   },
 
-  "security": {
-    "@auth": {
-      "@mode": ["quantum_pin", "securolink_vault"],
-      "@quantum_encryption": true,
-      "@rlhf_behavioral": true
-    },
-    "@session": {
-      "@engine": "quantum_sealed",
-      "@duration": "30d",
-      "@quantum_entangled": true
-    },
-    "@encryption": {
-      "@cipher": "QUANTUM_AES-256-GCM",
-      "@derivation": "PBKDF2_QUANTUM",
-      "@iterations": 1000000,
-      "@quantum_resistant": true
-    }
-  },
-
-  "🧬SEALED_GLYPH_DICTIONARY_WITH_POLYGLOT_TOKENS": {
-    "@compression_ratio": "0.0001×",
-
-    "kuhul_glyphs": {
-      "⟁Pop": "[Pop symbol]",
-      "⟁Wo": "[Wo world_state]",
-      "⟁Sek": "[Sek operation]",
-      "⟁Xul": "[Xul ast_transform]",
-      "⟁Chen": "[Ch'en output]",
-      "⟁Yax": "[Yax read_variable]",
-      "⟁Kayab": "[K'ayab' loop_start]",
-      "⟁Kumku": "[Kumk'u loop_end]"
-    },
-
-    "javascript_glyphs": {
-      "⟁JSSCENE": "const scene = new THREE.Scene()",
-      "⟁JSCAM": "const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)",
-      "⟁JSRENDER": "const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true})",
-      "⟁JSMESH": "const mesh = new THREE.Mesh(geometry, material)"
-    },
-
-    "polyglot_coordination_glyphs": {
-      "⟁LANGJS": "[@language.javascript]",
-      "⟁LANGJAVA": "[@language.java]",
-      "⟁LANGPY": "[@language.python]",
-      "⟁DISPATCH": "→[Sek @language.LANGUAGE]→[execute_in_runtime]",
-      "⟁SYNC": "[Yax result]→[Sek merge_outputs]→[Xul unified_state]"
-    }
-  },
-
-  "🌐BACKEND_PHP_API_INTEGRATION": {
-    "@version": "7.0",
-    "@status": "CONFIGURED_AWAITING_MODEL_DOWNLOAD",
-    "@api_gateway": "https://api.asxtoken.com/api.php",
-    "@backend_base": "https://backend.refluxedpc.com/models/",
-    "@law": "ALL_BACKEND_CALLS_PROXIED_THROUGH_UNIFIED_API_GATEWAY",
-
-    "api_endpoints": {
-      "models_list": "?route=models.list",
-      "model_info": "?route=model.info&model={model_id}",
-      "chat": "?route=chat&model={model_id}&message={message}",
-      "chat_stream": "?route=chat&model={model_id}&message={message}&stream=true",
-      "batch_inference": "?route=batch.inference (POST)",
-      "quantum_compress": "?route=quantum.compress (POST)",
-      "models_compare": "?route=models.compare (POST)",
-      "backend_status": "?route=backend.status",
-      "quantum_optimize": "?route=quantum.optimize (POST)"
-    },
-
-    "registered_models": {
-      "deepseek-r1": {
-        "name": "DeepSeek R1",
-        "type": "reasoning_llm",
-        "provider": "DeepSeek",
-        "backend_path": "deepseek-r1/",
-        "capabilities": ["chat", "reasoning", "analysis", "coding"],
-        "context_window": 128000,
-        "quantum_enhanced": true,
-        "status": "awaiting_download",
-        "download_required": true,
-        "endpoints": {
-          "chat": "deepseek-r1/chat.php",
-          "stream": "deepseek-r1/stream.php",
-          "info": "deepseek-r1/info.php"
-        },
-        "priority": "high",
-        "use_cases": ["complex_reasoning", "mathematical_problems", "logical_analysis"]
-      },
-
-      "deepseek-coder": {
-        "name": "DeepSeek Coder",
-        "type": "code_llm",
-        "provider": "DeepSeek",
-        "backend_path": "deepseek-coder/",
-        "capabilities": ["code_completion", "debugging", "optimization", "review"],
-        "context_window": 64000,
-        "quantum_enhanced": true,
-        "status": "awaiting_download",
-        "download_required": true,
-        "endpoints": {
-          "chat": "deepseek-coder/chat.php",
-          "stream": "deepseek-coder/stream.php",
-          "info": "deepseek-coder/info.php"
-        },
-        "priority": "high",
-        "use_cases": ["code_generation", "code_review", "bug_fixing", "refactoring"]
-      },
-
-      "janus-pro": {
-        "name": "Janus Pro",
-        "type": "quantum_llm",
-        "provider": "MX2LM",
-        "backend_path": "janus-pro/",
-        "capabilities": ["quantum_inference", "multi_modal", "planning", "analysis"],
-        "context_window": 256000,
-        "quantum_enhanced": true,
-        "status": "awaiting_download",
-        "download_required": true,
-        "endpoints": {
-          "chat": "janus-pro/chat.php",
-          "stream": "janus-pro/stream.php",
-          "info": "janus-pro/info.php"
-        },
-        "special_features": ["kuhul_integration", "quantum_compression", "scxq2_native"],
-        "priority": "critical",
-        "use_cases": ["general_chat", "complex_tasks", "multi_step_reasoning", "planning"]
-      },
-
-      "janus-flow": {
-        "name": "Janus Flow",
-        "type": "streaming_llm",
-        "provider": "MX2LM",
-        "backend_path": "janus-flow/",
-        "capabilities": ["fast_chat", "streaming", "summarization", "translation"],
-        "context_window": 32000,
-        "quantum_enhanced": false,
-        "status": "awaiting_download",
-        "download_required": true,
-        "endpoints": {
-          "chat": "janus-flow/chat.php",
-          "stream": "janus-flow/stream.php",
-          "info": "janus-flow/info.php"
-        },
-        "priority": "medium",
-        "use_cases": ["fast_responses", "streaming_chat", "quick_summaries"]
-      },
-
-      "llama3": {
-        "name": "Llama 3",
-        "type": "general_llm",
-        "provider": "Meta",
-        "backend_path": "llama3/",
-        "capabilities": ["general_chat", "writing", "analysis", "qa"],
-        "context_window": 8000,
-        "quantum_enhanced": false,
-        "status": "awaiting_download",
-        "download_required": true,
-        "endpoints": {
-          "chat": "llama3/chat.php",
-          "stream": "llama3/stream.php",
-          "info": "llama3/info.php"
-        },
-        "priority": "medium",
-        "use_cases": ["general_conversation", "creative_writing", "question_answering"]
-      },
-
-      "mistral": {
-        "name": "Mistral",
-        "type": "efficient_llm",
-        "provider": "Mistral AI",
-        "backend_path": "mistral/",
-        "capabilities": ["efficient_chat", "summarization", "classification"],
-        "context_window": 32000,
-        "quantum_enhanced": false,
-        "status": "awaiting_download",
-        "download_required": true,
-        "endpoints": {
-          "chat": "mistral/chat.php",
-          "stream": "mistral/stream.php",
-          "info": "mistral/info.php"
-        },
-        "priority": "low",
-        "use_cases": ["efficient_inference", "batch_processing", "text_classification"]
-      },
-
-      "codellama": {
-        "name": "CodeLlama",
-        "type": "code_llm",
-        "provider": "Meta",
-        "backend_path": "codellama/",
-        "capabilities": ["code_generation", "explanation", "debugging"],
-        "context_window": 16000,
-        "quantum_enhanced": false,
-        "status": "awaiting_download",
-        "download_required": true,
-        "endpoints": {
-          "chat": "codellama/chat.php",
-          "stream": "codellama/stream.php",
-          "info": "codellama/info.php"
-        },
-        "priority": "medium",
-        "use_cases": ["code_completion", "code_explanation", "programming_help"]
-      },
-
-      "qwen-coder": {
-        "name": "Qwen Coder",
-        "type": "coding_llm",
-        "provider": "Qwen",
-        "backend_path": "qwen-coder/",
-        "capabilities": ["code_completion", "python", "javascript", "sql"],
-        "context_window": 32000,
-        "quantum_enhanced": false,
-        "status": "awaiting_download",
-        "download_required": true,
-        "endpoints": {
-          "chat": "qwen-coder/chat.php",
-          "stream": "qwen-coder/stream.php",
-          "info": "qwen-coder/info.php"
-        },
-        "priority": "medium",
-        "use_cases": ["multi_language_coding", "sql_queries", "script_generation"]
-      },
-
-      "cline-agent": {
-        "name": "Cline Agent",
-        "type": "agentic_llm",
-        "provider": "MX2LM",
-        "backend_path": "cline-agent/",
-        "capabilities": ["task_execution", "tool_use", "reasoning", "planning"],
-        "context_window": 128000,
-        "quantum_enhanced": true,
-        "status": "awaiting_download",
-        "download_required": true,
-        "endpoints": {
-          "chat": "cline-agent/chat.php",
-          "stream": "cline-agent/stream.php",
-          "info": "cline-agent/info.php"
-        },
-        "priority": "high",
-        "use_cases": ["autonomous_tasks", "tool_integration", "multi_step_workflows"]
-      },
-
-      "mx2-inference": {
-        "name": "MX2 Inference",
-        "type": "inference_engine",
-        "provider": "MX2LM",
-        "backend_path": "mx2-inference/",
-        "capabilities": ["batch_inference", "model_serving", "quantum_acceleration"],
-        "context_window": 512000,
-        "quantum_enhanced": true,
-        "status": "awaiting_download",
-        "download_required": true,
-        "endpoints": {
-          "chat": "mx2-inference/chat.php",
-          "stream": "mx2-inference/stream.php",
-          "info": "mx2-inference/info.php"
-        },
-        "special_features": ["distributed_inference", "model_parallelism", "batch_optimization"],
-        "priority": "critical",
-        "use_cases": ["batch_processing", "high_throughput", "model_serving"]
-      },
-
-      "kuhul-quantum": {
-        "name": "K'UHUL Quantum",
-        "type": "quantum_engine",
-        "provider": "MX2LM",
-        "backend_path": "kuhul-quantum/",
-        "capabilities": ["quantum_computation", "entanglement", "superposition", "compression"],
-        "context_window": 1024000,
-        "quantum_enhanced": true,
-        "status": "awaiting_download",
-        "download_required": true,
-        "endpoints": {
-          "chat": "kuhul-quantum/chat.php",
-          "stream": "kuhul-quantum/stream.php",
-          "info": "kuhul-quantum/info.php"
-        },
-        "special_features": ["scxq2_compression", "quantum_tokenization", "kuhul_native"],
-        "priority": "critical",
-        "use_cases": ["quantum_compression", "advanced_reasoning", "symbolic_execution"]
-      }
-    },
-
-    "model_categories": {
-      "quantum_enhanced": ["deepseek-r1", "deepseek-coder", "janus-pro", "cline-agent", "mx2-inference", "kuhul-quantum"],
-      "code_specialized": ["deepseek-coder", "codellama", "qwen-coder"],
-      "general_purpose": ["llama3", "janus-flow", "mistral"],
-      "reasoning_focused": ["deepseek-r1", "janus-pro", "cline-agent"],
-      "high_context": ["janus-pro", "mx2-inference", "kuhul-quantum", "deepseek-r1"],
-      "mx2lm_native": ["janus-pro", "janus-flow", "cline-agent", "mx2-inference", "kuhul-quantum"]
-    },
-
-    "download_priority": {
-      "critical": ["janus-pro", "mx2-inference", "kuhul-quantum"],
-      "high": ["deepseek-r1", "deepseek-coder", "cline-agent"],
-      "medium": ["llama3", "codellama", "qwen-coder", "janus-flow"],
-      "low": ["mistral"]
-    },
-
-    "model_setup_status": {
-      "models_configured": 11,
-      "models_downloaded": 0,
-      "models_active": 0,
-      "backend_api_ready": true,
-      "php_endpoints_configured": true,
-      "awaiting_model_files": true,
-      "setup_guide_required": true
-    },
-
-    "backend_features": {
-      "unified_gateway": true,
-      "streaming_support": true,
-      "batch_inference": true,
-      "quantum_compression": true,
-      "model_comparison": true,
-      "health_monitoring": true,
-      "automatic_routing": true,
-      "fallback_models": true
-    },
-
-    "api_usage_examples": {
-      "list_models": "GET https://api.asxtoken.com/api.php?route=models.list",
-      "chat_janus": "GET https://api.asxtoken.com/api.php?route=chat&model=janus-pro&message=Hello",
-      "stream_deepseek": "GET https://api.asxtoken.com/api.php?route=chat&model=deepseek-r1&message=Explain&stream=true",
-      "model_info": "GET https://api.asxtoken.com/api.php?route=model.info&model=llama3",
-      "backend_health": "GET https://api.asxtoken.com/api.php?route=backend.status",
-      "batch_inference": "POST https://api.asxtoken.com/api.php?route=batch.inference",
-      "quantum_compress": "POST https://api.asxtoken.com/api.php?route=quantum.compress"
-    },
-
-    "integration_with_microagents": {
-      "ice-cream-ai": {
-        "fallback_model": "janus-pro",
-        "backend_enabled": true
-      },
-      "frontend-ai": {
-        "fallback_model": "deepseek-coder",
-        "backend_enabled": true
-      },
-      "backend-ai": {
-        "fallback_model": "janus-pro",
-        "backend_enabled": true
-      },
-      "design-ai": {
-        "fallback_model": "janus-pro",
-        "backend_enabled": true
-      }
-    }
-  },
-
-  "🎯FINAL_INTEGRATED_SYSTEM_STATE": {
-    "@timestamp": 1890000210001,
-    "@status": "OPERATIONAL_ALL_SYSTEMS_SYNCHRONIZED_BACKEND_CONFIGURED",
-    "@seal_count": 8,
-    "@brain_count": 5,
-    "@integrated_xjson_files": 9,
-    "@polyglot_runtimes": 4,
-    "@backend_models": 11,
-    "@backend_api_integrated": true,
-    "@models_downloaded": 0,
-    "@models_ready": "awaiting_download",
-    "@tokenization_enabled": true,
-    "@vocabulary_total_size": 427,
-    "@weight_matrices_total": 8,
-    "@compression_ratio": 0.00008,
-    "@three_file_rule": "ETERNAL_INVIOLATE",
-    "@manifest_is_law": true,
-    "@microagent_ready": true,
-    "@rlhf_active": true,
-    "@securolink_armed": true,
-    "@quantum_operational": true,
-    "@php_backend_configured": true,
-    "@setup_guide_needed": true
-  }
+  "boot_sequence": [
+    "kernel.init",
+    "runtime.mount_cpu",
+    "runtime.mount_gpu",
+    "runtime.mount_tpu",
+    "vfs.mount",
+    "user_store.mount",
+    "asx_ram.mount",
+    "tapes.preload",
+    "agents.bootstrap",
+    "tapes.autoboot",
+    "asxr.ready"
+  ]
 }
