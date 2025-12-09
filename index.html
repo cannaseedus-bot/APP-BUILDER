@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASX XJSON App Builder - AI-Powered Application Generator</title>
+  <link rel="manifest" href="/manifest.json">
+
+  <style>
+    :root {
+      --bg-primary: #020617;
+      --bg-secondary: #0f172a;
+      --accent-primary: #16f2aa;
+      --accent-secondary: #38bdf8;
+      --accent-purple: #a855f7;
+      --accent-orange: #FF6600;
+      --text-primary: #e5f2ff;
+      --text-muted: #94a3b8;
+      --glass: rgba(255,255,255,0.05);
+      --border: rgba(148,163,184,0.2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at 10% 20%, rgb(6, 20, 38) 0%, rgb(2, 6, 23) 90%);
+      color: var(--text-primary);
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .matrix-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      padding: 3rem 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+
+    .logo {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 1rem;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--bg-primary);
+      box-shadow: 0 0 80px rgba(22, 242, 170, 0.6);
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 80px rgba(22, 242, 170, 0.6); }
+      50% { transform: scale(1.05); box-shadow: 0 0 120px rgba(22, 242, 170, 0.8); }
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .system-info {
+      display: inline-block;
+      padding: 0.5rem 1.5rem;
+      background: var(--glass);
+      border: 1px solid var(--accent-primary);
+      border-radius: 999px;
+      font-size: 0.9rem;
+      color: var(--accent-primary);
+      margin-bottom: 2rem;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      padding: 0.75rem 2rem;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .stat:hover {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 20px rgba(22, 242, 170, 0.3);
+    }
+
+    .stat-value {
+      color: var(--accent-primary);
+      font-weight: 700;
+      margin-right: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .microagent-showcase {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin: 3rem 0;
+      padding: 2rem;
+      background: linear-gradient(135deg, rgba(22,242,170,0.03), rgba(56,189,248,0.03));
+      border: 1px solid var(--border);
+      border-radius: 20px;
+    }
+
+    .microagent-card {
+      background: var(--bg-secondary);
+      border: 2px solid var(--border);
+      border-radius: 15px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .microagent-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(22, 242, 170, 0.3);
+    }
+
+    .microagent-card.ice-cream { border-color: #FFFF00; }
+    .microagent-card.frontend { border-color: #00FF00; }
+    .microagent-card.backend { border-color: #FF6600; }
+    .microagent-card.design { border-color: #a855f7; }
+
+    .agent-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .agent-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent-secondary);
+    }
+
+    .agent-role {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .agent-port {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.75rem;
+      color: var(--accent-primary);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .panel {
+      background: linear-gradient(135deg, rgba(22,242,170,0.05), rgba(56,189,248,0.05));
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .panel h2 {
+      font-size: 1.75rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .icon {
+      font-size: 2rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    textarea, input, select {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      color: var(--text-primary);
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 20px rgba(22, 242, 170, 0.2);
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: var(--bg-primary);
+      box-shadow: 0 10px 40px rgba(22, 242, 170, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 50px rgba(22, 242, 170, 0.5);
+    }
+
+    .btn-secondary {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent-primary);
+      background: rgba(22, 242, 170, 0.1);
+    }
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    .collaboration-viz {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .collab-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--accent-secondary);
+      text-align: center;
+    }
+
+    .workflow-steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .workflow-step {
+      text-align: center;
+      padding: 1rem;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .workflow-step.active {
+      border-color: var(--accent-primary);
+      background: rgba(22, 242, 170, 0.1);
+      box-shadow: 0 0 30px rgba(22, 242, 170, 0.3);
+    }
+
+    .step-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .arrow {
+      font-size: 2rem;
+      color: var(--accent-primary);
+      text-align: center;
+    }
+
+    .code-output {
+      background: #0a0e1a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      max-height: 600px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-title {
+      font-weight: 700;
+      color: var(--accent-primary);
+    }
+
+    .copy-btn {
+      padding: 0.5rem 1rem;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .copy-btn:hover {
+      background: rgba(22, 242, 170, 0.1);
+      border-color: var(--accent-primary);
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1rem;
+      border: 4px solid var(--glass);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .examples {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .example-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .example-card:hover {
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(22, 242, 170, 0.2);
+    }
+
+    .example-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .example-title {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--accent-secondary);
+      font-size: 1.1rem;
+    }
+
+    .example-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 1rem 1.5rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab.active {
+      color: var(--accent-primary);
+      border-bottom-color: var(--accent-primary);
+    }
+
+    .tab:hover {
+      color: var(--text-primary);
+    }
+
+    .output-tabs {
+      display: none;
+    }
+
+    .output-tabs.active {
+      display: block;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+
+    .feature {
+      padding: 2rem;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .feature:hover {
+      border-color: var(--accent-primary);
+      box-shadow: 0 10px 40px rgba(22, 242, 170, 0.2);
+    }
+
+    .feature-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-title {
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--accent-secondary);
+      font-size: 1.2rem;
+    }
+
+    .feature-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1200px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .microagent-showcase {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .workflow-steps {
+        grid-template-columns: 1fr;
+      }
+
+      .arrow {
+        transform: rotate(90deg);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .microagent-showcase {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      .subtitle {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas class="matrix-bg" id="matrix"></canvas>
+
+  <div class="container">
+    <header>
+      <div class="logo">⚡</div>
+      <h1>ASX XJSON App Builder</h1>
+      <p class="subtitle">AI-Powered Microagent Collaboration Platform</p>
+      <div class="system-info">K'UHUL v13.5 | XCFE Governed | Quantum Mesh Active</div>
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-value">3</span>
+          <span>Files Generated</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">0</span>
+          <span>Dependencies</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">87%</span>
+          <span>Compression</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">4</span>
+          <span>Microagents</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">∞</span>
+          <span>Possibilities</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Microagent Showcase -->
+    <div class="microagent-showcase">
+      <div class="microagent-card ice-cream" onclick="demonstrateAgent('ice-cream')">
+        <div class="agent-icon">🍦</div>
+        <div class="agent-title">Ice Cream AI</div>
+        <div class="agent-role">Flavor Science Expert</div>
+        <div class="agent-port">:4001</div>
+      </div>
+
+      <div class="microagent-card frontend" onclick="demonstrateAgent('frontend')">
+        <div class="agent-icon">🎨</div>
+        <div class="agent-title">Frontend AI</div>
+        <div class="agent-role">K'UHUL DOM Generator</div>
+        <div class="agent-port">:4002</div>
+      </div>
+
+      <div class="microagent-card backend" onclick="demonstrateAgent('backend')">
+        <div class="agent-icon">⚡</div>
+        <div class="agent-title">Backend AI</div>
+        <div class="agent-role">XJSON Virtual Server</div>
+        <div class="agent-port">:4003</div>
+      </div>
+
+      <div class="microagent-card design" onclick="demonstrateAgent('design')">
+        <div class="agent-icon">🎯</div>
+        <div class="agent-title">Design AI</div>
+        <div class="agent-role">3D Visual Architect</div>
+        <div class="agent-port">:4004</div>
+      </div>
+    </div>
+
+    <!-- Collaboration Visualization -->
+    <div class="collaboration-viz" id="collab-viz" style="display:none;">
+      <div class="collab-title">🔄 AI Team Collaboration Workflow</div>
+      <div class="workflow-steps">
+        <div class="workflow-step" id="step-1">
+          <div class="step-icon">🍦</div>
+          <div class="step-label">Domain Analysis</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="workflow-step" id="step-2">
+          <div class="step-icon">🎨</div>
+          <div class="step-label">UI Generation</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="workflow-step" id="step-3">
+          <div class="step-icon">⚡</div>
+          <div class="step-label">API Creation</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="workflow-step" id="step-4">
+          <div class="step-icon">🎯</div>
+          <div class="step-label">Visual Design</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="workflow-step" id="step-5">
+          <div class="step-icon">✅</div>
+          <div class="step-label">App Assembly</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <!-- Input Panel -->
+      <div class="panel">
+        <h2>
+          <span class="icon">🎯</span>
+          Describe Your App
+        </h2>
+
+        <div class="input-group">
+          <label>App Type</label>
+          <select id="appType">
+            <option value="custom">Custom Description</option>
+            <option value="ecommerce">E-Commerce Store</option>
+            <option value="dashboard">Admin Dashboard</option>
+            <option value="chat">Real-Time Chat</option>
+            <option value="blog">Blog/CMS</option>
+            <option value="social">Social Network</option>
+            <option value="portfolio">Portfolio Site</option>
+            <option value="game">Game/Interactive</option>
+            <option value="saas">SaaS Platform</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Natural Language Description</label>
+          <textarea id="description" placeholder="Example: Build me a real-time chat application with emoji reactions, typing indicators, and file sharing. Users should be able to create channels and direct messages. Include dark mode and mobile responsiveness. The microagent team will collaborate to build this for me."></textarea>
+        </div>
+
+        <div class="input-group">
+          <label>Features (comma-separated)</label>
+          <input type="text" id="features" placeholder="auth, dark-mode, offline-support, pwa, real-time, microagent-collab">
+        </div>
+
+        <div class="input-group">
+          <label>Compression Mode</label>
+          <select id="compression">
+            <option value="iconic">Iconic SCXQ2 (87% compression)</option>
+            <option value="standard">Standard XJSON</option>
+            <option value="hybrid">Hybrid (Icons + XJSON)</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>
+            <input type="checkbox" id="microagentCollab" checked>
+            Enable Microagent Team Collaboration
+          </label>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" onclick="generateApp()">
+            🚀 Generate App (with AI Team)
+          </button>
+          <button class="btn btn-secondary" onclick="showExamples()">
+            📚 Examples
+          </button>
+          <button class="btn btn-secondary" onclick="testMicroagent()">
+            🧪 Test Microagent
+          </button>
+        </div>
+
+        <div id="examples-container" style="display:none; margin-top: 2rem;">
+          <h3 style="margin-bottom: 1.5rem; color: var(--accent-secondary);">Quick Start Examples</h3>
+          <div class="examples">
+            <div class="example-card" onclick="loadExample('chat')">
+              <div class="example-icon">💬</div>
+              <div class="example-title">Real-Time Chat</div>
+              <div class="example-desc">WebSocket chat with channels, DMs, emoji reactions. Built by microagent team.</div>
+            </div>
+            <div class="example-card" onclick="loadExample('ecommerce')">
+              <div class="example-icon">🛒</div>
+              <div class="example-title">E-Commerce</div>
+              <div class="example-desc">Product catalog, cart, checkout, payments. AI-generated frontend & backend.</div>
+            </div>
+            <div class="example-card" onclick="loadExample('dashboard')">
+              <div class="example-icon">📊</div>
+              <div class="example-title">Analytics Dashboard</div>
+              <div class="example-desc">Charts, metrics, real-time data, exports. Design AI creates 3D visualizations.</div>
+            </div>
+            <div class="example-card" onclick="loadExample('social')">
+              <div class="example-icon">📱</div>
+              <div class="example-title">Social Feed</div>
+              <div class="example-desc">Posts, comments, likes, notifications. Full microagent collaboration.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Features Panel -->
+      <div class="panel">
+        <h2>
+          <span class="icon">✨</span>
+          Microagent AI Features
+        </h2>
+
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">🧠</div>
+            <div class="feature-title">Smart Collaboration</div>
+            <div class="feature-desc">Four AI microagents work together using XCFE-governed workflows</div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-title">K'UHUL Execution</div>
+            <div class="feature-desc">5-stage pipeline (Pop→Wo→Sek→Xul→Ch'en) for guaranteed causality</div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">🎨</div>
+            <div class="feature-title">Auto Design System</div>
+            <div class="feature-desc">Design AI creates 3D visuals, animations, and responsive layouts</div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">🗜️</div>
+            <div class="feature-title">SCXQ2 Compression</div>
+            <div class="feature-desc">Semantic compression achieves 87% reduction with quantum lattice encoding</div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">🔒</div>
+            <div class="feature-title">Securolink Vault</div>
+            <div class="feature-desc">Quantum-resistant encryption with glyph OAuth and PIN protection</div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">📊</div>
+            <div class="feature-title">RLHF Learning</div>
+            <div class="feature-desc">Each microagent learns from feedback with quantum-optimized scoring</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output Panel -->
+    <div class="panel" id="output-panel" style="display:none;">
+      <h2>
+        <span class="icon">📦</span>
+        Generated Application
+      </h2>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('index')">index.html</button>
+        <button class="tab" onclick="switchTab('sw')">sw.js</button>
+        <button class="tab" onclick="switchTab('manifest')">manifest.json</button>
+        <button class="tab" onclick="switchTab('workflow')">🔄 AI Workflow</button>
+      </div>
+
+      <div id="tab-index" class="output-tabs active">
+        <div class="code-output">
+          <div class="code-header">
+            <span class="code-title">index.html</span>
+            <button class="copy-btn" onclick="copyCode('index')">📋 Copy</button>
+          </div>
+          <pre id="code-index"></pre>
+        </div>
+      </div>
+
+      <div id="tab-sw" class="output-tabs">
+        <div class="code-output">
+          <div class="code-header">
+            <span class="code-title">sw.js</span>
+            <button class="copy-btn" onclick="copyCode('sw')">📋 Copy</button>
+          </div>
+          <pre id="code-sw"></pre>
+        </div>
+      </div>
+
+      <div id="tab-manifest" class="output-tabs">
+        <div class="code-output">
+          <div class="code-header">
+            <span class="code-title">manifest.json</span>
+            <button class="copy-btn" onclick="copyCode('manifest')">📋 Copy</button>
+          </div>
+          <pre id="code-manifest"></pre>
+        </div>
+      </div>
+
+      <div id="tab-workflow" class="output-tabs">
+        <div class="code-output">
+          <div class="code-header">
+            <span class="code-title">Microagent Collaboration Workflow</span>
+          </div>
+          <pre id="code-workflow"></pre>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="downloadApp()">
+          💾 Download as ZIP
+        </button>
+        <button class="btn btn-secondary" onclick="deployApp()">
+          🚀 Deploy to Netlify
+        </button>
+        <button class="btn btn-secondary" onclick="shareApp()">
+          🔗 Share Link
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        console.log('[ASX] Service worker registered:', reg);
+      }).catch(err => {
+        console.error('[ASX] Service worker registration failed:', err);
+      });
+    }
+
+    // Matrix background
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const columns = Math.floor(canvas.width / 20);
+    const drops = Array(columns).fill(0);
+
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(2, 6, 23, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#16f2aa';
+      ctx.font = '14px monospace';
+
+      drops.forEach((y, i) => {
+        const text = String.fromCharCode(0x30A0 + Math.random() * 96);
+        ctx.fillText(text, i * 20, y * 20);
+        if (y * 20 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        else drops[i]++;
+      });
+    }
+
+    setInterval(drawMatrix, 50);
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    // App Builder Logic
+    let generatedApp = {
+      index: '',
+      sw: '',
+      manifest: '',
+      workflow: {}
+    };
+
+    function showExamples() {
+      const container = document.getElementById('examples-container');
+      container.style.display = container.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function loadExample(type) {
+      const examples = {
+        chat: {
+          description: "Build a real-time chat application with WebSocket support. The microagent team will collaborate: Ice Cream AI (example domain expert), Frontend AI creates the chat interface with K'UHUL DOM, Backend AI builds the virtual XJSON server, and Design AI adds 3D animations and visual polish.",
+          features: "auth, websocket, real-time, file-upload, emoji, dark-mode, pwa, microagent-collab"
+        },
+        ecommerce: {
+          description: "Create an e-commerce platform. Frontend AI generates product catalog UI, Backend AI creates virtual APIs for cart and checkout, Design AI adds 3D product showcases, all coordinated through XCFE governance.",
+          features: "auth, cart, payments, search, reviews, admin, responsive, pwa, microagent-collab"
+        },
+        dashboard: {
+          description: "Build an analytics dashboard. Design AI creates 3D chart visualizations, Frontend AI builds responsive layout with K'UHUL, Backend AI handles data processing through XJSON virtual server.",
+          features: "auth, charts, real-time, export, filters, admin, responsive, microagent-collab"
+        },
+        social: {
+          description: "Create a social media platform. All four microagents collaborate: Frontend AI for feed UI, Backend AI for post/comment APIs, Design AI for 3D profile cards and animations.",
+          features: "auth, posts, comments, likes, follows, notifications, chat, media-upload, pwa, microagent-collab"
+        }
+      };
+
+      const example = examples[type];
+      if (example) {
+        document.getElementById('description').value = example.description;
+        document.getElementById('features').value = example.features;
+        document.getElementById('appType').value = type;
+        document.getElementById('microagentCollab').checked = true;
+      }
+    }
+
+    async function generateApp() {
+      const description = document.getElementById('description').value;
+      const features = document.getElementById('features').value;
+      const appType = document.getElementById('appType').value;
+      const compression = document.getElementById('compression').value;
+      const microagentCollab = document.getElementById('microagentCollab').checked;
+
+      if (!description) {
+        alert('Please provide an app description');
+        return;
+      }
+
+      // Show collaboration viz
+      if (microagentCollab) {
+        document.getElementById('collab-viz').style.display = 'block';
+        await visualizeWorkflow();
+      }
+
+      // Show loading state
+      const outputPanel = document.getElementById('output-panel');
+      outputPanel.style.display = 'block';
+      outputPanel.innerHTML = '<div class="loading"><div class="spinner"></div><p>Microagent team is collaborating to build your application...</p></div>';
+
+      // Call microagent orchestration via service worker
+      try {
+        const response = await fetch('/__api__/orchestrate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectSpec: {
+              description,
+              features: features.split(',').map(f => f.trim()),
+              app_type: appType,
+              compression,
+              domain_query: appType,
+              ui_type: appType,
+              design_style: '3d-showcase'
+            }
+          })
+        });
+
+        const workflow = await response.json();
+        generatedApp.workflow = workflow;
+
+        // Simulate additional processing time
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Generate the app files
+        const app = buildXJSONApp(description, features, appType, compression, workflow);
+        generatedApp = { ...generatedApp, ...app };
+
+        // Restore output panel structure
+        displayGeneratedApp();
+
+        outputPanel.scrollIntoView({ behavior: 'smooth' });
+      } catch (error) {
+        console.error('[ASX] Error:', error);
+        outputPanel.innerHTML = '<div class="loading"><p>Error: ' + error.message + '</p></div>';
+      }
+    }
+
+    async function visualizeWorkflow() {
+      const steps = ['step-1', 'step-2', 'step-3', 'step-4', 'step-5'];
+      for (let i = 0; i < steps.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        document.getElementById(steps[i]).classList.add('active');
+      }
+    }
+
+    function buildXJSONApp(description, featuresStr, appType, compression, workflow) {
+      const features = featuresStr.split(',').map(f => f.trim());
+      const useIconic = compression === 'iconic' || compression === 'hybrid';
+
+      // Use workflow results if available
+      const workflowData = workflow.results || {};
+
+      // Generate manifest.json
+      const manifest = generateManifest(description, features, appType, useIconic, workflowData);
+
+      // Generate sw.js
+      const sw = generateServiceWorker(features, useIconic);
+
+      // Generate index.html
+      const index = generateIndexHTML(appType, useIconic, workflowData);
+
+      return { index, sw, manifest };
+    }
+
+    function generateManifest(description, features, appType, useIconic, workflowData) {
+      const base = {
+        "xjson_version": "13.5",
+        "app_name": `${appType.charAt(0).toUpperCase() + appType.slice(1)} App`,
+        "compression": useIconic ? "iconic-scxq2" : "standard",
+        "microagent_collaboration": true,
+
+        "state": {
+          "user": null,
+          "authenticated": false,
+          "theme": "dark",
+          "loading": false
+        },
+
+        "routes": [
+          { "path": "/", "name": "home", "component": "HomePage" },
+          { "path": "/login", "name": "login", "component": "LoginPage" }
+        ],
+
+        "microagents_used": {
+          "ice_cream_ai": workflowData.domain ? true : false,
+          "frontend_ai": true,
+          "backend_ai": true,
+          "design_ai": true
+        },
+
+        "css_variables": {
+          "--primary": "#16f2aa",
+          "--secondary": "#38bdf8",
+          "--bg": "#020617",
+          "--text": "#e5f2ff"
+        }
+      };
+
+      if (workflowData.frontend) {
+        base.ui_components = workflowData.frontend.ui_ast;
+      }
+
+      if (workflowData.backend) {
+        base.virtual_server = workflowData.backend.virtual_server;
+      }
+
+      if (workflowData.design) {
+        base.design_system = workflowData.design.design_system;
+      }
+
+      return JSON.stringify(base, null, 2);
+    }
+
+    function generateServiceWorker(features, useIconic) {
+      return `// XJSON Runtime Engine v13.5 with Microagent Support
+// Auto-generated by ASX App Builder
+
+class XJSONRuntime {
+  constructor() {
+    this.state = {};
+    this.manifest = null;
+    this.microagents = {
+      'ice-cream-ai': { active: false },
+      'frontend-ai': { active: true },
+      'backend-ai': { active: true },
+      'design-ai': { active: true }
+    };
+  }
+
+  async boot(manifestPath = '/manifest.json') {
+    const response = await fetch(manifestPath);
+    this.manifest = await response.json();
+
+    this.state = new Proxy(this.manifest.state || {}, {
+      set: (target, prop, value) => {
+        target[prop] = value;
+        this.render();
+        return true;
+      }
+    });
+
+    console.log('[ASX Runtime] Booted with microagent support ✅');
+    console.log('[ASX Runtime] Microagents:', this.manifest.microagents_used);
+  }
+
+  render() {
+    const root = document.getElementById('xjson-root');
+    if (!root) return;
+
+    root.innerHTML = '<div class="xjson-component">App rendered via K\\'UHUL + Microagents</div>';
+  }
+}
+
+const app = new XJSONRuntime();
+app.boot();
+
+${features.includes('pwa') ? `
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+` : ''}
+`;
+    }
+
+    function generateIndexHTML(appType, useIconic, workflowData) {
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XJSON ${appType.charAt(0).toUpperCase() + appType.slice(1)} App</title>
+  <link rel="manifest" href="/manifest.json">
+
+  <style>
+    /* Generated by Design AI Microagent */
+    :root {
+      --primary: #16f2aa;
+      --secondary: #38bdf8;
+      --bg: #020617;
+      --text: #e5f2ff;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    #xjson-root {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .xjson-component {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 15px;
+      padding: 3rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="xjson-root"></div>
+  <script src="/sw.js" type="module"></script>
+</body>
+</html>`;
+    }
+
+    function displayGeneratedApp() {
+      const outputPanel = document.getElementById('output-panel');
+      outputPanel.innerHTML = `
+        <h2><span class="icon">📦</span> Generated Application</h2>
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('index')">index.html</button>
+          <button class="tab" onclick="switchTab('sw')">sw.js</button>
+          <button class="tab" onclick="switchTab('manifest')">manifest.json</button>
+          <button class="tab" onclick="switchTab('workflow')">🔄 AI Workflow</button>
+        </div>
+        <div id="tab-index" class="output-tabs active">
+          <div class="code-output">
+            <div class="code-header">
+              <span class="code-title">index.html</span>
+              <button class="copy-btn" onclick="copyCode('index')">📋 Copy</button>
+            </div>
+            <pre id="code-index"></pre>
+          </div>
+        </div>
+        <div id="tab-sw" class="output-tabs">
+          <div class="code-output">
+            <div class="code-header">
+              <span class="code-title">sw.js</span>
+              <button class="copy-btn" onclick="copyCode('sw')">📋 Copy</button>
+            </div>
+            <pre id="code-sw"></pre>
+          </div>
+        </div>
+        <div id="tab-manifest" class="output-tabs">
+          <div class="code-output">
+            <div class="code-header">
+              <span class="code-title">manifest.json</span>
+              <button class="copy-btn" onclick="copyCode('manifest')">📋 Copy</button>
+            </div>
+            <pre id="code-manifest"></pre>
+          </div>
+        </div>
+        <div id="tab-workflow" class="output-tabs">
+          <div class="code-output">
+            <div class="code-header">
+              <span class="code-title">Microagent Collaboration Workflow</span>
+            </div>
+            <pre id="code-workflow"></pre>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="downloadApp()">💾 Download as ZIP</button>
+          <button class="btn btn-secondary" onclick="deployApp()">🚀 Deploy</button>
+          <button class="btn btn-secondary" onclick="shareApp()">🔗 Share</button>
+        </div>
+      `;
+
+      document.getElementById('code-index').textContent = generatedApp.index;
+      document.getElementById('code-sw').textContent = generatedApp.sw;
+      document.getElementById('code-manifest').textContent = generatedApp.manifest;
+      document.getElementById('code-workflow').textContent = JSON.stringify(generatedApp.workflow, null, 2);
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.output-tabs').forEach(t => t.classList.remove('active'));
+
+      event.target.classList.add('active');
+      document.getElementById('tab-' + tab).classList.add('active');
+    }
+
+    function copyCode(type) {
+      const code = generatedApp[type];
+      navigator.clipboard.writeText(code);
+      event.target.textContent = '✅ Copied!';
+      setTimeout(() => {
+        event.target.textContent = '📋 Copy';
+      }, 2000);
+    }
+
+    function downloadApp() {
+      alert('Download functionality: In production, this would bundle all files into a ZIP.');
+    }
+
+    function deployApp() {
+      alert('Deploy functionality: In production, this would deploy to Netlify/Vercel.');
+    }
+
+    function shareApp() {
+      alert('Share functionality: In production, this would create a shareable link.');
+    }
+
+    async function testMicroagent() {
+      try {
+        const response = await fetch('/__kuhul_microagent_list');
+        const data = await response.json();
+        alert('Microagents registered:\\n' + JSON.stringify(data, null, 2));
+      } catch (error) {
+        alert('Error testing microagent: ' + error.message);
+      }
+    }
+
+    function demonstrateAgent(agentName) {
+      alert(`${agentName.toUpperCase()} AI Agent\\n\\nThis microagent is part of the collaborative swarm. Click "Generate App" to see them work together!`);
+    }
+  </script>
+</body>
+</html>
