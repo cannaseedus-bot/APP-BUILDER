@@ -3,21 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ASX XJSON App Builder - AI-Powered Application Generator</title>
+  <title>🍦 ASXR Trinity - Build Your Dream AI Operating System</title>
   <link rel="manifest" href="/manifest.json">
 
   <style>
     :root {
       --bg-primary: #020617;
       --bg-secondary: #0f172a;
-      --accent-primary: #16f2aa;
-      --accent-secondary: #38bdf8;
+      --accent-emerald: #16f2aa;
+      --accent-cyan: #38bdf8;
       --accent-purple: #a855f7;
-      --accent-orange: #FF6600;
-      --text-primary: #e5f2ff;
+      --text-primary: #e2e8f0;
       --text-muted: #94a3b8;
-      --glass: rgba(255,255,255,0.05);
-      --border: rgba(148,163,184,0.2);
+      --glass: rgba(15, 23, 42, 0.7);
+      --border: rgba(22, 242, 170, 0.2);
     }
 
     * {
@@ -27,1461 +26,931 @@
     }
 
     body {
-      background: radial-gradient(circle at 10% 20%, rgb(6, 20, 38) 0%, rgb(2, 6, 23) 90%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: radial-gradient(circle at 50% 50%, #020617, #0f172a, #1e293b);
       color: var(--text-primary);
-      font-family: system-ui, -apple-system, sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
     }
 
-    .matrix-bg {
+    /* Navigation */
+    nav {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      opacity: 0.15;
-      pointer-events: none;
-    }
-
-    .container {
-      position: relative;
-      z-index: 1;
-      max-width: 1600px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    header {
-      text-align: center;
-      padding: 3rem 0;
+      right: 0;
+      z-index: 1000;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
-      margin-bottom: 3rem;
+      padding: 1rem 2rem;
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .logo {
-      width: 100px;
-      height: 100px;
-      margin: 0 auto 1rem;
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-      border-radius: 25px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3.5rem;
+      font-size: 1.5rem;
       font-weight: 900;
-      color: var(--bg-primary);
-      box-shadow: 0 0 80px rgba(22, 242, 170, 0.6);
-      animation: pulse 3s ease-in-out infinite;
+      background: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent-emerald);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 8rem 2rem 4rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 1000px;
+      background: radial-gradient(circle, rgba(22, 242, 170, 0.15), transparent 70%);
+      pointer-events: none;
+      animation: pulse 4s ease-in-out infinite;
     }
 
     @keyframes pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 80px rgba(22, 242, 170, 0.6); }
-      50% { transform: scale(1.05); box-shadow: 0 0 120px rgba(22, 242, 170, 0.8); }
+      0%, 100% { opacity: 0.3; transform: translateX(-50%) scale(1); }
+      50% { opacity: 0.6; transform: translateX(-50%) scale(1.1); }
     }
 
-    h1 {
-      font-size: 3.5rem;
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 1rem;
-    }
-
-    .subtitle {
-      font-size: 1.4rem;
-      color: var(--text-muted);
-      margin-bottom: 2rem;
-    }
-
-    .system-info {
-      display: inline-block;
-      padding: 0.5rem 1.5rem;
-      background: var(--glass);
-      border: 1px solid var(--accent-primary);
-      border-radius: 999px;
-      font-size: 0.9rem;
-      color: var(--accent-primary);
-      margin-bottom: 2rem;
-    }
-
-    .stats {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .stat {
-      padding: 0.75rem 2rem;
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-    }
-
-    .stat:hover {
-      border-color: var(--accent-primary);
-      box-shadow: 0 0 20px rgba(22, 242, 170, 0.3);
-    }
-
-    .stat-value {
-      color: var(--accent-primary);
-      font-weight: 700;
-      margin-right: 0.5rem;
-      font-size: 1.1rem;
-    }
-
-    .microagent-showcase {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem;
-      margin: 3rem 0;
-      padding: 2rem;
-      background: linear-gradient(135deg, rgba(22,242,170,0.03), rgba(56,189,248,0.03));
-      border: 1px solid var(--border);
-      border-radius: 20px;
-    }
-
-    .microagent-card {
-      background: var(--bg-secondary);
-      border: 2px solid var(--border);
-      border-radius: 15px;
-      padding: 1.5rem;
-      text-align: center;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .microagent-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 40px rgba(22, 242, 170, 0.3);
-    }
-
-    .microagent-card.ice-cream { border-color: #FFFF00; }
-    .microagent-card.frontend { border-color: #00FF00; }
-    .microagent-card.backend { border-color: #FF6600; }
-    .microagent-card.design { border-color: #a855f7; }
-
-    .agent-icon {
-      font-size: 3.5rem;
+    .hero-emoji {
+      font-size: 6rem;
+      display: block;
       margin-bottom: 1rem;
       animation: float 3s ease-in-out infinite;
     }
 
     @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
     }
 
-    .agent-title {
-      font-weight: 700;
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
-      color: var(--accent-secondary);
+    .hero h1 {
+      font-size: 4rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
     }
 
-    .agent-role {
-      font-size: 0.85rem;
+    .hero .tagline {
+      font-size: 1.5rem;
+      color: var(--accent-emerald);
+      font-weight: 600;
+      margin-bottom: 2rem;
+      text-shadow: 0 0 20px rgba(22, 242, 170, 0.5);
+    }
+
+    .hero p {
+      font-size: 1.25rem;
       color: var(--text-muted);
-      margin-bottom: 0.75rem;
+      max-width: 700px;
+      margin: 0 auto 3rem;
+      line-height: 1.6;
     }
 
-    .agent-port {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      font-size: 0.75rem;
-      color: var(--accent-primary);
-    }
-
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-      margin-bottom: 3rem;
-    }
-
-    .panel {
-      background: linear-gradient(135deg, rgba(22,242,170,0.05), rgba(56,189,248,0.05));
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2rem;
-      backdrop-filter: blur(10px);
-    }
-
-    .panel h2 {
-      font-size: 1.75rem;
-      margin-bottom: 1.5rem;
+    .cta-buttons {
       display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .icon {
-      font-size: 2rem;
-    }
-
-    .input-group {
-      margin-bottom: 1.5rem;
-    }
-
-    .input-group label {
-      display: block;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    textarea, input, select {
-      width: 100%;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1rem;
-      color: var(--text-primary);
-      font-family: 'Courier New', monospace;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-    }
-
-    textarea {
-      min-height: 180px;
-      resize: vertical;
-    }
-
-    textarea:focus, input:focus, select:focus {
-      outline: none;
-      border-color: var(--accent-primary);
-      box-shadow: 0 0 20px rgba(22, 242, 170, 0.2);
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
     .btn {
-      padding: 1rem 2rem;
-      border: none;
-      border-radius: 999px;
-      font-size: 1rem;
+      padding: 1rem 2.5rem;
+      font-size: 1.125rem;
       font-weight: 700;
+      border: none;
+      border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
+      text-decoration: none;
+      display: inline-block;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-      color: var(--bg-primary);
-      box-shadow: 0 10px 40px rgba(22, 242, 170, 0.3);
+      background: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan));
+      color: #020617;
+      box-shadow: 0 10px 40px rgba(22, 242, 170, 0.4);
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 15px 50px rgba(22, 242, 170, 0.5);
+      box-shadow: 0 15px 50px rgba(22, 242, 170, 0.6);
     }
 
     .btn-secondary {
       background: var(--glass);
       border: 1px solid var(--border);
       color: var(--text-primary);
+      backdrop-filter: blur(10px);
     }
 
     .btn-secondary:hover {
-      border-color: var(--accent-primary);
+      border-color: var(--accent-emerald);
       background: rgba(22, 242, 170, 0.1);
     }
 
-    .actions {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-top: 1.5rem;
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
     }
 
-    .collaboration-viz {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      padding: 2rem;
-      margin: 2rem 0;
+    /* Section Styles */
+    section {
+      padding: 4rem 0;
     }
 
-    .collab-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      color: var(--accent-secondary);
+    .section-header {
       text-align: center;
+      margin-bottom: 3rem;
     }
 
-    .workflow-steps {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 1rem;
-      align-items: center;
-    }
-
-    .workflow-step {
-      text-align: center;
-      padding: 1rem;
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      transition: all 0.3s ease;
-    }
-
-    .workflow-step.active {
-      border-color: var(--accent-primary);
-      background: rgba(22, 242, 170, 0.1);
-      box-shadow: 0 0 30px rgba(22, 242, 170, 0.3);
-    }
-
-    .step-icon {
+    .section-header h2 {
       font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .step-label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .arrow {
-      font-size: 2rem;
-      color: var(--accent-primary);
-      text-align: center;
-    }
-
-    .code-output {
-      background: #0a0e1a;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.5rem;
-      font-family: 'Courier New', monospace;
-      font-size: 0.85rem;
-      max-height: 600px;
-      overflow-y: auto;
-      position: relative;
-    }
-
-    .code-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .code-title {
-      font-weight: 700;
-      color: var(--accent-primary);
-    }
-
-    .copy-btn {
-      padding: 0.5rem 1rem;
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      color: var(--text-primary);
-      cursor: pointer;
-      font-size: 0.8rem;
-    }
-
-    .copy-btn:hover {
-      background: rgba(22, 242, 170, 0.1);
-      border-color: var(--accent-primary);
-    }
-
-    pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      color: var(--text-primary);
-      line-height: 1.6;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 3rem;
-    }
-
-    .spinner {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 1rem;
-      border: 4px solid var(--glass);
-      border-top-color: var(--accent-primary);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .examples {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1.5rem;
-    }
-
-    .example-card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.5rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .example-card:hover {
-      border-color: var(--accent-primary);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(22, 242, 170, 0.2);
-    }
-
-    .example-icon {
-      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--accent-emerald);
       margin-bottom: 1rem;
     }
 
-    .example-title {
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: var(--accent-secondary);
-      font-size: 1.1rem;
-    }
-
-    .example-desc {
-      font-size: 0.9rem;
+    .section-header p {
+      font-size: 1.125rem;
       color: var(--text-muted);
-    }
-
-    .tabs {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .tab {
-      padding: 1rem 1.5rem;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 0.95rem;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      border-bottom: 2px solid transparent;
-    }
-
-    .tab.active {
-      color: var(--accent-primary);
-      border-bottom-color: var(--accent-primary);
-    }
-
-    .tab:hover {
-      color: var(--text-primary);
-    }
-
-    .output-tabs {
-      display: none;
-    }
-
-    .output-tabs.active {
-      display: block;
-    }
-
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      margin: 3rem 0;
-    }
-
-    .feature {
-      padding: 2rem;
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      text-align: center;
-      transition: all 0.3s ease;
-    }
-
-    .feature:hover {
-      border-color: var(--accent-primary);
-      box-shadow: 0 10px 40px rgba(22, 242, 170, 0.2);
-    }
-
-    .feature-icon {
-      font-size: 3.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .feature-title {
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-      color: var(--accent-secondary);
-      font-size: 1.2rem;
-    }
-
-    .feature-desc {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-
-    @media (max-width: 1200px) {
-      .main-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .microagent-showcase {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .workflow-steps {
-        grid-template-columns: 1fr;
-      }
-
-      .arrow {
-        transform: rotate(90deg);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .microagent-showcase {
-        grid-template-columns: 1fr;
-      }
-
-      h1 {
-        font-size: 2.5rem;
-      }
-
-      .subtitle {
-        font-size: 1.1rem;
-      }
-    }
-  </style>
-</head>
-<body>
-  <canvas class="matrix-bg" id="matrix"></canvas>
-
-  <div class="container">
-    <header>
-      <div class="logo">⚡</div>
-      <h1>ASX XJSON App Builder</h1>
-      <p class="subtitle">AI-Powered Microagent Collaboration Platform</p>
-      <div class="system-info">K'UHUL v13.5 | XCFE Governed | Quantum Mesh Active</div>
-      <div class="stats">
-        <div class="stat">
-          <span class="stat-value">3</span>
-          <span>Files Generated</span>
-        </div>
-        <div class="stat">
-          <span class="stat-value">0</span>
-          <span>Dependencies</span>
-        </div>
-        <div class="stat">
-          <span class="stat-value">87%</span>
-          <span>Compression</span>
-        </div>
-        <div class="stat">
-          <span class="stat-value">4</span>
-          <span>Microagents</span>
-        </div>
-        <div class="stat">
-          <span class="stat-value">∞</span>
-          <span>Possibilities</span>
-        </div>
-      </div>
-    </header>
-
-    <!-- Microagent Showcase -->
-    <div class="microagent-showcase">
-      <div class="microagent-card ice-cream" onclick="demonstrateAgent('ice-cream')">
-        <div class="agent-icon">🍦</div>
-        <div class="agent-title">Ice Cream AI</div>
-        <div class="agent-role">Flavor Science Expert</div>
-        <div class="agent-port">:4001</div>
-      </div>
-
-      <div class="microagent-card frontend" onclick="demonstrateAgent('frontend')">
-        <div class="agent-icon">🎨</div>
-        <div class="agent-title">Frontend AI</div>
-        <div class="agent-role">K'UHUL DOM Generator</div>
-        <div class="agent-port">:4002</div>
-      </div>
-
-      <div class="microagent-card backend" onclick="demonstrateAgent('backend')">
-        <div class="agent-icon">⚡</div>
-        <div class="agent-title">Backend AI</div>
-        <div class="agent-role">XJSON Virtual Server</div>
-        <div class="agent-port">:4003</div>
-      </div>
-
-      <div class="microagent-card design" onclick="demonstrateAgent('design')">
-        <div class="agent-icon">🎯</div>
-        <div class="agent-title">Design AI</div>
-        <div class="agent-role">3D Visual Architect</div>
-        <div class="agent-port">:4004</div>
-      </div>
-    </div>
-
-    <!-- Collaboration Visualization -->
-    <div class="collaboration-viz" id="collab-viz" style="display:none;">
-      <div class="collab-title">🔄 AI Team Collaboration Workflow</div>
-      <div class="workflow-steps">
-        <div class="workflow-step" id="step-1">
-          <div class="step-icon">🍦</div>
-          <div class="step-label">Domain Analysis</div>
-        </div>
-        <div class="arrow">→</div>
-        <div class="workflow-step" id="step-2">
-          <div class="step-icon">🎨</div>
-          <div class="step-label">UI Generation</div>
-        </div>
-        <div class="arrow">→</div>
-        <div class="workflow-step" id="step-3">
-          <div class="step-icon">⚡</div>
-          <div class="step-label">API Creation</div>
-        </div>
-        <div class="arrow">→</div>
-        <div class="workflow-step" id="step-4">
-          <div class="step-icon">🎯</div>
-          <div class="step-label">Visual Design</div>
-        </div>
-        <div class="arrow">→</div>
-        <div class="workflow-step" id="step-5">
-          <div class="step-icon">✅</div>
-          <div class="step-label">App Assembly</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="main-grid">
-      <!-- Input Panel -->
-      <div class="panel">
-        <h2>
-          <span class="icon">🎯</span>
-          Describe Your App
-        </h2>
-
-        <div class="input-group">
-          <label>App Type</label>
-          <select id="appType">
-            <option value="custom">Custom Description</option>
-            <option value="ecommerce">E-Commerce Store</option>
-            <option value="dashboard">Admin Dashboard</option>
-            <option value="chat">Real-Time Chat</option>
-            <option value="blog">Blog/CMS</option>
-            <option value="social">Social Network</option>
-            <option value="portfolio">Portfolio Site</option>
-            <option value="game">Game/Interactive</option>
-            <option value="saas">SaaS Platform</option>
-          </select>
-        </div>
-
-        <div class="input-group">
-          <label>Natural Language Description</label>
-          <textarea id="description" placeholder="Example: Build me a real-time chat application with emoji reactions, typing indicators, and file sharing. Users should be able to create channels and direct messages. Include dark mode and mobile responsiveness. The microagent team will collaborate to build this for me."></textarea>
-        </div>
-
-        <div class="input-group">
-          <label>Features (comma-separated)</label>
-          <input type="text" id="features" placeholder="auth, dark-mode, offline-support, pwa, real-time, microagent-collab">
-        </div>
-
-        <div class="input-group">
-          <label>Compression Mode</label>
-          <select id="compression">
-            <option value="iconic">Iconic SCXQ2 (87% compression)</option>
-            <option value="standard">Standard XJSON</option>
-            <option value="hybrid">Hybrid (Icons + XJSON)</option>
-          </select>
-        </div>
-
-        <div class="input-group">
-          <label>
-            <input type="checkbox" id="microagentCollab" checked>
-            Enable Microagent Team Collaboration
-          </label>
-        </div>
-
-        <div class="actions">
-          <button class="btn btn-primary" onclick="generateApp()">
-            🚀 Generate App (with AI Team)
-          </button>
-          <button class="btn btn-secondary" onclick="showExamples()">
-            📚 Examples
-          </button>
-          <button class="btn btn-secondary" onclick="testMicroagent()">
-            🧪 Test Microagent
-          </button>
-        </div>
-
-        <div id="examples-container" style="display:none; margin-top: 2rem;">
-          <h3 style="margin-bottom: 1.5rem; color: var(--accent-secondary);">Quick Start Examples</h3>
-          <div class="examples">
-            <div class="example-card" onclick="loadExample('chat')">
-              <div class="example-icon">💬</div>
-              <div class="example-title">Real-Time Chat</div>
-              <div class="example-desc">WebSocket chat with channels, DMs, emoji reactions. Built by microagent team.</div>
-            </div>
-            <div class="example-card" onclick="loadExample('ecommerce')">
-              <div class="example-icon">🛒</div>
-              <div class="example-title">E-Commerce</div>
-              <div class="example-desc">Product catalog, cart, checkout, payments. AI-generated frontend & backend.</div>
-            </div>
-            <div class="example-card" onclick="loadExample('dashboard')">
-              <div class="example-icon">📊</div>
-              <div class="example-title">Analytics Dashboard</div>
-              <div class="example-desc">Charts, metrics, real-time data, exports. Design AI creates 3D visualizations.</div>
-            </div>
-            <div class="example-card" onclick="loadExample('social')">
-              <div class="example-icon">📱</div>
-              <div class="example-title">Social Feed</div>
-              <div class="example-desc">Posts, comments, likes, notifications. Full microagent collaboration.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Features Panel -->
-      <div class="panel">
-        <h2>
-          <span class="icon">✨</span>
-          Microagent AI Features
-        </h2>
-
-        <div class="features">
-          <div class="feature">
-            <div class="feature-icon">🧠</div>
-            <div class="feature-title">Smart Collaboration</div>
-            <div class="feature-desc">Four AI microagents work together using XCFE-governed workflows</div>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">⚡</div>
-            <div class="feature-title">K'UHUL Execution</div>
-            <div class="feature-desc">5-stage pipeline (Pop→Wo→Sek→Xul→Ch'en) for guaranteed causality</div>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">🎨</div>
-            <div class="feature-title">Auto Design System</div>
-            <div class="feature-desc">Design AI creates 3D visuals, animations, and responsive layouts</div>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">🗜️</div>
-            <div class="feature-title">SCXQ2 Compression</div>
-            <div class="feature-desc">Semantic compression achieves 87% reduction with quantum lattice encoding</div>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">🔒</div>
-            <div class="feature-title">Securolink Vault</div>
-            <div class="feature-desc">Quantum-resistant encryption with glyph OAuth and PIN protection</div>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">📊</div>
-            <div class="feature-title">RLHF Learning</div>
-            <div class="feature-desc">Each microagent learns from feedback with quantum-optimized scoring</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Backend Model Status Panel -->
-    <div class="panel" id="backend-status-panel">
-      <h2>
-        <span class="icon">🌐</span>
-        Backend AI Models
-        <span id="backend-status-indicator" style="font-size: 0.8rem; margin-left: auto;">⏳ Loading...</span>
-      </h2>
-
-      <div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(22, 242, 170, 0.1); border-radius: 10px; border: 1px solid rgba(22, 242, 170, 0.3);">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-          <span><strong>API Gateway:</strong></span>
-          <span style="color: var(--accent-primary);">api.asxtoken.com</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-          <span><strong>Backend Base:</strong></span>
-          <span style="color: var(--accent-primary);">backend.refluxedpc.com</span>
-        </div>
-        <div style="display: flex; justify-content: space-between;">
-          <span><strong>Total Models:</strong></span>
-          <span style="color: var(--accent-secondary);" id="backend-model-count">11</span>
-        </div>
-      </div>
-
-      <div id="backend-models-grid" class="features" style="max-height: 400px; overflow-y: auto;">
-        <!-- Models will be loaded dynamically -->
-        <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
-          <div style="font-size: 3rem; margin-bottom: 1rem;">🔄</div>
-          <div>Loading backend models...</div>
-          <div style="font-size: 0.8rem; margin-top: 0.5rem;">Querying PHP API Gateway</div>
-        </div>
-      </div>
-
-      <div class="actions" style="margin-top: 1.5rem;">
-        <button class="btn btn-primary" onclick="testBackendConnection()">
-          🧪 Test Connection
-        </button>
-        <button class="btn btn-secondary" onclick="refreshBackendModels()">
-          🔄 Refresh Models
-        </button>
-        <button class="btn btn-secondary" onclick="window.open('BACKEND-SETUP.md', '_blank')">
-          📚 Setup Guide
-        </button>
-      </div>
-
-      <div id="backend-test-result" style="margin-top: 1.5rem; display: none;"></div>
-    </div>
-
-    <!-- Output Panel -->
-    <div class="panel" id="output-panel" style="display:none;">
-      <h2>
-        <span class="icon">📦</span>
-        Generated Application
-      </h2>
-
-      <div class="tabs">
-        <button class="tab active" onclick="switchTab('index')">index.html</button>
-        <button class="tab" onclick="switchTab('sw')">sw.js</button>
-        <button class="tab" onclick="switchTab('manifest')">manifest.json</button>
-        <button class="tab" onclick="switchTab('workflow')">🔄 AI Workflow</button>
-      </div>
-
-      <div id="tab-index" class="output-tabs active">
-        <div class="code-output">
-          <div class="code-header">
-            <span class="code-title">index.html</span>
-            <button class="copy-btn" onclick="copyCode('index')">📋 Copy</button>
-          </div>
-          <pre id="code-index"></pre>
-        </div>
-      </div>
-
-      <div id="tab-sw" class="output-tabs">
-        <div class="code-output">
-          <div class="code-header">
-            <span class="code-title">sw.js</span>
-            <button class="copy-btn" onclick="copyCode('sw')">📋 Copy</button>
-          </div>
-          <pre id="code-sw"></pre>
-        </div>
-      </div>
-
-      <div id="tab-manifest" class="output-tabs">
-        <div class="code-output">
-          <div class="code-header">
-            <span class="code-title">manifest.json</span>
-            <button class="copy-btn" onclick="copyCode('manifest')">📋 Copy</button>
-          </div>
-          <pre id="code-manifest"></pre>
-        </div>
-      </div>
-
-      <div id="tab-workflow" class="output-tabs">
-        <div class="code-output">
-          <div class="code-header">
-            <span class="code-title">Microagent Collaboration Workflow</span>
-          </div>
-          <pre id="code-workflow"></pre>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button class="btn btn-primary" onclick="downloadApp()">
-          💾 Download as ZIP
-        </button>
-        <button class="btn btn-secondary" onclick="deployApp()">
-          🚀 Deploy to Netlify
-        </button>
-        <button class="btn btn-secondary" onclick="shareApp()">
-          🔗 Share Link
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').then(reg => {
-        console.log('[ASX] Service worker registered:', reg);
-      }).catch(err => {
-        console.error('[ASX] Service worker registration failed:', err);
-      });
-    }
-
-    // Matrix background
-    const canvas = document.getElementById('matrix');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const columns = Math.floor(canvas.width / 20);
-    const drops = Array(columns).fill(0);
-
-    function drawMatrix() {
-      ctx.fillStyle = 'rgba(2, 6, 23, 0.05)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#16f2aa';
-      ctx.font = '14px monospace';
-
-      drops.forEach((y, i) => {
-        const text = String.fromCharCode(0x30A0 + Math.random() * 96);
-        ctx.fillText(text, i * 20, y * 20);
-        if (y * 20 > canvas.height && Math.random() > 0.975) drops[i] = 0;
-        else drops[i]++;
-      });
-    }
-
-    setInterval(drawMatrix, 50);
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
-
-    // App Builder Logic
-    let generatedApp = {
-      index: '',
-      sw: '',
-      manifest: '',
-      workflow: {}
-    };
-
-    function showExamples() {
-      const container = document.getElementById('examples-container');
-      container.style.display = container.style.display === 'none' ? 'block' : 'none';
-    }
-
-    function loadExample(type) {
-      const examples = {
-        chat: {
-          description: "Build a real-time chat application with WebSocket support. The microagent team will collaborate: Ice Cream AI (example domain expert), Frontend AI creates the chat interface with K'UHUL DOM, Backend AI builds the virtual XJSON server, and Design AI adds 3D animations and visual polish.",
-          features: "auth, websocket, real-time, file-upload, emoji, dark-mode, pwa, microagent-collab"
-        },
-        ecommerce: {
-          description: "Create an e-commerce platform. Frontend AI generates product catalog UI, Backend AI creates virtual APIs for cart and checkout, Design AI adds 3D product showcases, all coordinated through XCFE governance.",
-          features: "auth, cart, payments, search, reviews, admin, responsive, pwa, microagent-collab"
-        },
-        dashboard: {
-          description: "Build an analytics dashboard. Design AI creates 3D chart visualizations, Frontend AI builds responsive layout with K'UHUL, Backend AI handles data processing through XJSON virtual server.",
-          features: "auth, charts, real-time, export, filters, admin, responsive, microagent-collab"
-        },
-        social: {
-          description: "Create a social media platform. All four microagents collaborate: Frontend AI for feed UI, Backend AI for post/comment APIs, Design AI for 3D profile cards and animations.",
-          features: "auth, posts, comments, likes, follows, notifications, chat, media-upload, pwa, microagent-collab"
-        }
-      };
-
-      const example = examples[type];
-      if (example) {
-        document.getElementById('description').value = example.description;
-        document.getElementById('features').value = example.features;
-        document.getElementById('appType').value = type;
-        document.getElementById('microagentCollab').checked = true;
-      }
-    }
-
-    async function generateApp() {
-      const description = document.getElementById('description').value;
-      const features = document.getElementById('features').value;
-      const appType = document.getElementById('appType').value;
-      const compression = document.getElementById('compression').value;
-      const microagentCollab = document.getElementById('microagentCollab').checked;
-
-      if (!description) {
-        alert('Please provide an app description');
-        return;
-      }
-
-      // Show collaboration viz
-      if (microagentCollab) {
-        document.getElementById('collab-viz').style.display = 'block';
-        await visualizeWorkflow();
-      }
-
-      // Show loading state
-      const outputPanel = document.getElementById('output-panel');
-      outputPanel.style.display = 'block';
-      outputPanel.innerHTML = '<div class="loading"><div class="spinner"></div><p>Microagent team is collaborating to build your application...</p></div>';
-
-      // Call microagent orchestration via service worker
-      try {
-        const response = await fetch('/__api__/orchestrate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            projectSpec: {
-              description,
-              features: features.split(',').map(f => f.trim()),
-              app_type: appType,
-              compression,
-              domain_query: appType,
-              ui_type: appType,
-              design_style: '3d-showcase'
-            }
-          })
-        });
-
-        const workflow = await response.json();
-        generatedApp.workflow = workflow;
-
-        // Simulate additional processing time
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        // Generate the app files
-        const app = buildXJSONApp(description, features, appType, compression, workflow);
-        generatedApp = { ...generatedApp, ...app };
-
-        // Restore output panel structure
-        displayGeneratedApp();
-
-        outputPanel.scrollIntoView({ behavior: 'smooth' });
-      } catch (error) {
-        console.error('[ASX] Error:', error);
-        outputPanel.innerHTML = '<div class="loading"><p>Error: ' + error.message + '</p></div>';
-      }
-    }
-
-    async function visualizeWorkflow() {
-      const steps = ['step-1', 'step-2', 'step-3', 'step-4', 'step-5'];
-      for (let i = 0; i < steps.length; i++) {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        document.getElementById(steps[i]).classList.add('active');
-      }
-    }
-
-    function buildXJSONApp(description, featuresStr, appType, compression, workflow) {
-      const features = featuresStr.split(',').map(f => f.trim());
-      const useIconic = compression === 'iconic' || compression === 'hybrid';
-
-      // Use workflow results if available
-      const workflowData = workflow.results || {};
-
-      // Generate manifest.json
-      const manifest = generateManifest(description, features, appType, useIconic, workflowData);
-
-      // Generate sw.js
-      const sw = generateServiceWorker(features, useIconic);
-
-      // Generate index.html
-      const index = generateIndexHTML(appType, useIconic, workflowData);
-
-      return { index, sw, manifest };
-    }
-
-    function generateManifest(description, features, appType, useIconic, workflowData) {
-      const base = {
-        "xjson_version": "13.5",
-        "app_name": `${appType.charAt(0).toUpperCase() + appType.slice(1)} App`,
-        "compression": useIconic ? "iconic-scxq2" : "standard",
-        "microagent_collaboration": true,
-
-        "state": {
-          "user": null,
-          "authenticated": false,
-          "theme": "dark",
-          "loading": false
-        },
-
-        "routes": [
-          { "path": "/", "name": "home", "component": "HomePage" },
-          { "path": "/login", "name": "login", "component": "LoginPage" }
-        ],
-
-        "microagents_used": {
-          "ice_cream_ai": workflowData.domain ? true : false,
-          "frontend_ai": true,
-          "backend_ai": true,
-          "design_ai": true
-        },
-
-        "css_variables": {
-          "--primary": "#16f2aa",
-          "--secondary": "#38bdf8",
-          "--bg": "#020617",
-          "--text": "#e5f2ff"
-        }
-      };
-
-      if (workflowData.frontend) {
-        base.ui_components = workflowData.frontend.ui_ast;
-      }
-
-      if (workflowData.backend) {
-        base.virtual_server = workflowData.backend.virtual_server;
-      }
-
-      if (workflowData.design) {
-        base.design_system = workflowData.design.design_system;
-      }
-
-      return JSON.stringify(base, null, 2);
-    }
-
-    function generateServiceWorker(features, useIconic) {
-      return `// XJSON Runtime Engine v13.5 with Microagent Support
-// Auto-generated by ASX App Builder
-
-class XJSONRuntime {
-  constructor() {
-    this.state = {};
-    this.manifest = null;
-    this.microagents = {
-      'ice-cream-ai': { active: false },
-      'frontend-ai': { active: true },
-      'backend-ai': { active: true },
-      'design-ai': { active: true }
-    };
-  }
-
-  async boot(manifestPath = '/manifest.json') {
-    const response = await fetch(manifestPath);
-    this.manifest = await response.json();
-
-    this.state = new Proxy(this.manifest.state || {}, {
-      set: (target, prop, value) => {
-        target[prop] = value;
-        this.render();
-        return true;
-      }
-    });
-
-    console.log('[ASX Runtime] Booted with microagent support ✅');
-    console.log('[ASX Runtime] Microagents:', this.manifest.microagents_used);
-  }
-
-  render() {
-    const root = document.getElementById('xjson-root');
-    if (!root) return;
-
-    root.innerHTML = '<div class="xjson-component">App rendered via K\\'UHUL + Microagents</div>';
-  }
-}
-
-const app = new XJSONRuntime();
-app.boot();
-
-${features.includes('pwa') ? `
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js');
-}
-` : ''}
-`;
-    }
-
-    function generateIndexHTML(appType, useIconic, workflowData) {
-      return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XJSON ${appType.charAt(0).toUpperCase() + appType.slice(1)} App</title>
-  <link rel="manifest" href="/manifest.json">
-
-  <style>
-    /* Generated by Design AI Microagent */
-    :root {
-      --primary: #16f2aa;
-      --secondary: #38bdf8;
-      --bg: #020617;
-      --text: #e5f2ff;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: system-ui, sans-serif;
-      margin: 0;
-      padding: 2rem;
-    }
-
-    #xjson-root {
-      max-width: 1200px;
+      max-width: 600px;
       margin: 0 auto;
     }
 
-    .xjson-component {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 15px;
+    /* Feature Cards */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .feature-card {
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-emerald), var(--accent-cyan), var(--accent-purple));
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--accent-emerald);
+      box-shadow: 0 20px 60px rgba(22, 242, 170, 0.3);
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .feature-card h3 {
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-card ul {
+      list-style: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-card li {
+      padding: 0.5rem 0;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .feature-card li::before {
+      content: '✓';
+      color: var(--accent-emerald);
+      font-weight: bold;
+    }
+
+    /* N-gram Uploader */
+    .uploader-section {
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3rem;
+      margin-top: 3rem;
+    }
+
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 16px;
       padding: 3rem;
       text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(15, 23, 42, 0.5);
     }
+
+    .upload-zone:hover {
+      border-color: var(--accent-emerald);
+      background: rgba(22, 242, 170, 0.05);
+    }
+
+    .upload-zone.dragover {
+      border-color: var(--accent-emerald);
+      background: rgba(22, 242, 170, 0.1);
+    }
+
+    .upload-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .gram-types {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .gram-type {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .gram-type .count {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--accent-emerald);
+      display: block;
+    }
+
+    .gram-type .label {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .stat-card {
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 3rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Footer */
+    footer {
+      padding: 3rem 2rem;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+
+    footer p {
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--accent-emerald);
+      text-decoration: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero-emoji {
+        font-size: 4rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+      }
+    }
+
+    /* Animations */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .feature-card {
+      animation: slideIn 0.6s ease forwards;
+    }
+
+    .feature-card:nth-child(1) { animation-delay: 0.1s; }
+    .feature-card:nth-child(2) { animation-delay: 0.2s; }
+    .feature-card:nth-child(3) { animation-delay: 0.3s; }
   </style>
 </head>
 <body>
-  <div id="xjson-root"></div>
-  <script src="/sw.js" type="module"></script>
-</body>
-</html>`;
-    }
 
-    function displayGeneratedApp() {
-      const outputPanel = document.getElementById('output-panel');
-      outputPanel.innerHTML = `
-        <h2><span class="icon">📦</span> Generated Application</h2>
-        <div class="tabs">
-          <button class="tab active" onclick="switchTab('index')">index.html</button>
-          <button class="tab" onclick="switchTab('sw')">sw.js</button>
-          <button class="tab" onclick="switchTab('manifest')">manifest.json</button>
-          <button class="tab" onclick="switchTab('workflow')">🔄 AI Workflow</button>
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-container">
+      <div class="logo">🍦 ASXR Trinity</div>
+      <ul class="nav-links">
+        <li><a href="#ai-builder">AI Builder</a></li>
+        <li><a href="#app-generator">Apps</a></li>
+        <li><a href="#brains">Brains</a></li>
+        <li><a href="#n-grams">N-Grams</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <span class="hero-emoji">🍦</span>
+    <h1>ASXR Trinity</h1>
+    <p class="tagline">Build Your Dream AI Operating System</p>
+    <p>Browser-native multi-agent OS with cognitive memory, RLHF training, and self-learning capabilities. No servers required.</p>
+
+    <div class="cta-buttons">
+      <a href="/ai-generator.html" class="btn btn-primary">🍦 Build Your AI Now</a>
+      <a href="#features" class="btn btn-secondary">Learn More</a>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <div class="container">
+
+    <!-- Ice Cream AI Builder - MAIN FEATURE -->
+    <section id="ai-builder">
+      <div class="section-header">
+        <h2>🍦 Ice Cream AI Builder</h2>
+        <p>Create custom ASXR instances with visual form builder. No coding required.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">🎨</span>
+          <h3>Choose Your Flavor</h3>
+          <p>Select from 6 AI personalities:</p>
+          <ul>
+            <li>Creative - Artistic & Innovative</li>
+            <li>Analytical - Data-Driven</li>
+            <li>Friendly - Conversational</li>
+            <li>Professional - Precise</li>
+            <li>Gaming - NPC Intelligence</li>
+            <li>Quantum - Experimental</li>
+          </ul>
+          <a href="/ai-generator.html" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Start Building</a>
         </div>
-        <div id="tab-index" class="output-tabs active">
-          <div class="code-output">
-            <div class="code-header">
-              <span class="code-title">index.html</span>
-              <button class="copy-btn" onclick="copyCode('index')">📋 Copy</button>
-            </div>
-            <pre id="code-index"></pre>
+
+        <div class="feature-card">
+          <span class="feature-icon">⚙️</span>
+          <h3>Configure Everything</h3>
+          <p>Customize your AI's capabilities:</p>
+          <ul>
+            <li>Memory size (3-8 n-gram stores)</li>
+            <li>Training intensity & frequency</li>
+            <li>Runtime (CPU/GPU/TPU)</li>
+            <li>System tapes & agents</li>
+            <li>RLHF visualization</li>
+            <li>User profiles</li>
+          </ul>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">📦</span>
+          <h3>Export & Deploy</h3>
+          <p>Get production-ready files:</p>
+          <ul>
+            <li>manifest.json configuration</li>
+            <li>Service worker setup</li>
+            <li>Integration instructions</li>
+            <li>One-click downloads</li>
+            <li>Complete documentation</li>
+            <li>Zero dependencies</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- App Generator - SECONDARY -->
+    <section id="app-generator">
+      <div class="section-header">
+        <h2>🎮 Application Generator</h2>
+        <p>Build complete applications with ASXR-powered intelligence.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">🌐</span>
+          <h3>Web Apps</h3>
+          <p>Create intelligent web applications with built-in AI capabilities, persistent state, and real-time training.</p>
+          <a href="#" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">Coming Soon</a>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">🎮</span>
+          <h3>Game NPCs</h3>
+          <p>Build game characters with individual AI personalities, learning behaviors, and adaptive intelligence.</p>
+          <a href="#" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">Coming Soon</a>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">💬</span>
+          <h3>Chatbots</h3>
+          <p>Deploy conversational AI with RLHF training, context memory, and personality customization.</p>
+          <a href="#" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">Coming Soon</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Training Brains - TERTIARY -->
+    <section id="brains">
+      <div class="section-header">
+        <h2>🧠 Training Brains</h2>
+        <p>Advanced cognitive memory and reinforcement learning systems.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">💾</span>
+          <h3>ASX RAM</h3>
+          <p>Cognitive memory system with multiple n-gram stores:</p>
+          <ul>
+            <li>Unigrams - Base vocabulary</li>
+            <li>Bigrams - Word pairs</li>
+            <li>Trigrams - Three-word patterns</li>
+            <li>Quadragrams - Four-word sequences</li>
+            <li>Pentagrams - Five-word chains</li>
+            <li>Supagrams - Advanced patterns</li>
+            <li>Glyphgrams - Symbol compression</li>
+            <li>Quantum grams - Entangled states</li>
+          </ul>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">📊</span>
+          <h3>RLHF Training</h3>
+          <p>Reinforcement Learning from Human Feedback:</p>
+          <ul>
+            <li>Real-time training metrics</li>
+            <li>Visualization dashboard</li>
+            <li>Training cockpit interface</li>
+            <li>Quality scoring dimensions</li>
+            <li>Continuous learning mode</li>
+            <li>Batch processing support</li>
+          </ul>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">🔥</span>
+          <h3>Memory Heatmap</h3>
+          <p>Visual cognitive state monitoring:</p>
+          <ul>
+            <li>Real-time memory usage</li>
+            <li>Pattern visualization</li>
+            <li>Hot-path detection</li>
+            <li>Learning curve analysis</li>
+            <li>Performance optimization</li>
+            <li>State compression metrics</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- N-gram Uploader -->
+    <section id="n-grams">
+      <div class="section-header">
+        <h2>📤 N-Gram Uploader</h2>
+        <p>Upload your training data and generate all n-gram types with Python.</p>
+      </div>
+
+      <div class="uploader-section">
+        <div class="upload-zone" id="uploadZone">
+          <span class="upload-icon">📁</span>
+          <h3>Drop Your Training Data Here</h3>
+          <p style="color: var(--text-muted); margin: 1rem 0;">
+            or click to browse
+          </p>
+          <p style="color: var(--text-muted); font-size: 0.875rem;">
+            Supports: .txt, .jsonl, .xjson, .khl, .scx, .html, .md
+          </p>
+          <input type="file" id="fileInput" class="file-input" multiple accept=".txt,.jsonl,.xjson,.khl,.scx,.html,.md">
+        </div>
+
+        <div class="gram-types">
+          <div class="gram-type">
+            <span class="count" id="unigramCount">0</span>
+            <span class="label">Unigrams</span>
+          </div>
+          <div class="gram-type">
+            <span class="count" id="bigramCount">0</span>
+            <span class="label">Bigrams</span>
+          </div>
+          <div class="gram-type">
+            <span class="count" id="trigramCount">0</span>
+            <span class="label">Trigrams</span>
+          </div>
+          <div class="gram-type">
+            <span class="count" id="quadgramCount">0</span>
+            <span class="label">Quadragrams</span>
+          </div>
+          <div class="gram-type">
+            <span class="count" id="pentagramCount">0</span>
+            <span class="label">Pentagrams</span>
+          </div>
+          <div class="gram-type">
+            <span class="count" id="supagramCount">0</span>
+            <span class="label">Supagrams</span>
+          </div>
+          <div class="gram-type">
+            <span class="count" id="glyphgramCount">0</span>
+            <span class="label">Glyphgrams</span>
+          </div>
+          <div class="gram-type">
+            <span class="count" id="quantumCount">0</span>
+            <span class="label">Quantum</span>
           </div>
         </div>
-        <div id="tab-sw" class="output-tabs">
-          <div class="code-output">
-            <div class="code-header">
-              <span class="code-title">sw.js</span>
-              <button class="copy-btn" onclick="copyCode('sw')">📋 Copy</button>
-            </div>
-            <pre id="code-sw"></pre>
-          </div>
+
+        <div style="margin-top: 2rem; text-align: center;">
+          <button class="btn btn-primary" id="generateBtn" disabled>
+            🧠 Generate All N-Grams
+          </button>
+          <button class="btn btn-secondary" id="downloadBtn" style="margin-left: 1rem;" disabled>
+            📥 Download N-Grams
+          </button>
         </div>
-        <div id="tab-manifest" class="output-tabs">
-          <div class="code-output">
-            <div class="code-header">
-              <span class="code-title">manifest.json</span>
-              <button class="copy-btn" onclick="copyCode('manifest')">📋 Copy</button>
-            </div>
-            <pre id="code-manifest"></pre>
-          </div>
+
+        <div style="margin-top: 2rem;">
+          <h3 style="color: var(--accent-emerald); margin-bottom: 1rem;">Python N-Gram Builder</h3>
+          <p style="color: var(--text-muted); margin-bottom: 1rem;">
+            Generate n-grams locally with our Python script:
+          </p>
+          <pre style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 8px; overflow-x: auto; color: var(--text-primary); font-size: 0.875rem;">python build_ngrams.py --input ./data --output ./ngrams --all-types</pre>
+          <a href="/build_ngrams.py" class="btn btn-secondary" style="margin-top: 1rem;" download>
+            📥 Download Python Script
+          </a>
         </div>
-        <div id="tab-workflow" class="output-tabs">
-          <div class="code-output">
-            <div class="code-header">
-              <span class="code-title">Microagent Collaboration Workflow</span>
-            </div>
-            <pre id="code-workflow"></pre>
-          </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section>
+      <div class="section-header">
+        <h2>🚀 Why ASXR Trinity?</h2>
+        <p>The future of browser-native AI operating systems.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">0KB</div>
+          <div class="stat-label">Server Requirements</div>
         </div>
-        <div class="actions">
-          <button class="btn btn-primary" onclick="downloadApp()">💾 Download as ZIP</button>
-          <button class="btn btn-secondary" onclick="deployApp()">🚀 Deploy</button>
-          <button class="btn btn-secondary" onclick="shareApp()">🔗 Share</button>
+        <div class="stat-card">
+          <div class="stat-value">13</div>
+          <div class="stat-label">Specialized Agents</div>
         </div>
-      `;
-
-      document.getElementById('code-index').textContent = generatedApp.index;
-      document.getElementById('code-sw').textContent = generatedApp.sw;
-      document.getElementById('code-manifest').textContent = generatedApp.manifest;
-      document.getElementById('code-workflow').textContent = JSON.stringify(generatedApp.workflow, null, 2);
-    }
-
-    function switchTab(tab) {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.output-tabs').forEach(t => t.classList.remove('active'));
-
-      event.target.classList.add('active');
-      document.getElementById('tab-' + tab).classList.add('active');
-    }
-
-    function copyCode(type) {
-      const code = generatedApp[type];
-      navigator.clipboard.writeText(code);
-      event.target.textContent = '✅ Copied!';
-      setTimeout(() => {
-        event.target.textContent = '📋 Copy';
-      }, 2000);
-    }
-
-    function downloadApp() {
-      alert('Download functionality: In production, this would bundle all files into a ZIP.');
-    }
-
-    function deployApp() {
-      alert('Deploy functionality: In production, this would deploy to Netlify/Vercel.');
-    }
-
-    function shareApp() {
-      alert('Share functionality: In production, this would create a shareable link.');
-    }
-
-    async function testMicroagent() {
-      try {
-        const response = await fetch('/__kuhul_microagent_list');
-        const data = await response.json();
-        alert('Microagents registered:\\n' + JSON.stringify(data, null, 2));
-      } catch (error) {
-        alert('Error testing microagent: ' + error.message);
-      }
-    }
-
-    function demonstrateAgent(agentName) {
-      alert(`${agentName.toUpperCase()} AI Agent\\n\\nThis microagent is part of the collaborative swarm. Click "Generate App" to see them work together!`);
-    }
-
-    // ========== BACKEND MODEL MANAGEMENT ==========
-
-    async function loadBackendModels() {
-      const statusIndicator = document.getElementById('backend-status-indicator');
-      const modelsGrid = document.getElementById('backend-models-grid');
-
-      try {
-        statusIndicator.textContent = '🔄 Loading...';
-        statusIndicator.style.color = 'var(--accent-secondary)';
-
-        const response = await fetch('/__api__/backendModels', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-
-        const result = await response.json();
-
-        if (result.error) {
-          throw new Error(result.message || 'Failed to load models');
-        }
-
-        const models = result.data?.models || getDefaultModels();
-        displayBackendModels(models);
-
-        statusIndicator.textContent = '✅ Connected';
-        statusIndicator.style.color = 'var(--accent-primary)';
-
-      } catch (error) {
-        console.error('[ASX-BACKEND] Error loading models:', error);
-        statusIndicator.textContent = '⚠️ Awaiting Setup';
-        statusIndicator.style.color = '#ff6b6b';
-
-        // Show default model list with "awaiting download" status
-        displayBackendModels(getDefaultModels(), true);
-      }
-    }
-
-    function getDefaultModels() {
-      return [
-        { name: 'Janus Pro', type: 'quantum_llm', status: 'awaiting_download', priority: 'critical', quantum: true },
-        { name: 'MX2 Inference', type: 'inference_engine', status: 'awaiting_download', priority: 'critical', quantum: true },
-        { name: "K'UHUL Quantum", type: 'quantum_engine', status: 'awaiting_download', priority: 'critical', quantum: true },
-        { name: 'DeepSeek R1', type: 'reasoning_llm', status: 'awaiting_download', priority: 'high', quantum: true },
-        { name: 'DeepSeek Coder', type: 'code_llm', status: 'awaiting_download', priority: 'high', quantum: true },
-        { name: 'Cline Agent', type: 'agentic_llm', status: 'awaiting_download', priority: 'high', quantum: true },
-        { name: 'Llama 3', type: 'general_llm', status: 'awaiting_download', priority: 'medium', quantum: false },
-        { name: 'CodeLlama', type: 'code_llm', status: 'awaiting_download', priority: 'medium', quantum: false },
-        { name: 'Qwen Coder', type: 'coding_llm', status: 'awaiting_download', priority: 'medium', quantum: false },
-        { name: 'Janus Flow', type: 'streaming_llm', status: 'awaiting_download', priority: 'medium', quantum: false },
-        { name: 'Mistral', type: 'efficient_llm', status: 'awaiting_download', priority: 'low', quantum: false }
-      ];
-    }
-
-    function displayBackendModels(models, isDefault = false) {
-      const modelsGrid = document.getElementById('backend-models-grid');
-      const modelCount = document.getElementById('backend-model-count');
-
-      modelCount.textContent = models.length;
-
-      const priorityColors = {
-        critical: '#ff0080',
-        high: '#16f2aa',
-        medium: '#38bdf8',
-        low: '#999999'
-      };
-
-      const statusIcons = {
-        ready: '✅',
-        awaiting_download: '⏳',
-        downloading: '🔄',
-        error: '❌'
-      };
-
-      modelsGrid.innerHTML = models.map(model => `
-        <div class="feature" style="border-left: 3px solid ${priorityColors[model.priority || 'medium']};">
-          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
-            <div class="feature-icon">${model.quantum ? '⚛️' : '🤖'}</div>
-            <span style="font-size: 0.8rem; padding: 0.2rem 0.6rem; background: rgba(22,242,170,0.2); border-radius: 999px;">
-              ${statusIcons[model.status] || '⏳'} ${model.status?.replace('_', ' ') || 'Unknown'}
-            </span>
-          </div>
-          <div class="feature-title">${model.name}</div>
-          <div class="feature-desc" style="font-size: 0.8rem;">
-            ${model.type?.replace(/_/g, ' ')} • Priority: ${model.priority || 'medium'}
-            ${model.quantum ? ' • Quantum Enhanced' : ''}
-          </div>
+        <div class="stat-card">
+          <div class="stat-value">8</div>
+          <div class="stat-label">System Tapes</div>
         </div>
-      `).join('');
+        <div class="stat-card">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Browser Native</div>
+        </div>
+      </div>
+    </section>
 
-      if (isDefault) {
-        modelsGrid.innerHTML += `
-          <div style="grid-column: 1/-1; text-align: center; padding: 1rem; margin-top: 1rem; background: rgba(255,107,107,0.1); border-radius: 10px; border: 1px solid rgba(255,107,107,0.3);">
-            <div style="font-size: 1rem; margin-bottom: 0.5rem;">⚠️ Models Awaiting Download</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">
-              See <a href="BACKEND-SETUP.md" target="_blank" style="color: var(--accent-primary);">BACKEND-SETUP.md</a> for download instructions
-            </div>
-          </div>
-        `;
-      }
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>Built with 🍦 by <a href="https://github.com/asxr">ASXR Team</a></p>
+    <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+      Powered by ASXR Trinity Multi-Agent OS v3.2.0
+    </p>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('✅ ASXR Trinity OS Booted:', reg))
+        .catch(err => console.error('❌ ASXR Boot Failed:', err));
     }
 
-    async function testBackendConnection() {
-      const testResult = document.getElementById('backend-test-result');
-      testResult.style.display = 'block';
-      testResult.innerHTML = '<div style="text-align: center; padding: 1rem;"><div class="spinner"></div><p>Testing connection...</p></div>';
+    // N-gram Upload Handling
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
 
-      try {
-        const response = await fetch('/__api__/backendStatus', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
+    let uploadedFiles = [];
+    let ngramData = null;
 
-        const result = await response.json();
+    uploadZone.addEventListener('click', () => fileInput.click());
 
-        if (result.error) {
-          throw new Error(result.message || 'Connection failed');
-        }
-
-        testResult.innerHTML = `
-          <div style="padding: 1rem; background: rgba(22,242,170,0.1); border-radius: 10px; border: 1px solid rgba(22,242,170,0.3);">
-            <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">✅ Backend Connection Successful</div>
-            <div style="font-size: 0.9rem; color: var(--text-muted);">
-              <pre style="margin-top: 1rem; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 5px; overflow-x: auto;">${JSON.stringify(result.data, null, 2)}</pre>
-            </div>
-          </div>
-        `;
-      } catch (error) {
-        testResult.innerHTML = `
-          <div style="padding: 1rem; background: rgba(255,107,107,0.1); border-radius: 10px; border: 1px solid rgba(255,107,107,0.3);">
-            <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">❌ Connection Failed</div>
-            <div style="font-size: 0.9rem; color: var(--text-muted);">
-              ${error.message}
-              <br><br>
-              <strong>Troubleshooting:</strong>
-              <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
-                <li>Check that models are downloaded (see BACKEND-SETUP.md)</li>
-                <li>Verify PHP API is running at api.asxtoken.com</li>
-                <li>Ensure backend.refluxedpc.com is accessible</li>
-              </ul>
-            </div>
-          </div>
-        `;
-      }
-    }
-
-    async function refreshBackendModels() {
-      await loadBackendModels();
-      alert('Backend model list refreshed!');
-    }
-
-    // Load backend models on page load
-    window.addEventListener('load', () => {
-      loadBackendModels();
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
     });
+
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.classList.remove('dragover');
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+    });
+
+    function handleFiles(files) {
+      uploadedFiles = Array.from(files);
+      console.log(`📁 Uploaded ${uploadedFiles.length} files`);
+      generateBtn.disabled = false;
+
+      // Update upload zone text
+      uploadZone.querySelector('h3').textContent = `${uploadedFiles.length} files ready`;
+      uploadZone.querySelector('p').textContent = 'Click "Generate All N-Grams" to process';
+    }
+
+    generateBtn.addEventListener('click', async () => {
+      if (uploadedFiles.length === 0) return;
+
+      generateBtn.disabled = true;
+      generateBtn.textContent = '🔄 Processing...';
+
+      try {
+        // Read all files
+        const texts = [];
+        for (const file of uploadedFiles) {
+          const text = await file.text();
+          texts.push(text);
+        }
+
+        // Generate n-grams
+        ngramData = generateAllNGrams(texts.join(' '));
+
+        // Update counts
+        document.getElementById('unigramCount').textContent = ngramData.unigrams.length.toLocaleString();
+        document.getElementById('bigramCount').textContent = ngramData.bigrams.length.toLocaleString();
+        document.getElementById('trigramCount').textContent = ngramData.trigrams.length.toLocaleString();
+        document.getElementById('quadgramCount').textContent = ngramData.quadragrams.length.toLocaleString();
+        document.getElementById('pentagramCount').textContent = ngramData.pentagrams.length.toLocaleString();
+        document.getElementById('supagramCount').textContent = ngramData.supagrams.length.toLocaleString();
+        document.getElementById('glyphgramCount').textContent = ngramData.glyphgrams.length.toLocaleString();
+        document.getElementById('quantumCount').textContent = ngramData.quantum.length.toLocaleString();
+
+        // Enable download
+        downloadBtn.disabled = false;
+        generateBtn.textContent = '✅ Generated!';
+
+        console.log('✅ N-grams generated successfully');
+      } catch (error) {
+        console.error('❌ Error generating n-grams:', error);
+        generateBtn.textContent = '❌ Error';
+      }
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      if (!ngramData) return;
+
+      // Create zip-like structure (individual JSON files)
+      const files = {
+        'ngrams.json': JSON.stringify(ngramData.unigrams, null, 2),
+        'bigrams.json': JSON.stringify(ngramData.bigrams, null, 2),
+        'trigrams.json': JSON.stringify(ngramData.trigrams, null, 2),
+        'quadragrams.json': JSON.stringify(ngramData.quadragrams, null, 2),
+        'pentagrams.json': JSON.stringify(ngramData.pentagrams, null, 2),
+        'supagrams.json': JSON.stringify(ngramData.supagrams, null, 2),
+        'glyphgrams.json': JSON.stringify(ngramData.glyphgrams, null, 2),
+        'quantum.json': JSON.stringify(ngramData.quantum, null, 2),
+      };
+
+      // Download each file
+      for (const [filename, content] of Object.entries(files)) {
+        const blob = new Blob([content], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      console.log('✅ All n-gram files downloaded');
+    });
+
+    function generateAllNGrams(text) {
+      // Tokenize text
+      const tokens = text.toLowerCase()
+        .replace(/[^\w\s]/g, ' ')
+        .split(/\s+/)
+        .filter(t => t.length > 0);
+
+      const results = {
+        unigrams: [],
+        bigrams: [],
+        trigrams: [],
+        quadragrams: [],
+        pentagrams: [],
+        supagrams: [],
+        glyphgrams: [],
+        quantum: []
+      };
+
+      // Unigrams
+      const unigramCounts = {};
+      tokens.forEach(token => {
+        unigramCounts[token] = (unigramCounts[token] || 0) + 1;
+      });
+      results.unigrams = Object.entries(unigramCounts)
+        .map(([gram, count]) => ({ gram, count }))
+        .sort((a, b) => b.count - a.count);
+
+      // Bigrams
+      const bigramCounts = {};
+      for (let i = 0; i < tokens.length - 1; i++) {
+        const bigram = `${tokens[i]} ${tokens[i + 1]}`;
+        bigramCounts[bigram] = (bigramCounts[bigram] || 0) + 1;
+      }
+      results.bigrams = Object.entries(bigramCounts)
+        .map(([gram, count]) => ({ gram, count }))
+        .sort((a, b) => b.count - a.count);
+
+      // Trigrams
+      const trigramCounts = {};
+      for (let i = 0; i < tokens.length - 2; i++) {
+        const trigram = `${tokens[i]} ${tokens[i + 1]} ${tokens[i + 2]}`;
+        trigramCounts[trigram] = (trigramCounts[trigram] || 0) + 1;
+      }
+      results.trigrams = Object.entries(trigramCounts)
+        .map(([gram, count]) => ({ gram, count }))
+        .sort((a, b) => b.count - a.count);
+
+      // Quadragrams
+      const quadgramCounts = {};
+      for (let i = 0; i < tokens.length - 3; i++) {
+        const quadgram = `${tokens[i]} ${tokens[i + 1]} ${tokens[i + 2]} ${tokens[i + 3]}`;
+        quadgramCounts[quadgram] = (quadgramCounts[quadgram] || 0) + 1;
+      }
+      results.quadragrams = Object.entries(quadgramCounts)
+        .map(([gram, count]) => ({ gram, count }))
+        .sort((a, b) => b.count - a.count);
+
+      // Pentagrams
+      const pentagramCounts = {};
+      for (let i = 0; i < tokens.length - 4; i++) {
+        const pentagram = tokens.slice(i, i + 5).join(' ');
+        pentagramCounts[pentagram] = (pentagramCounts[pentagram] || 0) + 1;
+      }
+      results.pentagrams = Object.entries(pentagramCounts)
+        .map(([gram, count]) => ({ gram, count }))
+        .sort((a, b) => b.count - a.count);
+
+      // Supagrams (6-grams)
+      const supagramCounts = {};
+      for (let i = 0; i < tokens.length - 5; i++) {
+        const supagram = tokens.slice(i, i + 6).join(' ');
+        supagramCounts[supagram] = (supagramCounts[supagram] || 0) + 1;
+      }
+      results.supagrams = Object.entries(supagramCounts)
+        .map(([gram, count]) => ({ gram, count }))
+        .sort((a, b) => b.count - a.count);
+
+      // Glyphgrams (character-level 3-grams)
+      const glyphgramCounts = {};
+      const fullText = tokens.join('');
+      for (let i = 0; i < fullText.length - 2; i++) {
+        const glyphgram = fullText.slice(i, i + 3);
+        glyphgramCounts[glyphgram] = (glyphgramCounts[glyphgram] || 0) + 1;
+      }
+      results.glyphgrams = Object.entries(glyphgramCounts)
+        .map(([gram, count]) => ({ gram, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 1000); // Top 1000
+
+      // Quantum grams (skip-grams with distance 2)
+      const quantumCounts = {};
+      for (let i = 0; i < tokens.length - 4; i += 2) {
+        const quantum = `${tokens[i]} ${tokens[i + 2]} ${tokens[i + 4]}`;
+        quantumCounts[quantum] = (quantumCounts[quantum] || 0) + 1;
+      }
+      results.quantum = Object.entries(quantumCounts)
+        .map(([gram, count]) => ({ gram, count }))
+        .sort((a, b) => b.count - a.count);
+
+      return results;
+    }
   </script>
+
 </body>
 </html>

@@ -1,0 +1,30 @@
+{
+  "@tape": "tape_system_memory_heatmap_v1",
+  "role": "memory_heatmap_ui",
+  "description": "Transforms ASX RAM usage into a visual heatmap for UI panels.",
+  "agents": ["agent.memory.heatmap", "agent.ui"],
+  "autoloop": true,
+  "cycle_ms": 4500,
+
+  "pipeline": {
+    "@steps": [
+      {
+        "@id": "fetch_memory",
+        "@op": "http.get",
+        "@endpoint": "/api/asxr/memory/heatmap"
+      },
+      {
+        "@id": "heatmap_transform",
+        "@op": "agent.call",
+        "@agent": "agent.memory.heatmap",
+        "@input": "memory_snapshot"
+      },
+      {
+        "@id": "render_ui",
+        "@op": "agent.call",
+        "@agent": "agent.ui",
+        "@input": "heatmap_ast"
+      }
+    ]
+  }
+}

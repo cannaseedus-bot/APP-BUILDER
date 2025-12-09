@@ -1,0 +1,24 @@
+{
+  "@tape": "tape_system_rlhf_visualizer_v1",
+  "role": "rlhf_visualization",
+  "description": "Reads RLHF metrics and exposes a visualization-ready stream for the UI.",
+  "agents": ["agent.rlhf.visualizer"],
+  "autoloop": true,
+  "cycle_ms": 4000,
+
+  "pipeline": {
+    "@steps": [
+      {
+        "@id": "fetch_metrics",
+        "@op": "http.get",
+        "@endpoint": "/api/asxr/rlhf/metrics"
+      },
+      {
+        "@id": "aggregate",
+        "@op": "agent.call",
+        "@agent": "agent.rlhf.visualizer",
+        "@input": "metrics"
+      }
+    ]
+  }
+}

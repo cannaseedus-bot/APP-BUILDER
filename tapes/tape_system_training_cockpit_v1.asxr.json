@@ -1,0 +1,39 @@
+{
+  "@tape": "tape_system_training_cockpit_v1",
+  "role": "training_cockpit",
+  "description": "Central cockpit that coordinates RLHF metrics, memory heatmap, and training status.",
+  "agents": ["agent.cockpit.trainer", "agent.rlhf.visualizer", "agent.memory.heatmap", "agent.metrics"],
+  "autoloop": true,
+  "cycle_ms": 3000,
+
+  "pipeline": {
+    "@steps": [
+      {
+        "@id": "load_rlhf",
+        "@op": "http.get",
+        "@endpoint": "/api/asxr/rlhf/metrics"
+      },
+      {
+        "@id": "load_memory_heatmap",
+        "@op": "http.get",
+        "@endpoint": "/api/asxr/memory/heatmap"
+      },
+      {
+        "@id": "collect_metrics",
+        "@op": "agent.call",
+        "@agent": "agent.metrics",
+        "@input": "runtime_state"
+      },
+      {
+        "@id": "compose_cockpit_view",
+        "@op": "agent.call",
+        "@agent": "agent.cockpit.trainer",
+        "@input": {
+          "rlhf": "rlhf_metrics",
+          "memory": "memory_heatmap",
+          "runtime": "runtime_metrics"
+        }
+      }
+    ]
+  }
+}

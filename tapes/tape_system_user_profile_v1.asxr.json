@@ -1,0 +1,25 @@
+{
+  "@tape": "tape_system_user_profile_v1",
+  "role": "user_profile",
+  "description": "Maintains user profile + settings and synchronizes with /usr/profile.json and UI.",
+  "agents": ["agent.profile.manager"],
+  "autoloop": true,
+  "cycle_ms": 3000,
+
+  "pipeline": {
+    "@steps": [
+      {
+        "@id": "load_profile",
+        "@op": "vfs.read",
+        "@path": "/usr/profile.json",
+        "@default": { "user": null, "settings": {}, "created": null }
+      },
+      {
+        "@id": "sync_ui",
+        "@op": "agent.call",
+        "@agent": "agent.profile.manager",
+        "@input": "profile"
+      }
+    ]
+  }
+}
