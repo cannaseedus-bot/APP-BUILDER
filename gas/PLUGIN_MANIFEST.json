@@ -1,0 +1,160 @@
+{
+  "@context": "xjson://asxr/gas/plugins/v1",
+  "@v": "1.0.0",
+  "@law": "GAS_PLUGINS_WORDPRESS_STYLE_MODULAR_PUBLIC_PRIVATE",
+  "description": "GAS Plugin Registry - WordPress-style modular functions",
+
+  "core_plugins": [
+    {
+      "name": "API Shard",
+      "file": "core/api-shard.js",
+      "functions": ["doGet", "doPost"],
+      "endpoint": "",
+      "dependencies": [],
+      "tags": ["core", "api", "routing"],
+      "status": "active",
+      "modifiable": false,
+      "description": "Core API routing shard - requires merger request to modify"
+    },
+    {
+      "name": "Manifest Shard",
+      "file": "core/manifest-shard.js",
+      "functions": ["doGet"],
+      "endpoint": "https://script.google.com/macros/s/AKfycby_XiNPlU7KxrcXWzIB7eBFf8q1BiTUIbAitjkKi31nJtd3DvFK9k7Z7nIiFwJ4Py48/exec",
+      "dependencies": [],
+      "tags": ["core", "manifest", "config"],
+      "status": "active",
+      "modifiable": false,
+      "description": "Manifest serving shard - requires merger request to modify"
+    },
+    {
+      "name": "Shard Template",
+      "file": "core/shard-template.js",
+      "functions": ["doGet", "doPost"],
+      "endpoint": "",
+      "dependencies": [],
+      "tags": ["core", "template", "starter"],
+      "status": "template",
+      "modifiable": true,
+      "description": "Template for creating new shards - copy and modify freely"
+    }
+  ],
+
+  "agent_plugins": [
+    {
+      "name": "Backend AI Specialist",
+      "file": "agents/backend-ai-specialist.js",
+      "functions": ["doGet", "doPost"],
+      "endpoint": "",
+      "dependencies": [],
+      "tags": ["agent", "backend", "api", "specialist"],
+      "status": "active",
+      "modifiable": false,
+      "description": "Backend AI specialist agent - requires merger request to modify"
+    },
+    {
+      "name": "Design AI Specialist",
+      "file": "agents/design-ai-specialist.js",
+      "functions": ["doGet", "doPost"],
+      "endpoint": "",
+      "dependencies": [],
+      "tags": ["agent", "design", "ui", "specialist"],
+      "status": "active",
+      "modifiable": false,
+      "description": "Design AI specialist agent - requires merger request to modify"
+    },
+    {
+      "name": "Frontend AI Specialist",
+      "file": "agents/frontend-ai-specialist.js",
+      "functions": ["doGet", "doPost"],
+      "endpoint": "",
+      "dependencies": [],
+      "tags": ["agent", "frontend", "ui", "specialist"],
+      "status": "active",
+      "modifiable": false,
+      "description": "Frontend AI specialist agent - requires merger request to modify"
+    }
+  ],
+
+  "mx2lm_plugins": [
+    {
+      "name": "MX2LM Crown Foreman",
+      "file": "mx2lm/crown-foreman.js",
+      "functions": ["doGet", "doPost"],
+      "endpoint": "",
+      "dependencies": [],
+      "tags": ["mx2lm", "crown", "orchestrator"],
+      "status": "active",
+      "modifiable": false,
+      "description": "MX2LM crown orchestrator - requires merger request to modify"
+    },
+    {
+      "name": "MX2LM Foreman Shard",
+      "file": "mx2lm/foreman-shard.js",
+      "functions": ["doGet", "doPost"],
+      "endpoint": "",
+      "dependencies": [],
+      "tags": ["mx2lm", "foreman"],
+      "status": "active",
+      "modifiable": false,
+      "description": "MX2LM foreman shard - requires merger request to modify"
+    },
+    {
+      "name": "MX2LM Foreman Two Brain",
+      "file": "mx2lm/foreman-two-brain.js",
+      "functions": ["doGet", "doPost"],
+      "endpoint": "",
+      "dependencies": [],
+      "tags": ["mx2lm", "foreman", "dual-brain"],
+      "status": "active",
+      "modifiable": false,
+      "description": "MX2LM dual-brain foreman - requires merger request to modify"
+    },
+    {
+      "name": "MX2LM Frontend Builder",
+      "file": "mx2lm/frontend-builder.js",
+      "functions": ["doGet", "doPost", "mx2lmInit"],
+      "endpoint": "https://script.google.com/macros/s/AKfycbyWBaO1s-y1LZizMkqcB8mHtbWEcgngj4-rwGHCLaC3N-No2pn1OzYOvzdH-c89p6DM/exec",
+      "dependencies": [],
+      "tags": ["mx2lm", "frontend", "builder", "ui"],
+      "status": "active",
+      "modifiable": false,
+      "description": "MX2LM frontend builder with 5 micro-agents - requires merger request to modify"
+    }
+  ],
+
+  "user_plugins": [],
+
+  "plugin_guidelines": {
+    "modifiable": "Plugins marked 'modifiable: false' require a merger request to change",
+    "user_plugins": "Add your custom plugins to the 'user_plugins' array",
+    "public_vs_private": "Set 'public: true' for public plugins, 'public: false' for private",
+    "deployment": "Deploy to Google Apps Script and add endpoint URL",
+    "tags": "Use tags for categorization and filtering",
+    "dependencies": "List other plugins this plugin depends on",
+    "status_values": ["active", "inactive", "template", "deprecated", "testing"]
+  },
+
+  "sorting_system": {
+    "by_tag": "Filter plugins by tags (core, agent, mx2lm, user)",
+    "by_status": "Filter plugins by status (active, inactive, testing)",
+    "by_visibility": "Filter by public/private visibility",
+    "by_author": "Filter plugins by author name",
+    "search": "Full-text search across name, description, tags"
+  },
+
+  "example_user_plugin": {
+    "name": "My Custom RLHF Forum",
+    "file": "plugins/examples/rlhf-forum-plugin.js",
+    "functions": ["doGet", "doPost", "renderForum"],
+    "endpoint": "",
+    "dependencies": [],
+    "tags": ["user", "rlhf", "forum", "training"],
+    "status": "active",
+    "modifiable": true,
+    "public": true,
+    "author": "username",
+    "version": "1.0.0",
+    "description": "Custom RLHF forum plugin with green theme"
+  }
+}
