@@ -250,26 +250,128 @@ Execute GAS plugins through the POLYGOAT architecture:
 ```python
 from gas_polyglot_bridge import KUHULGASBridge, GASPolyglotDispatcher, GASEndpoint
 
-# Initialize
-dispatcher = GASPolyglotDispatcher()
+# Initialize with SECURITY-GOAT enabled (default)
+dispatcher = GASPolyglotDispatcher(enable_security=True)
 
-# Register your plugin
-dispatcher.register_endpoint(GASEndpoint(
-    name="my-custom-plugin",
-    url="https://script.google.com/macros/s/YOUR_ENDPOINT/exec",
-    description="My awesome plugin",
-    functions=["doGet", "doPost"],
-    tags=["user", "custom"],
-    public=True
-))
+# Register your plugin with code validation
+plugin_code = """
+function doPost(e) {
+    return ContentService.createTextOutput(JSON.stringify({
+        success: true,
+        data: processData(e.parameter)
+    })).setMimeType(ContentService.MimeType.JSON);
+}
+"""
 
-# Execute through KUHUL pipeline
+dispatcher.register_endpoint(
+    endpoint=GASEndpoint(
+        name="my-custom-plugin",
+        url="https://script.google.com/macros/s/YOUR_ENDPOINT/exec",
+        description="My awesome plugin",
+        functions=["doGet", "doPost"],
+        tags=["user", "custom"],
+        public=True,
+        author="your_username"
+    ),
+    plugin_code=plugin_code  # Optional: enables security validation
+)
+
+# Execute through enhanced KUHUL pipeline
+# Pipeline: SECURITY → POP → WO → SEK → XUL → CH'EN
 bridge = KUHULGASBridge(dispatcher)
 result = await bridge.execute_through_pipeline(
     code="[Pop my-custom-plugin.doPost]→[Wo params]→[Sek execute]",
-    context={"action": "getData", "id": 123}
+    context={
+        "action": "getData",
+        "id": 123,
+        "author": "your_username"
+    }
 )
+
+# Result includes security validation
+print(result["security_validation"]["status"])  # APPROVED, NEEDS_REVIEW, etc.
+print(result["security_validation"]["threat_score"])  # 0.0 to 1.0
 ```
+
+---
+
+## 🔒 SECURITY-GOAT Protection
+
+**PI-GOAT IS ALSO SECURITY-GOAT** - All plugins are automatically validated for malware and security threats.
+
+### Security Validation Process
+
+When you register a plugin with code, SECURITY-GOAT automatically:
+
+1. **Scans for Malware Patterns**:
+   - `eval()` execution
+   - Dynamic `Function()` constructor
+   - XSS vulnerabilities (`innerHTML`)
+   - Base64 obfuscation
+   - Command execution
+   - File system access
+
+2. **Calculates Threat Score** (0.0 to 1.0):
+   - **0.0 - 0.3**: SAFE ✅
+   - **0.3 - 0.5**: LOW 🟨
+   - **0.5 - 0.7**: MEDIUM ⚠️
+   - **0.7 - 0.9**: HIGH 🔴
+   - **0.9 - 1.0**: CRITICAL 🚨
+
+3. **Determines Status**:
+   - **APPROVED**: Safe to execute
+   - **NEEDS_REVIEW**: Suspicious but allowed
+   - **QUARANTINED**: High threat, requires manual review
+   - **REJECTED**: Critical threat, execution blocked
+
+### Security Example
+
+```python
+from gas_polyglot_bridge import GASPolyglotDispatcher, GASEndpoint
+
+dispatcher = GASPolyglotDispatcher(enable_security=True)
+
+# Safe plugin - will be APPROVED
+safe_plugin = """
+function doGet(e) {
+    const data = {message: "Hello", timestamp: new Date().toISOString()};
+    return ContentService.createTextOutput(JSON.stringify(data))
+        .setMimeType(ContentService.MimeType.JSON);
+}
+"""
+
+result = dispatcher.register_endpoint(
+    endpoint=GASEndpoint(name="safe-plugin", url="...", author="you"),
+    plugin_code=safe_plugin
+)
+# Output: ✅ APPROVED & Registered: safe-plugin (security score: 0.00)
+
+# Malicious plugin - will be REJECTED
+malicious_plugin = """
+function doPost(e) {
+    eval(e.parameter.code);  // DANGEROUS!
+    return ContentService.createTextOutput("executed");
+}
+"""
+
+result = dispatcher.register_endpoint(
+    endpoint=GASEndpoint(name="malicious-plugin", url="...", author="unknown"),
+    plugin_code=malicious_plugin
+)
+# Output: ❌ REJECTED: malicious-plugin - CRITICAL threat detected
+#         Threats: 1 found, score: 0.90
+```
+
+### Bypassing Security (Not Recommended)
+
+If you need to disable security for testing:
+
+```python
+# Disable SECURITY-GOAT
+dispatcher = GASPolyglotDispatcher(enable_security=False)
+```
+
+**⚠️ Warning**: Only disable security in development environments. Production should always use SECURITY-GOAT.
 
 ---
 

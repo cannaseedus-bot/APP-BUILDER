@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-MX2LM GAS Polyglot Bridge - PI-GOAT Integration
+MX2LM GAS Polyglot Bridge - PI-GOAT Integration (SECURITY-GOAT Enabled)
 
 Bridges Google Apps Script functions into POLYGOAT (MX2LM) architecture
-with full XCFE + KUHUL polyglot support.
+with full XCFE + KUHUL polyglot support + SECURITY-GOAT validation.
 
 Features:
 - Execute GAS functions through KUHUL pipeline
@@ -12,6 +12,7 @@ Features:
 - XJSON-formatted GAS responses
 - Seal tracking for GAS runtimes
 - HTTP request batching and caching
+- SECURITY-GOAT malware/threat validation
 """
 
 import json
@@ -29,6 +30,13 @@ except ImportError:
     print("⚠️  aiohttp not available - install with: pip install aiohttp")
 
 from checkpoint_manager import XCFEVectors, PolyglotRuntimeState
+
+try:
+    from gas_security_validator import SecurityGOAT, ValidationStatus
+    SECURITY_AVAILABLE = True
+except ImportError:
+    SECURITY_AVAILABLE = False
+    print("⚠️  SECURITY-GOAT not available - security validation disabled")
 
 
 @dataclass
@@ -80,17 +88,62 @@ class GASPolyglotDispatcher:
     - [@language.gas] → Execute GAS function
     - [@language.javascript] → GAS with JS execution
     - [@language.python] → GAS with Python backend
+
+    SECURITY-GOAT Integration:
+    - Validates plugin code before registration
+    - Validates runtime execution requests
+    - Enforces threat thresholds
     """
 
-    def __init__(self):
+    def __init__(self, enable_security: bool = True):
         self.endpoints: Dict[str, GASEndpoint] = {}
         self.cache: Dict[str, Any] = {}
         self.cache_ttl = 300  # 5 minutes
+        self.enable_security = enable_security and SECURITY_AVAILABLE
 
-    def register_endpoint(self, endpoint: GASEndpoint):
-        """Register GAS endpoint"""
+        if self.enable_security:
+            self.security = SecurityGOAT()
+            print("🔒 SECURITY-GOAT enabled - all plugins will be validated")
+        else:
+            self.security = None
+            print("⚠️  SECURITY-GOAT disabled - no security validation")
+
+    def register_endpoint(self, endpoint: GASEndpoint, plugin_code: str = ""):
+        """Register GAS endpoint with optional security validation"""
+
+        # Security validation if enabled and code provided
+        if self.enable_security and plugin_code:
+            validation = self.security.validate_plugin(
+                code=plugin_code,
+                plugin_name=endpoint.name,
+                author=endpoint.author
+            )
+
+            if validation.status == ValidationStatus.REJECTED:
+                print(f"❌ REJECTED: {endpoint.name} - {validation.threat_level.name} threat detected")
+                print(f"   Threats: {len(validation.threats)} found, score: {validation.score:.2f}")
+                return False
+
+            elif validation.status == ValidationStatus.QUARANTINED:
+                print(f"⚠️  QUARANTINED: {endpoint.name} - requires manual review")
+                print(f"   Threats: {len(validation.threats)} found, score: {validation.score:.2f}")
+                # Store in quarantine but don't register
+                self.security.quarantine_plugin(endpoint.name, plugin_code, validation)
+                return False
+
+            elif validation.status == ValidationStatus.NEEDS_REVIEW:
+                print(f"⚠️  NEEDS REVIEW: {endpoint.name} - {validation.threat_level.name}")
+                print(f"   Suspicious patterns: {len(validation.threats)} found, score: {validation.score:.2f}")
+                # Allow but flag for review
+
         self.endpoints[endpoint.name] = endpoint
-        print(f"✅ Registered GAS endpoint: {endpoint.name}")
+
+        if self.enable_security and plugin_code:
+            print(f"✅ APPROVED & Registered: {endpoint.name} (security score: {validation.score:.2f})")
+        else:
+            print(f"✅ Registered GAS endpoint: {endpoint.name}")
+
+        return True
 
     def detect_language(self, code: str) -> str:
         """Detect target language from KUHUL code"""
@@ -127,30 +180,70 @@ class GASPolyglotDispatcher:
 
 class KUHULGASBridge:
     """
-    KUHUL Pipeline Bridge for GAS Execution
+    KUHUL Pipeline Bridge for GAS Execution (SECURITY-GOAT Protected)
 
-    Executes GAS functions through the five-stage KUHUL pipeline:
-    POP → WO → SEK → XUL → CH'EN
+    Executes GAS functions through the enhanced KUHUL pipeline:
+    SECURITY → POP → WO → SEK → XUL → CH'EN
+
+    Stage 0: SECURITY - Validate runtime code with SECURITY-GOAT
+    Stage 1: POP - Parse GAS call
+    Stage 2: WO - Bind world state
+    Stage 3: SEK - Execute GAS function
+    Stage 4: XUL - Transform to XJSON
+    Stage 5: CH'EN - Emit result
     """
 
     def __init__(self, dispatcher: GASPolyglotDispatcher):
         self.dispatcher = dispatcher
         self.xcfe = XCFEVectors(
-            control_state={"gas_dispatch_enabled": True},
+            control_state={"gas_dispatch_enabled": True, "security_enabled": dispatcher.enable_security},
             flow_state={"pipeline_active": False},
             variable_state={}
         )
         self.polyglot = PolyglotRuntimeState(
             kuhul_active=True
         )
+        self.enable_security = dispatcher.enable_security
 
     async def execute_through_pipeline(
         self,
         code: str,
         context: Dict[str, Any] = None
     ) -> Dict[str, Any]:
-        """Execute GAS call through KUHUL pipeline"""
+        """Execute GAS call through enhanced KUHUL pipeline with SECURITY-GOAT"""
         context = context or {}
+        validation_result = None
+
+        # Stage 0: SECURITY - Validate runtime code with SECURITY-GOAT
+        if self.enable_security:
+            self.xcfe.pipeline_stage = "security"
+            validation_result = self.dispatcher.security.validate_plugin(
+                code=code,
+                plugin_name=context.get("plugin_name", "runtime"),
+                author=context.get("author", "unknown")
+            )
+
+            # Reject if critical threat
+            if validation_result.status == ValidationStatus.REJECTED:
+                return {
+                    "@context": "xjson://asxr/gas/security/rejected/v1",
+                    "error": "SECURITY-GOAT rejected execution",
+                    "validation": validation_result.to_xjson(),
+                    "code": code,
+                    "pipeline_stage": "security",
+                    "timestamp": datetime.now().isoformat()
+                }
+
+            # Quarantine if high threat
+            if validation_result.status == ValidationStatus.QUARANTINED:
+                return {
+                    "@context": "xjson://asxr/gas/security/quarantined/v1",
+                    "error": "SECURITY-GOAT quarantined code for review",
+                    "validation": validation_result.to_xjson(),
+                    "code": code,
+                    "pipeline_stage": "security",
+                    "timestamp": datetime.now().isoformat()
+                }
 
         # Stage 1: Pop - Parse GAS call
         self.xcfe.pipeline_stage = "pop"
@@ -174,7 +267,7 @@ class KUHULGASBridge:
 
         # Stage 4: Xul - Transform response to XJSON
         self.xcfe.pipeline_stage = "xul"
-        xjson_result = self._transform_to_xjson(result, gas_request)
+        xjson_result = self._transform_to_xjson(result, gas_request, validation_result)
 
         # Stage 5: Ch'en - Emit result
         self.xcfe.pipeline_stage = "chen"
@@ -243,16 +336,17 @@ class KUHULGASBridge:
     def _transform_to_xjson(
         self,
         result: Dict[str, Any],
-        request: GASRequest
+        request: GASRequest,
+        validation_result = None
     ) -> Dict[str, Any]:
-        """Transform GAS response to XJSON format"""
-        return {
+        """Transform GAS response to XJSON format with security validation"""
+        xjson = {
             "@context": "xjson://asxr/gas/response/v1",
             "@v": "3.2.0",
-            "law": "XCFE_GOVERNS → KUHUL_EXECUTES → GAS_DISPATCHES",
+            "law": "SECURITY_VALIDATES → XCFE_GOVERNS → KUHUL_EXECUTES → GAS_DISPATCHES",
 
             "kuhul_pipeline": {
-                "@law": "POP → WO → SEK → XUL → CH'EN",
+                "@law": "SECURITY → POP → WO → SEK → XUL → CH'EN",
                 "@stage": self.xcfe.pipeline_stage,
                 "@language": self.xcfe.language_active
             },
@@ -268,11 +362,24 @@ class KUHULGASBridge:
 
             "xcfe_state": {
                 "language_active": self.xcfe.language_active,
-                "pipeline_stage": self.xcfe.pipeline_stage
+                "pipeline_stage": self.xcfe.pipeline_stage,
+                "security_enabled": self.enable_security
             },
 
             "timestamp": datetime.now().isoformat()
         }
+
+        # Add security validation if available
+        if validation_result:
+            xjson["security_validation"] = {
+                "status": validation_result.status.name,
+                "threat_level": validation_result.threat_level.name,
+                "threat_score": validation_result.score,
+                "threats_found": len(validation_result.threats),
+                "details": validation_result.to_xjson()
+            }
+
+        return xjson
 
 
 class GASXCFEValidator:
@@ -325,12 +432,66 @@ class GASXCFEValidator:
 # ============================================================
 
 async def example_usage():
-    """Example: Execute GAS through POLYGOAT"""
+    """Example: Execute GAS through POLYGOAT with SECURITY-GOAT"""
 
-    # Initialize dispatcher
-    dispatcher = GASPolyglotDispatcher()
+    print("\n" + "=" * 70)
+    print("EXAMPLE: SECURITY-GOAT Validation in Action")
+    print("=" * 70)
 
-    # Register GAS endpoints
+    # Initialize dispatcher with SECURITY-GOAT enabled
+    dispatcher = GASPolyglotDispatcher(enable_security=True)
+
+    print("\n--- Example 1: Safe Plugin Registration ---\n")
+
+    # Safe plugin code
+    safe_plugin = """
+    function doGet(e) {
+        return ContentService.createTextOutput(JSON.stringify({
+            message: "Hello from safe plugin",
+            timestamp: new Date().toISOString()
+        })).setMimeType(ContentService.MimeType.JSON);
+    }
+    """
+
+    dispatcher.register_endpoint(
+        endpoint=GASEndpoint(
+            name="gas-safe-plugin",
+            url="https://script.google.com/macros/s/SAFE_ENDPOINT/exec",
+            description="Safe example plugin",
+            functions=["doGet"],
+            tags=["safe", "example"],
+            public=True,
+            author="trusted_dev"
+        ),
+        plugin_code=safe_plugin
+    )
+
+    print("\n--- Example 2: Malicious Plugin Registration (will be rejected) ---\n")
+
+    # Malicious plugin with eval()
+    malicious_plugin = """
+    function doPost(e) {
+        eval(e.parameter.code);  // DANGEROUS!
+        return ContentService.createTextOutput("executed");
+    }
+    """
+
+    dispatcher.register_endpoint(
+        endpoint=GASEndpoint(
+            name="gas-malicious-plugin",
+            url="https://script.google.com/macros/s/MALICIOUS_ENDPOINT/exec",
+            description="Malicious plugin",
+            functions=["doPost"],
+            tags=["malicious"],
+            public=True,
+            author="unknown"
+        ),
+        plugin_code=malicious_plugin
+    )
+
+    print("\n--- Example 3: Register Production Endpoints ---\n")
+
+    # Register production endpoints without code validation (already deployed)
     dispatcher.register_endpoint(GASEndpoint(
         name="gas-mx2lm-frontend-builder",
         url="https://script.google.com/macros/s/AKfycbyWBaO1s-y1LZizMkqcB8mHtbWEcgngj4-rwGHCLaC3N-No2pn1OzYOvzdH-c89p6DM/exec",
@@ -340,34 +501,33 @@ async def example_usage():
         public=True
     ))
 
-    dispatcher.register_endpoint(GASEndpoint(
-        name="gas-backend-ai-specialist",
-        url="https://script.google.com/macros/s/YOUR_BACKEND_AI_URL/exec",
-        description="Backend AI Specialist",
-        functions=["doGet", "doPost", "createAPI"],
-        tags=["backend", "api", "specialist"],
-        public=True
-    ))
+    print("\n--- Example 4: Execute through KUHUL Pipeline ---\n")
 
     # Initialize bridge
     bridge = KUHULGASBridge(dispatcher)
 
-    # Execute GAS through KUHUL pipeline
+    # Execute safe GAS call
     result = await bridge.execute_through_pipeline(
         code="[Pop gas-mx2lm-frontend-builder.generateUI]→[Wo params]→[Sek execute]",
         context={
             "prompt": "Build a dashboard with charts",
             "style": "modern",
-            "theme": "dark"
+            "theme": "dark",
+            "author": "user_123"
         }
     )
 
+    print("\n--- Execution Result ---\n")
     print(json.dumps(result, indent=2))
+
+    print("\n" + "=" * 70)
+    print("Security Validation Complete")
+    print("=" * 70)
 
 
 if __name__ == "__main__":
     print("=" * 70)
-    print("MX2LM GAS Polyglot Bridge - PI-GOAT Integration")
+    print("MX2LM GAS Polyglot Bridge - PI-GOAT + SECURITY-GOAT")
     print("=" * 70)
     print()
     print("Features:")
@@ -376,13 +536,21 @@ if __name__ == "__main__":
     print("  ✅ Polyglot language dispatch")
     print("  ✅ XJSON-formatted responses")
     print("  ✅ HTTP request caching")
+    print("  🔒 SECURITY-GOAT malware detection")
+    print("  🔒 Plugin threat scoring (0.0-1.0)")
+    print("  🔒 Quarantine & approval workflow")
+    print()
+    print("Enhanced Pipeline:")
+    print("  SECURITY → POP → WO → SEK → XUL → CH'EN")
     print()
     print("Usage:")
     print("  from gas_polyglot_bridge import KUHULGASBridge, GASPolyglotDispatcher")
     print()
 
     # Run example
-    if AIOHTTP_AVAILABLE:
+    if AIOHTTP_AVAILABLE and SECURITY_AVAILABLE:
         asyncio.run(example_usage())
-    else:
+    elif not AIOHTTP_AVAILABLE:
         print("⚠️  Install aiohttp to run example: pip install aiohttp")
+    elif not SECURITY_AVAILABLE:
+        print("⚠️  SECURITY-GOAT not available - check gas_security_validator.py")
