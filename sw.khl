@@ -1,15 +1,30 @@
 /* ============================================================
-   sw.khl — K'UHUL KERNEL ROM CARTRIDGE Ω.∞.Ω
-   ASX Ghost OS - Complete 3-file ROM
+   sw.khl — KERNEL HYPER LANGUAGE (KHL) ROM CARTRIDGE Ω.∞.Ω
+   ASX Ghost OS - C@@L ATOMIC BLOCK Architecture
 
-   This file contains BOTH:
-   - JSON AST (manifest data)
-   - K'UHUL kernel code
+   This file contains:
+   - Embedded manifest_ast (JSON AST data blob)
+   - C@@L ATOMIC VECTORS (control flow primitives)
+   - C@@L ATOMIC VARIABLES (state containers)
+   - ATOMIC BLOCK DATA (execution logic)
 
-   K'UHUL is JSON blocks + execution logic
+   K'UHUL executes C@@L BLOCKS directly
+   manifest.json + sw.js = data shufflers (PWA compliance)
    ============================================================ */
 
-⟁ kuhul_kernel
+⟁ KERNEL_HYPER_LANGUAGE_v1 ⟁
+
+  /* ==========================================================
+     META + VERSION
+     ========================================================== */
+  [Pop meta]
+    [Wo "sw.khl"]→[Ch'en kernel_name]
+    [Wo "Ω.∞.Ω"]→[Ch'en kernel_version]
+    [Wo "ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK"]→[Ch'en atomic_law]
+    [Wo "|OS⟩⊗|UI⟩⊗|AI⟩⊗|RUNTIME⟩⊗|RAM⟩"]→[Ch'en quantum_state]
+    [Wo "three_file_rom_with_cool_blocks"]→[Ch'en architecture]
+  [Xul]
+
 
   /* ==========================================================
      JSON AST - OS MANIFEST (Embedded ROM Data)
@@ -387,218 +402,348 @@
 
 
   /* ==========================================================
-     K'UHUL KERNEL EXECUTION LOGIC
+     C@@L ATOMIC VECTORS (Control Flow Primitives)
      ========================================================== */
+  ⟁ COOL_ATOMIC_VECTORS ⟁
 
-  /* META + VERSION */
-  ⟁Wo⟁ meta {
-    "name": "sw.khl",
-    "version": "Ω.∞.Ω",
-    "law": "ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK",
-    "quantum_state": "|OS⟩⊗|UI⟩⊗|AI⟩⊗|RUNTIME⟩⊗|RAM⟩",
-    "architecture": "three_file_rom_with_embedded_ast"
-  }
+    // Conditional execution
+    @if_then_else = [@if condition]→[@then consequent]→[@else alternative]
 
-  /* 1) DNS AUTHORITY */
-  ⟁Wo⟁ dns_authority_init
-    ⟁Sek⟁ dns_init_zones(manifest_ast.dns.zones)
-      ⟁Xul⟁ dns_register("xjson.app", "ghost-shell")
-      ⟁Xul⟁ dns_register("rig.xjson.app", "asx-rig")
-      ⟁Xul⟁ dns_register("hive.xjson.app", "multi-hive")
-      ⟁Xul⟁ dns_register("local.rig", "ghost-local")
-    ⟁Xul⟁
-  ⟁Xul⟁
+    // Loop execution
+    @loop = [@loop condition]→[body]→[@break|@continue]
 
-  /* 2) REST MESH */
-  ⟁Wo⟁ rest_mesh_init {
-    "/xjson/compile":    xjson_compile_handler,
-    "/xjson/eval":       xjson_eval_handler,
-    "/klh/router":       klh_router_handler,
-    "/hive/exec":        hive_exec_handler,
-    "/os/state":         os_state_handler,
-    "/scxq2/compress":   scxq2_compress_handler,
-    "/scxq2/decompress": scxq2_decompress_handler,
-    "/trainer/start":    trainer_start_handler,
-    "/trainer/status":   trainer_status_handler,
-    "/prime/modules":    prime_modules_handler,
-    "/basher/run":       basher_run_handler,
-    "/health":           os_health_handler,
-    "/tapes/list":       tapes_list_handler,
-    "/tapes/boot":       tapes_boot_handler,
-    "/tapes/load":       tapes_load_handler,
-    "/ram/get":          ram_get_handler,
-    "/ram/set":          ram_set_handler,
-    "/ram/list":         ram_list_handler,
-    "/mx2db/put":        mx2db_put_handler,
-    "/mx2db/query":      mx2db_query_handler
-  }
+    // Switch/dispatch
+    @dispatch = [@dispatch value]→[@case1|@case2|…|@default]
 
-  /* 3) K'UHUL + K'UHUL π ENGINES */
-  ⟁Wo⟁ kuhul_engine_init
-    ⟁Sek⟁ kuhul_init(manifest_ast.kuhul_folds)
-      ⟁Xul⟁ fold_activate("ai")
-      ⟁Xul⟁ fold_activate("ui")
-      ⟁Xul⟁ fold_activate("runtime")
-      ⟁Xul⟁ fold_activate("os")
-      ⟁Xul⟁ fold_activate("tapes")
-      ⟁Xul⟁ fold_activate("dns")
-      ⟁Xul⟁ fold_activate("mesh")
-      ⟁Xul⟁ fold_activate("security")
-      ⟁Xul⟁ fold_activate("trainer")
-      ⟁Xul⟁ fold_activate("rlhf")
-      ⟁Xul⟁ fold_activate("quantum")
-      ⟁Xul⟁ fold_activate("atomic")
-    ⟁Xul⟁
-  ⟁Xul⟁
+    // Microagent execution
+    @microagent = [@agent.spawn]→[@agent.assign_task]→[@agent.execute]→[@agent.merge_results]
 
-  ⟁Wo⟁ pi_engine_init
-    ⟁Sek⟁ pi_init(manifest_ast.pi_scripts)
-    ⟁Xul⟁
-  ⟁Xul⟁
+  ⟁ Xul ⟁
 
-  /* 4) KLH MULTI-HIVE ROUTER */
-  ⟁Wo⟁ klh_router_init
-    ⟁Sek⟁ klh_mount(manifest_ast.hive.shards)
-    ⟁Xul⟁
-  ⟁Xul⟁
 
-  /* 5) SCXQ2 ENGINE (Compression/Cipher) */
-  ⟁Wo⟁ scx_engine_init
-    ⟁Sek⟁ scxq2_init(manifest_ast.scxq2)
-    ⟁Xul⟁
-  ⟁Xul⟁
+  /* ==========================================================
+     C@@L ATOMIC VARIABLES (State Containers)
+     ========================================================== */
+  ⟁ COOL_ATOMIC_VARIABLES ⟁
 
-  /* 6) ASX-RAM / MX2DB BINDINGS */
-  ⟁Wo⟁ asx_ram_init
-    ⟁Sek⟁ asx_ram_mount(manifest_ast.asx_ram)
-      ⟁Xul⟁ ram_create_store("os")
-      ⟁Xul⟁ ram_create_store("ui")
-      ⟁Xul⟁ ram_create_store("tapes")
-      ⟁Xul⟁ ram_create_store("rlhf")
-      ⟁Xul⟁ ram_create_store("trainer")
-    ⟁Xul⟁
-  ⟁Xul⟁
+    @kernel_state = [
+      @kernel_version,
+      @boot_count,
+      @uptime,
+      @law
+    ]
 
-  ⟁Wo⟁ mx2db_init
-    ⟁Sek⟁ mx2db_mount(manifest_ast.mx2db)
-      ⟁Xul⟁ db_create_table("n_grams")
-      ⟁Xul⟁ db_create_table("supagrams")
-      ⟁Xul⟁ db_create_table("rlhf_traces")
-      ⟁Xul⟁ db_create_table("agent_state")
-      ⟁Xul⟁ db_create_table("training_history")
-      ⟁Xul⟁ db_create_table("tapes")
-    ⟁Xul⟁
-  ⟁Xul⟁
+    @agent_state = [
+      @agent_id,
+      @agent_role,
+      @task_queue,
+      @completion_status,
+      @rlhf_score
+    ]
 
-  /* 7) DOM ENGINE (K'UHUL DOM OPS) */
-  ⟁Wo⟁ dom_engine_init
-    ⟁Sek⟁ dom_bind(manifest_ast.dom_runtime)
-      ⟁Xul⟁ dom_set_mount("#asx-ghost-root")
-      ⟁Xul⟁ dom_load_templates(manifest_ast.atomic.templates)
-      ⟁Xul⟁ dom_inject_atomic_css(manifest_ast.atomic)
-    ⟁Xul⟁
-  ⟁Xul⟁
+    @tape_state = [
+      @tape_id,
+      @boot_status,
+      @active_surface,
+      @ram_bindings
+    ]
 
-  /* 8) TAPE RUNTIME + LOADER */
-  ⟁Sek⟁ tape_boot(tape_id)
-    ⟁Sek⟁ tape_def ← manifest_ast.tapes[tape_id]
+    @runtime_state = [
+      @cpu_status,
+      @gpu_status,
+      @tpu_status,
+      @execution_queue
+    ]
 
-    ⟁Pop⟁ tape_security_check
-      ⟁Xul⟁ validate_tape_signature(tape_def)
-      ⟁Xul⟁ validate_tape_permissions(tape_def)
-    ⟁Xul⟁
+    @ram_state = [
+      @os_state,
+      @ui_state,
+      @tapes_registry,
+      @rlhf_data,
+      @trainer_metrics
+    ]
 
-    ⟁Sek⟁ tape_load ← fetch(tape_def.entry)
-    ⟁Sek⟁ tape_xjson ← parse_xjson(tape_load)
+  ⟁ Xul ⟁
 
-    ⟁Sek⟁ kuhul_run_hooks(tape_xjson.@kuhul_hooks.@Pop)
-    ⟁Wo⟁  kuhul_run_hooks(tape_xjson.@kuhul_hooks.@Wo)
-    ⟁Sek⟁ dom_render(tape_xjson.@atomic_layout)
-    ⟁Sek⟁ kuhul_run_hooks(tape_xjson.@kuhul_hooks.@Sek)
-    ⟁Xul⟁ kuhul_run_hooks(tape_xjson.@kuhul_hooks.@Xul)
 
-    ⟁Xul⟁ ram_set("os.active_tape", tape_id)
-    ⟁Xul⟁ log("Tape booted: " + tape_id)
-  ⟁Xul⟁
+  /* ==========================================================
+     1) DNS AUTHORITY INIT (C@@L BLOCK)
+     ========================================================== */
+  [Pop dns_authority_init]
+    [Wo manifest_ast.dns.zones]→[Ch'en zones]
 
-  ⟁Sek⟁ tape_list
-    ⟁Xul⟁ return Object.keys(manifest_ast.tapes)
-  ⟁Xul⟁
+    [@loop @for zone in zones]→[
+      [Wo zone.name]→[Ch'en zone_name]
+      [Wo zone.target]→[Ch'en zone_target]
+      [Yax zone_name zone_target]→[Sek dns_register]
+    ]
 
-  ⟁Sek⟁ tape_load_from_db(tape_id)
-    ⟁Sek⟁ tape_xjson ← mx2db_query("tapes", { id: tape_id })
-    ⟁Xul⟁ return tape_xjson
-  ⟁Xul⟁
+    [Wo "DNS zones registered"]→[Sek log]
+  [Xul]
 
-  /* 9) SYSTEM TAPES AUTO-BOOT */
-  ⟁Wo⟁ system_tapes_boot
-    ⟁Sek⟁ tape_boot("tape_system_boot_hud_v1")
-    ⟁Sek⟁ tape_boot("tape_system_auto_recovery_v1")
-    ⟁Sek⟁ tape_boot("tape_system_trinity_runtime_v1")
-    ⟁Sek⟁ tape_boot("tape_system_asx_ram_manager_v1")
-  ⟁Xul⟁
 
-  /* 10) FOLD KERNEL (K'UHUL FOLDS INTEGRATION) */
-  ⟁Wo⟁ folds_init
-    ⟁Sek⟁ kuhul_folds_mount(manifest_ast.kuhul_folds)
-    ⟁Xul⟁
-  ⟁Xul⟁
+  /* ==========================================================
+     2) REST MESH INIT (C@@L BLOCK)
+     ========================================================== */
+  [Pop rest_mesh_init]
+    [Wo manifest_ast.rest_mesh.routes]→[Ch'en routes]
 
-  /* 11) AUTO-RECOVERY HOOK */
-  ⟁Xul⟁ kernel_panic(reason)
-    ⟁Xul⟁ log("KERNEL PANIC: " + reason)
-    ⟁Xul⟁ tape_boot("tape_system_auto_recovery_v1")
-  ⟁Xul⟁
+    [@loop @for route_path in routes]→[
+      [Wo routes[route_path]]→[Ch'en route_def]
+      [Wo route_path]→[Ch'en path]
+      [Yax path route_def]→[Sek rest_mesh_register]
+    ]
 
-  /* 12) HEALTH CHECK */
-  ⟁Sek⟁ os_health_check
-    ⟁Xul⟁ return {
+    [Wo "REST mesh initialized"]→[Sek log]
+  [Xul]
+
+
+  /* ==========================================================
+     3) K'UHUL FOLDS INIT (C@@L BLOCK)
+     ========================================================== */
+  [Pop kuhul_folds_init]
+    [Wo manifest_ast.kuhul_folds]→[Ch'en folds]
+
+    [@loop @for fold_name in folds]→[
+      [Wo fold_name]→[Ch'en name]
+      [Wo folds[fold_name].status]→[Ch'en status]
+
+      [@if status == "active"]→[@then
+        [Wo name]→[Sek fold_activate]
+        [Wo "Fold activated: " + name]→[Sek log]
+      ]
+    ]
+
+    [Wo "K'UHUL folds initialized"]→[Sek log]
+  [Xul]
+
+
+  /* ==========================================================
+     4) ASX-RAM INIT (C@@L BLOCK)
+     ========================================================== */
+  [Pop asx_ram_init]
+    [Wo manifest_ast.asx_ram]→[Ch'en ram_config]
+    [Wo ram_config.keys]→[Ch'en keys_by_category]
+
+    [@loop @for category in keys_by_category]→[
+      [Wo keys_by_category[category]]→[Ch'en keys]
+
+      [@loop @for key in keys]→[
+        [Wo key]→[Yax null]→[Sek ram_create_key]
+      ]
+    ]
+
+    [Wo "ASX-RAM initialized"]→[Sek log]
+  [Xul]
+
+
+  /* ==========================================================
+     5) MX2DB INIT (C@@L BLOCK)
+     ========================================================== */
+  [Pop mx2db_init]
+    [Wo manifest_ast.mx2db]→[Ch'en db_config]
+    [Wo db_config.tables]→[Ch'en tables]
+
+    [@loop @for table_name in tables]→[
+      [Wo table_name]→[Sek db_create_table]
+      [Wo "Table created: " + table_name]→[Sek log]
+    ]
+
+    [Wo "MX2DB initialized"]→[Sek log]
+  [Xul]
+
+
+  /* ==========================================================
+     6) DOM ENGINE INIT (C@@L BLOCK)
+     ========================================================== */
+  [Pop dom_engine_init]
+    [Wo manifest_ast.dom_runtime]→[Ch'en dom_config]
+    [Wo dom_config.mount_point]→[Ch'en mount_point]
+
+    [Wo mount_point]→[Sek dom_set_mount]
+
+    [Wo manifest_ast.atomic.templates]→[Ch'en templates]
+    [Wo templates]→[Sek dom_load_templates]
+
+    [Wo manifest_ast.atomic]→[Ch'en atomic_css]
+    [Wo atomic_css]→[Sek dom_inject_atomic_css]
+
+    [Wo "DOM engine initialized"]→[Sek log]
+  [Xul]
+
+
+  /* ==========================================================
+     7) TAPE BOOT (C@@L BLOCK with DISPATCH)
+     ========================================================== */
+  [Pop tape_boot]
+    [Wo @tape_id]→[Ch'en tape_id]
+    [Wo manifest_ast.tapes[tape_id]]→[Ch'en tape_def]
+
+    // Security check
+    [Wo tape_def]→[Sek validate_tape_signature]→[Ch'en sig_valid]
+
+    [@if sig_valid == false]→[@then
+      [Wo "SECURITY VIOLATION: Invalid tape signature"]→[Sek error]
+      [Xul]
+    ]
+
+    // Fetch and parse tape
+    [Wo tape_def.entry]→[Sek fetch]→[Ch'en tape_data]
+    [Wo tape_data]→[Sek parse_xjson]→[Ch'en tape_xjson]
+
+    // Execute K'UHUL hooks in pipeline order
+    [Wo tape_xjson.@kuhul_hooks.@Pop]→[Sek kuhul_run_hooks]
+    [Wo tape_xjson.@kuhul_hooks.@Wo]→[Sek kuhul_run_hooks]
+    [Wo tape_xjson.@atomic_layout]→[Sek dom_render]
+    [Wo tape_xjson.@kuhul_hooks.@Sek]→[Sek kuhul_run_hooks]
+    [Wo tape_xjson.@kuhul_hooks.@Xul]→[Sek kuhul_run_hooks]
+
+    // Update RAM state
+    [Wo tape_id]→[Yax "os.active_tape"]→[Sek ram_set]
+    [Wo "Tape booted: " + tape_id]→[Sek log]
+  [Xul]
+
+
+  /* ==========================================================
+     8) TAPE LIST (C@@L BLOCK)
+     ========================================================== */
+  [Pop tape_list]
+    [Wo manifest_ast.tapes]→[Sek Object.keys]→[Ch'en tape_ids]
+    [Wo tape_ids]→[Xul return]
+  [Xul]
+
+
+  /* ==========================================================
+     9) SYSTEM TAPES AUTO-BOOT (C@@L BLOCK with LOOP)
+     ========================================================== */
+  [Pop system_tapes_autoboot]
+    [Wo manifest_ast.tapes]→[Ch'en all_tapes]
+
+    [@loop @for tape_id in all_tapes]→[
+      [Wo all_tapes[tape_id]]→[Ch'en tape_def]
+
+      [@if tape_def.boot == true]→[@then
+        [Wo tape_id]→[Sek tape_boot]
+        [Wo "Auto-booted: " + tape_id]→[Sek log]
+      ]
+    ]
+
+    [Wo "System tapes auto-boot complete"]→[Sek log]
+  [Xul]
+
+
+  /* ==========================================================
+     10) AGENT SPAWN (C@@L BLOCK with MICROAGENT)
+     ========================================================== */
+  [Pop agent_spawn]
+    [Wo @agent_id]→[Ch'en agent_id]
+    [Wo manifest_ast.agents[agent_id]]→[Ch'en agent_def]
+
+    [@microagent]
+      →[@agent.spawn agent_id]→[Ch'en spawned_agent]
+      →[@agent.assign_task {
+        "role": agent_def.role,
+        "default_tape": agent_def.default_tape
+      }]→[Ch'en task_assigned]
+      →[@agent.execute]→[Ch'en results]
+      →[@agent.merge_results]→[
+        [Wo results]→[Yax "agent_state" agent_id]→[Sek mx2db_put]
+        [Wo results.rlhf_score]→[Yax "rlhf.agent." + agent_id]→[Sek ram_set]
+      ]
+
+    [Wo "Agent spawned: " + agent_id]→[Sek log]
+  [Xul]
+
+
+  /* ==========================================================
+     11) BASHER COMMAND HANDLER (C@@L BLOCK with DISPATCH)
+     ========================================================== */
+  [Pop basher_run]
+    [Wo @command]→[Ch'en command]
+    [Wo command]→[Sek split " "]→[Ch'en parts]
+    [Wo parts[0]]→[Ch'en cmd]
+    [Wo parts.slice(1)]→[Ch'en args]
+
+    [@dispatch cmd]
+      →[@case "tapes.list"]→[
+        [Sek tape_list]→[Ch'en tapes]
+        [Wo tapes]→[Xul return]
+      ]
+      →[@case "tapes.boot"]→[
+        [Wo args[0]]→[Sek tape_boot]
+        [Wo "Booted: " + args[0]]→[Xul return]
+      ]
+      →[@case "folds.tree"]→[
+        [Wo manifest_ast.kuhul_folds]→[Xul return]
+      ]
+      →[@case "mesh.status"]→[
+        [Wo manifest_ast.rest_mesh.routes]→[Sek Object.keys]→[Xul return]
+      ]
+      →[@case "ram.get"]→[
+        [Wo args[0]]→[Sek ram_get]→[Xul return]
+      ]
+      →[@case "ram.set"]→[
+        [Wo args[0]]→[Yax args[1]]→[Sek ram_set]
+        [Wo "RAM updated"]→[Xul return]
+      ]
+      →[@case "health"]→[
+        [Sek os_health_check]→[Xul return]
+      ]
+      →[@default]→[
+        [Wo "Unknown command: " + cmd]→[Sek error]→[Xul return]
+      ]
+  [Xul]
+
+
+  /* ==========================================================
+     12) OS HEALTH CHECK (C@@L BLOCK)
+     ========================================================== */
+  [Pop os_health_check]
+    [Wo {
       "ok": true,
       "kernel": "sw.khl Ω.∞.Ω",
-      "law": "ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK",
+      "law": manifest_ast.atomic_law,
+      "quantum_state": manifest_ast.quantum_state,
       "folds_active": Object.keys(manifest_ast.kuhul_folds).length,
-      "tapes_loaded": ram_get("tapes.registry").length,
+      "tapes_registered": Object.keys(manifest_ast.tapes).length,
       "uptime": performance.now()
-    }
-  ⟁Xul⟁
+    }]→[Xul return]
+  [Xul]
 
-  /* 13) BASHER COMMAND HANDLER */
-  ⟁Sek⟁ basher_run(command)
-    ⟁Sek⟁ cmd_parts ← command.split(" ")
-    ⟁Sek⟁ cmd ← cmd_parts[0]
-    ⟁Sek⟁ args ← cmd_parts.slice(1)
 
-    ⟁If⟁ cmd == "tapes.list"
-      ⟁Xul⟁ return tape_list()
+  /* ==========================================================
+     13) KERNEL PANIC (C@@L BLOCK - Auto Recovery)
+     ========================================================== */
+  [Pop kernel_panic]
+    [Wo @reason]→[Ch'en reason]
+    [Wo "⟁ KERNEL PANIC: " + reason]→[Sek error]
+    [Wo "tape_system_auto_recovery_v1"]→[Sek tape_boot]
+  [Xul]
 
-    ⟁If⟁ cmd == "tapes.boot"
-      ⟁Xul⟁ return tape_boot(args[0])
 
-    ⟁If⟁ cmd == "folds.tree"
-      ⟁Xul⟁ return manifest_ast.kuhul_folds
+  /* ==========================================================
+     KERNEL BOOT SEQUENCE (C@@L BLOCK ORCHESTRATION)
+     ========================================================== */
+  [Pop kernel_boot]
+    [Wo "⟁ K'UHUL Kernel Ω.∞.Ω booting..."]→[Sek log]
 
-    ⟁If⟁ cmd == "mesh.status"
-      ⟁Xul⟁ return Object.keys(manifest_ast.rest_mesh.routes)
+    // Execute boot sequence
+    [Sek dns_authority_init]
+    [Sek rest_mesh_init]
+    [Sek kuhul_folds_init]
+    [Sek asx_ram_init]
+    [Sek mx2db_init]
+    [Sek dom_engine_init]
+    [Sek system_tapes_autoboot]
 
-    ⟁If⟁ cmd == "trainer.start"
-      ⟁Xul⟁ return trainer_start_handler(args)
+    // Set kernel state
+    [Wo "active"]→[Yax "os.state"]→[Sek ram_set]
+    [Wo "sw.khl Ω.∞.Ω"]→[Yax "os.kernel"]→[Sek ram_set]
 
-    ⟁If⟁ cmd == "runtime.reload"
-      ⟁Xul⟁ return location.reload()
+    [Wo "⟁ K'UHUL Kernel ONLINE"]→[Sek log]
+    [Wo "⟁ Manifest AST Embedded"]→[Sek log]
+    [Wo "⟁ Ghost Shell Ready"]→[Sek log]
+    [Wo "⟁ " + manifest_ast.atomic_law]→[Sek log]
+  [Xul]
 
-    ⟁If⟁ cmd == "health"
-      ⟁Xul⟁ return os_health_check()
-
-    ⟁If⟁ cmd == "ram.get"
-      ⟁Xul⟁ return { "key": args[0], "value": ram_get(args[0]) }
-
-    ⟁Xul⟁ return { "error": "Unknown command: " + cmd }
-  ⟁Xul⟁
-
-  /* KERNEL BOOT COMPLETE */
-  ⟁Xul⟁ log("⟁ K'UHUL Kernel Ω.∞.Ω ONLINE")
-  ⟁Xul⟁ log("⟁ Manifest AST Embedded")
-  ⟁Xul⟁ log("⟁ Ghost Shell ready")
-  ⟁Xul⟁ log("⟁ " + manifest_ast.atomic_law)
-
-⟁Xul⟁
+⟁ Xul ⟁
