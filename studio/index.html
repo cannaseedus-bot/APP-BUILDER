@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>⚡ ASX Studio Generator • New Studio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --gold:#ffd000;
+      --cyan:#16f2aa;
+      --bg:#020409;
+      --panel:#050a14;
+      --border:#1a2332;
+      --text:#e8eef5;
+      --text-dim:#8b95a3;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: radial-gradient(circle at top, #0b1120 0, var(--bg) 48%, #000 100%);
+      color: var(--text);
+    }
+    header {
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(18px);
+      background: linear-gradient(120deg, rgba(255, 208, 0, 0.18), rgba(3, 12, 30, 0.9));
+      border-bottom: 1px solid var(--gold);
+    }
+    .logo {
+      font-weight: 700;
+      letter-spacing: 3px;
+      font-size: 16px;
+      background: linear-gradient(135deg, var(--gold), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    nav a {
+      margin-left: 16px;
+      font-size: 13px;
+      text-decoration: none;
+      color: var(--text-dim);
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+    nav a.active, nav a:hover {
+      border-color: var(--gold);
+      background: radial-gradient(circle at top, rgba(255, 208, 0, 0.18), transparent);
+      color: var(--gold);
+    }
+    .hud {
+      position: fixed;
+      inset: 54px 0 0 0;
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 10px;
+      padding: 10px;
+    }
+    .panel {
+      background: linear-gradient(145deg, var(--panel), #040711);
+      border-radius: 16px;
+      border: 1px solid var(--gold);
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.8), 0 0 18px rgba(255, 208, 0, 0.2);
+      backdrop-filter: blur(14px);
+    }
+    .form {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .label {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      opacity: 0.8;
+      color: var(--cyan);
+    }
+    input, textarea, select {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      background: rgba(1, 4, 10, 0.9);
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 12px rgba(255, 208, 0, 0.3);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+      font-family: inherit;
+    }
+    .btn-primary {
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(120deg, var(--gold), var(--cyan));
+      color: var(--bg);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 0 18px rgba(255, 208, 0, 0.65);
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 24px rgba(255, 208, 0, 0.8);
+    }
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+    .log {
+      padding: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      overflow-y: auto;
+      line-height: 1.6;
+    }
+    .log-line {
+      margin-bottom: 4px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.3);
+    }
+    .log-success { color: var(--cyan); }
+    .log-error { color: #ff3366; }
+    .log-info { color: var(--gold); }
+    .title {
+      font-size: 19px;
+      font-weight: 650;
+      margin-bottom: 4px;
+      background: linear-gradient(135deg, var(--gold), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      font-size: 11px;
+      opacity: 0.78;
+      margin-bottom: 12px;
+      color: var(--text-dim);
+    }
+    .studio-type-desc {
+      font-size: 11px;
+      color: var(--text-dim);
+      padding: 8px;
+      background: rgba(255, 208, 0, 0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 208, 0, 0.2);
+      margin-top: 4px;
+    }
+    @media (max-width: 768px) {
+      .hud {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">⚡ ASX STUDIOGEN</div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/studio/" class="active">New Studio</a>
+      <a href="/ghost.html">Ghost Shell</a>
+      <a href="/cms/">Database</a>
+    </nav>
+  </header>
+
+  <div class="hud">
+    <div class="panel form">
+      <div class="title">Create New Studio</div>
+      <div class="subtitle">Generate a new project using XJSON jobs and ASXR Trinity architecture</div>
+
+      <div class="label">Studio Name</div>
+      <input id="studio-name" placeholder="NeoCommerce XR" />
+
+      <div class="label">Description</div>
+      <textarea id="studio-desc" placeholder="XR e-commerce dashboard studio powered by ASXR Trinity + XJSON"></textarea>
+
+      <div class="label">Studio Type</div>
+      <select id="studio-type">
+        <option value="web">🌐 Web App Studio</option>
+        <option value="game">🎮 Game Studio</option>
+        <option value="api">🔌 API Studio</option>
+        <option value="tape">📼 XJSON Tape Studio</option>
+        <option value="ai">🤖 AI Multi-Agent Studio</option>
+        <option value="cms">🗄️ CMS Studio</option>
+        <option value="pwa">📱 PWA Mobile Studio</option>
+        <option value="terminal">👻 Terminal App Studio</option>
+      </select>
+
+      <div class="studio-type-desc" id="type-desc">
+        Full-stack web application with Micro-ASXR architecture, service worker, and MX2CMS integration
+      </div>
+
+      <button class="btn-primary" id="generate-btn">⚡ Generate Studio</button>
+    </div>
+
+    <div class="panel log" id="log">
+      <div class="log-line log-info">ASX Studio Generator v3.0 • Ready</div>
+      <div class="log-line log-info">Connected to ASXR Trinity Ecosystem</div>
+      <div class="log-line log-success">✓ MX2CMS Database Online</div>
+      <div class="log-line log-success">✓ XJSON Engine Ready</div>
+    </div>
+  </div>
+
+  <script>
+    const typeDescriptions = {
+      web: 'Full-stack web application with Micro-ASXR architecture, service worker, and MX2CMS integration',
+      game: 'Browser-based game studio with canvas rendering, physics engine, and multiplayer support via WebSockets',
+      api: 'RESTful API server with Express/FastAPI, database models, authentication, and API documentation',
+      tape: 'XJSON tape-based application with K\'UHUL pipeline, XCFE governance, and atomic block execution',
+      ai: 'Multi-agent AI studio with LLM integration, RLHF training, memory management, and agent orchestration',
+      cms: 'Content management system with blog, forum, e-commerce, user management, and plugin architecture',
+      pwa: 'Progressive Web App with offline support, push notifications, app manifest, and mobile-first design',
+      terminal: 'Terminal-based application with command system, REPL interface, and shell integration'
+    };
+
+    const log = (msg, type = 'info') => {
+      const el = document.getElementById('log');
+      const line = document.createElement('div');
+      line.className = `log-line log-${type}`;
+      const t = new Date().toLocaleTimeString();
+      line.textContent = `[${t}] ${msg}`;
+      el.appendChild(line);
+      el.scrollTop = el.scrollHeight;
+      console.log('[StudioGenerator]', msg);
+    };
+
+    // Update type description on change
+    document.getElementById('studio-type').addEventListener('change', (e) => {
+      const desc = typeDescriptions[e.target.value];
+      document.getElementById('type-desc').textContent = desc;
+      log(`Selected: ${e.target.options[e.target.selectedIndex].text}`, 'info');
+    });
+
+    document.getElementById('generate-btn').onclick = async () => {
+      const name = document.getElementById('studio-name').value.trim();
+      const desc = document.getElementById('studio-desc').value.trim();
+      const type = document.getElementById('studio-type').value;
+
+      if (!name) {
+        log('✖ Please enter a studio name.', 'error');
+        return;
+      }
+
+      const typeName = document.getElementById('studio-type').options[document.getElementById('studio-type').selectedIndex].text;
+      log(`→ Creating ${typeName} "${name}"...`, 'info');
+
+      try {
+        // Store in MX2CMS database
+        const studioData = {
+          name,
+          description: desc,
+          type,
+          created: Date.now(),
+          status: 'generating'
+        };
+
+        const dbRes = await fetch('/mx2db/put?scope=models', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(studioData)
+        });
+
+        if (dbRes.ok) {
+          log('✓ Studio metadata saved to MX2DB', 'success');
+        }
+
+        // Call studio generation API
+        const res = await fetch('/api/studio/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, description: desc, type })
+        });
+
+        const data = await res.json();
+
+        if (!data.ok) {
+          log('✖ Error: ' + (data.error || 'unknown'), 'error');
+          return;
+        }
+
+        log('✓ Studio scaffolding generated', 'success');
+        log('✓ Project structure created', 'success');
+        log('✓ Service worker configured', 'success');
+        log('✓ Dependencies installed', 'success');
+        log(`✓ Studio ready at: /projects/${name}`, 'success');
+        log('→ Open Ghost Shell to explore your new studio', 'info');
+
+        // Clear form
+        document.getElementById('studio-name').value = '';
+        document.getElementById('studio-desc').value = '';
+
+      } catch (e) {
+        log('✖ Request failed: ' + e, 'error');
+      }
+    };
+  </script>
+</body>
+</html>

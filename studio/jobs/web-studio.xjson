@@ -1,0 +1,80 @@
+{
+  "@context": "ASXR-Trinity-Studio-Generator",
+  "@v": "3.0.0",
+  "@law": "ASX = XCFE = XJSON = KUHUL = AST = MX2DB",
+  "@type": "web-studio",
+  "@sequence": [
+    {
+      "@log": "🌐 Creating Web App Studio: $input.name"
+    },
+    {
+      "@mkdir": {
+        "path": "projects/$input.name"
+      }
+    },
+    {
+      "@mkdir": {
+        "path": "projects/$input.name/public"
+      }
+    },
+    {
+      "@mkdir": {
+        "path": "projects/$input.name/src"
+      }
+    },
+    {
+      "@py.file.write": {
+        "path": "projects/$input.name/studio.xjson",
+        "pretty": true,
+        "data": {
+          "@context": "ASXR-Web-Studio",
+          "@v": "3.0.0",
+          "name": "$input.name",
+          "description": "$input.description",
+          "type": "web",
+          "created": "{{timestamp}}",
+          "architecture": "MICRO_ASXR",
+          "features": ["service-worker", "mx2cms", "pwa", "offline-first"]
+        }
+      }
+    },
+    {
+      "@template": {
+        "output": "projects/$input.name/index.html",
+        "template": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>{{name}}</title>\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <link rel=\"manifest\" href=\"/manifest.json\">\n  <style>\n    :root { --gold: #ffd000; --cyan: #16f2aa; --bg: #020409; }\n    body { margin: 0; font-family: system-ui; background: var(--bg); color: #e8eef5; }\n  </style>\n</head>\n<body>\n  <h1>⚛️ {{name}}</h1>\n  <p>{{description}}</p>\n  <script src=\"/public/asx-runtime.js\"></script>\n</body>\n</html>",
+        "data": "$input"
+      }
+    },
+    {
+      "@py.file.write": {
+        "path": "projects/$input.name/manifest.json",
+        "pretty": true,
+        "data": {
+          "name": "$input.name",
+          "short_name": "$input.name",
+          "description": "$input.description",
+          "start_url": "/",
+          "display": "standalone",
+          "background_color": "#020409",
+          "theme_color": "#ffd000",
+          "icons": []
+        }
+      }
+    },
+    {
+      "@py.file.write": {
+        "path": "projects/$input.name/sw.js",
+        "data": "/* Service Worker for $input.name */\nconst CACHE = '$input.name-v1';\n\nself.addEventListener('install', (e) => {\n  console.log('[SW] Install');\n  e.waitUntil(\n    caches.open(CACHE).then(cache => {\n      return cache.addAll(['/']);\n    })\n  );\n});\n\nself.addEventListener('fetch', (e) => {\n  e.respondWith(\n    caches.match(e.request).then(r => r || fetch(e.request))\n  );\n});\n"
+      }
+    },
+    {
+      "@py.file.write": {
+        "path": "projects/$input.name/README.md",
+        "data": "# $input.name\n\n$input.description\n\n## ASXR Trinity Stack\n\n- **Architecture**: Micro-ASXR\n- **Database**: MX2CMS (ASX-RAM + MX2DB)\n- **Runtime**: Browser + Service Worker\n- **Type**: Web App Studio\n\n## Getting Started\n\n1. Open `index.html` in browser\n2. Service worker will register automatically\n3. Use MX2CMS for data persistence\n4. Build with XJSON jobs\n\n## Structure\n\n```\n$input.name/\n├── index.html        # Main entry point\n├── sw.js            # Service worker\n├── manifest.json    # PWA manifest\n├── studio.xjson     # Studio metadata\n└── README.md        # This file\n```\n\nPowered by ASXR Trinity ⚛️\n"
+      }
+    },
+    {
+      "@log": "✓ Web App Studio created at: projects/$input.name"
+    }
+  ]
+}

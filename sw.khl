@@ -1,0 +1,604 @@
+/* ============================================================
+   sw.khl — K'UHUL KERNEL ROM CARTRIDGE Ω.∞.Ω
+   ASX Ghost OS - Complete 3-file ROM
+
+   This file contains BOTH:
+   - JSON AST (manifest data)
+   - K'UHUL kernel code
+
+   K'UHUL is JSON blocks + execution logic
+   ============================================================ */
+
+⟁ kuhul_kernel
+
+  /* ==========================================================
+     JSON AST - OS MANIFEST (Embedded ROM Data)
+     ========================================================== */
+  ⟁Wo⟁ manifest_ast {
+    "@context": "xjson://asx/ghost-os/v1",
+    "立v": "1.0.0",
+    "n": "ASX-GHOST-OS",
+    "d": "Three-file Ghost Shell ROM with K'UHUL kernel, ATOMIC runtime, ASX-RAM, and multi-runtime tapes",
+    "timestamp": 1890000010000,
+
+    "mode": "ghost-shell",
+    "boot_surface": "dashboard",
+    "primary_tape": "tape_system_boot_hud_v1",
+
+    "atomic_law": "ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK",
+    "quantum_state": "|OS⟩⊗|UI⟩⊗|AI⟩⊗|RUNTIME⟩⊗|RAM⟩",
+
+    "kuhul_folds": {
+      "ai":      { "status": "active" },
+      "ui":      { "status": "active" },
+      "runtime": { "status": "active" },
+      "os":      { "status": "active" },
+      "tapes":   { "status": "active" },
+      "dns":     { "status": "active" },
+      "mesh":    { "status": "active" },
+      "security":{ "status": "active" },
+      "trainer": { "status": "active" },
+      "rlhf":    { "status": "active" },
+      "quantum": { "status": "active" },
+      "atomic":  { "status": "active" }
+    },
+
+    "dns": {
+      "zones": {
+        "xjson.app":        { "type": "root", "target": "ghost-shell" },
+        "rig.xjson.app":    { "type": "backend", "target": "asx-rig" },
+        "hive.xjson.app":   { "type": "mesh", "target": "multi-hive" },
+        "local.rig":        { "type": "local", "target": "ghost-local" }
+      }
+    },
+
+    "rest_mesh": {
+      "base": "/",
+      "routes": {
+        "/xjson/compile":    { "fold": "runtime", "handler": "xjson_compile" },
+        "/xjson/eval":       { "fold": "runtime", "handler": "xjson_eval" },
+        "/klh/router":       { "fold": "mesh",    "handler": "klh_router" },
+        "/hive/exec":        { "fold": "mesh",    "handler": "hive_exec" },
+        "/os/state":         { "fold": "os",      "handler": "os_state" },
+        "/scxq2/compress":   { "fold": "runtime", "handler": "scx_compress" },
+        "/scxq2/decompress": { "fold": "runtime", "handler": "scx_decompress" },
+        "/trainer/start":    { "fold": "trainer", "handler": "trainer_start" },
+        "/trainer/status":   { "fold": "trainer", "handler": "trainer_status" },
+        "/prime/modules":    { "fold": "ai",      "handler": "prime_modules" },
+        "/basher/run":       { "fold": "os",      "handler": "basher_run" },
+        "/health":           { "fold": "os",      "handler": "health_check" },
+        "/tapes/list":       { "fold": "tapes",   "handler": "tapes_list" },
+        "/tapes/boot":       { "fold": "tapes",   "handler": "tapes_boot" },
+        "/tapes/load":       { "fold": "tapes",   "handler": "tapes_load" },
+        "/ram/get":          { "fold": "os",      "handler": "ram_get" },
+        "/ram/set":          { "fold": "os",      "handler": "ram_set" },
+        "/ram/list":         { "fold": "os",      "handler": "ram_list" },
+        "/mx2db/put":        { "fold": "os",      "handler": "mx2db_put" },
+        "/mx2db/query":      { "fold": "os",      "handler": "mx2db_query" }
+      }
+    },
+
+    "runtime": {
+      "cpu": { "id": "asxr_cpu_runtime", "mode": "browser_vm", "status": "active" },
+      "gpu": { "id": "asxr_gpu_runtime", "mode": "webgl_webgpu", "status": "ready" },
+      "tpu": { "id": "asxr_tpu_runtime", "mode": "trainer_node", "status": "standby" }
+    },
+
+    "asx_ram": {
+      "backend": "MX2DB",
+      "shard_id": "asx_ram_trinity",
+      "type": "volatile_cognitive_memory",
+      "backing": "user_store",
+      "keys": {
+        "os":     ["os.state", "os.boot.count", "os.active_tape"],
+        "ui":     ["ui.active_surface", "ui.panels", "ui.theme"],
+        "tapes":  ["tapes.active_id", "tapes.history", "tapes.registry"],
+        "rlhf":   ["rlhf.forum.posts", "rlhf.forum.scores"],
+        "trainer":["trainer.jobs", "trainer.metrics"]
+      },
+      "stores": {
+        "ngrams": "/usr/ram/ngrams.json",
+        "@grams": "/usr/ram/@grams.json",
+        "quadragrams": "/usr/ram/quadragrams.json",
+        "pentagrams": "/usr/ram/pentagrams.json",
+        "supagrams": "/usr/ram/supagrams.json",
+        "glyphgrams": "/usr/ram/glyphgrams.json",
+        "reinforcement": "/usr/ram/reinforcement.json",
+        "agent_experience": "/usr/ram/agent_experience.json"
+      },
+      "learning_mode": "continuous"
+    },
+
+    "mx2db": {
+      "mode": "micro-asxr",
+      "shard_id": "mx2db_micronaut",
+      "tables": ["n_grams", "supagrams", "rlhf_traces", "agent_state", "training_history", "tapes"]
+    },
+
+    "user_backing": {
+      "enabled": true,
+      "mount": "/usr",
+      "agent_data_pattern": "MX2LM://<agent_id>/DATA/"
+    },
+
+    "vfs": {
+      "mounts": {
+        "/sys":  { "type": "ro",  "driver": "scx_sys" },
+        "/tapes":{ "type": "ro",  "driver": "tape_cache" },
+        "/usr":  { "type": "rw",  "driver": "usr_store" },
+        "/tmp":  { "type": "vol", "driver": "mem" }
+      }
+    },
+
+    "atomic": {
+      "css_profile": "ATOMIC_CSS_v1_CANONICAL",
+      "theme": "emerald-ghost",
+      "inject_mode": "dynamic",
+      "css_vars": {
+        "asx-bg": "#020617",
+        "asx-bg-alt": "#020819",
+        "asx-surface": "#020b16",
+        "asx-text": "#e6fffa",
+        "asx-muted": "#7dd3fc",
+        "asx-emerald": "#16f2aa",
+        "asx-emerald-soft": "rgba(22, 242, 170, 0.13)",
+        "asx-emerald-strong": "rgba(22, 242, 170, 0.22)",
+        "asx-cyan": "#22d3ee",
+        "asx-cyan-soft": "rgba(34, 211, 238, 0.16)",
+        "asx-stroke-soft": "rgba(148, 163, 184, 0.25)",
+        "asx-stroke-emerald": "rgba(45, 212, 191, 0.55)",
+        "asx-glow-emerald": "0 0 32px rgba(16, 185, 129, 0.42)",
+        "asx-glow-cyan": "0 0 28px rgba(34, 211, 238, 0.35)",
+        "bg-primary": "#020617",
+        "bg-secondary": "#0a0f14",
+        "bg-tertiary": "#101820",
+        "glass-primary": "rgba(255, 255, 255, 0.08)",
+        "glass-secondary": "rgba(255, 255, 255, 0.06)",
+        "glass-tertiary": "rgba(255, 255, 255, 0.04)",
+        "stroke-primary": "rgba(148, 163, 184, 0.35)",
+        "stroke-secondary": "rgba(148, 163, 184, 0.25)",
+        "stroke-accent": "rgba(22, 242, 170, 0.55)",
+        "text-primary": "#e6fffa",
+        "text-secondary": "#7dd3fc",
+        "text-muted": "#5d8ba3",
+        "accent-primary": "#16f2aa",
+        "accent-secondary": "#00ffa3",
+        "accent-warning": "#ffd166",
+        "accent-danger": "#ff3366",
+        "accent-success": "#00d9a6",
+        "gradient-primary": "linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))",
+        "gradient-glass": "linear-gradient(135deg, rgba(22, 242, 170, 0.1), rgba(34, 211, 238, 0.05))",
+        "shadow-sm": "0 2px 8px rgba(0, 0, 0, 0.3)",
+        "shadow-md": "0 8px 24px rgba(0, 0, 0, 0.4)",
+        "shadow-lg": "0 16px 48px rgba(0, 0, 0, 0.5)",
+        "shadow-glow": "0 0 40px rgba(22, 242, 170, 0.25)",
+        "blur-sm": "blur(8px)",
+        "blur-md": "blur(16px)",
+        "blur-lg": "blur(24px)",
+        "font-primary": "system-ui, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif",
+        "font-mono": "'JetBrains Mono', 'Fira Code', monospace",
+        "space-xs": "4px",
+        "space-sm": "8px",
+        "space-md": "16px",
+        "space-lg": "24px",
+        "space-xl": "32px",
+        "space-2xl": "48px",
+        "radius-sm": "8px",
+        "radius-md": "12px",
+        "radius-lg": "16px",
+        "radius-xl": "20px",
+        "radius-2xl": "24px",
+        "radius-pill": "999px",
+        "transition-fast": "0.15s ease",
+        "transition-normal": "0.3s ease",
+        "transition-slow": "0.5s ease",
+        "panel-gap": "16px",
+        "panel-padding": "14px",
+        "panel-padding-lg": "18px"
+      },
+      "templates": {
+        "template_dashboard": {
+          "slots": ["header", "left", "center", "right", "footer"]
+        },
+        "template_world_sandbox": {
+          "slots": ["header", "left_panel", "center_panel", "right_panel", "footer"]
+        },
+        "template_ghost_shell": {
+          "slots": ["ghost-header", "ghost-main"]
+        }
+      },
+      "classes": {
+        "asx-flex": "display:flex;",
+        "asx-row": "flex-direction:row;",
+        "asx-col": "flex-direction:column;",
+        "asx-center": "align-items:center;justify-content:center;",
+        "asx-between": "justify-content:space-between;",
+        "asx-align": "align-items:center;",
+        "asx-grow": "flex:1 1 auto;",
+        "asx-scroll-y": "overflow-y:auto;",
+        "asx-scroll-x": "overflow-x:auto;",
+        "text-xs": "font-size:11px;",
+        "text-sm": "font-size:13px;",
+        "text-md": "font-size:14px;",
+        "text-lg": "font-size:16px;",
+        "text-xl": "font-size:20px;",
+        "text-2xl": "font-size:24px;",
+        "text-muted": "color:rgba(148,163,184,0.95);",
+        "text-soft": "color:rgba(148,163,184,0.75);",
+        "ghost-root": "display:flex;flex-direction:column;height:100vh;padding:14px 18px;gap:14px;",
+        "ghost-header": "display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:var(--radius-xl);background:radial-gradient(circle at 0 0,rgba(34,211,238,0.28),transparent 55%),linear-gradient(120deg,rgba(15,23,42,0.96),rgba(15,23,42,0.86));border:1px solid rgba(148,163,184,0.55);box-shadow:0 18px 45px rgba(15,23,42,0.95),var(--asx-glow-emerald);backdrop-filter:blur(20px);",
+        "ghost-main": "display:grid;grid-template-columns:minmax(260px,320px) minmax(380px,1.1fr) minmax(320px,0.9fr);gap:var(--panel-gap);flex:1 1 auto;min-height:0;",
+        "ghost-panel": "border-radius:var(--radius-xl);padding:var(--panel-padding-lg);background:radial-gradient(circle at 0 0,rgba(34,211,238,0.22),transparent 55%),linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.88));border:1px solid rgba(148,163,184,0.6);box-shadow:0 18px 45px rgba(15,23,42,0.95);backdrop-filter:blur(22px);display:flex;flex-direction:column;min-height:0;",
+        "ghost-panel-soft": "background:radial-gradient(circle at 0 0,rgba(34,211,238,0.14),transparent 55%),linear-gradient(145deg,rgba(15,23,42,0.96),rgba(15,23,42,0.9));",
+        "panel-header": "display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px;",
+        "panel-title": "font-size:13px;letter-spacing:0.18em;text-transform:uppercase;color:#a5f3fc;",
+        "panel-subtitle": "font-size:11px;color:rgba(148,163,184,0.9);",
+        "asx-chip": "border-radius:999px;padding:6px 12px;font-size:11px;display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(148,163,184,0.45);background:linear-gradient(135deg,rgba(15,23,42,0.95),rgba(15,23,42,0.75));",
+        "asx-chip-dot": "width:8px;height:8px;border-radius:999px;background:radial-gradient(circle,#22c55e 0,#22c55e 40%,transparent 70%);box-shadow:var(--asx-glow-emerald);",
+        "asx-btn": "border-radius:999px;border:1px solid rgba(148,163,184,0.55);background:radial-gradient(circle at 0 0,rgba(45,212,191,0.18),transparent 55%),linear-gradient(145deg,rgba(15,23,42,0.96),rgba(15,23,42,0.88));color:var(--asx-text);font-size:12px;padding:7px 14px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:all 0.12s ease;",
+        "asx-btn-primary": "border-color:var(--asx-stroke-emerald);background:radial-gradient(circle at 0 0,rgba(45,212,191,0.24),transparent 55%),linear-gradient(140deg,rgba(15,23,42,0.98),rgba(16,185,129,0.2));box-shadow:var(--asx-glow-emerald);",
+        "asx-btn-icon": "width:18px;height:18px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;",
+        "badge-emerald": "border-radius:999px;padding:2px 9px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;border:1px solid rgba(45,212,191,0.9);color:#bbf7d0;background:linear-gradient(120deg,rgba(16,185,129,0.2),rgba(15,23,42,0.95));box-shadow:var(--asx-glow-emerald);",
+        "editor-shell": "margin-top:10px;border-radius:var(--radius-lg);border:1px solid rgba(148,163,184,0.55);background:radial-gradient(circle at 0 0,rgba(34,211,238,0.18),transparent 55%),linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));box-shadow:0 15px 30px rgba(15,23,42,0.9);display:flex;flex-direction:column;overflow:hidden;min-height:0;flex:1 1 auto;",
+        "editor-body": "flex:1;padding:10px;font-size:11px;line-height:1.5;color:rgba(226,232,240,0.86);font-family:var(--font-mono);overflow:auto;background:radial-gradient(circle at 0 0,rgba(45,212,191,0.16),transparent 60%),linear-gradient(145deg,#020617,#020617);",
+        "chat-body": "margin-top:10px;border-radius:var(--radius-lg);border:1px solid rgba(148,163,184,0.55);background:radial-gradient(circle at 0 0,rgba(34,211,238,0.2),transparent 60%),linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;",
+        "chat-stream": "flex:1;padding:10px;overflow-y:auto;font-size:12px;",
+        "chat-msg": "margin-bottom:8px;padding:7px 9px;border-radius:12px;border:1px solid rgba(148,163,184,0.4);background:linear-gradient(140deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));",
+        "chat-input": "flex:1;background:rgba(15,23,42,0.95);border:1px solid rgba(148,163,184,0.5);border-radius:8px;color:var(--asx-text);padding:6px 10px;font-size:12px;outline:none;"
+      }
+    },
+
+    "dom_runtime": {
+      "engine": "KUHUL_DOM_v1",
+      "mount_point": "#asx-ghost-root",
+      "surfaces": {
+        "dashboard": {
+          "template": "template_ghost_shell",
+          "panels": ["ghost-header", "ghost-main"]
+        }
+      }
+    },
+
+    "tapes": {
+      "tape_system_boot_hud_v1": {
+        "id": "tape_system_boot_hud_v1",
+        "label": "Boot HUD",
+        "role": "system",
+        "entry": "/tapes/tape_system_boot_hud_v1.xjson",
+        "boot": true
+      },
+      "tape_system_auto_recovery_v1": {
+        "id": "tape_system_auto_recovery_v1",
+        "label": "Auto Recovery",
+        "role": "system_recovery",
+        "entry": "/tapes/tape_system_auto_recovery_v1.xjson",
+        "agents": ["agent.repair", "agent.diagnostics"],
+        "shards": ["cpu", "tpu"],
+        "boot": true
+      },
+      "tape_system_trinity_runtime_v1": {
+        "id": "tape_system_trinity_runtime_v1",
+        "label": "Trinity Runtime",
+        "role": "trinity_orchestrator",
+        "entry": "/tapes/tape_system_trinity_runtime_v1.xjson",
+        "agents": ["agent.trinity", "agent.metrics"],
+        "shards": ["cpu", "gpu", "tpu"],
+        "boot": true
+      },
+      "tape_system_asx_ram_manager_v1": {
+        "id": "tape_system_asx_ram_manager_v1",
+        "label": "ASX-RAM Manager",
+        "role": "ram_manager",
+        "entry": "/tapes/tape_system_asx_ram_manager_v1.xjson",
+        "agents": ["agent.memory.trainer", "agent.rlhf.reinforcer"],
+        "shards": ["cpu"],
+        "boot": true
+      },
+      "tape_system_basher_v1": {
+        "id": "tape_system_basher_v1",
+        "label": "Basher Terminal",
+        "role": "system",
+        "entry": "/tapes/tape_system_basher_v1.xjson",
+        "boot": false
+      },
+      "tape_mx2cms_v1": {
+        "id": "tape_mx2cms_v1",
+        "label": "MX2CMS",
+        "role": "app",
+        "entry": "/tapes/tape_mx2cms_v1.xjson",
+        "boot": false
+      },
+      "tape_mx2cx_builder_v1": {
+        "id": "tape_mx2cx_builder_v1",
+        "label": "MX2CX Builder",
+        "role": "app",
+        "entry": "/tapes/tape_mx2cx_builder_v1.xjson",
+        "boot": false
+      },
+      "tape_studio_gen_v1": {
+        "id": "tape_studio_gen_v1",
+        "label": "Studio Generator",
+        "role": "app",
+        "entry": "/tapes/tape_studio_gen_v1.xjson",
+        "boot": false
+      }
+    },
+
+    "agents": {
+      "agent.trinity":          { "role": "runtime_orchestrator",  "default_tape": "tape_system_trinity_runtime_v1" },
+      "agent.metrics":          { "role": "telemetry",             "default_tape": "tape_system_trinity_runtime_v1" },
+      "agent.repair":           { "role": "recovery_exec",         "default_tape": "tape_system_auto_recovery_v1" },
+      "agent.diagnostics":      { "role": "health_check",          "default_tape": "tape_system_auto_recovery_v1" },
+      "agent.memory.trainer":   { "role": "asx_ram_trainer",       "default_tape": "tape_system_asx_ram_manager_v1" },
+      "agent.rlhf.reinforcer":  { "role": "reinforcement_engine",  "default_tape": "tape_system_asx_ram_manager_v1" }
+    },
+
+    "xcfe": {
+      "control_vectors": [
+        "@control.nav",
+        "@control.layout",
+        "@control.state",
+        "@control.runtime",
+        "@control.learning",
+        "@control.memory"
+      ],
+      "flow_vectors": [
+        "@flow.scroll",
+        "@flow.transition",
+        "@flow.data",
+        "@flow.runtime",
+        "@flow.reinforcement",
+        "@flow.telemetry"
+      ],
+      "variable_vectors": [
+        "@variable.state",
+        "@variable.metrics",
+        "@variable.entropy",
+        "@variable.innovation"
+      ]
+    },
+
+    "boot_sequence": [
+      "kernel.init",
+      "runtime.mount_cpu",
+      "runtime.mount_gpu",
+      "runtime.mount_tpu",
+      "vfs.mount",
+      "user_store.mount",
+      "asx_ram.mount",
+      "atomic.inject_css",
+      "dom.mount",
+      "tapes.preload",
+      "agents.bootstrap",
+      "tapes.autoboot",
+      "asxr.ready"
+    ],
+
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#020617",
+    "theme_color": "#16f2aa",
+    "orientation": "any",
+    "scope": "/",
+    "icons": [],
+    "short_name": "ASX OS",
+    "description": "ASX Ghost OS - Three-file ASXR Trinity ROM"
+  }
+
+
+  /* ==========================================================
+     K'UHUL KERNEL EXECUTION LOGIC
+     ========================================================== */
+
+  /* META + VERSION */
+  ⟁Wo⟁ meta {
+    "name": "sw.khl",
+    "version": "Ω.∞.Ω",
+    "law": "ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK",
+    "quantum_state": "|OS⟩⊗|UI⟩⊗|AI⟩⊗|RUNTIME⟩⊗|RAM⟩",
+    "architecture": "three_file_rom_with_embedded_ast"
+  }
+
+  /* 1) DNS AUTHORITY */
+  ⟁Wo⟁ dns_authority_init
+    ⟁Sek⟁ dns_init_zones(manifest_ast.dns.zones)
+      ⟁Xul⟁ dns_register("xjson.app", "ghost-shell")
+      ⟁Xul⟁ dns_register("rig.xjson.app", "asx-rig")
+      ⟁Xul⟁ dns_register("hive.xjson.app", "multi-hive")
+      ⟁Xul⟁ dns_register("local.rig", "ghost-local")
+    ⟁Xul⟁
+  ⟁Xul⟁
+
+  /* 2) REST MESH */
+  ⟁Wo⟁ rest_mesh_init {
+    "/xjson/compile":    xjson_compile_handler,
+    "/xjson/eval":       xjson_eval_handler,
+    "/klh/router":       klh_router_handler,
+    "/hive/exec":        hive_exec_handler,
+    "/os/state":         os_state_handler,
+    "/scxq2/compress":   scxq2_compress_handler,
+    "/scxq2/decompress": scxq2_decompress_handler,
+    "/trainer/start":    trainer_start_handler,
+    "/trainer/status":   trainer_status_handler,
+    "/prime/modules":    prime_modules_handler,
+    "/basher/run":       basher_run_handler,
+    "/health":           os_health_handler,
+    "/tapes/list":       tapes_list_handler,
+    "/tapes/boot":       tapes_boot_handler,
+    "/tapes/load":       tapes_load_handler,
+    "/ram/get":          ram_get_handler,
+    "/ram/set":          ram_set_handler,
+    "/ram/list":         ram_list_handler,
+    "/mx2db/put":        mx2db_put_handler,
+    "/mx2db/query":      mx2db_query_handler
+  }
+
+  /* 3) K'UHUL + K'UHUL π ENGINES */
+  ⟁Wo⟁ kuhul_engine_init
+    ⟁Sek⟁ kuhul_init(manifest_ast.kuhul_folds)
+      ⟁Xul⟁ fold_activate("ai")
+      ⟁Xul⟁ fold_activate("ui")
+      ⟁Xul⟁ fold_activate("runtime")
+      ⟁Xul⟁ fold_activate("os")
+      ⟁Xul⟁ fold_activate("tapes")
+      ⟁Xul⟁ fold_activate("dns")
+      ⟁Xul⟁ fold_activate("mesh")
+      ⟁Xul⟁ fold_activate("security")
+      ⟁Xul⟁ fold_activate("trainer")
+      ⟁Xul⟁ fold_activate("rlhf")
+      ⟁Xul⟁ fold_activate("quantum")
+      ⟁Xul⟁ fold_activate("atomic")
+    ⟁Xul⟁
+  ⟁Xul⟁
+
+  ⟁Wo⟁ pi_engine_init
+    ⟁Sek⟁ pi_init(manifest_ast.pi_scripts)
+    ⟁Xul⟁
+  ⟁Xul⟁
+
+  /* 4) KLH MULTI-HIVE ROUTER */
+  ⟁Wo⟁ klh_router_init
+    ⟁Sek⟁ klh_mount(manifest_ast.hive.shards)
+    ⟁Xul⟁
+  ⟁Xul⟁
+
+  /* 5) SCXQ2 ENGINE (Compression/Cipher) */
+  ⟁Wo⟁ scx_engine_init
+    ⟁Sek⟁ scxq2_init(manifest_ast.scxq2)
+    ⟁Xul⟁
+  ⟁Xul⟁
+
+  /* 6) ASX-RAM / MX2DB BINDINGS */
+  ⟁Wo⟁ asx_ram_init
+    ⟁Sek⟁ asx_ram_mount(manifest_ast.asx_ram)
+      ⟁Xul⟁ ram_create_store("os")
+      ⟁Xul⟁ ram_create_store("ui")
+      ⟁Xul⟁ ram_create_store("tapes")
+      ⟁Xul⟁ ram_create_store("rlhf")
+      ⟁Xul⟁ ram_create_store("trainer")
+    ⟁Xul⟁
+  ⟁Xul⟁
+
+  ⟁Wo⟁ mx2db_init
+    ⟁Sek⟁ mx2db_mount(manifest_ast.mx2db)
+      ⟁Xul⟁ db_create_table("n_grams")
+      ⟁Xul⟁ db_create_table("supagrams")
+      ⟁Xul⟁ db_create_table("rlhf_traces")
+      ⟁Xul⟁ db_create_table("agent_state")
+      ⟁Xul⟁ db_create_table("training_history")
+      ⟁Xul⟁ db_create_table("tapes")
+    ⟁Xul⟁
+  ⟁Xul⟁
+
+  /* 7) DOM ENGINE (K'UHUL DOM OPS) */
+  ⟁Wo⟁ dom_engine_init
+    ⟁Sek⟁ dom_bind(manifest_ast.dom_runtime)
+      ⟁Xul⟁ dom_set_mount("#asx-ghost-root")
+      ⟁Xul⟁ dom_load_templates(manifest_ast.atomic.templates)
+      ⟁Xul⟁ dom_inject_atomic_css(manifest_ast.atomic)
+    ⟁Xul⟁
+  ⟁Xul⟁
+
+  /* 8) TAPE RUNTIME + LOADER */
+  ⟁Sek⟁ tape_boot(tape_id)
+    ⟁Sek⟁ tape_def ← manifest_ast.tapes[tape_id]
+
+    ⟁Pop⟁ tape_security_check
+      ⟁Xul⟁ validate_tape_signature(tape_def)
+      ⟁Xul⟁ validate_tape_permissions(tape_def)
+    ⟁Xul⟁
+
+    ⟁Sek⟁ tape_load ← fetch(tape_def.entry)
+    ⟁Sek⟁ tape_xjson ← parse_xjson(tape_load)
+
+    ⟁Sek⟁ kuhul_run_hooks(tape_xjson.@kuhul_hooks.@Pop)
+    ⟁Wo⟁  kuhul_run_hooks(tape_xjson.@kuhul_hooks.@Wo)
+    ⟁Sek⟁ dom_render(tape_xjson.@atomic_layout)
+    ⟁Sek⟁ kuhul_run_hooks(tape_xjson.@kuhul_hooks.@Sek)
+    ⟁Xul⟁ kuhul_run_hooks(tape_xjson.@kuhul_hooks.@Xul)
+
+    ⟁Xul⟁ ram_set("os.active_tape", tape_id)
+    ⟁Xul⟁ log("Tape booted: " + tape_id)
+  ⟁Xul⟁
+
+  ⟁Sek⟁ tape_list
+    ⟁Xul⟁ return Object.keys(manifest_ast.tapes)
+  ⟁Xul⟁
+
+  ⟁Sek⟁ tape_load_from_db(tape_id)
+    ⟁Sek⟁ tape_xjson ← mx2db_query("tapes", { id: tape_id })
+    ⟁Xul⟁ return tape_xjson
+  ⟁Xul⟁
+
+  /* 9) SYSTEM TAPES AUTO-BOOT */
+  ⟁Wo⟁ system_tapes_boot
+    ⟁Sek⟁ tape_boot("tape_system_boot_hud_v1")
+    ⟁Sek⟁ tape_boot("tape_system_auto_recovery_v1")
+    ⟁Sek⟁ tape_boot("tape_system_trinity_runtime_v1")
+    ⟁Sek⟁ tape_boot("tape_system_asx_ram_manager_v1")
+  ⟁Xul⟁
+
+  /* 10) FOLD KERNEL (K'UHUL FOLDS INTEGRATION) */
+  ⟁Wo⟁ folds_init
+    ⟁Sek⟁ kuhul_folds_mount(manifest_ast.kuhul_folds)
+    ⟁Xul⟁
+  ⟁Xul⟁
+
+  /* 11) AUTO-RECOVERY HOOK */
+  ⟁Xul⟁ kernel_panic(reason)
+    ⟁Xul⟁ log("KERNEL PANIC: " + reason)
+    ⟁Xul⟁ tape_boot("tape_system_auto_recovery_v1")
+  ⟁Xul⟁
+
+  /* 12) HEALTH CHECK */
+  ⟁Sek⟁ os_health_check
+    ⟁Xul⟁ return {
+      "ok": true,
+      "kernel": "sw.khl Ω.∞.Ω",
+      "law": "ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK",
+      "folds_active": Object.keys(manifest_ast.kuhul_folds).length,
+      "tapes_loaded": ram_get("tapes.registry").length,
+      "uptime": performance.now()
+    }
+  ⟁Xul⟁
+
+  /* 13) BASHER COMMAND HANDLER */
+  ⟁Sek⟁ basher_run(command)
+    ⟁Sek⟁ cmd_parts ← command.split(" ")
+    ⟁Sek⟁ cmd ← cmd_parts[0]
+    ⟁Sek⟁ args ← cmd_parts.slice(1)
+
+    ⟁If⟁ cmd == "tapes.list"
+      ⟁Xul⟁ return tape_list()
+
+    ⟁If⟁ cmd == "tapes.boot"
+      ⟁Xul⟁ return tape_boot(args[0])
+
+    ⟁If⟁ cmd == "folds.tree"
+      ⟁Xul⟁ return manifest_ast.kuhul_folds
+
+    ⟁If⟁ cmd == "mesh.status"
+      ⟁Xul⟁ return Object.keys(manifest_ast.rest_mesh.routes)
+
+    ⟁If⟁ cmd == "trainer.start"
+      ⟁Xul⟁ return trainer_start_handler(args)
+
+    ⟁If⟁ cmd == "runtime.reload"
+      ⟁Xul⟁ return location.reload()
+
+    ⟁If⟁ cmd == "health"
+      ⟁Xul⟁ return os_health_check()
+
+    ⟁If⟁ cmd == "ram.get"
+      ⟁Xul⟁ return { "key": args[0], "value": ram_get(args[0]) }
+
+    ⟁Xul⟁ return { "error": "Unknown command: " + cmd }
+  ⟁Xul⟁
+
+  /* KERNEL BOOT COMPLETE */
+  ⟁Xul⟁ log("⟁ K'UHUL Kernel Ω.∞.Ω ONLINE")
+  ⟁Xul⟁ log("⟁ Manifest AST Embedded")
+  ⟁Xul⟁ log("⟁ Ghost Shell ready")
+  ⟁Xul⟁ log("⟁ " + manifest_ast.atomic_law)
+
+⟁Xul⟁
