@@ -1,0 +1,53 @@
+{
+  "meshchain_block": {
+    "version": "meshchain.v1",
+    "epoch": 1,
+    "run_id": "clusteros2_2024_001",
+    "trainer_node": "PRIME_NODE_01",
+    "timestamp": 1732660000,
+
+    "cluster": {
+      "workers": 1000,
+      "completed": 1000,
+      "failed": 0,
+      "avg_runtime_sec": 6.3
+    },
+
+    "metrics": {
+      "avg_accuracy": 0.5099686,
+      "avg_loss": 0.5029849,
+      "best_accuracy": 0.9218,
+      "worst_accuracy": 0.0079,
+      "median_accuracy": 0.38,
+      "std_accuracy": 0.22
+    },
+
+    "model": {
+      "name": "Rombos-Coder-V2.5-Qwen-7b",
+      "base": "Qwen-7B",
+      "mergekit_config": "mergekit_config.yml",
+      "tokens": "tokenizer.json",
+      "config": "config.json"
+    },
+
+    "delta": {
+      "encoding": "SCXQ2",
+      "vector_ref": "scxq2://deltas/clusteros2/run_001.delta",
+      "shape": [4096, 4096],
+      "quantization": "int4",
+      "checksum": "sha256:7a91c2f91bb1d4e7..."
+    },
+
+    "rlhf": {
+      "alignment_score": 0.72,
+      "consensus_score": 0.68,
+      "samples": 1000
+    },
+
+    "chain": {
+      "height": 42,
+      "hash": "scxq2:7a91c2f91bb1d4e7",
+      "prev_hash": "scxq2:6ab8e3c781aa99ff"
+    }
+  }
+}

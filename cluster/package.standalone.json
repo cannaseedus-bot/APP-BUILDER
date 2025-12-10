@@ -1,0 +1,17 @@
+{
+  "name": "xjson-cluster-os",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "XJSON Cluster OS - No dependencies, just run it",
+  "scripts": {
+    "sw": "node run-sw.js",
+    "cluster": "node run-sw.js --cluster --workers 4",
+    "cluster:8": "node run-sw.js --cluster --workers 8",
+    "cluster:16": "node run-sw.js --cluster --workers 16",
+    "hive": "node cluster-os.js --hive --workers 8",
+    "mesh": "node cluster-os.js --hive --mesh --workers 16"
+  },
+  "keywords": ["xjson", "cluster", "distributed", "no-dependencies"],
+  "author": "XJSON Community",
+  "license": "MIT"
+}
