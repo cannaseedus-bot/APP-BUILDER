@@ -1,0 +1,70 @@
+{
+  "@context": "ASXR-Trinity-Studio-Generator",
+  "@v": "3.0.0",
+  "@law": "ASX = XCFE = XJSON = KUHUL = AST = MX2DB",
+  "@type": "ai-multi-agent-studio",
+  "@sequence": [
+    {
+      "@log": "🤖 Creating AI Multi-Agent Studio: $input.name"
+    },
+    {
+      "@mkdir": {
+        "path": "projects/$input.name"
+      }
+    },
+    {
+      "@mkdir": {
+        "path": "projects/$input.name/agents"
+      }
+    },
+    {
+      "@mkdir": {
+        "path": "projects/$input.name/memory"
+      }
+    },
+    {
+      "@py.file.write": {
+        "path": "projects/$input.name/studio.xjson",
+        "pretty": true,
+        "data": {
+          "@context": "ASXR-AI-Multi-Agent-Studio",
+          "@v": "3.0.0",
+          "name": "$input.name",
+          "description": "$input.description",
+          "type": "ai",
+          "created": "{{timestamp}}",
+          "architecture": "MICRO_ASXR",
+          "features": ["multi-agent", "rlhf", "memory-training", "llm-integration"],
+          "agents": {
+            "orchestrator": {"role": "master", "model": "qwen"},
+            "researcher": {"role": "worker", "model": "mx2lm"},
+            "executor": {"role": "worker", "model": "cline"},
+            "validator": {"role": "worker", "model": "janus"}
+          }
+        }
+      }
+    },
+    {
+      "@template": {
+        "output": "projects/$input.name/index.html",
+        "template": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>🤖 {{name}}</title>\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <style>\n    :root { --gold: #ffd000; --cyan: #16f2aa; --bg: #020409; }\n    body { margin: 0; font-family: system-ui; background: var(--bg); color: #e8eef5; padding: 20px; }\n    .agent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }\n    .agent-card { background: #050a14; border: 1px solid var(--gold); border-radius: 12px; padding: 20px; }\n    .agent-status { width: 12px; height: 12px; border-radius: 50%; background: var(--cyan); }\n  </style>\n</head>\n<body>\n  <h1>🤖 {{name}}</h1>\n  <p>{{description}}</p>\n  <div class=\"agent-grid\">\n    <div class=\"agent-card\">\n      <h3>Orchestrator</h3>\n      <div class=\"agent-status\"></div>\n      <p>Master agent coordinating all workers</p>\n    </div>\n    <div class=\"agent-card\">\n      <h3>Researcher</h3>\n      <div class=\"agent-status\"></div>\n      <p>Information gathering and analysis</p>\n    </div>\n    <div class=\"agent-card\">\n      <h3>Executor</h3>\n      <div class=\"agent-status\"></div>\n      <p>Code execution and implementation</p>\n    </div>\n    <div class=\"agent-card\">\n      <h3>Validator</h3>\n      <div class=\"agent-status\"></div>\n      <p>Quality control and validation</p>\n    </div>\n  </div>\n  <script src=\"/public/asx-runtime.js\"></script>\n  <script src=\"/agents/orchestrator.js\"></script>\n</body>\n</html>",
+        "data": "$input"
+      }
+    },
+    {
+      "@py.file.write": {
+        "path": "projects/$input.name/agents/orchestrator.js",
+        "data": "/* $input.name - AI Multi-Agent Orchestrator */\n\nclass AgentOrchestrator {\n  constructor() {\n    this.agents = {\n      orchestrator: { status: 'idle', model: 'qwen' },\n      researcher: { status: 'idle', model: 'mx2lm' },\n      executor: { status: 'idle', model: 'cline' },\n      validator: { status: 'idle', model: 'janus' }\n    };\n    this.memory = [];\n    this.init();\n  }\n  \n  async init() {\n    console.log('🤖 AI Multi-Agent System initialized');\n    console.log('Agents:', Object.keys(this.agents));\n    \n    // Connect to MX2CMS for memory storage\n    await this.loadMemory();\n  }\n  \n  async loadMemory() {\n    if (window.ASX) {\n      const res = await window.ASX.dbQuery('rlhf');\n      if (res.ok) {\n        this.memory = res.records || [];\n        console.log('Memory loaded:', this.memory.length, 'records');\n      }\n    }\n  }\n  \n  async delegateTask(task) {\n    console.log('Delegating task:', task);\n    \n    // Orchestrator delegates to appropriate agent\n    const agent = this.selectAgent(task);\n    this.agents[agent].status = 'active';\n    \n    // Execute task\n    const result = await this.executeTask(agent, task);\n    \n    // Store in memory\n    await this.storeMemory(agent, task, result);\n    \n    this.agents[agent].status = 'idle';\n    return result;\n  }\n  \n  selectAgent(task) {\n    // Simple routing logic\n    if (task.includes('research')) return 'researcher';\n    if (task.includes('code')) return 'executor';\n    if (task.includes('validate')) return 'validator';\n    return 'orchestrator';\n  }\n  \n  async executeTask(agent, task) {\n    console.log(`Agent ${agent} executing:`, task);\n    // TODO: Implement actual agent execution\n    return { agent, task, result: 'completed', timestamp: Date.now() };\n  }\n  \n  async storeMemory(agent, task, result) {\n    if (window.ASX) {\n      await window.ASX.dbPut('rlhf', {\n        agent,\n        task,\n        result,\n        timestamp: Date.now()\n      });\n    }\n    this.memory.push({ agent, task, result });\n  }\n}\n\nwindow.agentSystem = new AgentOrchestrator();\n"
+      }
+    },
+    {
+      "@py.file.write": {
+        "path": "projects/$input.name/README.md",
+        "data": "# 🤖 $input.name\n\n$input.description\n\n## AI Multi-Agent Architecture\n\n### Agents\n\n- **Orchestrator** (Qwen) - Master coordinator\n- **Researcher** (MX2LM) - Information gathering\n- **Executor** (Cline) - Code execution\n- **Validator** (Janus) - Quality control\n\n### Features\n\n- Multi-agent orchestration\n- RLHF memory training\n- MX2CMS integration\n- Agent specialization\n\n## Getting Started\n\n1. Open `index.html` in browser\n2. View agent dashboard\n3. Delegate tasks to agents\n4. Monitor agent status\n5. Review memory in MX2CMS\n\n## Structure\n\n```\n$input.name/\n├── index.html            # Agent dashboard\n├── agents/\n│   └── orchestrator.js  # Main orchestration logic\n├── memory/              # Agent memory storage\n└── studio.xjson         # Studio metadata\n```\n\nPowered by ASXR Trinity ⚛️\n"
+      }
+    },
+    {
+      "@log": "✓ AI Multi-Agent Studio created at: projects/$input.name"
+    }
+  ]
+}

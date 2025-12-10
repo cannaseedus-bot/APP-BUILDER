@@ -1,0 +1,64 @@
+{
+  "@context": "ASXR-Trinity-Studio-Generator",
+  "@v": "3.0.0",
+  "@law": "ASX = XCFE = XJSON = KUHUL = AST = MX2DB",
+  "@type": "game-studio",
+  "@sequence": [
+    {
+      "@log": "🎮 Creating Game Studio: $input.name"
+    },
+    {
+      "@mkdir": {
+        "path": "projects/$input.name"
+      }
+    },
+    {
+      "@mkdir": {
+        "path": "projects/$input.name/assets"
+      }
+    },
+    {
+      "@mkdir": {
+        "path": "projects/$input.name/src"
+      }
+    },
+    {
+      "@py.file.write": {
+        "path": "projects/$input.name/studio.xjson",
+        "pretty": true,
+        "data": {
+          "@context": "ASXR-Game-Studio",
+          "@v": "3.0.0",
+          "name": "$input.name",
+          "description": "$input.description",
+          "type": "game",
+          "created": "{{timestamp}}",
+          "architecture": "MICRO_ASXR",
+          "features": ["canvas", "webgl", "physics", "multiplayer"]
+        }
+      }
+    },
+    {
+      "@template": {
+        "output": "projects/$input.name/index.html",
+        "template": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>🎮 {{name}}</title>\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <style>\n    body { margin: 0; overflow: hidden; background: #000; }\n    canvas { display: block; width: 100vw; height: 100vh; }\n  </style>\n</head>\n<body>\n  <canvas id=\"game\"></canvas>\n  <script src=\"/public/asx-runtime.js\"></script>\n  <script src=\"/src/game.js\"></script>\n</body>\n</html>",
+        "data": "$input"
+      }
+    },
+    {
+      "@py.file.write": {
+        "path": "projects/$input.name/src/game.js",
+        "data": "/* $input.name - Game Engine */\n\nclass Game {\n  constructor(canvas) {\n    this.canvas = canvas;\n    this.ctx = canvas.getContext('2d');\n    this.width = window.innerWidth;\n    this.height = window.innerHeight;\n    \n    canvas.width = this.width;\n    canvas.height = this.height;\n    \n    this.init();\n  }\n  \n  init() {\n    console.log('🎮 Game initialized:', '$input.name');\n    this.gameLoop();\n  }\n  \n  update(dt) {\n    // Update game state\n  }\n  \n  render() {\n    this.ctx.fillStyle = '#020409';\n    this.ctx.fillRect(0, 0, this.width, this.height);\n    \n    // Render game\n    this.ctx.fillStyle = '#ffd000';\n    this.ctx.font = '32px sans-serif';\n    this.ctx.textAlign = 'center';\n    this.ctx.fillText('$input.name', this.width / 2, this.height / 2);\n  }\n  \n  gameLoop() {\n    this.update(1/60);\n    this.render();\n    requestAnimationFrame(() => this.gameLoop());\n  }\n}\n\nwindow.addEventListener('load', () => {\n  const canvas = document.getElementById('game');\n  new Game(canvas);\n});\n"
+      }
+    },
+    {
+      "@py.file.write": {
+        "path": "projects/$input.name/README.md",
+        "data": "# 🎮 $input.name\n\n$input.description\n\n## Game Studio Stack\n\n- **Engine**: Canvas 2D / WebGL\n- **Physics**: Custom / Matter.js\n- **Multiplayer**: WebSocket ready\n- **Assets**: `/assets` directory\n\n## Getting Started\n\n1. Open `index.html` in browser\n2. Edit `src/game.js` for game logic\n3. Add assets to `assets/` folder\n4. Use MX2CMS for save data\n\nPowered by ASXR Trinity ⚛️\n"
+      }
+    },
+    {
+      "@log": "✓ Game Studio created at: projects/$input.name"
+    }
+  ]
+}
