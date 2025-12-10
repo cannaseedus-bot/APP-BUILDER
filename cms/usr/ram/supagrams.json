@@ -1,0 +1,20 @@
+[
+  {
+    "ts": 1733788800000,
+    "tokens": ["ASXR", "Micro", "Super", "CMS", "Omega", "unified", "content", "OS"],
+    "source": "cms_manifest",
+    "frequency": 50,
+    "context": "full_system_architecture",
+    "entropy": 0.37,
+    "innovation": 0.71
+  },
+  {
+    "ts": 1733788900000,
+    "tokens": ["SECURITY", "validates", "XCFE", "governs", "KUHUL", "executes", "GAS", "dispatches"],
+    "source": "security_flow",
+    "frequency": 42,
+    "context": "security_pipeline_law",
+    "entropy": 0.42,
+    "innovation": 0.68
+  }
+]

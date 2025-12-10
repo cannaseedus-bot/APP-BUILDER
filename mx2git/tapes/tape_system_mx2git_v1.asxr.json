@@ -1,0 +1,184 @@
+{
+  "@context": "xjson://asxr/tape/system/mx2git/v1",
+  "@v": "1.0.0",
+  "n": "tape_system_mx2git_v1",
+  "d": "Core MX2GIT system tape - GitHub sync agent and VFS operations",
+  "@law": "GITHUB_SYNC = XCFE → KUHUL → ASX-RAM → XJSON",
+
+  "tape_metadata": {
+    "id": "tape_system_mx2git_v1",
+    "role": "github_sync_core",
+    "class": "system_tape",
+    "boot_priority": 1,
+    "cpu_affinity": ["asxr_cpu"],
+    "created_at": "2025-12-09T00:00:00.000Z"
+  },
+
+  "agents": {
+    "agent.git.sync": {
+      "id": "agent.git.sync",
+      "role": "github_sync",
+      "class": "system_agent",
+      "scope": ["github", "vfs", "asx_ram"],
+
+      "actions": {
+        "pull": {
+          "description": "Pull file from GitHub to ASX-RAM",
+          "params": ["repo", "branch", "path", "vfsPath"],
+          "kuhul_exec": "⟁Pop⟁github_api⟁Wo⟁credentials⟁Sek⟁fetch_content⟁Sek⟁decode_base64⟁Sek⟁write_vfs⟁Xul"
+        },
+
+        "push": {
+          "description": "Push file from ASX-RAM to GitHub",
+          "params": ["repo", "branch", "path", "vfsPath", "message"],
+          "kuhul_exec": "⟁Pop⟁vfs_read⟁Wo⟁credentials⟁Sek⟁encode_base64⟁Sek⟁github_api⟁Sek⟁commit⟁Xul"
+        },
+
+        "clone": {
+          "description": "Clone full repository to ASX-RAM",
+          "params": ["repo", "branch"],
+          "kuhul_exec": "⟁Pop⟁github_tree⟁Wo⟁credentials⟁Sek⟁fetch_files⟁Sek⟁write_project⟁Sek⟁manifest⟁Xul"
+        },
+
+        "import": {
+          "description": "Register repository as project",
+          "params": ["repo_url", "project_name"],
+          "kuhul_exec": "⟁Pop⟁parse_url⟁Wo⟁project_meta⟁Sek⟁write_manifest⟁Xul"
+        },
+
+        "list_projects": {
+          "description": "List all registered projects",
+          "params": [],
+          "kuhul_exec": "⟁Pop⟁vfs_scan⟁Wo⟁manifests⟁Sek⟁parse_json⟁Xul"
+        }
+      },
+
+      "xcfe_vectors": {
+        "@control": {
+          "@control.git": "github_api_control",
+          "@control.sync": "bidirectional_sync_control",
+          "@control.auth": "token_security_control"
+        },
+        "@flow": {
+          "@flow.push": "vfs → encode → github",
+          "@flow.pull": "github → decode → vfs",
+          "@flow.clone": "github → tree → batch → vfs"
+        },
+        "@variable": {
+          "@variable.repo": "github_repository_path",
+          "@variable.branch": "git_branch_name",
+          "@variable.token": "encrypted_github_token"
+        }
+      }
+    }
+  },
+
+  "vfs": {
+    "mounts": [
+      {
+        "path": "/usr",
+        "type": "rw",
+        "description": "System files and secrets"
+      },
+      {
+        "path": "/tmp",
+        "type": "vol",
+        "description": "Temporary storage"
+      },
+      {
+        "path": "/projects",
+        "type": "rw",
+        "description": "Cloned repositories"
+      }
+    ],
+
+    "secrets": [
+      {
+        "path": "/usr/secrets/github_token.json",
+        "type": "encrypted",
+        "access": "agent.git.sync"
+      }
+    ]
+  },
+
+  "kuhul": {
+    "@exec.github_pull": [
+      "⟁Pop github_request",
+      "⟁Wo credentials",
+      "⟁Sek fetch_api",
+      "⟁Sek decode_content",
+      "⟁Sek write_vfs",
+      "⟁Xul response"
+    ],
+
+    "@exec.github_push": [
+      "⟁Pop vfs_path",
+      "⟁Wo credentials",
+      "⟁Sek read_vfs",
+      "⟁Sek encode_content",
+      "⟁Sek push_api",
+      "⟁Xul commit_sha"
+    ],
+
+    "@exec.github_clone": [
+      "⟁Pop repo_url",
+      "⟁Wo credentials",
+      "⟁Sek fetch_tree",
+      "⟁Sek batch_download",
+      "⟁Sek write_project",
+      "⟁Sek create_manifest",
+      "⟁Xul project_path"
+    ]
+  },
+
+  "api_surface": {
+    "endpoints": [
+      "/api/mx2git/save-credentials",
+      "/api/mx2git/pull",
+      "/api/mx2git/push",
+      "/api/mx2git/clone",
+      "/api/mx2git/import-github",
+      "/api/mx2git/projects",
+      "/api/mx2git/manifest"
+    ],
+
+    "methods": {
+      "save-credentials": "POST",
+      "pull": "POST",
+      "push": "POST",
+      "clone": "POST",
+      "import-github": "POST",
+      "projects": "GET",
+      "manifest": "GET"
+    }
+  },
+
+  "security": {
+    "token_storage": {
+      "location": "/usr/secrets/github_token.json",
+      "encryption": "browser_cache_api",
+      "access_control": "agent.git.sync_only"
+    },
+
+    "api_validation": {
+      "github_api": "https://api.github.com",
+      "required_scopes": ["repo", "read:org"],
+      "rate_limiting": "github_native"
+    }
+  },
+
+  "integration": {
+    "cms": {
+      "compatible": true,
+      "mount_point": "/api/mx2git",
+      "agent_sharing": false,
+      "vfs_isolation": true
+    },
+
+    "polygoat": {
+      "compatible": true,
+      "bridge_type": "http_api",
+      "security_goat_validation": "optional"
+    }
+  }
+}

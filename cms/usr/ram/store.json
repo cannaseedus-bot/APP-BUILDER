@@ -1,0 +1,41 @@
+[
+  {
+    "id": "product-001",
+    "title": "ASXR Trinity OS License",
+    "name": "ASXR Trinity OS License",
+    "content": "Full commercial license for ASXR Trinity v3.2.0 browser-native multi-agent operating system. Includes KUHUL runtime, XCFE governance, and ASX-RAM storage.",
+    "price": 499.99,
+    "license": "commercial",
+    "created_at": "2025-12-09T00:00:00.000Z",
+    "updated_at": "2025-12-09T00:00:00.000Z",
+    "category": "software",
+    "stock": 999,
+    "downloads": 127
+  },
+  {
+    "id": "product-002",
+    "title": "POLYGOAT Runtime Bundle",
+    "name": "POLYGOAT Runtime Bundle",
+    "content": "Polyglot runtime support for K'uhul, JavaScript, Java, and Python. Includes WASM bindings and native graphics support.",
+    "price": 299.99,
+    "license": "commercial",
+    "created_at": "2025-12-09T00:30:00.000Z",
+    "updated_at": "2025-12-09T00:30:00.000Z",
+    "category": "runtime",
+    "stock": 999,
+    "downloads": 84
+  },
+  {
+    "id": "product-003",
+    "title": "SECURITY-GOAT Pro",
+    "name": "SECURITY-GOAT Pro",
+    "content": "Enterprise malware detection and threat validation system. Includes 50+ pattern matchers, threat scoring, and quarantine management.",
+    "price": 149.99,
+    "license": "commercial",
+    "created_at": "2025-12-09T01:00:00.000Z",
+    "updated_at": "2025-12-09T01:00:00.000Z",
+    "category": "security",
+    "stock": 999,
+    "downloads": 56
+  }
+]

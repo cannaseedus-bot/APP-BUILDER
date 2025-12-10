@@ -1,0 +1,23 @@
+[
+  {
+    "ts": 1733788800000,
+    "tokens": ["SECURITY", "POP", "WO", "SEK", "XUL"],
+    "source": "enhanced_pipeline",
+    "frequency": 30,
+    "context": "enhanced_kuhul_with_security"
+  },
+  {
+    "ts": 1733788900000,
+    "tokens": ["POLYGOAT", "K'uhul", "JavaScript", "Java", "Python"],
+    "source": "polyglot_runtime",
+    "frequency": 20,
+    "context": "polyglot_language_support"
+  },
+  {
+    "ts": 1733789000000,
+    "tokens": ["ASXR", "KUHUL", "XJSON", "XCFE", "ASX-RAM"],
+    "source": "core_architecture",
+    "frequency": 35,
+    "context": "asxr_ecosystem"
+  }
+]

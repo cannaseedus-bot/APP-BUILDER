@@ -1,0 +1,65 @@
+{
+  "@context": "xjson://micro-asxr/mx2git/v1",
+  "@v": "1.0.0",
+  "n": "MX2GIT",
+  "d": "Standalone Micro-ASXR for GitHub ↔ ASX-RAM synchronization. Provides agent-driven, credential-safe GitHub operations.",
+  "mode": "micro-asxr",
+  "boot_surface": "headless",
+  "primary_tape": "tape_system_mx2git_v1",
+
+  "runtime": {
+    "cpu": {
+      "id": "asxr_cpu",
+      "mode": "browser_vm",
+      "status": "active"
+    }
+  },
+
+  "tapes": {
+    "tape_system_mx2git_v1": {
+      "id": "tape_system_mx2git_v1",
+      "role": "github_sync_core",
+      "entry": "/tapes/tape_system_mx2git_v1.asxr.json",
+      "agents": ["agent.git.sync"],
+      "shards": ["cpu"]
+    }
+  },
+
+  "agents": {
+    "agent.git.sync": {
+      "role": "github_sync",
+      "default_tape": "tape_system_mx2git_v1",
+      "scope": ["github", "vfs"],
+      "actions": ["pull", "push", "clone", "sync"]
+    }
+  },
+
+  "asx_ram": {
+    "vfs_mounts": ["/usr", "/tmp", "/projects"],
+    "secret_paths": ["/usr/secrets/github_token.json"],
+    "project_root": "/projects"
+  },
+
+  "xcfe": {
+    "control_vectors": ["@control.git", "@control.sync", "@control.auth"],
+    "flow_vectors": ["@flow.push", "@flow.pull", "@flow.clone"],
+    "variable_vectors": ["@variable.repo", "@variable.branch", "@variable.token"]
+  },
+
+  "api": {
+    "@route.save_credentials": { "method": "POST", "path": "/api/mx2git/save-credentials" },
+    "@route.pull": { "method": "POST", "path": "/api/mx2git/pull" },
+    "@route.push": { "method": "POST", "path": "/api/mx2git/push" },
+    "@route.clone": { "method": "POST", "path": "/api/mx2git/clone" },
+    "@route.import_github": { "method": "POST", "path": "/api/mx2git/import-github" },
+    "@route.list_projects": { "method": "GET", "path": "/api/mx2git/projects" }
+  },
+
+  "boot_sequence": [
+    "kernel.init",
+    "vfs.mount",
+    "secrets.check",
+    "agents.bootstrap",
+    "mx2git.ready"
+  ]
+}

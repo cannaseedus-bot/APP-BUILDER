@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASXR MICRO SUPER CMS Ω</title>
+  <link rel="stylesheet" href="atomic.css">
+  <style>
+    :root {
+      --bg: #000;
+      --panel: #04170a;
+      --border: #0f3d22;
+      --text: #16f2aa;
+      --accent: #39ff14;
+      --danger: #ff1744;
+      --warning: #ffc107;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .container { max-width: 1400px; margin: 0 auto; }
+
+    header {
+      background: var(--panel);
+      border: 2px solid var(--border);
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: var(--accent);
+      font-size: 2rem;
+      text-shadow: 0 0 10px var(--accent);
+    }
+
+    .subtitle {
+      color: var(--text);
+      opacity: 0.7;
+      margin-top: 5px;
+    }
+
+    .mode-selector {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .mode-btn {
+      background: var(--panel);
+      border: 2px solid var(--border);
+      color: var(--text);
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+
+    .mode-btn:hover {
+      background: var(--border);
+      border-color: var(--text);
+    }
+
+    .mode-btn.active {
+      background: var(--border);
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 2px solid var(--border);
+      padding: 20px;
+    }
+
+    .panel-title {
+      color: var(--accent);
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    button {
+      background: var(--border);
+      border: 2px solid var(--text);
+      color: var(--text);
+      padding: 10px 20px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.3s;
+      margin-right: 10px;
+    }
+
+    button:hover {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    button.danger {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    button.danger:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .item-list {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .item-title {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .item-meta {
+      color: var(--text);
+      opacity: 0.7;
+      font-size: 0.9rem;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 0.9rem;
+    }
+
+    .status-bar {
+      background: var(--panel);
+      border: 2px solid var(--border);
+      padding: 10px 20px;
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .status-indicator {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .agent-panel {
+      grid-column: 1 / -1;
+    }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .agent-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 15px;
+    }
+
+    .agent-name {
+      color: var(--accent);
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚛️ ASXR MICRO SUPER CMS Ω</h1>
+      <div class="subtitle">KUHUL ⊗ XJSON ⊗ XCFE ⊗ ASX-RAM Unified Content OS</div>
+    </header>
+
+    <div class="mode-selector">
+      <button class="mode-btn active" data-mode="forum">📋 Forum</button>
+      <button class="mode-btn" data-mode="store">🛒 Store</button>
+      <button class="mode-btn" data-mode="plugins">🔌 Plugins</button>
+      <button class="mode-btn" data-mode="blog">📝 Blog</button>
+      <button class="mode-btn" data-mode="users">👥 Users</button>
+      <button class="mode-btn" data-mode="rlhf">🧠 RLHF</button>
+    </div>
+
+    <div class="main-content">
+      <!-- CREATE PANEL -->
+      <div class="panel">
+        <div class="panel-title">✨ Create New</div>
+        <form id="createForm">
+          <div class="form-group">
+            <label for="title">Title / Name</label>
+            <input type="text" id="title" required>
+          </div>
+          <div class="form-group">
+            <label for="content">Content / Description</label>
+            <textarea id="content"></textarea>
+          </div>
+          <div class="form-group" id="priceGroup" style="display:none;">
+            <label for="price">Price</label>
+            <input type="number" id="price" step="0.01">
+          </div>
+          <div class="form-group" id="versionGroup" style="display:none;">
+            <label for="version">Version</label>
+            <input type="text" id="version" placeholder="1.0.0">
+          </div>
+          <div class="form-group" id="rewardGroup" style="display:none;">
+            <label for="reward">Reward Delta</label>
+            <input type="number" id="reward" step="0.01" value="1.0">
+          </div>
+          <button type="submit">Create</button>
+          <button type="button" id="resetBtn">Reset</button>
+        </form>
+      </div>
+
+      <!-- LIST PANEL -->
+      <div class="panel">
+        <div class="panel-title" id="listTitle">📋 Forum Threads</div>
+        <button id="refreshBtn" class="btn-sm">🔄 Refresh</button>
+        <div class="item-list" id="itemList">
+          <div class="item-meta">Loading...</div>
+        </div>
+      </div>
+
+      <!-- AGENTS PANEL -->
+      <div class="panel agent-panel">
+        <div class="panel-title">🤖 ASXR Agents</div>
+        <div class="agent-grid">
+          <div class="agent-card">
+            <div class="agent-name">agent.profile.manager</div>
+            <div class="item-meta">Role: user_control</div>
+            <button class="btn-sm" onclick="testAgent('agent.profile.manager', 'upsert_profile', {name: 'Test User', level: 5})">Test</button>
+          </div>
+          <div class="agent-card">
+            <div class="agent-name">agent.memory.trainer</div>
+            <div class="item-meta">Role: memory_writer</div>
+            <button class="btn-sm" onclick="testAgent('agent.memory.trainer', 'record_ngrams', {tokens: ['test', 'memory'], source: 'ui'})">Test</button>
+          </div>
+          <div class="agent-card">
+            <div class="agent-name">agent.rlhf.reinforcer</div>
+            <div class="item-meta">Role: reward_adjuster</div>
+            <button class="btn-sm" onclick="testAgent('agent.rlhf.reinforcer', 'apply_reward', {delta: 1.5, meta: {test: true}})">Test</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-indicator">
+        <div class="status-dot"></div>
+        <span>OS: <span id="osStatus">ASXR_MICRO_SUPER_CMS_OMEGA_v1</span></span>
+      </div>
+      <div class="status-indicator">
+        <span>Mode: <span id="currentMode">forum</span></span>
+      </div>
+      <div class="status-indicator">
+        <span>Items: <span id="itemCount">0</span></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentMode = 'forum';
+    let currentItems = [];
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('✅ SW registered:', reg.scope))
+        .catch(err => console.error('❌ SW registration failed:', err));
+    }
+
+    // Mode switching
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMode = btn.dataset.mode;
+        document.getElementById('currentMode').textContent = currentMode;
+        updateFormFields();
+        updateListTitle();
+        loadItems();
+      });
+    });
+
+    // Update form fields based on mode
+    function updateFormFields() {
+      const priceGroup = document.getElementById('priceGroup');
+      const versionGroup = document.getElementById('versionGroup');
+      const rewardGroup = document.getElementById('rewardGroup');
+
+      priceGroup.style.display = currentMode === 'store' ? 'block' : 'none';
+      versionGroup.style.display = currentMode === 'plugins' ? 'block' : 'none';
+      rewardGroup.style.display = currentMode === 'rlhf' ? 'block' : 'none';
+
+      document.getElementById('title').placeholder = getTitlePlaceholder();
+      document.getElementById('content').placeholder = getContentPlaceholder();
+    }
+
+    function getTitlePlaceholder() {
+      const placeholders = {
+        forum: 'Thread title...',
+        store: 'Product name...',
+        plugins: 'Plugin name...',
+        blog: 'Article title...',
+        users: 'Username...',
+        rlhf: 'Training case title...'
+      };
+      return placeholders[currentMode] || 'Title...';
+    }
+
+    function getContentPlaceholder() {
+      const placeholders = {
+        forum: 'Thread content...',
+        store: 'Product description...',
+        plugins: 'Plugin description...',
+        blog: 'Article content...',
+        users: 'User bio...',
+        rlhf: 'Training case description...'
+      };
+      return placeholders[currentMode] || 'Content...';
+    }
+
+    function updateListTitle() {
+      const titles = {
+        forum: '📋 Forum Threads',
+        store: '🛒 Store Products',
+        plugins: '🔌 Installed Plugins',
+        blog: '📝 Blog Articles',
+        users: '👥 Users',
+        rlhf: '🧠 RLHF Cases'
+      };
+      document.getElementById('listTitle').textContent = titles[currentMode];
+    }
+
+    // Load items
+    async function loadItems() {
+      try {
+        const res = await fetch(`/api/cms/${currentMode}/list`);
+        const json = await res.json();
+
+        if (json.ok) {
+          currentItems = json.data || [];
+          renderItems();
+        } else {
+          console.error('Failed to load items:', json.error);
+          document.getElementById('itemList').innerHTML = '<div class="item-meta">Error loading items</div>';
+        }
+      } catch (err) {
+        console.error('Load error:', err);
+        document.getElementById('itemList').innerHTML = '<div class="item-meta">Network error</div>';
+      }
+    }
+
+    // Render items
+    function renderItems() {
+      const list = document.getElementById('itemList');
+      document.getElementById('itemCount').textContent = currentItems.length;
+
+      if (currentItems.length === 0) {
+        list.innerHTML = '<div class="item-meta">No items yet. Create one above!</div>';
+        return;
+      }
+
+      list.innerHTML = currentItems.map(item => `
+        <div class="item">
+          <div class="item-header">
+            <div class="item-title">${escapeHtml(item.title || item.name || item.id)}</div>
+            <div class="item-actions">
+              <button class="btn-sm danger" onclick="deleteItem('${item.id}')">Delete</button>
+            </div>
+          </div>
+          ${item.content ? `<div class="item-meta">${escapeHtml(item.content).substring(0, 200)}...</div>` : ''}
+          ${item.price ? `<div class="item-meta">Price: $${item.price}</div>` : ''}
+          ${item.version ? `<div class="item-meta">Version: ${item.version}</div>` : ''}
+          ${item.reward ? `<div class="item-meta">Reward: ${item.reward}</div>` : ''}
+          <div class="item-meta">Created: ${new Date(item.created_at).toLocaleString()}</div>
+        </div>
+      `).join('');
+    }
+
+    // Create item
+    document.getElementById('createForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        title: document.getElementById('title').value,
+        name: document.getElementById('title').value,
+        content: document.getElementById('content').value
+      };
+
+      if (currentMode === 'store') {
+        payload.price = parseFloat(document.getElementById('price').value) || 0;
+      }
+
+      if (currentMode === 'plugins') {
+        payload.version = document.getElementById('version').value || '1.0.0';
+      }
+
+      if (currentMode === 'rlhf') {
+        payload.reward = parseFloat(document.getElementById('reward').value) || 1.0;
+      }
+
+      try {
+        const res = await fetch(`/api/cms/${currentMode}/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const json = await res.json();
+
+        if (json.ok) {
+          console.log('✅ Created:', json.data);
+          document.getElementById('createForm').reset();
+          loadItems();
+        } else {
+          alert('Error: ' + json.error);
+        }
+      } catch (err) {
+        console.error('Create error:', err);
+        alert('Network error');
+      }
+    });
+
+    // Delete item
+    async function deleteItem(id) {
+      if (!confirm('Delete this item?')) return;
+
+      try {
+        const res = await fetch(`/api/cms/${currentMode}/delete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+
+        const json = await res.json();
+
+        if (json.ok) {
+          console.log('✅ Deleted');
+          loadItems();
+        } else {
+          alert('Error: ' + json.error);
+        }
+      } catch (err) {
+        console.error('Delete error:', err);
+        alert('Network error');
+      }
+    }
+
+    // Test agent
+    async function testAgent(agentId, action, payload) {
+      try {
+        const res = await fetch('/api/agents/action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ agentId, action, payload })
+        });
+
+        const json = await res.json();
+
+        if (json.ok) {
+          console.log('✅ Agent result:', json.res);
+          alert('Agent executed successfully! Check console.');
+        } else {
+          alert('Error: ' + json.error);
+        }
+      } catch (err) {
+        console.error('Agent error:', err);
+        alert('Network error');
+      }
+    }
+
+    // Refresh button
+    document.getElementById('refreshBtn').addEventListener('click', loadItems);
+
+    // Reset button
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('createForm').reset();
+    });
+
+    // Utility
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Initial load
+    updateFormFields();
+    updateListTitle();
+    loadItems();
+
+    // Auto-refresh every 30 seconds
+    setInterval(loadItems, 30000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "plugin-001",
+    "name": "KUHUL Pipeline Inspector",
+    "title": "KUHUL Pipeline Inspector",
+    "content": "Real-time visualization and debugging tool for KUHUL pipeline execution. Monitor POP, WO, SEK, XUL, and CH'EN stages.",
+    "version": "1.2.0",
+    "entry": "kuhul-inspector.js",
+    "created_at": "2025-12-09T00:00:00.000Z",
+    "updated_at": "2025-12-09T00:00:00.000Z",
+    "author": "user-002",
+    "public": true,
+    "downloads": 234,
+    "tags": ["debugging", "visualization", "kuhul"]
+  },
+  {
+    "id": "plugin-002",
+    "name": "XJSON Schema Validator",
+    "title": "XJSON Schema Validator",
+    "content": "Validate XJSON documents against schema definitions. Supports @context, @law, and @v declarations.",
+    "version": "2.0.1",
+    "entry": "xjson-validator.js",
+    "created_at": "2025-12-09T00:30:00.000Z",
+    "updated_at": "2025-12-09T00:30:00.000Z",
+    "author": "user-003",
+    "public": true,
+    "downloads": 189,
+    "tags": ["validation", "xjson", "schema"]
+  },
+  {
+    "id": "plugin-003",
+    "name": "ASX-RAM Memory Profiler",
+    "title": "ASX-RAM Memory Profiler",
+    "content": "Profile and optimize ASX-RAM memory usage. Track n-grams, glyphgrams, and supagrams storage patterns.",
+    "version": "1.5.2",
+    "entry": "asx-ram-profiler.js",
+    "created_at": "2025-12-09T01:00:00.000Z",
+    "updated_at": "2025-12-09T01:00:00.000Z",
+    "author": "user-001",
+    "public": true,
+    "downloads": 145,
+    "tags": ["memory", "profiling", "optimization"]
+  }
+]

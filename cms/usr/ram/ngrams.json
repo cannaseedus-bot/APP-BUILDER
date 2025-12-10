@@ -1,0 +1,32 @@
+[
+  {
+    "ts": 1733788800000,
+    "tokens": ["KUHUL", "pipeline", "execution"],
+    "source": "forum_thread_001",
+    "frequency": 12
+  },
+  {
+    "ts": 1733788900000,
+    "tokens": ["XCFE", "control", "flow"],
+    "source": "forum_thread_002",
+    "frequency": 8
+  },
+  {
+    "ts": 1733789000000,
+    "tokens": ["XJSON", "data", "format"],
+    "source": "blog_article_001",
+    "frequency": 15
+  },
+  {
+    "ts": 1733789100000,
+    "tokens": ["ASX-RAM", "memory", "storage"],
+    "source": "blog_article_002",
+    "frequency": 10
+  },
+  {
+    "ts": 1733789200000,
+    "tokens": ["SECURITY-GOAT", "malware", "detection"],
+    "source": "blog_article_003",
+    "frequency": 18
+  }
+]

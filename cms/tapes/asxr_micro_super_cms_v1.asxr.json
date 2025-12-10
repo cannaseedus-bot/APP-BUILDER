@@ -1,0 +1,200 @@
+{
+  "@context": "xjson://asxr/micro/cms/omega",
+  "@v": "1.0.0",
+  "n": "ASXR_MICRO_SUPER_CMS_OMEGA",
+  "d": "All-in-one Micro-ASXR CMS OS with Forum, Store, Plugins, Blog, Users, RLHF, Training, and ASX-RAM-native memory.",
+  "@law": "ASX = XCFE = XJSON = KUHUL = AST",
+  "role": "unified_cms_os",
+
+  "xcfe": {
+    "@control": {
+      "@control.boot": "init_os",
+      "@control.route": "resolve_view",
+      "@control.write": "commit_asx_ram",
+      "@control.train": "rlhf_ingest",
+      "@control.render": "render_mode",
+      "@control.agent": "dispatch_agents"
+    },
+    "@flow": {
+      "@flow.user": "user → ui → cms",
+      "@flow.store": "cms → payment → delivery",
+      "@flow.train": "cms → rlhf → asx_ram → model",
+      "@flow.plugin": "cms → plugin → runtime",
+      "@flow.blog": "cms → publish → feed",
+      "@flow.admin": "cms → users → permissions"
+    },
+    "@view": {
+      "@view.forum": "classic_forum",
+      "@view.store": "marketplace",
+      "@view.plugins": "plugin_directory",
+      "@view.blog": "blog_system",
+      "@view.users": "user_management",
+      "@view.rlhf": "trainer_forum",
+      "@view.heatmap": "memory_heatmap",
+      "@view.admin": "control_dashboard"
+    },
+    "@variable": {
+      "@variable.mode": "forum",
+      "@variable.theme": "atomic_dark",
+      "@variable.entropy": 0.37,
+      "@variable.innovation": 0.71,
+      "@variable.security": "sealed"
+    }
+  },
+
+  "modes": {
+    "forum": {
+      "label": "Classic Forum",
+      "entities": ["thread", "post", "comment"],
+      "route": "/forum"
+    },
+    "store": {
+      "label": "Marketplace",
+      "entities": ["product", "order", "license"],
+      "route": "/store"
+    },
+    "plugins": {
+      "label": "Plugin Directory",
+      "entities": ["plugin", "version", "dependency"],
+      "route": "/plugins"
+    },
+    "blog": {
+      "label": "Blog System",
+      "entities": ["article", "author", "tag"],
+      "route": "/blog"
+    },
+    "users": {
+      "label": "User Management",
+      "entities": ["user", "profile", "role", "session"],
+      "route": "/users"
+    },
+    "rlhf": {
+      "label": "RLHF Training",
+      "entities": ["case", "reward", "annotation"],
+      "route": "/rlhf"
+    }
+  },
+
+  "schema": {
+    "@entity.user": {
+      "id": "uuid",
+      "name": "string",
+      "role": "string",
+      "level": "number",
+      "created": "iso8601"
+    },
+    "@entity.thread": {
+      "id": "uuid",
+      "title": "string",
+      "author": "uuid",
+      "mode": "forum|blog|rlhf",
+      "timestamp": "iso8601"
+    },
+    "@entity.post": {
+      "id": "uuid",
+      "thread_id": "uuid",
+      "body": "string",
+      "reward": "number",
+      "timestamp": "iso8601"
+    },
+    "@entity.product": {
+      "id": "uuid",
+      "title": "string",
+      "price": "number",
+      "license": "string"
+    },
+    "@entity.plugin": {
+      "id": "uuid",
+      "name": "string",
+      "entry": "string",
+      "version": "string"
+    }
+  },
+
+  "asx_ram": {
+    "users": "/usr/ram/users.json",
+    "forum": "/usr/ram/forum.json",
+    "store": "/usr/ram/store.json",
+    "plugins": "/usr/ram/plugins.json",
+    "blog": "/usr/ram/blog.json",
+    "rlhf": "/usr/ram/rlhf.json",
+
+    "ngrams": "/usr/ram/ngrams.json",
+    "quadragrams": "/usr/ram/quadragrams.json",
+    "pentagrams": "/usr/ram/pentagrams.json",
+    "supagrams": "/usr/ram/supagrams.json",
+    "glyphgrams": "/usr/ram/glyphgrams.json"
+  },
+
+  "api": {
+    "@route.list": { "method": "GET", "path": "/api/cms/:mode/list" },
+    "@route.create": { "method": "POST", "path": "/api/cms/:mode/create" },
+    "@route.update": { "method": "POST", "path": "/api/cms/:mode/update" },
+    "@route.delete": { "method": "POST", "path": "/api/cms/:mode/delete" },
+    "@route.rlhf": { "method": "POST", "path": "/api/rlhf/reward" },
+    "@route.agent": { "method": "POST", "path": "/api/agents/action" }
+  },
+
+  "agents": {
+    "agent.profile.manager": {
+      "role": "user_control",
+      "scope": ["users"],
+      "exec": "⟁Pop⟁users⟁Wo⟁profile⟁Sek⟁commit_asx_ram⟁Xul"
+    },
+    "agent.memory.trainer": {
+      "role": "memory_writer",
+      "scope": ["ngrams", "glyphgrams"],
+      "exec": "⟁Pop⟁memory⟁Wo⟁train⟁Sek⟁commit_asx_ram⟁Xul"
+    },
+    "agent.rlhf.reinforcer": {
+      "role": "reward_adjuster",
+      "scope": ["rlhf"],
+      "exec": "⟁Pop⟁reward⟁Wo⟁delta⟁Sek⟁adjust_weights⟁Xul"
+    }
+  },
+
+  "kuhul": {
+    "@exec.write": [
+      "⟁Pop",
+      "⟁Wo input",
+      "⟁Sek validate",
+      "⟁Sek serialize",
+      "⟁Sek commit_asx_ram",
+      "⟁Xul"
+    ],
+    "@exec.render": [
+      "⟁Pop",
+      "⟁Wo mode",
+      "⟁Sek resolve_view",
+      "⟁Sek hydrate_dom",
+      "⟁Xul"
+    ],
+    "@exec.train": [
+      "⟁Pop",
+      "⟁Wo rlhf_case",
+      "⟁Sek tokenize",
+      "⟁Sek supagram_shift",
+      "⟁Sek glyphgram_bind",
+      "⟁Sek commit_asx_ram",
+      "⟁Xul"
+    ]
+  },
+
+  "visualization": {
+    "heatmap": {
+      "source": "/usr/ram/glyphgrams.json",
+      "type": "density_matrix"
+    },
+    "training_dashboard": {
+      "metrics": ["reward_avg", "entropy", "innovation"]
+    }
+  },
+
+  "boot": [
+    "@control.boot",
+    "@control.route",
+    "@control.render",
+    "@control.agent",
+    "@control.train"
+  ]
+}
