@@ -3,7 +3,7 @@
 ## **One Command AI Training - Zero Setup**
 
 Train AI models in your browser with a single command. No Python, no Colab, no configuration.
-
+```
 
 1. ✅ **Detects GPU** - Checks for WebGPU support
 2. ✅ **Finds Ports** - Auto-allocates available ports
@@ -13,7 +13,7 @@ Train AI models in your browser with a single command. No Python, no Colab, no c
 6. ✅ **Displays Status** - Beautiful terminal UI
 
 **Total time: ~2 seconds**
-
+```
 ---
 ```
 
