@@ -35,6 +35,79 @@ function parseKuhlRom(khlSource) {
     const manifestJson = manifestMatch[1];
     const manifest = JSON.parse(manifestJson);
     console.log('⟁ Manifest AST extracted from ROM:', manifest.n);
+
+    // Extract CMS RLHF Database from ATOMIC_BLOCK_DATABASE_RLHF
+    const rlhfDbMatch = khlSource.match(/⟁ ATOMIC_BLOCK_DATABASE_RLHF ⟁\s*\n\s*@shard_id:\s*"([^"]+)"[\s\S]*?@sample_data:\s*(\[[^\]]*\{[\s\S]*?\}\s*\])/);
+
+    if (rlhfDbMatch) {
+      try {
+        const sampleDataJson = rlhfDbMatch[2];
+        const sampleData = JSON.parse(sampleDataJson);
+
+        // Extract categories
+        const categoriesMatch = khlSource.match(/@categories:\s*(\[[^\]]*\])/);
+        const categories = categoriesMatch ? JSON.parse(categoriesMatch[1]) : [];
+
+        manifest.cms_rlhf = {
+          shard_id: rlhfDbMatch[1],
+          sample_data: sampleData,
+          categories: categories
+        };
+
+        console.log('⟁ CMS RLHF Database extracted:', sampleData.length, 'cases');
+      } catch (e) {
+        console.warn('⟁ Failed to parse CMS RLHF database:', e);
+      }
+    }
+
+    // Extract Site Content from ATOMIC_BLOCK_SITE_CONTENT
+    const siteContentMatch = khlSource.match(/⟁ ATOMIC_BLOCK_SITE_CONTENT ⟁\s*\n\s*@shard_id:\s*"([^"]+)"[\s\S]*?@pages:\s*(\{[\s\S]*?\n\s{4}\})/);
+
+    if (siteContentMatch) {
+      try {
+        // Extract pages section
+        const pagesStart = khlSource.indexOf('@pages: {', khlSource.indexOf('ATOMIC_BLOCK_SITE_CONTENT'));
+        const pagesEnd = khlSource.indexOf('\n    }\n\n    /* ==================================================', pagesStart);
+        const pagesJson = khlSource.substring(pagesStart + 8, pagesEnd + 6);
+        const pages = JSON.parse(pagesJson);
+
+        // Extract components section
+        const componentsStart = khlSource.indexOf('@components: {', pagesEnd);
+        const componentsEnd = khlSource.indexOf('\n    }\n\n    /* ==================================================', componentsStart);
+        const componentsJson = khlSource.substring(componentsStart + 13, componentsEnd + 6);
+        const components = JSON.parse(componentsJson);
+
+        // Extract assets section
+        const assetsStart = khlSource.indexOf('@assets: {', componentsEnd);
+        const assetsEnd = khlSource.indexOf('\n    }\n\n    /* ==================================================', assetsStart);
+        const assetsJson = khlSource.substring(assetsStart + 9, assetsEnd + 6);
+        const assets = JSON.parse(assetsJson);
+
+        // Extract tapes_rest section
+        const tapesRestStart = khlSource.indexOf('@tapes_rest: {', assetsEnd);
+        const tapesRestEnd = khlSource.indexOf('\n    }\n\n  ⟁ Xul ⟁', tapesRestStart);
+        const tapesRestJson = khlSource.substring(tapesRestStart + 13, tapesRestEnd + 6);
+        const tapesRest = JSON.parse(tapesRestJson);
+
+        manifest.site_content = {
+          shard_id: siteContentMatch[1],
+          pages: pages,
+          components: components,
+          assets: assets,
+          tapes_rest: tapesRest
+        };
+
+        console.log('⟁ Site Content Database extracted:', {
+          pages: Object.keys(pages).length,
+          components: Object.keys(components).length,
+          assets: Object.keys(assets).length,
+          tapes: Object.keys(tapesRest).length
+        });
+      } catch (e) {
+        console.warn('⟁ Failed to parse Site Content database:', e);
+      }
+    }
+
     return manifest;
   } catch (e) {
     console.error('⟁ Failed to parse manifest_ast JSON:', e);
@@ -108,6 +181,12 @@ self.addEventListener('activate', async (event) => {
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
+
+  // RLHF Forum CMS shard routes
+  if (url.pathname.startsWith('/cms/rlhf/')) {
+    event.respondWith(handleCmsRlhfRequest(event.request));
+    return;
+  }
 
   // Check if this is a REST mesh route
   const route = manifest?.rest_mesh?.routes?.[url.pathname];
@@ -425,6 +504,756 @@ async function executeBasherCommand(command) {
     return { ok: false, error: error.message };
   }
 }
+
+/* ============================================================
+   CMS RLHF FORUM HANDLER
+   ============================================================ */
+
+async function handleCmsRlhfRequest(request) {
+  const url = new URL(request.url);
+  const path = url.pathname;
+  const method = request.method;
+  const query = Object.fromEntries(url.searchParams.entries());
+
+  let body = null;
+  if (method === 'POST') {
+    try {
+      body = await request.json();
+    } catch (e) {
+      return new Response(JSON.stringify({ ok: false, error: 'Invalid JSON body' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+  }
+
+  const payload = {
+    '@kernel': 'kuhul',
+    '@app': 'cms_rlhf_forum_v2',
+    '@route': mapPathToRlhfRoute(path, method),
+    '@method': method,
+    '@query': query,
+    '@body': body
+  };
+
+  const kernelResult = await self.__KUHUL_KERNEL_EXEC__(payload, 'sw.js');
+
+  return new Response(kernelResult.body || JSON.stringify({ status: 'error' }), {
+    status: kernelResult.status || 200,
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+
+function mapPathToRlhfRoute(path, method) {
+  if (method === 'GET' && path === '/cms/rlhf/list') return 'cms_rlhf_list';
+  if (method === 'GET' && path === '/cms/rlhf/get') return 'cms_rlhf_get';
+  if (method === 'GET' && path === '/cms/rlhf/search') return 'cms_rlhf_search';
+  if (method === 'GET' && path === '/cms/rlhf/stats') return 'cms_rlhf_stats';
+  if (method === 'POST' && path === '/cms/rlhf/post') return 'cms_rlhf_post';
+  if (method === 'POST' && path === '/cms/rlhf/update_score') return 'cms_rlhf_update_score';
+  return 'cms_rlhf_list'; // default fallback
+}
+
+/* ============================================================
+   K'UHUL KERNEL EXECUTOR
+   Bridge to C@@L BLOCK functions in sw.khl ROM
+   ============================================================ */
+
+self.__KUHUL_KERNEL_EXEC__ = async function(payload, caller) {
+  const route = payload['@route'];
+  const query = payload['@query'] || {};
+  const body = payload['@body'] || {};
+
+  console.log('⟁ K\'UHUL EXEC:', route, 'from', caller);
+
+  try {
+    let result;
+
+    switch (route) {
+      // CMS RLHF Routes
+      case 'cms_rlhf_list': {
+        const label = query.label || null;
+        const limit = parseInt(query.limit) || 50;
+        const offset = parseInt(query.offset) || 0;
+
+        // Simulate C@@L BLOCK execution: cms_rlhf_list
+        // In real implementation, this would execute the K'UHUL code
+        // For now, we directly access the embedded manifest data
+
+        const allCases = manifest?.cms_rlhf?.sample_data || [];
+        let filteredCases = allCases;
+
+        if (label) {
+          filteredCases = allCases.filter(c => c.label === label);
+        }
+
+        const paginated = filteredCases.slice(offset, offset + limit);
+
+        result = {
+          ok: true,
+          mode: 'list',
+          shard: 'cms_rlhf_forum_v2',
+          items: paginated,
+          total: filteredCases.length
+        };
+        break;
+      }
+
+      case 'cms_rlhf_get': {
+        const caseId = query.id;
+        const allCases = manifest?.cms_rlhf?.sample_data || [];
+        const found = allCases.find(c => c.case_id === caseId);
+
+        if (found) {
+          result = {
+            ok: true,
+            mode: 'get',
+            item: found
+          };
+        } else {
+          result = {
+            ok: false,
+            error: 'Case not found',
+            case_id: caseId
+          };
+        }
+        break;
+      }
+
+      case 'cms_rlhf_post': {
+        // Create new RLHF case
+        const newCase = {
+          case_id: `rlhf_${Date.now()}`,
+          title: body.title || 'Untitled',
+          label: body.label || 'General Discussion',
+          author: body.author || 'anonymous',
+          body: body.body || '',
+          snippet: (body.body || '').substring(0, 150),
+          created_at: Date.now(),
+          updated_at: Date.now(),
+          comment_count: 0,
+          score: 0,
+          metadata: body.metadata || {}
+        };
+
+        // Store in MX2DB
+        MX2DB.rlhf_traces.set(newCase.case_id, newCase);
+
+        result = {
+          ok: true,
+          mode: 'post',
+          case_id: newCase.case_id,
+          message: 'RLHF case created'
+        };
+        break;
+      }
+
+      case 'cms_rlhf_search': {
+        const searchQuery = query.q || '';
+        const allCases = manifest?.cms_rlhf?.sample_data || [];
+
+        // Simple tokenization and search
+        const tokens = searchQuery.toLowerCase().split(/\s+/);
+        const matches = allCases.filter(c => {
+          const searchText = `${c.title} ${c.body} ${c.label}`.toLowerCase();
+          return tokens.some(token => searchText.includes(token));
+        });
+
+        result = {
+          ok: true,
+          mode: 'search',
+          query: searchQuery,
+          items: matches,
+          count: matches.length
+        };
+        break;
+      }
+
+      case 'cms_rlhf_stats': {
+        const allCases = manifest?.cms_rlhf?.sample_data || [];
+        const categories = manifest?.cms_rlhf?.categories || [];
+
+        const categoryStats = {};
+        categories.forEach(cat => {
+          categoryStats[cat] = allCases.filter(c => c.label === cat).length;
+        });
+
+        result = {
+          ok: true,
+          mode: 'stats',
+          total_cases: allCases.length,
+          categories: categoryStats,
+          avg_score: allCases.reduce((sum, c) => sum + (c.score || 0), 0) / allCases.length
+        };
+        break;
+      }
+
+      case 'cms_rlhf_update_score': {
+        const caseId = body.case_id;
+        const newScore = body.score;
+
+        // Try to find in MX2DB first
+        const stored = MX2DB.rlhf_traces.get(caseId);
+        if (stored) {
+          stored.score = newScore;
+          stored.updated_at = Date.now();
+          MX2DB.rlhf_traces.set(caseId, stored);
+
+          result = {
+            ok: true,
+            mode: 'update_score',
+            case_id: caseId,
+            new_score: newScore
+          };
+        } else {
+          result = {
+            ok: false,
+            error: 'Case not found in MX2DB',
+            case_id: caseId
+          };
+        }
+        break;
+      }
+
+      // SITE CONTENT Routes
+      case 'cms_page_get': {
+        const pageId = query.id || query.page_id;
+        const pages = manifest?.site_content?.pages || {};
+        const pageData = pages[pageId];
+
+        if (!pageData) {
+          result = {
+            ok: false,
+            error: 'Page not found',
+            page_id: pageId,
+            available: Object.keys(pages)
+          };
+        } else {
+          result = {
+            ok: true,
+            mode: 'page',
+            '@id': pageData['@id'],
+            '@type': pageData['@type'],
+            '@control': pageData['@control'],
+            '@variable': pageData['@variable'],
+            content: pageData['@content'],
+            route: pageData['@route']
+          };
+        }
+        break;
+      }
+
+      case 'cms_component_get': {
+        const componentId = query.id || query.component_id;
+        const props = query.props ? JSON.parse(query.props) : {};
+        const components = manifest?.site_content?.components || {};
+        const componentData = components[componentId];
+
+        if (!componentData) {
+          result = {
+            ok: false,
+            error: 'Component not found',
+            component_id: componentId,
+            available: Object.keys(components)
+          };
+        } else {
+          result = {
+            ok: true,
+            mode: 'component',
+            '@id': componentData['@id'],
+            '@type': componentData['@type'],
+            '@control': componentData['@control'],
+            '@variable': {...componentData['@variable'], ...props},
+            content: componentData['@content'],
+            route: componentData['@route']
+          };
+        }
+        break;
+      }
+
+      case 'cms_tape_get': {
+        const tapeId = query.id || query.tape_id;
+        const tapeManifest = manifest?.tapes?.[tapeId];
+        const tapeRest = manifest?.site_content?.tapes_rest?.[tapeId];
+
+        if (!tapeManifest) {
+          result = {
+            ok: false,
+            error: 'Tape not found',
+            tape_id: tapeId,
+            available: Object.keys(manifest?.tapes || {})
+          };
+        } else {
+          result = {
+            ok: true,
+            mode: 'tape',
+            '@id': tapeManifest.id,
+            '@type': 'tape',
+            '@control': tapeRest ? tapeRest['@control'] : ['@boot', '@execute'],
+            '@variable': {
+              label: tapeManifest.label,
+              role: tapeManifest.role,
+              entry: tapeManifest.entry,
+              boot: tapeManifest.boot,
+              agents: tapeManifest.agents,
+              shards: tapeManifest.shards,
+              ...(tapeRest ? tapeRest['@variable'] : {})
+            },
+            route: tapeRest ? tapeRest['@route'] : `/site/tape/${tapeId}`,
+            manifest: tapeManifest
+          };
+        }
+        break;
+      }
+
+      case 'cms_asset_get': {
+        const assetId = query.id || query.asset_id;
+        const assets = manifest?.site_content?.assets || {};
+        const assetData = assets[assetId];
+
+        if (!assetData) {
+          result = {
+            ok: false,
+            error: 'Asset not found',
+            asset_id: assetId,
+            available: Object.keys(assets)
+          };
+        } else {
+          result = {
+            ok: true,
+            mode: 'asset',
+            '@id': assetData['@id'],
+            '@type': assetData['@type'],
+            '@control': assetData['@control'],
+            '@variable': assetData['@variable'],
+            content: assetData['@content'],
+            mime: assetData['@variable'].mime,
+            cache_duration: assetData['@variable'].cache_duration || 3600
+          };
+        }
+        break;
+      }
+
+      case 'cms_site_map': {
+        const pages = manifest?.site_content?.pages || {};
+        const components = manifest?.site_content?.components || {};
+        const assets = manifest?.site_content?.assets || {};
+        const tapesRest = manifest?.site_content?.tapes_rest || {};
+
+        const pageRoutes = Object.keys(pages).map(id => ({
+          id: id,
+          route: pages[id]['@route'],
+          title: pages[id]['@variable'].title
+        }));
+
+        const componentRoutes = Object.keys(components).map(id => ({
+          id: id,
+          route: components[id]['@route']
+        }));
+
+        const tapeRoutes = Object.keys(tapesRest).map(id => ({
+          id: id,
+          route: tapesRest[id]['@route']
+        }));
+
+        result = {
+          ok: true,
+          mode: 'site_map',
+          pages: pageRoutes,
+          components: componentRoutes,
+          assets: Object.keys(assets),
+          tapes: tapeRoutes,
+          total_routes: pageRoutes.length + componentRoutes.length + tapeRoutes.length + Object.keys(assets).length
+        };
+        break;
+      }
+
+      case 'cms_atomic_search': {
+        const searchQuery = query.q || '';
+        const typeFilter = query.type || null;
+        const queryLower = searchQuery.toLowerCase();
+        const results = [];
+
+        // Search pages
+        if (!typeFilter || typeFilter === 'page') {
+          const pages = manifest?.site_content?.pages || {};
+          Object.values(pages).forEach(page => {
+            const searchable = `${page['@variable'].title} ${page['@variable'].description || ''}`;
+            if (searchable.toLowerCase().includes(queryLower)) {
+              results.push({
+                type: 'page',
+                id: page['@id'],
+                route: page['@route'],
+                title: page['@variable'].title,
+                description: page['@variable'].description
+              });
+            }
+          });
+        }
+
+        // Search components
+        if (!typeFilter || typeFilter === 'component') {
+          const components = manifest?.site_content?.components || {};
+          Object.values(components).forEach(component => {
+            if (component['@id'].includes(queryLower)) {
+              results.push({
+                type: 'component',
+                id: component['@id'],
+                route: component['@route']
+              });
+            }
+          });
+        }
+
+        // Search tapes
+        if (!typeFilter || typeFilter === 'tape') {
+          const tapes = manifest?.tapes || {};
+          Object.values(tapes).forEach(tape => {
+            if (tape.label.toLowerCase().includes(queryLower) || tape.role.toLowerCase().includes(queryLower)) {
+              results.push({
+                type: 'tape',
+                id: tape.id,
+                label: tape.label,
+                role: tape.role
+              });
+            }
+          });
+        }
+
+        result = {
+          ok: true,
+          mode: 'search',
+          query: searchQuery,
+          results: results,
+          count: results.length
+        };
+        break;
+      }
+
+      // GENERIC MX2DB REST API Routes
+      case 'db_list_rows': {
+        const table = query.table || query.table_name;
+        const limit = parseInt(query.limit) || 100;
+        const offset = parseInt(query.offset) || 0;
+
+        // Query MX2DB table
+        const dbTable = MX2DB[table];
+        if (!dbTable) {
+          result = {
+            ok: false,
+            error: 'Table not found',
+            table: table,
+            available: Object.keys(MX2DB)
+          };
+        } else {
+          const allRows = Array.from(dbTable.values());
+          const rows = allRows.slice(offset, offset + limit);
+
+          result = {
+            ok: true,
+            mode: 'db_list',
+            table: table,
+            rows: rows,
+            count: rows.length,
+            total: allRows.length,
+            limit: limit,
+            offset: offset
+          };
+        }
+        break;
+      }
+
+      case 'db_get_row': {
+        const table = query.table || query.table_name;
+        const id = query.id || query.row_id;
+
+        const dbTable = MX2DB[table];
+        if (!dbTable) {
+          result = {
+            ok: false,
+            error: 'Table not found',
+            table: table
+          };
+        } else {
+          const row = dbTable.get(id);
+          if (!row) {
+            result = {
+              ok: false,
+              error: 'Row not found',
+              table: table,
+              id: id
+            };
+          } else {
+            result = {
+              ok: true,
+              mode: 'db_get',
+              table: table,
+              row: row
+            };
+          }
+        }
+        break;
+      }
+
+      case 'db_insert_row': {
+        const table = body.table || body.table_name;
+        const data = body.data || body;
+
+        const dbTable = MX2DB[table];
+        if (!dbTable) {
+          result = {
+            ok: false,
+            error: 'Table not found',
+            table: table
+          };
+        } else {
+          const id = `${table}_${Date.now()}`;
+          const enriched = {
+            ...data,
+            id: id,
+            created_at: Date.now(),
+            updated_at: Date.now()
+          };
+
+          dbTable.set(id, enriched);
+
+          result = {
+            ok: true,
+            mode: 'db_insert',
+            table: table,
+            row: enriched,
+            id: id
+          };
+        }
+        break;
+      }
+
+      case 'db_update_row': {
+        const table = body.table || body.table_name;
+        const id = body.id || body.row_id;
+        const patch = body.patch || body.data;
+
+        const dbTable = MX2DB[table];
+        if (!dbTable) {
+          result = {
+            ok: false,
+            error: 'Table not found',
+            table: table
+          };
+        } else {
+          const existing = dbTable.get(id);
+          if (!existing) {
+            result = {
+              ok: false,
+              error: 'Row not found',
+              table: table,
+              id: id
+            };
+          } else {
+            const updated = {
+              ...existing,
+              ...patch,
+              updated_at: Date.now()
+            };
+
+            dbTable.set(id, updated);
+
+            result = {
+              ok: true,
+              mode: 'db_update',
+              table: table,
+              row: updated
+            };
+          }
+        }
+        break;
+      }
+
+      case 'db_delete_row': {
+        const table = body.table || body.table_name || query.table;
+        const id = body.id || body.row_id || query.id;
+
+        const dbTable = MX2DB[table];
+        if (!dbTable) {
+          result = {
+            ok: false,
+            error: 'Table not found',
+            table: table
+          };
+        } else {
+          const deleted = dbTable.delete(id);
+          if (!deleted) {
+            result = {
+              ok: false,
+              error: 'Row not found',
+              table: table,
+              id: id
+            };
+          } else {
+            result = {
+              ok: true,
+              mode: 'db_delete',
+              table: table,
+              id: id,
+              deleted: true
+            };
+          }
+        }
+        break;
+      }
+
+      // HEALTH & META Routes
+      case 'health_check_extended': {
+        const folds = Object.keys(manifest?.kuhul_folds || {});
+        const tapes = Object.keys(manifest?.tapes || {});
+
+        result = {
+          ok: true,
+          kernel: 'sw.khl Ω.∞.Ω',
+          law: manifest?.atomic_law,
+          quantum_state: manifest?.quantum_state,
+          status: 'active',
+          subsystems: {
+            folds: folds.length,
+            tapes: tapes.length,
+            os_state: ASX_RAM.get('os.state'),
+            boot_count: ASX_RAM.get('os.boot.count')
+          },
+          uptime: performance.now(),
+          timestamp: Date.now()
+        };
+        break;
+      }
+
+      case 'meta_routes': {
+        const routes = manifest?.rest_mesh?.routes || {};
+        const routeCatalog = Object.keys(routes).map(path => ({
+          path: path,
+          fold: routes[path].fold,
+          handler: routes[path].handler,
+          method: 'GET/POST/PUT/DELETE'
+        }));
+
+        result = {
+          ok: true,
+          mode: 'meta_routes',
+          mount: manifest?.rest_mesh?.base || '/',
+          routes: routeCatalog,
+          count: routeCatalog.length
+        };
+        break;
+      }
+
+      // FEED IMPORTER Routes
+      case 'feed_import': {
+        const feedUrl = query.url || body.feed_url;
+        const feedType = query.type || body.feed_type || 'rss';
+
+        // Fetch and parse feed (simplified implementation)
+        try {
+          const response = await fetch(feedUrl);
+          const feedXml = await response.text();
+
+          // Parse based on type (basic implementation)
+          const entries = [];
+          // In real implementation, parse XML to extract entries
+          // For now, return placeholder
+
+          result = {
+            ok: true,
+            mode: 'feed_import',
+            feed_url: feedUrl,
+            feed_type: feedType,
+            entries_found: entries.length,
+            entries_imported: 0,
+            message: 'Feed import stub - implement XML parsing'
+          };
+        } catch (error) {
+          result = {
+            ok: false,
+            error: 'Feed import failed',
+            feed_url: feedUrl,
+            message: error.message
+          };
+        }
+        break;
+      }
+
+      case 'feed_sync': {
+        const feeds = manifest?.feeds || [];
+
+        result = {
+          ok: true,
+          mode: 'feed_sync',
+          feeds_synced: feeds.length,
+          results: [],
+          timestamp: Date.now(),
+          message: 'Feed sync stub - implement batch import'
+        };
+        break;
+      }
+
+      // MESH COORDINATION Routes
+      case 'mesh_ping': {
+        result = {
+          ok: true,
+          mode: 'mesh_ping',
+          node_id: 'local_browser_node',
+          kernel: 'sw.khl Ω.∞.Ω',
+          quantum_state: manifest?.quantum_state,
+          os_state: ASX_RAM.get('os.state'),
+          role: 'API_RUNTIME',
+          capabilities: [
+            'cms_delivery',
+            'rlhf_storage',
+            'mx2db_query',
+            'feed_import',
+            'offline_operation'
+          ],
+          timestamp: Date.now()
+        };
+        break;
+      }
+
+      case 'mesh_register': {
+        const endpoint = query.endpoint || body.mesh_endpoint;
+
+        result = {
+          ok: true,
+          mode: 'mesh_register',
+          registered: true,
+          mesh_endpoint: endpoint,
+          node_id: 'local_browser_node',
+          message: 'Mesh registration stub - implement network coordination'
+        };
+        break;
+      }
+
+      default:
+        result = {
+          ok: false,
+          error: 'Unknown K\'UHUL route',
+          route: route
+        };
+    }
+
+    return {
+      status: result.ok ? 200 : 400,
+      body: JSON.stringify(result, null, 2)
+    };
+
+  } catch (error) {
+    console.error('⟁ K\'UHUL EXEC ERROR:', error);
+    return {
+      status: 500,
+      body: JSON.stringify({
+        ok: false,
+        error: error.message,
+        stack: error.stack
+      })
+    };
+  }
+};
 
 /* ============================================================
    STATIC ASSET HANDLER (Cache-First Strategy)
