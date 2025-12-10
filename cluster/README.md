@@ -4,22 +4,6 @@
 
 Train AI models in your browser with a single command. No Python, no Colab, no configuration.
 
-```bash
-npx @xjson/ml-runtime
-```
-
-That's it. The entire ML training environment launches automatically.
-
----
-
-
-
-
----
-
-## 📦 WHAT IT DOES
-
-When you run `npx @xjson/ml-runtime`, it automatically:
 
 1. ✅ **Detects GPU** - Checks for WebGPU support
 2. ✅ **Finds Ports** - Auto-allocates available ports
@@ -209,89 +193,8 @@ Response:
     "accuracy": 87.23
   }
 }
-```
+`
 
-### **Start Training**
-```bash
-POST /api/train
-Content-Type: application/json
-
-{
-  "model": "gpt",
-  "dataset": "./data.jsonl",
-  "hyperparams": {
-    "learning_rate": 0.0001,
-    "batch_size": 32,
-    "epochs": 10
-  }
-}
-```
-
-### **Update Metrics**
-```bash
-POST /api/metrics
-Content-Type: application/json
-
-{
-  "epoch": 5,
-  "loss": 0.2341,
-  "accuracy": 87.23,
-  "gpu_util": 78
-}
-```
-
-### **Export Model**
-```bash
-POST /api/export
-Content-Type: application/json
-
-{
-  "format": "onnx",
-  "output": "./exported-model"
-}
-```
-
----
-
----
-
-
-# Terminal 2: BERT training
-xjson-ml start --port 8090
-
-# Terminal 3: ViT training
-xjson-ml start --port 8100
-```
-
-Each instance gets its own port range automatically!
-
-### **Example 3: Development Workflow**
-
-```bash
-# Start in dev mode
-xjson-ml start --dev
-
-# Edit files in public/
-# Browser auto-reloads
-
-# Monitor in another terminal
-xjson-ml status
-```
-
-### **Example 4: Export and Deploy**
-
-```bash
-# Train model
-xjson-ml train --model bert --epochs 10
-
-# Export when done
-xjson-ml export --format onnx --output ./bert-model
-
-# Deploy to production
-cp -r bert-model /var/www/models/
-```
-
----
 
 
 
@@ -307,11 +210,6 @@ If service worker fails to register:
 
 ### **GPU Not Detected**
 If WebGPU is not available:
-
-```bash
-# Check GPU capabilities
-xjson-ml gpu
-```
 
 To enable WebGPU:
 1. Update browser to latest version
