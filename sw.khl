@@ -95,7 +95,18 @@
         "/site/tape":        { "fold": "cms",     "handler": "cms_tape_get" },
         "/site/asset":       { "fold": "cms",     "handler": "cms_asset_get" },
         "/site/map":         { "fold": "cms",     "handler": "cms_site_map" },
-        "/site/search":      { "fold": "cms",     "handler": "cms_atomic_search" }
+        "/site/search":      { "fold": "cms",     "handler": "cms_atomic_search" },
+        "/db/list":          { "fold": "db",      "handler": "db_list_rows" },
+        "/db/get":           { "fold": "db",      "handler": "db_get_row" },
+        "/db/insert":        { "fold": "db",      "handler": "db_insert_row" },
+        "/db/update":        { "fold": "db",      "handler": "db_update_row" },
+        "/db/delete":        { "fold": "db",      "handler": "db_delete_row" },
+        "/health/extended":  { "fold": "os",      "handler": "health_check_extended" },
+        "/meta/routes":      { "fold": "os",      "handler": "meta_routes" },
+        "/feed/import":      { "fold": "feed",    "handler": "feed_import" },
+        "/feed/sync":        { "fold": "feed",    "handler": "feed_sync" },
+        "/mesh/ping":        { "fold": "mesh",    "handler": "mesh_ping" },
+        "/mesh/register":    { "fold": "mesh",    "handler": "mesh_register" }
       }
     },
 
@@ -1581,6 +1592,397 @@
       "query": query,
       "results": results,
       "count": results.length
+    }]→[Xul return]
+  [Xul]
+
+
+  /* ==========================================================
+     GENERIC MX2DB REST API - Universal Database Access
+     ========================================================== */
+
+  /* DB LIST ROWS (C@@L BLOCK - Query Table) */
+  [Pop db_list_rows]
+    /* @control: [@query, @filter, @paginate]
+       @variable: {table_name, limit, offset, filter}
+       @Sek: Query MX2DB table with pagination
+       @Ch'en: Return rows as atomic blocks */
+
+    [Wo @table_name]→[Ch'en table]
+    [Wo @limit]→[Ch'en limit]
+    [Wo @offset]→[Ch'en offset]
+    [Wo @filter]→[Ch'en filter]
+
+    // Normalize limit/offset
+    [Wo limit || 100]→[Ch'en safe_limit]
+    [Wo offset || 0]→[Ch'en safe_offset]
+
+    // Query MX2DB (runtime would implement actual query)
+    [Wo {
+      "@table": table,
+      "@limit": safe_limit,
+      "@offset": safe_offset,
+      "@filter": filter
+    }]→[Sek mx2db_query]→[Ch'en rows]
+
+    [Wo {
+      "ok": true,
+      "mode": "db_list",
+      "table": table,
+      "rows": rows,
+      "count": rows.length,
+      "limit": safe_limit,
+      "offset": safe_offset
+    }]→[Xul return]
+  [Xul]
+
+
+  /* DB GET ROW (C@@L BLOCK - Retrieve Single Row) */
+  [Pop db_get_row]
+    /* @control: [@retrieve, @validate, @return]
+       @variable: {table_name, row_id}
+       @Sek: Get single row from MX2DB by ID
+       @Ch'en: Return row or 404 */
+
+    [Wo @table_name]→[Ch'en table]
+    [Wo @row_id]→[Ch'en id]
+
+    // Get from MX2DB
+    [Wo {
+      "@table": table,
+      "@id": id
+    }]→[Sek mx2db_get]→[Ch'en row]
+
+    [@if row == null]→[@then
+      [Wo {
+        "ok": false,
+        "error": "not_found",
+        "table": table,
+        "id": id
+      }]→[Xul return]
+    ]
+
+    [Wo {
+      "ok": true,
+      "mode": "db_get",
+      "table": table,
+      "row": row
+    }]→[Xul return]
+  [Xul]
+
+
+  /* DB INSERT ROW (C@@L BLOCK - Create New Row) */
+  [Pop db_insert_row]
+    /* @control: [@validate, @insert, @return_id]
+       @variable: {table_name, row_data}
+       @Sek: Insert new row into MX2DB
+       @Ch'en: Return created row with ID */
+
+    [Wo @table_name]→[Ch'en table]
+    [Wo @row_data]→[Ch'en data]
+
+    // Add metadata
+    [Wo data]→[Ch'en enriched]
+    [Wo Date.now()]→[Yax "created_at"]→[Ch'en enriched]
+    [Wo Date.now()]→[Yax "updated_at"]→[Ch'en enriched]
+    [Wo table]→[Yax "@table"]→[Ch'en enriched]
+
+    // Insert into MX2DB
+    [Wo enriched]→[Sek mx2db_insert]→[Ch'en inserted]
+
+    [Wo {
+      "ok": true,
+      "mode": "db_insert",
+      "table": table,
+      "row": inserted,
+      "id": inserted.id
+    }]→[Xul return]
+  [Xul]
+
+
+  /* DB UPDATE ROW (C@@L BLOCK - Update Existing Row) */
+  [Pop db_update_row]
+    /* @control: [@validate, @patch, @update]
+       @variable: {table_name, row_id, patch_data}
+       @Sek: Update row in MX2DB
+       @Ch'en: Return updated row */
+
+    [Wo @table_name]→[Ch'en table]
+    [Wo @row_id]→[Ch'en id]
+    [Wo @patch_data]→[Ch'en patch]
+
+    // Add updated timestamp
+    [Wo Date.now()]→[Yax "updated_at"]→[Ch'en patch]
+
+    // Update in MX2DB
+    [Wo {
+      "@table": table,
+      "@id": id,
+      "@patch": patch
+    }]→[Sek mx2db_update]→[Ch'en updated]
+
+    [@if updated == null]→[@then
+      [Wo {
+        "ok": false,
+        "error": "not_found",
+        "table": table,
+        "id": id
+      }]→[Xul return]
+    ]
+
+    [Wo {
+      "ok": true,
+      "mode": "db_update",
+      "table": table,
+      "row": updated
+    }]→[Xul return]
+  [Xul]
+
+
+  /* DB DELETE ROW (C@@L BLOCK - Remove Row) */
+  [Pop db_delete_row]
+    /* @control: [@validate, @delete, @confirm]
+       @variable: {table_name, row_id}
+       @Sek: Delete row from MX2DB
+       @Ch'en: Return success confirmation */
+
+    [Wo @table_name]→[Ch'en table]
+    [Wo @row_id]→[Ch'en id]
+
+    // Delete from MX2DB
+    [Wo {
+      "@table": table,
+      "@id": id
+    }]→[Sek mx2db_delete]→[Ch'en deleted]
+
+    [@if deleted == false]→[@then
+      [Wo {
+        "ok": false,
+        "error": "not_found",
+        "table": table,
+        "id": id
+      }]→[Xul return]
+    ]
+
+    [Wo {
+      "ok": true,
+      "mode": "db_delete",
+      "table": table,
+      "id": id,
+      "deleted": true
+    }]→[Xul return]
+  [Xul]
+
+
+  /* ==========================================================
+     HEALTH & META ENDPOINTS - System Monitoring
+     ========================================================== */
+
+  /* HEALTH CHECK (C@@L BLOCK - System Status) */
+  [Pop health_check_extended]
+    /* @control: [@monitor, @report, @diagnose]
+       @variable: {}
+       @Sek: Check all kernel subsystems
+       @Ch'en: Return health status */
+
+    [Wo manifest_ast.atomic_law]→[Ch'en law]
+    [Wo manifest_ast.quantum_state]→[Ch'en quantum_state]
+    [Wo Object.keys(manifest_ast.kuhul_folds)]→[Ch'en folds]
+    [Wo Object.keys(manifest_ast.tapes)]→[Ch'en tapes]
+
+    // Get ASX-RAM status
+    [Yax "os.state"]→[Sek ram_get]→[Ch'en os_state]
+    [Yax "os.boot.count"]→[Sek ram_get]→[Ch'en boot_count]
+
+    [Wo {
+      "ok": true,
+      "kernel": "sw.khl Ω.∞.Ω",
+      "law": law,
+      "quantum_state": quantum_state,
+      "status": "active",
+      "subsystems": {
+        "folds": folds.length,
+        "tapes": tapes.length,
+        "os_state": os_state,
+        "boot_count": boot_count
+      },
+      "uptime": performance.now(),
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* META ROUTES (C@@L BLOCK - REST API Introspection) */
+  [Pop meta_routes]
+    /* @control: [@discover, @index, @document]
+       @variable: {}
+       @Sek: List all available REST routes
+       @Ch'en: Return route catalog */
+
+    [Wo manifest_ast.rest_mesh.routes]→[Ch'en routes]
+
+    // Build route catalog
+    [Wo Object.keys(routes).map(path => ({
+      "path": path,
+      "fold": routes[path].fold,
+      "handler": routes[path].handler,
+      "method": "GET/POST/PUT/DELETE"
+    }))]→[Ch'en route_catalog]
+
+    [Wo {
+      "ok": true,
+      "mode": "meta_routes",
+      "mount": manifest_ast.rest_mesh.base,
+      "routes": route_catalog,
+      "count": route_catalog.length
+    }]→[Xul return]
+  [Xul]
+
+
+  /* ==========================================================
+     FEED IMPORTER - Blogger/RSS to Local DB
+     ========================================================== */
+
+  /* FEED IMPORT (C@@L BLOCK - Import External Feed) */
+  [Pop feed_import]
+    /* @control: [@fetch, @parse, @store]
+       @variable: {feed_url, feed_type}
+       @Sek: Fetch external feed and import to MX2DB
+       @Ch'en: Return import stats */
+
+    [Wo @feed_url]→[Ch'en url]
+    [Wo @feed_type]→[Ch'en type]
+
+    // Fetch feed (runtime implements actual fetch)
+    [Wo url]→[Sek fetch_external]→[Ch'en feed_xml]
+
+    // Parse based on type
+    [@if type == "blogger"]→[@then
+      [Wo feed_xml]→[Sek parse_blogger_feed]→[Ch'en entries]
+    ]→[@else
+      [Wo feed_xml]→[Sek parse_rss_feed]→[Ch'en entries]
+    ]
+
+    // Store entries in MX2DB
+    [Wo 0]→[Ch'en imported_count]
+    [@loop entries]→[@as entry]→[
+      [Wo {
+        "@table": "feed_entries",
+        "title": entry.title,
+        "content": entry.content,
+        "author": entry.author,
+        "published_at": entry.published,
+        "source_url": url,
+        "source_type": type,
+        "created_at": Date.now()
+      }]→[Sek mx2db_insert]→[Ch'en inserted]
+
+      [Wo imported_count + 1]→[Ch'en imported_count]
+    ]
+
+    [Wo {
+      "ok": true,
+      "mode": "feed_import",
+      "feed_url": url,
+      "feed_type": type,
+      "entries_found": entries.length,
+      "entries_imported": imported_count
+    }]→[Xul return]
+  [Xul]
+
+
+  /* FEED SYNC (C@@L BLOCK - Sync All Registered Feeds) */
+  [Pop feed_sync]
+    /* @control: [@schedule, @sync, @report]
+       @variable: {}
+       @Sek: Sync all feeds from registry
+       @Ch'en: Return sync report */
+
+    // Get feed registry from manifest or MX2DB
+    [Wo manifest_ast.feeds || []]→[Ch'en feeds]
+
+    [Wo []]→[Ch'en sync_results]
+
+    [@loop feeds]→[@as feed]→[
+      [Wo feed.url]→[Ch'en url]
+      [Wo feed.type]→[Ch'en type]
+
+      // Import feed
+      [Wo url type]→[Sek feed_import]→[Ch'en result]
+
+      [Wo sync_results.push(result)]→[Sek exec]
+    ]
+
+    [Wo {
+      "ok": true,
+      "mode": "feed_sync",
+      "feeds_synced": feeds.length,
+      "results": sync_results,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* ==========================================================
+     MESH COORDINATION - ASXR Network Communication
+     ========================================================== */
+
+  /* MESH PING (C@@L BLOCK - Health Check for Mesh) */
+  [Pop mesh_ping]
+    /* @control: [@ping, @respond, @coordinate]
+       @variable: {}
+       @Sek: Respond to mesh health check
+       @Ch'en: Return node status */
+
+    [Yax "os.state"]→[Sek ram_get]→[Ch'en os_state]
+    [Wo manifest_ast.quantum_state]→[Ch'en quantum_state]
+
+    [Wo {
+      "ok": true,
+      "mode": "mesh_ping",
+      "node_id": "local_browser_node",
+      "kernel": "sw.khl Ω.∞.Ω",
+      "quantum_state": quantum_state,
+      "os_state": os_state,
+      "role": "API_RUNTIME",
+      "capabilities": [
+        "cms_delivery",
+        "rlhf_storage",
+        "mx2db_query",
+        "feed_import",
+        "offline_operation"
+      ],
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* MESH REGISTER (C@@L BLOCK - Register with Mesh Network) */
+  [Pop mesh_register]
+    /* @control: [@announce, @register, @coordinate]
+       @variable: {mesh_endpoint}
+       @Sek: Register this node with ASXR mesh
+       @Ch'en: Return registration status */
+
+    [Wo @mesh_endpoint]→[Ch'en endpoint]
+
+    // Build registration payload
+    [Wo {
+      "node_id": "local_browser_node",
+      "kernel_version": "Ω.∞.Ω",
+      "capabilities": ["cms", "rlhf", "db", "offline"],
+      "endpoint": "local://browser/kuhul",
+      "status": "active"
+    }]→[Ch'en registration]
+
+    // Send to mesh coordinator (runtime implements)
+    [Wo endpoint registration]→[Sek mesh_announce]→[Ch'en response]
+
+    [Wo {
+      "ok": true,
+      "mode": "mesh_register",
+      "registered": true,
+      "mesh_endpoint": endpoint,
+      "node_id": "local_browser_node"
     }]→[Xul return]
   [Xul]
 

@@ -930,6 +930,305 @@ self.__KUHUL_KERNEL_EXEC__ = async function(payload, caller) {
         break;
       }
 
+      // GENERIC MX2DB REST API Routes
+      case 'db_list_rows': {
+        const table = query.table || query.table_name;
+        const limit = parseInt(query.limit) || 100;
+        const offset = parseInt(query.offset) || 0;
+
+        // Query MX2DB table
+        const dbTable = MX2DB[table];
+        if (!dbTable) {
+          result = {
+            ok: false,
+            error: 'Table not found',
+            table: table,
+            available: Object.keys(MX2DB)
+          };
+        } else {
+          const allRows = Array.from(dbTable.values());
+          const rows = allRows.slice(offset, offset + limit);
+
+          result = {
+            ok: true,
+            mode: 'db_list',
+            table: table,
+            rows: rows,
+            count: rows.length,
+            total: allRows.length,
+            limit: limit,
+            offset: offset
+          };
+        }
+        break;
+      }
+
+      case 'db_get_row': {
+        const table = query.table || query.table_name;
+        const id = query.id || query.row_id;
+
+        const dbTable = MX2DB[table];
+        if (!dbTable) {
+          result = {
+            ok: false,
+            error: 'Table not found',
+            table: table
+          };
+        } else {
+          const row = dbTable.get(id);
+          if (!row) {
+            result = {
+              ok: false,
+              error: 'Row not found',
+              table: table,
+              id: id
+            };
+          } else {
+            result = {
+              ok: true,
+              mode: 'db_get',
+              table: table,
+              row: row
+            };
+          }
+        }
+        break;
+      }
+
+      case 'db_insert_row': {
+        const table = body.table || body.table_name;
+        const data = body.data || body;
+
+        const dbTable = MX2DB[table];
+        if (!dbTable) {
+          result = {
+            ok: false,
+            error: 'Table not found',
+            table: table
+          };
+        } else {
+          const id = `${table}_${Date.now()}`;
+          const enriched = {
+            ...data,
+            id: id,
+            created_at: Date.now(),
+            updated_at: Date.now()
+          };
+
+          dbTable.set(id, enriched);
+
+          result = {
+            ok: true,
+            mode: 'db_insert',
+            table: table,
+            row: enriched,
+            id: id
+          };
+        }
+        break;
+      }
+
+      case 'db_update_row': {
+        const table = body.table || body.table_name;
+        const id = body.id || body.row_id;
+        const patch = body.patch || body.data;
+
+        const dbTable = MX2DB[table];
+        if (!dbTable) {
+          result = {
+            ok: false,
+            error: 'Table not found',
+            table: table
+          };
+        } else {
+          const existing = dbTable.get(id);
+          if (!existing) {
+            result = {
+              ok: false,
+              error: 'Row not found',
+              table: table,
+              id: id
+            };
+          } else {
+            const updated = {
+              ...existing,
+              ...patch,
+              updated_at: Date.now()
+            };
+
+            dbTable.set(id, updated);
+
+            result = {
+              ok: true,
+              mode: 'db_update',
+              table: table,
+              row: updated
+            };
+          }
+        }
+        break;
+      }
+
+      case 'db_delete_row': {
+        const table = body.table || body.table_name || query.table;
+        const id = body.id || body.row_id || query.id;
+
+        const dbTable = MX2DB[table];
+        if (!dbTable) {
+          result = {
+            ok: false,
+            error: 'Table not found',
+            table: table
+          };
+        } else {
+          const deleted = dbTable.delete(id);
+          if (!deleted) {
+            result = {
+              ok: false,
+              error: 'Row not found',
+              table: table,
+              id: id
+            };
+          } else {
+            result = {
+              ok: true,
+              mode: 'db_delete',
+              table: table,
+              id: id,
+              deleted: true
+            };
+          }
+        }
+        break;
+      }
+
+      // HEALTH & META Routes
+      case 'health_check_extended': {
+        const folds = Object.keys(manifest?.kuhul_folds || {});
+        const tapes = Object.keys(manifest?.tapes || {});
+
+        result = {
+          ok: true,
+          kernel: 'sw.khl Ω.∞.Ω',
+          law: manifest?.atomic_law,
+          quantum_state: manifest?.quantum_state,
+          status: 'active',
+          subsystems: {
+            folds: folds.length,
+            tapes: tapes.length,
+            os_state: ASX_RAM.get('os.state'),
+            boot_count: ASX_RAM.get('os.boot.count')
+          },
+          uptime: performance.now(),
+          timestamp: Date.now()
+        };
+        break;
+      }
+
+      case 'meta_routes': {
+        const routes = manifest?.rest_mesh?.routes || {};
+        const routeCatalog = Object.keys(routes).map(path => ({
+          path: path,
+          fold: routes[path].fold,
+          handler: routes[path].handler,
+          method: 'GET/POST/PUT/DELETE'
+        }));
+
+        result = {
+          ok: true,
+          mode: 'meta_routes',
+          mount: manifest?.rest_mesh?.base || '/',
+          routes: routeCatalog,
+          count: routeCatalog.length
+        };
+        break;
+      }
+
+      // FEED IMPORTER Routes
+      case 'feed_import': {
+        const feedUrl = query.url || body.feed_url;
+        const feedType = query.type || body.feed_type || 'rss';
+
+        // Fetch and parse feed (simplified implementation)
+        try {
+          const response = await fetch(feedUrl);
+          const feedXml = await response.text();
+
+          // Parse based on type (basic implementation)
+          const entries = [];
+          // In real implementation, parse XML to extract entries
+          // For now, return placeholder
+
+          result = {
+            ok: true,
+            mode: 'feed_import',
+            feed_url: feedUrl,
+            feed_type: feedType,
+            entries_found: entries.length,
+            entries_imported: 0,
+            message: 'Feed import stub - implement XML parsing'
+          };
+        } catch (error) {
+          result = {
+            ok: false,
+            error: 'Feed import failed',
+            feed_url: feedUrl,
+            message: error.message
+          };
+        }
+        break;
+      }
+
+      case 'feed_sync': {
+        const feeds = manifest?.feeds || [];
+
+        result = {
+          ok: true,
+          mode: 'feed_sync',
+          feeds_synced: feeds.length,
+          results: [],
+          timestamp: Date.now(),
+          message: 'Feed sync stub - implement batch import'
+        };
+        break;
+      }
+
+      // MESH COORDINATION Routes
+      case 'mesh_ping': {
+        result = {
+          ok: true,
+          mode: 'mesh_ping',
+          node_id: 'local_browser_node',
+          kernel: 'sw.khl Ω.∞.Ω',
+          quantum_state: manifest?.quantum_state,
+          os_state: ASX_RAM.get('os.state'),
+          role: 'API_RUNTIME',
+          capabilities: [
+            'cms_delivery',
+            'rlhf_storage',
+            'mx2db_query',
+            'feed_import',
+            'offline_operation'
+          ],
+          timestamp: Date.now()
+        };
+        break;
+      }
+
+      case 'mesh_register': {
+        const endpoint = query.endpoint || body.mesh_endpoint;
+
+        result = {
+          ok: true,
+          mode: 'mesh_register',
+          registered: true,
+          mesh_endpoint: endpoint,
+          node_id: 'local_browser_node',
+          message: 'Mesh registration stub - implement network coordination'
+        };
+        break;
+      }
+
       default:
         result = {
           ok: false,
