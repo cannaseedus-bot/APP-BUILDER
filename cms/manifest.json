@@ -1,0 +1,140 @@
+{
+  "Ωv": "1.0.0",
+  "name": "AI_POWERED_MICRO_ASXR_CMS",
+  "alias": ["MX2CMS", "MX2DB", "MICRO-ASXR"],
+  "description": "Native AI-powered CMS OS using ASX-RAM, MX2DB, XJSON, XCFE, KUHUL, AST. Organizes all data into a cohesive dynamic UI using a three-file Micro-ASXR architecture.",
+  "timestamp": 1890000011000,
+
+  "atomic_law": "ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK",
+  "architecture": "THREE_FILE_MICRO_ASXR",
+  "bindings": {
+    "index.html": "DOM_ROOT_CMS",
+    "sw.js": "SERVICE_KERNEL",
+    "manifest.json": "OS_LAW_DATABASE"
+  },
+
+  "core_systems": {
+    "asx_ram": {
+      "type": "volatile_memory + persistence",
+      "enabled": true,
+      "routes": ["/ram/get", "/ram/set", "/ram/list", "/ram/clear"]
+    },
+
+    "mx2db": {
+      "type": "local_ai_database",
+      "enabled": true,
+      "routes": ["/mx2db/put", "/mx2db/get", "/mx2db/query", "/mx2db/delete"],
+      "storage_model": "atomic_blocks + xjson",
+      "scopes": ["profiles", "posts", "products", "plugins", "models", "rlhf"]
+    },
+
+    "local_rest_mesh": {
+      "enabled": true,
+      "protocol": "fetch + service_worker",
+      "authority": "sw.js",
+      "domains": ["ram", "mx2db", "agents", "cms", "rlhf", "tapes"]
+    }
+  },
+
+  "cms_modes": {
+    "forum": {
+      "schema": "post, reply, vote",
+      "routes": ["/cms/forum/list", "/cms/forum/create"]
+    },
+    "store": {
+      "schema": "product, price, inventory",
+      "routes": ["/cms/store/list", "/cms/store/purchase"]
+    },
+    "plugins": {
+      "schema": "plugin, version, permissions",
+      "routes": ["/cms/plugins/list", "/cms/plugins/install"]
+    },
+    "blog": {
+      "schema": "article, tag, author",
+      "routes": ["/cms/blog/list", "/cms/blog/post"]
+    },
+    "users": {
+      "schema": "profile, roles, preferences",
+      "routes": ["/cms/users/list", "/cms/users/update"]
+    },
+    "rlhf": {
+      "schema": "prompt, response, score, feedback",
+      "routes": ["/cms/rlhf/submit", "/cms/rlhf/stats"]
+    }
+  },
+
+  "agents": {
+    "agent.profile.manager": {
+      "role": "User profile creation, editing, permissions",
+      "routes": ["/agents/profile/get", "/agents/profile/update"]
+    },
+    "agent.memory.trainer": {
+      "role": "ASX-RAM → MX2DB memory training, pattern extraction",
+      "routes": ["/agents/memory/train", "/agents/memory/status"]
+    },
+    "agent.rlhf.reinforcer": {
+      "role": "RLHF dataset processing, scoring, weight updates",
+      "routes": ["/agents/rlhf/score", "/agents/rlhf/apply"]
+    }
+  },
+
+  "n_gram_memory_hierarchy": {
+    "levels": [
+      "n-grams",
+      "quadragrams",
+      "pentagrams",
+      "supagrams",
+      "glyphgrams"
+    ],
+    "storage": "asx_ram + mx2db",
+    "trainer": "agent.memory.trainer"
+  },
+
+  "tapes": {
+    "tape_system_asx_ram_manager_v1.asxr.json": {
+      "role": "ASX-RAM lifecycle + inspector",
+      "mount": "/tapes/ram"
+    },
+    "tape_system_user_profile_v1.asxr.json": {
+      "role": "User profile UI + editor",
+      "mount": "/tapes/users"
+    },
+    "tape_system_rlhf_visualization_v1.asxr.json": {
+      "role": "RLHF charts + feedback dashboard",
+      "mount": "/tapes/rlhf"
+    },
+    "tape_system_memory_heatmap_v1.asxr.json": {
+      "role": "3D memory heatmap + n-gram entropy",
+      "mount": "/tapes/heatmap"
+    },
+    "tape_system_training_cockpit_v1.asxr.json": {
+      "role": "Training control panel for MX2 agents",
+      "mount": "/tapes/training"
+    }
+  },
+
+  "security": {
+    "model": "PI_GOAT_SECURITY",
+    "validation": ["route_guard", "agent_guard", "rlhf_guard"],
+    "threat_scoring": true
+  },
+
+  "visual_runtime": {
+    "css_runtime": "ATOMIC_CSS",
+    "theme": "BLACK_GOLD_HAZARD",
+    "svg_3d": true
+  },
+
+  "xcfe_control_vectors": [
+    "@boot", "@route", "@store", "@query", "@train", "@score",
+    "@render", "@deploy", "@persist", "@synchronize", "@recover"
+  ],
+
+  "xcfe_variable_vectors": [
+    "@entropy", "@innovation", "@compression_ratio",
+    "@memory_pressure", "@model_weight", "@feedback_score"
+  ],
+
+  "status": "MANIFEST_LOCKED",
+  "next_file": "sw.js"
+}
