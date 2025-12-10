@@ -1,503 +1,593 @@
-/* =====================================================================
-   ASXR MICRO SUPER CMS Ω — SERVICE WORKER
-   KUHUL ⊗ XJSON ⊗ XCFE ⊗ ASX-RAM CMS BACKEND
-   ===================================================================== */
+// sw.js — AI_POWERED_MICRO_ASXR_CMS SERVICE KERNEL
+// ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK
 
-'use strict';
+/* -------------------------------------------------------------------------
+   0. KERNEL META
+------------------------------------------------------------------------- */
 
-/* ---------------------------------------------------------------------
-   1. OS / CACHE / MANIFEST
------------------------------------------------------------------------- */
+const ASX_KERNEL_TAG = "AI_POWERED_MICRO_ASXR_CMS";
+const ASX_KERNEL_VERSION = "1.0.0";
+const CORE_CACHE = "asx-cms-core-v1";
+const RUNTIME_CACHE = "asx-cms-runtime-v1";
 
-const CMS_OS_ID          = 'ASXR_MICRO_SUPER_CMS_OMEGA_v1';
-const CMS_KERNEL_CACHE   = `${CMS_OS_ID}-kernel`;
-const CMS_RAM_CACHE      = `${CMS_OS_ID}-ram`;
-const CMS_SHELL_ASSETS   = [
-  '/',
-  '/index.html',
-  '/atomic.css',
-  '/tapes/asxr_micro_super_cms_v1.asxr.json'
-];
+/* -------------------------------------------------------------------------
+   1. IN-MEMORY STATE (ASX-RAM + MX2DB)
+------------------------------------------------------------------------- */
 
-/** Micro CMS brain (same structure you defined, slightly compact) */
-const CMS_MANIFEST = {
-  '@context': 'xjson://asxr/micro/cms/omega',
-  '@v': '1.0.0',
-  n: 'ASXR_MICRO_SUPER_CMS_OMEGA',
-  d: 'All-in-one Micro-ASXR CMS OS with Forum, Store, Plugins, Blog, Users, RLHF, Training, and ASX-RAM-native memory.',
-  '@law': 'ASX = XCFE = XJSON = KUHUL = AST',
-  role: 'unified_cms_os',
-  modes: {
-    forum:   { label: 'Classic Forum',      route: '/forum'   },
-    store:   { label: 'Marketplace',        route: '/store'   },
-    plugins: { label: 'Plugin Directory',   route: '/plugins' },
-    blog:    { label: 'Blog System',        route: '/blog'    },
-    users:   { label: 'User Management',    route: '/users'   },
-    rlhf:    { label: 'RLHF Training',      route: '/rlhf'    }
-  },
-  asx_ram: {
-    users:        '/usr/ram/users.json',
-    forum:        '/usr/ram/forum.json',
-    store:        '/usr/ram/store.json',
-    plugins:      '/usr/ram/plugins.json',
-    blog:         '/usr/ram/blog.json',
-    rlhf:         '/usr/ram/rlhf.json',
-    ngrams:       '/usr/ram/ngrams.json',
-    quadragrams:  '/usr/ram/quadragrams.json',
-    pentagrams:   '/usr/ram/pentagrams.json',
-    supagrams:    '/usr/ram/supagrams.json',
-    glyphgrams:   '/usr/ram/glyphgrams.json'
-  },
-  agents: {
-    'agent.profile.manager': {
-      role: 'user_control',
-      scope: ['users']
-    },
-    'agent.memory.trainer': {
-      role: 'memory_writer',
-      scope: ['ngrams', 'glyphgrams']
-    },
-    'agent.rlhf.reinforcer': {
-      role: 'reward_adjuster',
-      scope: ['rlhf']
-    }
-  }
+// ASX-RAM: volatile key/value store
+const ASX_RAM = new Map();
+
+// MX2DB: simple scoped maps for our CMS entities
+const MX2DB = {
+  profiles: new Map(),   // users
+  posts: new Map(),      // forum/blog posts
+  products: new Map(),   // store items
+  plugins: new Map(),    // plugin registry
+  models: new Map(),     // AI models / configs
+  rlhf: new Map()        // RLHF traces
 };
 
-/* Helper: resolve ASX-RAM path for a mode */
-function cmsRamPathForMode(mode) {
-  const map = CMS_MANIFEST.asx_ram || {};
-  switch (mode) {
-    case 'forum':   return map.forum;
-    case 'store':   return map.store;
-    case 'plugins': return map.plugins;
-    case 'blog':    return map.blog;
-    case 'users':   return map.users;
-    case 'rlhf':    return map.rlhf;
-    default:        return null;
+// Simple ID helper for MX2DB scopes
+function mx2dbNextId(scope) {
+  const db = MX2DB[scope] || MX2DB.posts;
+  let max = 0;
+  for (const key of db.keys()) {
+    const n = parseInt(key, 10);
+    if (!Number.isNaN(n) && n > max) max = n;
   }
+  return String(max + 1);
 }
 
-/* ---------------------------------------------------------------------
-   2. ASX-RAM (Virtual FS over Cache API)
------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------
+   2. HELPER UTILITIES
+------------------------------------------------------------------------- */
 
-const ASX_RAM = {
-  async readJSON(path) {
-    const cache = await caches.open(CMS_RAM_CACHE);
-    const res = await cache.match(path);
-    if (!res) return null;
-    try {
-      const txt = await res.text();
-      return JSON.parse(txt);
-    } catch {
-      return null;
-    }
-  },
-
-  async writeJSON(path, data) {
-    const cache = await caches.open(CMS_RAM_CACHE);
-    const body = JSON.stringify(data || {}, null, 2);
-    await cache.put(path, new Response(body, {
-      headers: { 'Content-Type': 'application/json' }
-    }));
-    return { path, size: body.length };
-  },
-
-  async ensureArray(path) {
-    let data = await this.readJSON(path);
-    if (!Array.isArray(data)) data = [];
-    await this.writeJSON(path, data);
-    return data;
-  }
-};
-
-/* ---------------------------------------------------------------------
-   3. MICRO KUHUL KERNEL (SYMBOLIC / PROCESS LITE)
------------------------------------------------------------------------- */
-
-const MicroKernel = {
-  processes: new Map(),
-
-  spawn(op, context) {
-    const pid = `${op}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-    const proc = {
-      pid,
-      op,
-      context: context || {},
-      createdAt: Date.now(),
-      status: 'running'
-    };
-    this.processes.set(pid, proc);
-    // In this micro kernel, we just mark as complete immediately
-    proc.status = 'completed';
-    return proc;
-  },
-
-  snapshot() {
-    return Array.from(this.processes.values()).map(p => ({
-      pid: p.pid,
-      op: p.op,
-      status: p.status,
-      runtime_ms: Date.now() - p.createdAt
-    }));
-  }
-};
-
-/* ---------------------------------------------------------------------
-   4. CMS OPERATIONS (LIST / CREATE / UPDATE / DELETE)
------------------------------------------------------------------------- */
-
-const CMSOps = {
-  async list(mode) {
-    const path = cmsRamPathForMode(mode);
-    if (!path) throw new Error(`unknown_mode:${mode}`);
-    const data = await ASX_RAM.ensureArray(path);
-    return data;
-  },
-
-  async create(mode, payload) {
-    const path = cmsRamPathForMode(mode);
-    if (!path) throw new Error(`unknown_mode:${mode}`);
-    const data = await ASX_RAM.ensureArray(path);
-
-    const id = payload.id || crypto.randomUUID();
-    const now = new Date().toISOString();
-    const record = Object.assign({}, payload, {
-      id,
-      mode,
-      created_at: payload.created_at || now,
-      updated_at: now
-    });
-
-    data.push(record);
-    await ASX_RAM.writeJSON(path, data);
-    return record;
-  },
-
-  async update(mode, payload) {
-    const path = cmsRamPathForMode(mode);
-    if (!path) throw new Error(`unknown_mode:${mode}`);
-    const data = await ASX_RAM.ensureArray(path);
-    if (!payload.id) throw new Error('missing_id');
-
-    const idx = data.findIndex(r => r.id === payload.id);
-    if (idx === -1) throw new Error('not_found');
-
-    const now = new Date().toISOString();
-    data[idx] = Object.assign({}, data[idx], payload, {
-      updated_at: now
-    });
-
-    await ASX_RAM.writeJSON(path, data);
-    return data[idx];
-  },
-
-  async remove(mode, payload) {
-    const path = cmsRamPathForMode(mode);
-    if (!path) throw new Error(`unknown_mode:${mode}`);
-    const data = await ASX_RAM.ensureArray(path);
-    if (!payload.id) throw new Error('missing_id');
-
-    const before = data.length;
-    const filtered = data.filter(r => r.id !== payload.id);
-    await ASX_RAM.writeJSON(path, filtered);
-    return { deleted: before - filtered.length };
-  }
-};
-
-/* ---------------------------------------------------------------------
-   5. RLHF + MEMORY + AGENTS (MICRO ASXR STYLE)
------------------------------------------------------------------------- */
-
-const MicroAgents = {
-  async run(agentId, action, payload) {
-    const agent = (CMS_MANIFEST.agents || {})[agentId];
-    if (!agent) throw new Error(`unknown_agent:${agentId}`);
-
-    // Very small, symbolic behavior
-    if (agentId === 'agent.profile.manager') {
-      if (action === 'upsert_profile') {
-        const path = CMS_MANIFEST.asx_ram.users;
-        const list = await ASX_RAM.ensureArray(path);
-        const id = payload.id || crypto.randomUUID();
-        const now = new Date().toISOString();
-
-        const idx = list.findIndex(u => u.id === id);
-        const base = { id, created_at: now };
-        const merged = Object.assign(base, list[idx] || {}, payload, {
-          updated_at: now
-        });
-
-        if (idx === -1) list.push(merged);
-        else list[idx] = merged;
-        await ASX_RAM.writeJSON(path, list);
-        return merged;
-      }
-    }
-
-    if (agentId === 'agent.memory.trainer') {
-      if (action === 'record_ngrams') {
-        const path = CMS_MANIFEST.asx_ram.ngrams;
-        const list = await ASX_RAM.ensureArray(path);
-        list.push({
-          ts: Date.now(),
-          tokens: payload.tokens || [],
-          source: payload.source || 'unknown'
-        });
-        await ASX_RAM.writeJSON(path, list);
-        return { ok: true, count: list.length };
-      }
-      if (action === 'record_glyphgram') {
-        const path = CMS_MANIFEST.asx_ram.glyphgrams;
-        const list = await ASX_RAM.ensureArray(path);
-        list.push({
-          ts: Date.now(),
-          glyphs: payload.glyphs || [],
-          context: payload.context || {}
-        });
-        await ASX_RAM.writeJSON(path, list);
-        return { ok: true, count: list.length };
-      }
-    }
-
-    if (agentId === 'agent.rlhf.reinforcer') {
-      if (action === 'apply_reward') {
-        const path = CMS_MANIFEST.asx_ram.rlhf;
-        const list = await ASX_RAM.ensureArray(path);
-        list.push({
-          ts: Date.now(),
-          case_id: payload.case_id || null,
-          delta: payload.delta || 0,
-          meta: payload.meta || {}
-        });
-        await ASX_RAM.writeJSON(path, list);
-        return { ok: true, reward_count: list.length };
-      }
-    }
-
-    // Fallback: echo context
-    return { agentId, action, payload, note: 'no-op handler used' };
-  }
-};
-
-/* ---------------------------------------------------------------------
-   6. API ROUTERS
------------------------------------------------------------------------- */
-
-async function handleCmsApi(url, req) {
-  // /api/cms/:mode/:action
-  const parts = url.pathname.replace(/^\/api\/cms\//, '').split('/').filter(Boolean);
-  const mode = parts[0];
-  const action = parts[1] || 'list';
-
-  try {
-    let body = {};
-    if (req.method === 'POST' || req.method === 'PUT') {
-      try { body = await req.json(); } catch { body = {}; }
-    }
-
-    MicroKernel.spawn(`cms_${mode}_${action}`, { mode, body });
-
-    let data;
-    if (action === 'list' && req.method === 'GET') {
-      data = await CMSOps.list(mode);
-    } else if (action === 'create' && req.method === 'POST') {
-      data = await CMSOps.create(mode, body);
-    } else if (action === 'update' && req.method === 'POST') {
-      data = await CMSOps.update(mode, body);
-    } else if (action === 'delete' && req.method === 'POST') {
-      data = await CMSOps.remove(mode, body);
-    } else {
-      return jsonResponse({ error: 'unsupported_action', mode, action }, 400);
-    }
-
-    return jsonResponse({ ok: true, mode, action, data });
-  } catch (e) {
-    return jsonResponse({ ok: false, error: e.message || 'cms_error', mode }, 500);
-  }
-}
-
-async function handleRlhfApi(url, req) {
-  if (req.method !== 'POST') {
-    return jsonResponse({ error: 'method_not_allowed' }, 405);
-  }
-  try {
-    const body = await req.json();
-
-    MicroKernel.spawn('rlhf_reward', body);
-
-    const res = await MicroAgents.run('agent.rlhf.reinforcer', 'apply_reward', {
-      case_id: body.case_id || null,
-      delta: body.delta || 0,
-      meta: body.meta || {}
-    });
-
-    return jsonResponse({ ok: true, res });
-  } catch (e) {
-    return jsonResponse({ ok: false, error: e.message || 'rlhf_error' }, 500);
-  }
-}
-
-async function handleAgentApi(url, req) {
-  if (req.method !== 'POST') {
-    return jsonResponse({ error: 'method_not_allowed' }, 405);
-  }
-  try {
-    const body = await req.json();
-    const { agentId, action, payload } = body;
-
-    MicroKernel.spawn(`agent_${agentId}_${action}`, body);
-
-    const res = await MicroAgents.run(agentId, action, payload || {});
-    return jsonResponse({ ok: true, res });
-  } catch (e) {
-    return jsonResponse({ ok: false, error: e.message || 'agent_error' }, 500);
-  }
-}
-
-/* Small helper */
-function jsonResponse(obj, status = 200) {
-  return new Response(JSON.stringify(obj, null, 2), {
+function jsonResponse(data, status = 200, headers = {}) {
+  return new Response(JSON.stringify(data, null, 2), {
     status,
-    headers: { 'Content-Type': 'application/json' }
+    headers: {
+      "Content-Type": "application/json",
+      "X-ASX-Kernel": ASX_KERNEL_TAG,
+      "X-ASX-Version": ASX_KERNEL_VERSION,
+      ...headers
+    }
   });
 }
 
-/* ---------------------------------------------------------------------
-   7. SERVICE WORKER LIFECYCLE
------------------------------------------------------------------------- */
+async function readJsonBody(request) {
+  try {
+    const text = await request.text();
+    if (!text) return {};
+    return JSON.parse(text);
+  } catch {
+    return {};
+  }
+}
 
-self.addEventListener('install', event => {
-  event.waitUntil((async () => {
-    const cache = await caches.open(CMS_KERNEL_CACHE);
-    await cache.addAll(CMS_SHELL_ASSETS);
-    // Seed empty ASX-RAM files
-    const ram = CMS_MANIFEST.asx_ram || {};
-    const paths = Object.values(ram);
-    for (const p of paths) {
-      const existing = await ASX_RAM.readJSON(p);
-      if (existing === null) {
-        await ASX_RAM.writeJSON(p, Array.isArray(existing) ? existing : []);
-      }
-    }
-    self.skipWaiting();
-  })());
-});
+// Basic upstream mesh proxy (optional / best-effort)
+const MESH_UPSTREAMS = {
+  // Example: shard names -> base URL
+  // "mx2lm_api": "https://api.asxtoken.com/api.php"
+};
 
-self.addEventListener('activate', event => {
-  event.waitUntil((async () => {
-    const keys = await caches.keys();
-    await Promise.all(
-      keys
-        .filter(k => !k.startsWith(CMS_OS_ID))
-        .map(k => caches.delete(k))
+/**
+ * Forward a request to a configured mesh target.
+ * /mesh/proxy?target=mx2lm_api&path=/inference
+ */
+async function handleMeshProxy(url, request) {
+  const target = url.searchParams.get("target");
+  const path = url.searchParams.get("path") || "/";
+  const base = MESH_UPSTREAMS[target];
+
+  if (!base) {
+    return jsonResponse(
+      { ok: false, error: "UNKNOWN_MESH_TARGET", target },
+      400
     );
-    await self.clients.claim();
-  })());
+  }
+
+  const proxyUrl = base.replace(/\/$/, "") + path;
+
+  const init = {
+    method: request.method,
+    headers: request.headers,
+    body: ["GET", "HEAD"].includes(request.method) ? undefined : request.body
+  };
+
+  try {
+    const res = await fetch(proxyUrl, init);
+    const blob = await res.blob();
+    return new Response(blob, {
+      status: res.status,
+      statusText: res.statusText,
+      headers: res.headers
+    });
+  } catch (err) {
+    return jsonResponse(
+      { ok: false, error: "MESH_PROXY_FAILED", detail: String(err) },
+      502
+    );
+  }
+}
+
+/* -------------------------------------------------------------------------
+   3. INSTALL / ACTIVATE
+------------------------------------------------------------------------- */
+
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches
+      .open(CORE_CACHE)
+      .then(cache =>
+        cache.addAll([
+          "./",
+          "./index.html",
+          "./manifest.json"
+        ]).catch(() => {})
+      )
+      .then(() => self.skipWaiting())
+  );
 });
 
-/* ---------------------------------------------------------------------
-   8. FETCH ROUTING
------------------------------------------------------------------------- */
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    (async () => {
+      const keys = await caches.keys();
+      await Promise.all(
+        keys
+          .filter(k => ![CORE_CACHE, RUNTIME_CACHE].includes(k))
+          .map(k => caches.delete(k))
+      );
+      await self.clients.claim();
+    })()
+  );
+});
 
-self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
+/* -------------------------------------------------------------------------
+   4. ASX-RAM REST ROUTES
+   /ram/get?key=foo
+   /ram/set   (POST { key, value })
+   /ram/list
+   /ram/clear
+------------------------------------------------------------------------- */
 
-  // CMS APIs
-  if (url.pathname.startsWith('/api/cms/')) {
-    event.respondWith(handleCmsApi(url, event.request));
-    return;
+async function handleRamRoute(url, request) {
+  const path = url.pathname.replace(/^\/ram\/?/, "") || "get";
+
+  if (path === "get") {
+    const key = url.searchParams.get("key");
+    const value = ASX_RAM.has(key) ? ASX_RAM.get(key) : null;
+    return jsonResponse({ ok: true, key, value });
   }
 
-  if (url.pathname === '/api/rlhf/reward') {
-    event.respondWith(handleRlhfApi(url, event.request));
-    return;
-  }
-
-  if (url.pathname === '/api/agents/action') {
-    event.respondWith(handleAgentApi(url, event.request));
-    return;
-  }
-
-  // Expose CMS manifest (optional utility)
-  if (url.pathname === '/api/cms/manifest') {
-    event.respondWith(jsonResponse({ ok: true, manifest: CMS_MANIFEST }));
-    return;
-  }
-
-  // ASX-RAM VFS direct reads: /usr/ram/*
-  if (url.pathname.startsWith('/usr/ram/')) {
-    event.respondWith((async () => {
-      const data = await ASX_RAM.readJSON(url.pathname);
-      if (data === null) {
-        return jsonResponse({ error: 'ram_not_found', path: url.pathname }, 404);
-      }
-      return jsonResponse(data);
-    })());
-    return;
-  }
-
-  // App shell (navigation)
-  if (event.request.mode === 'navigate') {
-    event.respondWith((async () => {
-      const cache = await caches.open(CMS_KERNEL_CACHE);
-      const cached = await cache.match('/index.html');
-      if (cached) return cached;
-      try {
-        const net = await fetch('/index.html');
-        await cache.put('/index.html', net.clone());
-        return net;
-      } catch {
-        return new Response(
-          `<h1>ASXR MICRO SUPER CMS</h1><p>Offline shell unavailable.</p>`,
-          { headers: { 'Content-Type': 'text/html' } }
-        );
-      }
-    })());
-    return;
-  }
-
-  // Default: network first, fallback to kernel cache
-  event.respondWith((async () => {
-    try {
-      return await fetch(event.request);
-    } catch {
-      const cache = await caches.open(CMS_KERNEL_CACHE);
-      const cached = await cache.match(event.request);
-      return cached || new Response('ASXR CMS: no route', { status: 503 });
+  if (path === "set" && request.method === "POST") {
+    const body = await readJsonBody(request);
+    const key = body.key;
+    const value = body.value;
+    if (!key) {
+      return jsonResponse({ ok: false, error: "MISSING_KEY" }, 400);
     }
-  })());
-});
+    ASX_RAM.set(key, value);
+    return jsonResponse({ ok: true, key, value });
+  }
 
-/* ---------------------------------------------------------------------
-   9. MESSAGE CHANNEL (OPTIONAL CONTROL FROM UI)
------------------------------------------------------------------------- */
+  if (path === "list") {
+    const entries = [];
+    for (const [key, value] of ASX_RAM.entries()) {
+      entries.push({ key, value });
+    }
+    return jsonResponse({ ok: true, entries });
+  }
 
-self.addEventListener('message', event => {
-  const { type, payload } = event.data || {};
-  const port = event.ports && event.ports[0];
-  if (!port) return;
+  if (path === "clear") {
+    ASX_RAM.clear();
+    return jsonResponse({ ok: true, cleared: true });
+  }
 
-  if (type === 'CMS:status') {
-    port.postMessage({
+  return jsonResponse({ ok: false, error: "UNKNOWN_RAM_ROUTE", path }, 404);
+}
+
+/* -------------------------------------------------------------------------
+   5. MX2DB REST ROUTES
+   /mx2db/put?scope=posts&id=123  (POST data)
+   /mx2db/get?scope=posts&id=123
+   /mx2db/query?scope=posts&q=...
+   /mx2db/delete?scope=posts&id=123
+------------------------------------------------------------------------- */
+
+async function handleMx2dbRoute(url, request) {
+  const path = url.pathname.replace(/^\/mx2db\/?/, "") || "get";
+  const scope = url.searchParams.get("scope") || "posts";
+  const db = MX2DB[scope];
+
+  if (!db) {
+    return jsonResponse({ ok: false, error: "UNKNOWN_SCOPE", scope }, 400);
+  }
+
+  if (path === "put" && request.method === "POST") {
+    const body = await readJsonBody(request);
+    let id = url.searchParams.get("id") || body.id;
+    if (!id) {
+      id = mx2dbNextId(scope);
+    }
+    const record = {
+      id,
+      scope,
+      data: body,
+      ts: Date.now()
+    };
+    db.set(id, record);
+    return jsonResponse({ ok: true, record });
+  }
+
+  if (path === "get") {
+    const id = url.searchParams.get("id");
+    if (!id) {
+      return jsonResponse({ ok: false, error: "MISSING_ID" }, 400);
+    }
+    const record = db.get(id) || null;
+    return jsonResponse({ ok: true, record });
+  }
+
+  if (path === "query") {
+    const q = (url.searchParams.get("q") || "").toLowerCase();
+    const results = [];
+    for (const record of db.values()) {
+      const haystack = JSON.stringify(record.data || {}).toLowerCase();
+      if (!q || haystack.includes(q)) {
+        results.push(record);
+      }
+    }
+    return jsonResponse({ ok: true, results, count: results.length });
+  }
+
+  if (path === "delete") {
+    const id = url.searchParams.get("id");
+    if (!id) {
+      return jsonResponse({ ok: false, error: "MISSING_ID" }, 400);
+    }
+    const existed = db.delete(id);
+    return jsonResponse({ ok: true, deleted: existed, id });
+  }
+
+  return jsonResponse({ ok: false, error: "UNKNOWN_MX2DB_ROUTE", path }, 404);
+}
+
+/* -------------------------------------------------------------------------
+   6. CMS ROUTES (FORUM, STORE, PLUGINS, BLOG, USERS, RLHF)
+   These are thin facades over MX2DB scopes.
+------------------------------------------------------------------------- */
+
+async function handleCmsRoute(url, request) {
+  const [, , section = ""] = url.pathname.split("/"); // /cms/forum/list → ["", "cms", "forum", "list"]
+  const action = url.pathname.split("/")[3] || "list";
+
+  // Map CMS section → MX2DB scope
+  const scopeMap = {
+    forum: "posts",
+    blog: "posts",
+    store: "products",
+    plugins: "plugins",
+    users: "profiles",
+    rlhf: "rlhf"
+  };
+  const scope = scopeMap[section];
+
+  if (!scope) {
+    return jsonResponse({ ok: false, error: "UNKNOWN_CMS_SECTION", section }, 404);
+  }
+  const db = MX2DB[scope];
+
+  if (action === "list") {
+    const items = Array.from(db.values());
+    return jsonResponse({ ok: true, section, scope, items });
+  }
+
+  if (action === "create" && request.method === "POST") {
+    const body = await readJsonBody(request);
+    const id = mx2dbNextId(scope);
+    const record = {
+      id,
+      scope,
+      data: body,
+      ts: Date.now()
+    };
+    db.set(id, record);
+    return jsonResponse({ ok: true, section, record });
+  }
+
+  if (action === "get") {
+    const id = url.searchParams.get("id");
+    if (!id) {
+      return jsonResponse({ ok: false, error: "MISSING_ID" }, 400);
+    }
+    const record = db.get(id) || null;
+    return jsonResponse({ ok: true, section, record });
+  }
+
+  if (action === "update" && request.method === "POST") {
+    const id = url.searchParams.get("id");
+    const body = await readJsonBody(request);
+    if (!id) {
+      return jsonResponse({ ok: false, error: "MISSING_ID" }, 400);
+    }
+    const existing = db.get(id) || { id, scope, data: {} };
+    existing.data = { ...existing.data, ...body };
+    existing.ts = Date.now();
+    db.set(id, existing);
+    return jsonResponse({ ok: true, section, record: existing });
+  }
+
+  return jsonResponse(
+    { ok: false, error: "UNKNOWN_CMS_ACTION", section, action },
+    404
+  );
+}
+
+/* -------------------------------------------------------------------------
+   7. AGENT ROUTES
+   - /agents/profile/get|update
+   - /agents/memory/train
+   - /agents/rlhf/score
+------------------------------------------------------------------------- */
+
+async function handleAgentsRoute(url, request) {
+  const [, , agentName = ""] = url.pathname.split("/"); // /agents/profile/update
+  const action = url.pathname.split("/")[3] || "";
+
+  // agent.profile.manager
+  if (agentName === "profile") {
+    if (action === "get") {
+      const userId = url.searchParams.get("userId") || "default";
+      const db = MX2DB.profiles;
+      const record = db.get(userId) || null;
+      return jsonResponse({
+        ok: true,
+        agent: "agent.profile.manager",
+        profile: record
+      });
+    }
+
+    if (action === "update" && request.method === "POST") {
+      const body = await readJsonBody(request);
+      const userId = body.id || url.searchParams.get("userId") || "default";
+      const db = MX2DB.profiles;
+      const existing = db.get(userId) || {
+        id: userId,
+        scope: "profiles",
+        data: {},
+        ts: Date.now()
+      };
+      existing.data = { ...existing.data, ...body };
+      existing.ts = Date.now();
+      db.set(userId, existing);
+
+      return jsonResponse({
+        ok: true,
+        agent: "agent.profile.manager",
+        profile: existing
+      });
+    }
+  }
+
+  // agent.memory.trainer
+  if (agentName === "memory" && action === "train" && request.method === "POST") {
+    const body = await readJsonBody(request);
+    const text = body.text || "";
+    const score = body.score ?? 1;
+
+    const id = mx2dbNextId("rlhf");
+    const record = {
+      id,
+      scope: "rlhf",
+      data: { text, score },
+      ts: Date.now()
+    };
+    MX2DB.rlhf.set(id, record);
+
+    // also drop into ASX-RAM n-gram style bucket for quick access
+    const key = "rlhf:" + id;
+    ASX_RAM.set(key, { text, score, ts: record.ts });
+
+    return jsonResponse({
       ok: true,
-      os: CMS_OS_ID,
-      manifest: CMS_MANIFEST,
-      processes: MicroKernel.snapshot()
+      agent: "agent.memory.trainer",
+      stored: record
     });
   }
 
-  if (type === 'CMS:list_ram') {
-    (async () => {
-      const entries = {};
-      const ram = CMS_MANIFEST.asx_ram || {};
-      for (const [k, p] of Object.entries(ram)) {
-        entries[k] = await ASX_RAM.readJSON(p);
-      }
-      port.postMessage({ ok: true, entries });
-    })();
+  // agent.rlhf.reinforcer
+  if (agentName === "rlhf" && action === "score" && request.method === "POST") {
+    const body = await readJsonBody(request);
+    const score = body.score ?? 1;
+    const id = body.id || mx2dbNextId("rlhf");
+
+    const db = MX2DB.rlhf;
+    const existing = db.get(id) || {
+      id,
+      scope: "rlhf",
+      data: {},
+      ts: Date.now()
+    };
+
+    existing.data = {
+      ...existing.data,
+      ...(body || {}),
+      lastScore: score
+    };
+    existing.ts = Date.now();
+    db.set(id, existing);
+
+    return jsonResponse({
+      ok: true,
+      agent: "agent.rlhf.reinforcer",
+      updated: existing
+    });
+  }
+
+  return jsonResponse(
+    { ok: false, error: "UNKNOWN_AGENT_ROUTE", agentName, action },
+    404
+  );
+}
+
+/* -------------------------------------------------------------------------
+   8. TAPES / RLHF / AUX ROUTES
+------------------------------------------------------------------------- */
+
+async function handleTapesRoute(url, _request) {
+  // Minimal introspection for tapes; real tape data lives in manifest / index.html.
+  const tapes = [
+    "tape_system_asx_ram_manager_v1.asxr.json",
+    "tape_system_user_profile_v1.asxr.json",
+    "tape_system_rlhf_visualization_v1.asxr.json",
+    "tape_system_memory_heatmap_v1.asxr.json",
+    "tape_system_training_cockpit_v1.asxr.json"
+  ];
+  return jsonResponse({
+    ok: true,
+    tapes,
+    route: url.pathname
+  });
+}
+
+/* -------------------------------------------------------------------------
+   9. FETCH ROUTER
+------------------------------------------------------------------------- */
+
+self.addEventListener("fetch", event => {
+  const request = event.request;
+  const url = new URL(request.url);
+
+  // Only intercept same-origin REST-style paths
+  if (url.origin !== self.location.origin) {
+    return; // let browser handle cross-origin
+  }
+
+  // LOCAL REST MESH
+  if (url.pathname.startsWith("/ram/")) {
+    event.respondWith(handleRamRoute(url, request));
+    return;
+  }
+
+  if (url.pathname.startsWith("/mx2db/")) {
+    event.respondWith(handleMx2dbRoute(url, request));
+    return;
+  }
+
+  if (url.pathname.startsWith("/cms/")) {
+    event.respondWith(handleCmsRoute(url, request));
+    return;
+  }
+
+  if (url.pathname.startsWith("/agents/")) {
+    event.respondWith(handleAgentsRoute(url, request));
+    return;
+  }
+
+  if (url.pathname.startsWith("/tapes/")) {
+    event.respondWith(handleTapesRoute(url, request));
+    return;
+  }
+
+  if (url.pathname.startsWith("/mesh/proxy")) {
+    event.respondWith(handleMeshProxy(url, request));
+    return;
+  }
+
+  // HTML navigation: stale-while-revalidate
+  if (request.mode === "navigate") {
+    event.respondWith(
+      (async () => {
+        try {
+          const network = await fetch(request);
+          const cache = await caches.open(RUNTIME_CACHE);
+          cache.put(request, network.clone());
+          return network;
+        } catch {
+          const cache = await caches.open(RUNTIME_CACHE);
+          const cached = await cache.match(request);
+          if (cached) return cached;
+          const core = await caches.open(CORE_CACHE);
+          return (await core.match("./index.html")) || Response.error();
+        }
+      })()
+    );
+    return;
+  }
+
+  // Static assets: cache-first
+  if (request.method === "GET") {
+    event.respondWith(
+      (async () => {
+        const cache = await caches.open(RUNTIME_CACHE);
+        const cached = await cache.match(request);
+        if (cached) return cached;
+        try {
+          const network = await fetch(request);
+          cache.put(request, network.clone());
+          return network;
+        } catch {
+          return cached || Response.error();
+        }
+      })()
+    );
   }
 });
 
-console.log('ASXR MICRO SUPER CMS Ω — service worker booted');
+/* -------------------------------------------------------------------------
+   10. MESSAGE CHANNEL (ASX-RAM BRIDGE)
+   Supports:
+   - { type: "ram-store", key, value }
+   - { type: "ram-get", key }
+------------------------------------------------------------------------- */
+
+self.addEventListener("message", event => {
+  const msg = event.data || {};
+  if (!msg.type) return;
+
+  if (msg.type === "ram-store") {
+    if (msg.key) ASX_RAM.set(msg.key, msg.value);
+    return;
+  }
+
+  if (msg.type === "ram-get") {
+    const value = ASX_RAM.has(msg.key) ? ASX_RAM.get(msg.key) : null;
+    if (event.source && typeof event.source.postMessage === "function") {
+      event.source.postMessage({
+        type: "ram-data",
+        key: msg.key,
+        value
+      });
+    }
+    return;
+  }
+});
+
+/* -------------------------------------------------------------------------
+   11. HEARTBEAT / HEALTH (OPTIONAL)
+   /os/health
+------------------------------------------------------------------------- */
+
+async function handleHealthRoute() {
+  const status = {
+    ok: true,
+    kernel: ASX_KERNEL_TAG,
+    version: ASX_KERNEL_VERSION,
+    ram_keys: ASX_RAM.size,
+    scopes: Object.keys(MX2DB),
+    ts: Date.now()
+  };
+  return jsonResponse(status);
+}
+
+self.addEventListener("fetch", event => {
+  const request = event.request;
+  const url = new URL(request.url);
+
+  if (url.origin === self.location.origin && url.pathname === "/os/health") {
+    event.respondWith(handleHealthRoute());
+  }
+});
+
+console.log('AI_POWERED_MICRO_ASXR_CMS — Service worker kernel booted');
