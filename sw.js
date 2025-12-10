@@ -18,6 +18,47 @@ let MX2DB = {
   feed_entries: new Map()
 };
 
+/* ===========================================================
+   SECUROLINK v2 — Local Auth Kernel Config
+   -----------------------------------------------------------
+   Modes:
+   - "off"   → everyone is guest
+   - "local" → simple in-memory roles (dev mode)
+   - "remote"→ call GAS Securolink shard for verification
+=========================================================== */
+
+const SECUROLINK_CONFIG = {
+  mode: "local", // "off" | "local" | "remote"
+
+  // Optional: GAS Quantum Mesh Shard v2 + Securolink endpoint
+  // e.g. https://script.google.com/macros/s/AKfycb.../exec
+  remoteEndpoint: "https://script.google.com/macros/s/YOUR_SECUROLINK_GAS_ID/exec",
+
+  // Cookie / header names
+  cookieName: "mx2_securolink",      // session ticket / api key
+  headerApiKey: "x-api-key",         // API key header
+  headerAuth: "authorization",       // Bearer <jwt>
+
+  // Default role for unauthenticated users
+  defaultRole: "guest",
+
+  // Local dev user map (only used when mode === "local")
+  localUsers: {
+    "dev-admin-key": {
+      id: "local_admin",
+      email: "admin@local",
+      name: "Local Admin",
+      roles: ["admin"]
+    },
+    "dev-trainer-key": {
+      id: "local_trainer",
+      email: "trainer@local",
+      name: "Local Trainer",
+      roles: ["trainer"]
+    }
+  }
+};
+
 /* ============================================================
    FOLDS - JavaScript Runtime Modules
    Each fold orchestrates K'UHUL kernel execution
@@ -26,8 +67,35 @@ let MX2DB = {
 const FOLDS = {
   "local_rest": {
     mount: "/local/api",
-    description: "Local REST API fold for CMS OS, RLHF, and MX2DB",
-    version: "1.0.0",
+    description: "Local REST API fold for CMS OS, RLHF, MX2DB, and Securolink",
+    version: "1.1.0",
+
+    // Access control policy per route
+    // Keys MUST match the route keys: "METHOD /path/:param"
+    policy: {
+      "GET /rlhf/case":      ["guest", "trainer", "admin"],
+      "GET /rlhf/case/:id":  ["guest", "trainer", "admin"],
+      "POST /rlhf/case":     ["trainer", "admin"],
+      "POST /rlhf/score":    ["trainer", "admin"],
+
+      "GET /cms/page/:slug": ["guest", "trainer", "admin"],
+      "GET /cms/feed/:name": ["guest", "trainer", "admin"],
+
+      "GET /db/:table":          ["trainer", "admin"],
+      "GET /db/:table/:id":      ["trainer", "admin"],
+      "POST /db/:table":         ["trainer", "admin"],
+      "PUT /db/:table/:id":      ["admin"],
+      "DELETE /db/:table/:id":   ["admin"],
+
+      "GET /health":         ["guest", "trainer", "admin"],
+      "GET /meta/routes":    ["guest", "trainer", "admin"],
+
+      "POST /feed/import":   ["admin"],
+      "POST /feed/sync":     ["admin"],
+
+      "GET /mesh/ping":      ["guest", "trainer", "admin"],
+      "POST /mesh/register": ["admin"]
+    },
 
     routes: {
       "GET /rlhf/case":      "cms_rlhf_list",
@@ -58,15 +126,17 @@ const FOLDS = {
      * Main fold dispatch logic
      * Bridges REST requests to K'UHUL kernel execution
      */
-    async dispatch(request) {
-      // request = { method, path, query, body, headers, auth, params }
+    async dispatch(request, routeKey, params) {
+      // request = { method, path, query, body, headers, auth }
+      // routeKey = "METHOD /path/:param"
       const handler = request.handler;
 
       // Build payload for K'UHUL kernel
       const payload = {
         '@route': handler,
-        '@query': { ...request.query, ...request.params },
-        '@body': request.body
+        '@query': { ...request.query, ...params },
+        '@body': request.body,
+        '@auth': request.auth || {}
       };
 
       const kernelResp = await self.__KUHUL_KERNEL_EXEC__(payload, 'local_rest_fold');
@@ -85,11 +155,42 @@ const FOLDS = {
    ============================================================ */
 
 /**
+ * Parse cookies from cookie header
+ * @param {string} cookieHeader - Cookie header string
+ * @returns {Object} - Parsed cookies object
+ */
+function parseCookies(cookieHeader) {
+  const out = {};
+  if (!cookieHeader) return out;
+  cookieHeader.split(";").forEach(pair => {
+    const idx = pair.indexOf("=");
+    if (idx === -1) return;
+    const key = pair.slice(0, idx).trim();
+    const val = pair.slice(idx + 1).trim();
+    out[key] = decodeURIComponent(val);
+  });
+  return out;
+}
+
+/**
+ * Get auth headers with lowercase keys
+ * @param {Object} headers - Headers object
+ * @returns {Object} - Lowercase headers
+ */
+function getAuthHeaders(headers) {
+  const h = {};
+  for (const [k, v] of Object.entries(headers || {})) {
+    h[k.toLowerCase()] = v;
+  }
+  return h;
+}
+
+/**
  * Parse fold route and extract parameters
  * @param {Object} fold - Fold object with routes
  * @param {string} method - HTTP method
  * @param {string} path - Request path (without fold mount)
- * @returns {Object|null} - { handler, params } or null
+ * @returns {Object|null} - { handler, routeKey, params } or null
  */
 function parseFoldRoute(fold, method, path) {
   for (const key of Object.keys(fold.routes)) {
@@ -101,6 +202,7 @@ function parseFoldRoute(fold, method, path) {
     if (match) {
       return {
         handler: fold.routes[key],
+        routeKey: key,   // "METHOD /pattern"
         params: match
       };
     }
@@ -131,6 +233,113 @@ function matchPattern(pattern, actual) {
     }
   }
   return params;
+}
+
+/* ===========================================================
+   SECUROLINK AUTH CORE
+=========================================================== */
+
+/**
+ * Authenticate request via Securolink
+ * Supports local dev mode and remote GAS verification
+ * @param {FetchEvent} evt - Fetch event
+ * @returns {Object} - Auth identity { id, email, name, roles, apiKey, raw }
+ */
+async function authenticateRequest(evt) {
+  const req = evt.request;
+  const rawHeaders = {};
+  req.headers.forEach((v, k) => rawHeaders[k] = v);
+
+  const headers = getAuthHeaders(rawHeaders);
+  const cookies = parseCookies(headers["cookie"] || "");
+
+  // Default unauthenticated identity
+  const baseIdentity = {
+    id: null,
+    email: null,
+    name: null,
+    roles: [SECUROLINK_CONFIG.defaultRole],
+    apiKey: null,
+    raw: { headers, cookies }
+  };
+
+  if (SECUROLINK_CONFIG.mode === "off") {
+    return baseIdentity;
+  }
+
+  // 1) Try header API key
+  const apiKey = headers[SECUROLINK_CONFIG.headerApiKey] || null;
+
+  // 2) Try cookie session
+  const cookieTicket = cookies[SECUROLINK_CONFIG.cookieName] || null;
+
+  // 3) Try Authorization: Bearer <jwt>
+  const authHeader = headers[SECUROLINK_CONFIG.headerAuth] || "";
+  const bearerMatch = authHeader.toLowerCase().startsWith("bearer ")
+    ? authHeader.slice(7).trim()
+    : null;
+
+  // LOCAL MODE (no network)
+  if (SECUROLINK_CONFIG.mode === "local") {
+    if (apiKey && SECUROLINK_CONFIG.localUsers[apiKey]) {
+      const u = SECUROLINK_CONFIG.localUsers[apiKey];
+      return {
+        id: u.id,
+        email: u.email,
+        name: u.name,
+        roles: u.roles || ["trainer"],
+        apiKey,
+        raw: { headers, cookies }
+      };
+    }
+    // everything else is guest
+    return baseIdentity;
+  }
+
+  // REMOTE MODE: call GAS Securolink shard
+  if (SECUROLINK_CONFIG.mode === "remote" && SECUROLINK_CONFIG.remoteEndpoint) {
+    try {
+      const payload = {
+        action: "verifyTicket",
+        apiKey: apiKey || undefined,
+        ticket: cookieTicket || undefined,
+        bearer: bearerMatch || undefined
+      };
+
+      const resp = await fetch(SECUROLINK_CONFIG.remoteEndpoint, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!resp.ok) {
+        // fall back to guest
+        return baseIdentity;
+      }
+
+      const data = await resp.json();
+      if (!data || !data.ok || !data.user) {
+        return baseIdentity;
+      }
+
+      return {
+        id: data.user.id || null,
+        email: data.user.email || null,
+        name: data.user.name || null,
+        roles: Array.isArray(data.user.roles) && data.user.roles.length
+          ? data.user.roles
+          : [SECUROLINK_CONFIG.defaultRole],
+        apiKey: data.apiKey || apiKey || null,
+        raw: { headers, cookies }
+      };
+    } catch (e) {
+      // Any failure → guest identity
+      return baseIdentity;
+    }
+  }
+
+  // If misconfigured → guest
+  return baseIdentity;
 }
 
 /* ============================================================
@@ -300,9 +509,9 @@ self.addEventListener('fetch', (event) => {
   const path = url.pathname;
   const method = event.request.method;
 
-  // Local REST API bypass (FOLDS architecture)
+  // Local REST API bypass (FOLDS architecture + Securolink)
   if (path.startsWith('/local/api')) {
-    event.respondWith(handleLocalRestApi(event.request));
+    event.respondWith(handleLocalRestApi(event));
     return;
   }
 
@@ -326,7 +535,8 @@ self.addEventListener('fetch', (event) => {
    LOCAL REST API HANDLER (FOLDS Architecture)
    ============================================================ */
 
-async function handleLocalRestApi(request) {
+async function handleLocalRestApi(evt) {
+  const request = evt.request;
   const url = new URL(request.url);
   const path = url.pathname;
   const method = request.method;
@@ -357,6 +567,31 @@ async function handleLocalRestApi(request) {
       });
     }
 
+    // 🔐 Authenticate via Securolink
+    const authIdentity = await authenticateRequest(evt);
+
+    // 🔐 Authorize based on policy
+    const allowedRoles = fold.policy?.[parsed.routeKey] || ["guest"];
+    const hasAccess = (authIdentity.roles || []).some(r => allowedRoles.includes(r));
+
+    if (!hasAccess) {
+      return new Response(JSON.stringify({
+        ok: false,
+        error: 'Forbidden',
+        route: parsed.routeKey,
+        requiredRoles: allowedRoles,
+        yourRoles: authIdentity.roles,
+        message: 'Insufficient permissions to access this resource'
+      }), {
+        status: 403,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Fold': 'local_rest',
+          'X-Kernel': 'sw.khl Ω.∞.Ω'
+        }
+      });
+    }
+
     // Parse request body if present
     let reqBody = null;
     if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
@@ -367,20 +602,24 @@ async function handleLocalRestApi(request) {
       }
     }
 
-    // Build REST request object
+    // Get raw headers
+    const rawHeaders = {};
+    request.headers.forEach((v, k) => rawHeaders[k] = v);
+
+    // Build REST request object with auth
     const restRequest = {
       method: method,
       path: path,
       query: Object.fromEntries(url.searchParams),
       body: reqBody,
-      headers: Object.fromEntries(request.headers),
-      auth: {}, // Future: SecuroLink/JWT validation goes here
+      headers: rawHeaders,
+      auth: authIdentity,
       params: parsed.params,
       handler: parsed.handler
     };
 
     // Dispatch to fold
-    const response = await fold.dispatch(restRequest);
+    const response = await fold.dispatch(restRequest, parsed.routeKey, parsed.params);
 
     return new Response(JSON.stringify(response.body, null, 2), {
       status: response.status || 200,
@@ -388,6 +627,8 @@ async function handleLocalRestApi(request) {
         'Content-Type': 'application/json',
         'X-Fold': 'local_rest',
         'X-Handler': parsed.handler,
+        'X-Auth-User': authIdentity.id || 'guest',
+        'X-Auth-Roles': authIdentity.roles.join(','),
         'X-Kernel': 'sw.khl Ω.∞.Ω',
         'X-Law': manifest?.atomic_law || 'ASX'
       }
