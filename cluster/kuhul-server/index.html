@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MX2LM.APP</title>
+    <style>
+        body {
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .loader {
+            border: 3px solid rgba(22, 242, 170, 0.3);
+            border-top: 3px solid #16f2aa;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        a {
+            color: #0ff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="loader"></div>
+        <h1>MX2LM.APP</h1>
+        <p>🌀 K'UHUL Bootloader v2.0</p>
+        <p>Loading full-stack webhost...</p>
+        
+        <div id="status" style="margin: 2rem 0; color: #888;">
+            Initializing...
+        </div>
+        
+        <div style="margin-top: 2rem;">
+            <p>If not redirected automatically:</p>
+            <p><a href="/">Click here to continue</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            const status = document.getElementById('status');
+            
+            status.textContent = 'Registering K\'UHUL Service Worker...';
+            
+            navigator.serviceWorker.register('sw.khl', { scope: './' })
+                .then(registration => {
+                    status.textContent = '✅ K\'UHUL Service Worker registered';
+                    status.style.color = '#0f0';
+                    
+                    // Check for updates
+                    registration.update();
+                    
+                    // Redirect to dashboard after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                })
+                .catch(error => {
+                    status.textContent = `❌ Error: ${error.message}`;
+                    status.style.color = '#f00';
+                    
+                    // Fallback after 5 seconds
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 5000);
+                });
+        } else {
+            document.getElementById('status').textContent = 
+                '⚠️ Service Worker not supported - loading basic mode';
+            
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

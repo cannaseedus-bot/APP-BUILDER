@@ -1,0 +1,69 @@
+{
+  "asx_os": {
+    "backend_architecture": {
+      "mime_system": {
+        "id": "asx_mime_system_v1",
+        "purpose": "teach_browsers_that_khul_is_script",
+        "kernel_files": {
+          "sw_kernel": "sw.khl",
+          "manifest": "manifest.json",
+          "shell": "index.html"
+        },
+        "khl_extension": ".khl",
+        "khl_mime_type": "application/javascript",
+        "service_worker_requirements": {
+          "allowed_mime_types": [
+            "application/javascript",
+            "text/javascript"
+          ],
+          "allowed_schemes": [
+            "https",
+            "http_localhost"
+          ],
+          "note": "service_workers_reject_unknown_mime"
+        },
+        "targets": {
+          "apache_htaccess": {
+            "enabled": true,
+            "directive": "AddType application/javascript .khl",
+            "location_hint": "public_html/.htaccess"
+          },
+          "apache_vhost": {
+            "enabled": true,
+            "directives": [
+              "AddType application/javascript .khl"
+            ],
+            "location_hint": "vhost_conf_or_httpd.conf"
+          },
+          "cpanel_php_hosting": {
+            "enabled": true,
+            "steps": [
+              "Open cPanel -> MIME Types",
+              "Create new MIME type: application/javascript",
+              "Add extension: khl",
+              "Save"
+            ]
+          },
+          "nginx": {
+            "enabled": true,
+            "types_block": "types { application/javascript khl; }",
+            "location_hint": "/etc/nginx/sites-available/your-site.conf"
+          },
+          "cloudflare_pages": {
+            "enabled": true,
+            "headers_file": "_headers",
+            "example": [
+              "/sw.khl",
+              "  Content-Type: application/javascript"
+            ]
+          },
+          "static_file_hosts": {
+            "note": "if_mime_cannot_be_configured_you_must_use_loader_shell",
+            "fallback_file": "sw.js_loader_or_index_shell",
+            "status": "last_resort"
+          }
+        }
+      }
+    }
+  }
+}
