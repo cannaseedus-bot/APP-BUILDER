@@ -60,6 +60,54 @@ function parseKuhlRom(khlSource) {
       }
     }
 
+    // Extract Site Content from ATOMIC_BLOCK_SITE_CONTENT
+    const siteContentMatch = khlSource.match(/⟁ ATOMIC_BLOCK_SITE_CONTENT ⟁\s*\n\s*@shard_id:\s*"([^"]+)"[\s\S]*?@pages:\s*(\{[\s\S]*?\n\s{4}\})/);
+
+    if (siteContentMatch) {
+      try {
+        // Extract pages section
+        const pagesStart = khlSource.indexOf('@pages: {', khlSource.indexOf('ATOMIC_BLOCK_SITE_CONTENT'));
+        const pagesEnd = khlSource.indexOf('\n    }\n\n    /* ==================================================', pagesStart);
+        const pagesJson = khlSource.substring(pagesStart + 8, pagesEnd + 6);
+        const pages = JSON.parse(pagesJson);
+
+        // Extract components section
+        const componentsStart = khlSource.indexOf('@components: {', pagesEnd);
+        const componentsEnd = khlSource.indexOf('\n    }\n\n    /* ==================================================', componentsStart);
+        const componentsJson = khlSource.substring(componentsStart + 13, componentsEnd + 6);
+        const components = JSON.parse(componentsJson);
+
+        // Extract assets section
+        const assetsStart = khlSource.indexOf('@assets: {', componentsEnd);
+        const assetsEnd = khlSource.indexOf('\n    }\n\n    /* ==================================================', assetsStart);
+        const assetsJson = khlSource.substring(assetsStart + 9, assetsEnd + 6);
+        const assets = JSON.parse(assetsJson);
+
+        // Extract tapes_rest section
+        const tapesRestStart = khlSource.indexOf('@tapes_rest: {', assetsEnd);
+        const tapesRestEnd = khlSource.indexOf('\n    }\n\n  ⟁ Xul ⟁', tapesRestStart);
+        const tapesRestJson = khlSource.substring(tapesRestStart + 13, tapesRestEnd + 6);
+        const tapesRest = JSON.parse(tapesRestJson);
+
+        manifest.site_content = {
+          shard_id: siteContentMatch[1],
+          pages: pages,
+          components: components,
+          assets: assets,
+          tapes_rest: tapesRest
+        };
+
+        console.log('⟁ Site Content Database extracted:', {
+          pages: Object.keys(pages).length,
+          components: Object.keys(components).length,
+          assets: Object.keys(assets).length,
+          tapes: Object.keys(tapesRest).length
+        });
+      } catch (e) {
+        console.warn('⟁ Failed to parse Site Content database:', e);
+      }
+    }
+
     return manifest;
   } catch (e) {
     console.error('⟁ Failed to parse manifest_ast JSON:', e);
@@ -664,6 +712,221 @@ self.__KUHUL_KERNEL_EXEC__ = async function(payload, caller) {
             case_id: caseId
           };
         }
+        break;
+      }
+
+      // SITE CONTENT Routes
+      case 'cms_page_get': {
+        const pageId = query.id || query.page_id;
+        const pages = manifest?.site_content?.pages || {};
+        const pageData = pages[pageId];
+
+        if (!pageData) {
+          result = {
+            ok: false,
+            error: 'Page not found',
+            page_id: pageId,
+            available: Object.keys(pages)
+          };
+        } else {
+          result = {
+            ok: true,
+            mode: 'page',
+            '@id': pageData['@id'],
+            '@type': pageData['@type'],
+            '@control': pageData['@control'],
+            '@variable': pageData['@variable'],
+            content: pageData['@content'],
+            route: pageData['@route']
+          };
+        }
+        break;
+      }
+
+      case 'cms_component_get': {
+        const componentId = query.id || query.component_id;
+        const props = query.props ? JSON.parse(query.props) : {};
+        const components = manifest?.site_content?.components || {};
+        const componentData = components[componentId];
+
+        if (!componentData) {
+          result = {
+            ok: false,
+            error: 'Component not found',
+            component_id: componentId,
+            available: Object.keys(components)
+          };
+        } else {
+          result = {
+            ok: true,
+            mode: 'component',
+            '@id': componentData['@id'],
+            '@type': componentData['@type'],
+            '@control': componentData['@control'],
+            '@variable': {...componentData['@variable'], ...props},
+            content: componentData['@content'],
+            route: componentData['@route']
+          };
+        }
+        break;
+      }
+
+      case 'cms_tape_get': {
+        const tapeId = query.id || query.tape_id;
+        const tapeManifest = manifest?.tapes?.[tapeId];
+        const tapeRest = manifest?.site_content?.tapes_rest?.[tapeId];
+
+        if (!tapeManifest) {
+          result = {
+            ok: false,
+            error: 'Tape not found',
+            tape_id: tapeId,
+            available: Object.keys(manifest?.tapes || {})
+          };
+        } else {
+          result = {
+            ok: true,
+            mode: 'tape',
+            '@id': tapeManifest.id,
+            '@type': 'tape',
+            '@control': tapeRest ? tapeRest['@control'] : ['@boot', '@execute'],
+            '@variable': {
+              label: tapeManifest.label,
+              role: tapeManifest.role,
+              entry: tapeManifest.entry,
+              boot: tapeManifest.boot,
+              agents: tapeManifest.agents,
+              shards: tapeManifest.shards,
+              ...(tapeRest ? tapeRest['@variable'] : {})
+            },
+            route: tapeRest ? tapeRest['@route'] : `/site/tape/${tapeId}`,
+            manifest: tapeManifest
+          };
+        }
+        break;
+      }
+
+      case 'cms_asset_get': {
+        const assetId = query.id || query.asset_id;
+        const assets = manifest?.site_content?.assets || {};
+        const assetData = assets[assetId];
+
+        if (!assetData) {
+          result = {
+            ok: false,
+            error: 'Asset not found',
+            asset_id: assetId,
+            available: Object.keys(assets)
+          };
+        } else {
+          result = {
+            ok: true,
+            mode: 'asset',
+            '@id': assetData['@id'],
+            '@type': assetData['@type'],
+            '@control': assetData['@control'],
+            '@variable': assetData['@variable'],
+            content: assetData['@content'],
+            mime: assetData['@variable'].mime,
+            cache_duration: assetData['@variable'].cache_duration || 3600
+          };
+        }
+        break;
+      }
+
+      case 'cms_site_map': {
+        const pages = manifest?.site_content?.pages || {};
+        const components = manifest?.site_content?.components || {};
+        const assets = manifest?.site_content?.assets || {};
+        const tapesRest = manifest?.site_content?.tapes_rest || {};
+
+        const pageRoutes = Object.keys(pages).map(id => ({
+          id: id,
+          route: pages[id]['@route'],
+          title: pages[id]['@variable'].title
+        }));
+
+        const componentRoutes = Object.keys(components).map(id => ({
+          id: id,
+          route: components[id]['@route']
+        }));
+
+        const tapeRoutes = Object.keys(tapesRest).map(id => ({
+          id: id,
+          route: tapesRest[id]['@route']
+        }));
+
+        result = {
+          ok: true,
+          mode: 'site_map',
+          pages: pageRoutes,
+          components: componentRoutes,
+          assets: Object.keys(assets),
+          tapes: tapeRoutes,
+          total_routes: pageRoutes.length + componentRoutes.length + tapeRoutes.length + Object.keys(assets).length
+        };
+        break;
+      }
+
+      case 'cms_atomic_search': {
+        const searchQuery = query.q || '';
+        const typeFilter = query.type || null;
+        const queryLower = searchQuery.toLowerCase();
+        const results = [];
+
+        // Search pages
+        if (!typeFilter || typeFilter === 'page') {
+          const pages = manifest?.site_content?.pages || {};
+          Object.values(pages).forEach(page => {
+            const searchable = `${page['@variable'].title} ${page['@variable'].description || ''}`;
+            if (searchable.toLowerCase().includes(queryLower)) {
+              results.push({
+                type: 'page',
+                id: page['@id'],
+                route: page['@route'],
+                title: page['@variable'].title,
+                description: page['@variable'].description
+              });
+            }
+          });
+        }
+
+        // Search components
+        if (!typeFilter || typeFilter === 'component') {
+          const components = manifest?.site_content?.components || {};
+          Object.values(components).forEach(component => {
+            if (component['@id'].includes(queryLower)) {
+              results.push({
+                type: 'component',
+                id: component['@id'],
+                route: component['@route']
+              });
+            }
+          });
+        }
+
+        // Search tapes
+        if (!typeFilter || typeFilter === 'tape') {
+          const tapes = manifest?.tapes || {};
+          Object.values(tapes).forEach(tape => {
+            if (tape.label.toLowerCase().includes(queryLower) || tape.role.toLowerCase().includes(queryLower)) {
+              results.push({
+                type: 'tape',
+                id: tape.id,
+                label: tape.label,
+                role: tape.role
+              });
+            }
+          });
+        }
+
+        result = {
+          ok: true,
+          mode: 'search',
+          query: searchQuery,
+          results: results,
+          count: results.length
+        };
         break;
       }
 

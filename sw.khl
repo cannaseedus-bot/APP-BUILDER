@@ -89,7 +89,13 @@
         "/ram/set":          { "fold": "os",      "handler": "ram_set" },
         "/ram/list":         { "fold": "os",      "handler": "ram_list" },
         "/mx2db/put":        { "fold": "os",      "handler": "mx2db_put" },
-        "/mx2db/query":      { "fold": "os",      "handler": "mx2db_query" }
+        "/mx2db/query":      { "fold": "os",      "handler": "mx2db_query" },
+        "/site/page":        { "fold": "cms",     "handler": "cms_page_get" },
+        "/site/component":   { "fold": "cms",     "handler": "cms_component_get" },
+        "/site/tape":        { "fold": "cms",     "handler": "cms_tape_get" },
+        "/site/asset":       { "fold": "cms",     "handler": "cms_asset_get" },
+        "/site/map":         { "fold": "cms",     "handler": "cms_site_map" },
+        "/site/search":      { "fold": "cms",     "handler": "cms_atomic_search" }
       }
     },
 
@@ -1049,5 +1055,534 @@
       "feedback": fb
     }]→[Xul return]
   [Xul]
+
+
+  /* ==========================================================
+     ATOMIC_BLOCK_SITE_CONTENT - Complete Site as Living Database
+     All pages, tapes, components accessible via REST API
+     ========================================================== */
+  ⟁ ATOMIC_BLOCK_SITE_CONTENT ⟁
+
+    @shard_id: "site_content_delivery_v1"
+    @quantum_state: "|SITE⟩⊗|CMS⟩⊗|ATOMIC_UI⟩⊗|REST⟩"
+    @compression: "scxq2"
+    @storage: "asx_ram.site_content"
+
+    /* ==================================================
+       SITE PAGES - Full HTML Content as Atomic Blocks
+       ================================================== */
+    @pages: {
+      "home": {
+        "@id": "page_home",
+        "@type": "page",
+        "@route": "/site/page/home",
+        "@control": ["@render", "@cache", "@deliver"],
+        "@variable": {
+          "title": "ASX Ghost OS - Home",
+          "description": "Three-file ROM architecture with K'UHUL kernel",
+          "template": "ghost_shell",
+          "priority": "high"
+        },
+        "@content": {
+          "@type": "atomic_html",
+          "@html": "<div class='ghost-root'><header class='ghost-header'><h1>⟁ ASX Ghost OS</h1><p>Three-File ROM | K'UHUL Kernel Ω.∞.Ω</p></header><main class='ghost-main'><section class='ghost-panel'><h2>ATOMIC BLOCK SYSTEM</h2><p>Everything is an atomic block. XJSON describes structure. K'UHUL defines physics. AST reveals geometry. XCFE controls causality.</p><div class='atomic-law'>ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK</div></section><section class='ghost-panel ghost-panel-soft'><h3>Active Tapes</h3><div id='tape-list'></div></section><section class='ghost-panel ghost-panel-soft'><h3>System Status</h3><div id='system-status'></div></section></main></div>",
+          "@css": "atomic",
+          "@js": "ghost_shell_controller"
+        }
+      },
+
+      "dashboard": {
+        "@id": "page_dashboard",
+        "@type": "page",
+        "@route": "/site/page/dashboard",
+        "@control": ["@render", "@realtime", "@interactive"],
+        "@variable": {
+          "title": "Dashboard - ASX Ghost OS",
+          "template": "template_dashboard",
+          "refresh_rate": 1000
+        },
+        "@content": {
+          "@type": "atomic_html",
+          "@html": "<div class='ghost-root'><header class='ghost-header'><h1>⟁ Dashboard</h1></header><main class='ghost-main'><div class='ghost-panel'><div class='panel-header'><span class='panel-title'>System Metrics</span></div><div id='metrics-display'></div></div><div class='ghost-panel'><div class='panel-header'><span class='panel-title'>Active Agents</span></div><div id='agents-display'></div></div><div class='ghost-panel'><div class='panel-header'><span class='panel-title'>Memory (ASX-RAM)</span></div><div id='ram-display'></div></div></main></div>"
+        }
+      },
+
+      "rlhf-forum": {
+        "@id": "page_rlhf_forum",
+        "@type": "page",
+        "@route": "/site/page/rlhf-forum",
+        "@control": ["@render", "@cms", "@interactive"],
+        "@variable": {
+          "title": "RLHF Forum - CMS",
+          "cms_shard": "cms_rlhf_forum_v2",
+          "api_base": "/cms/rlhf"
+        },
+        "@content": {
+          "@type": "atomic_xjson",
+          "@source": "/rlhf_forum.atomic.xjson",
+          "@fallback_html": "<div class='ghost-root'><h1>⟁ RLHF Forum</h1><div id='rlhf-app'></div></div>"
+        }
+      },
+
+      "tapes": {
+        "@id": "page_tapes",
+        "@type": "page",
+        "@route": "/site/page/tapes",
+        "@control": ["@render", "@list", "@boot"],
+        "@variable": {
+          "title": "Tapes - ASX Ghost OS",
+          "show_boot_status": true
+        },
+        "@content": {
+          "@type": "atomic_html",
+          "@html": "<div class='ghost-root'><header class='ghost-header'><h1>⟁ System Tapes</h1></header><main class='ghost-main'><div class='ghost-panel'><h2>Available Tapes</h2><div id='tapes-list'></div></div><div class='ghost-panel'><h2>Tape Details</h2><div id='tape-details'></div></div></main></div>"
+        }
+      },
+
+      "world-sandbox": {
+        "@id": "page_world_sandbox",
+        "@type": "page",
+        "@route": "/site/page/world-sandbox",
+        "@control": ["@render", "@3d", "@physics"],
+        "@variable": {
+          "title": "World Sandbox - 3D Environment",
+          "template": "template_world_sandbox",
+          "engine": "three.js"
+        },
+        "@content": {
+          "@type": "atomic_html",
+          "@html": "<div class='ghost-root'><header class='ghost-header'><h1>⟁ World Sandbox</h1></header><main><canvas id='world-canvas'></canvas><div id='world-controls'></div></main></div>"
+        }
+      }
+    }
+
+    /* ==================================================
+       SITE COMPONENTS - Reusable UI Atomic Blocks
+       ================================================== */
+    @components: {
+      "nav-menu": {
+        "@id": "component_nav",
+        "@type": "component",
+        "@route": "/site/component/nav-menu",
+        "@control": ["@render", "@navigate", "@highlight"],
+        "@variable": {
+          "items": [
+            {"label": "Home", "route": "/site/page/home"},
+            {"label": "Dashboard", "route": "/site/page/dashboard"},
+            {"label": "RLHF Forum", "route": "/site/page/rlhf-forum"},
+            {"label": "Tapes", "route": "/site/page/tapes"},
+            {"label": "World Sandbox", "route": "/site/page/world-sandbox"}
+          ]
+        },
+        "@content": {
+          "@type": "atomic_html",
+          "@html": "<nav class='ghost-nav'><ul class='nav-list'><li><a href='/site/page/home'>Home</a></li><li><a href='/site/page/dashboard'>Dashboard</a></li><li><a href='/site/page/rlhf-forum'>RLHF Forum</a></li><li><a href='/site/page/tapes'>Tapes</a></li><li><a href='/site/page/world-sandbox'>World</a></li></ul></nav>"
+        }
+      },
+
+      "system-status": {
+        "@id": "component_system_status",
+        "@type": "component",
+        "@route": "/site/component/system-status",
+        "@control": ["@render", "@poll", "@update"],
+        "@variable": {
+          "refresh_interval": 1000,
+          "show_uptime": true,
+          "show_memory": true
+        },
+        "@content": {
+          "@type": "atomic_html",
+          "@html": "<div class='system-status'><div class='status-item'><span>Kernel:</span><span id='kernel-version'></span></div><div class='status-item'><span>Uptime:</span><span id='uptime'></span></div><div class='status-item'><span>RAM:</span><span id='ram-usage'></span></div></div>"
+        }
+      },
+
+      "tape-card": {
+        "@id": "component_tape_card",
+        "@type": "component",
+        "@route": "/site/component/tape-card",
+        "@control": ["@render", "@click", "@boot"],
+        "@variable": {
+          "show_agents": true,
+          "show_shards": true,
+          "bootable": true
+        },
+        "@content": {
+          "@type": "atomic_html_template",
+          "@template": "<div class='tape-card' data-tape-id='{{id}}'><h3>{{label}}</h3><p>{{role}}</p><div class='tape-meta'><span>Agents: {{agents.length}}</span><span>Boot: {{boot}}</span></div><button class='asx-btn asx-btn-primary' onclick='bootTape(\"{{id}}\")'>Boot Tape</button></div>"
+        }
+      },
+
+      "atomic-block-viz": {
+        "@id": "component_atomic_viz",
+        "@type": "component",
+        "@route": "/site/component/atomic-block-viz",
+        "@control": ["@render", "@animate", "@inspect"],
+        "@variable": {
+          "show_control": true,
+          "show_variable": true,
+          "show_energy": true
+        },
+        "@content": {
+          "@type": "atomic_html_template",
+          "@template": "<div class='atomic-block-card'><div class='atomic-header'><span class='atomic-type'>{{@type}}</span><span class='atomic-id'>{{@id}}</span></div><div class='atomic-controls'>{{#each @control}}<span class='control-tag'>{{this}}</span>{{/each}}</div><div class='atomic-variables'><pre>{{json @variable}}</pre></div><div class='atomic-energy-bar' style='width: {{multiply @energy 100}}%'></div></div>"
+        }
+      }
+    }
+
+    /* ==================================================
+       SITE ASSETS - Images, Icons, Fonts as Data URIs
+       ================================================== */
+    @assets: {
+      "logo": {
+        "@id": "asset_logo",
+        "@type": "asset",
+        "@route": "/site/asset/logo",
+        "@control": ["@cache", "@deliver"],
+        "@variable": {
+          "mime": "image/svg+xml",
+          "cache_duration": 86400
+        },
+        "@content": {
+          "@type": "svg",
+          "@data": "<svg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'><circle cx='16' cy='16' r='14' fill='none' stroke='#16f2aa' stroke-width='2'/><text x='16' y='20' text-anchor='middle' fill='#16f2aa' font-size='16' font-family='monospace'>⟁</text></svg>"
+        }
+      },
+
+      "icon-tape": {
+        "@id": "asset_icon_tape",
+        "@type": "asset",
+        "@route": "/site/asset/icon-tape",
+        "@control": ["@cache", "@deliver"],
+        "@variable": {
+          "mime": "image/svg+xml"
+        },
+        "@content": {
+          "@type": "svg",
+          "@data": "<svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><rect x='4' y='6' width='16' height='12' rx='2' stroke='#16f2aa' stroke-width='2'/><circle cx='8' cy='12' r='2' fill='#16f2aa'/><circle cx='16' cy='12' r='2' fill='#16f2aa'/></svg>"
+        }
+      }
+    }
+
+    /* ==================================================
+       TAPE REGISTRY - All Tapes as REST Endpoints
+       ================================================== */
+    @tapes_rest: {
+      "tape_system_boot_hud_v1": {
+        "@route": "/site/tape/boot-hud",
+        "@control": ["@boot", "@system", "@render"],
+        "@variable": {
+          "boot_priority": 1,
+          "auto_load": true
+        }
+      },
+      "tape_system_auto_recovery_v1": {
+        "@route": "/site/tape/auto-recovery",
+        "@control": ["@recovery", "@diagnostics", "@repair"],
+        "@variable": {
+          "boot_priority": 2,
+          "trigger": "on_error"
+        }
+      },
+      "tape_system_trinity_runtime_v1": {
+        "@route": "/site/tape/trinity-runtime",
+        "@control": ["@orchestrate", "@trinity", "@metrics"],
+        "@variable": {
+          "boot_priority": 3
+        }
+      },
+      "tape_studio_generator_v1": {
+        "@route": "/site/tape/studio-generator",
+        "@control": ["@generate", "@ai", "@create"],
+        "@variable": {
+          "requires": ["ai_fold"]
+        }
+      },
+      "tape_ghost_chat_v1": {
+        "@route": "/site/tape/ghost-chat",
+        "@control": ["@chat", "@llm", "@stream"],
+        "@variable": {
+          "ui_type": "chat_interface"
+        }
+      },
+      "tape_world_sandbox_v1": {
+        "@route": "/site/tape/world-sandbox",
+        "@control": ["@3d", "@physics", "@render"],
+        "@variable": {
+          "engine": "three.js",
+          "ui_type": "3d_canvas"
+        }
+      },
+      "tape_trainer_dashboard_v1": {
+        "@route": "/site/tape/trainer-dashboard",
+        "@control": ["@train", "@rlhf", "@metrics"],
+        "@variable": {
+          "ui_type": "dashboard"
+        }
+      },
+      "tape_mx2cms_v1": {
+        "@route": "/site/tape/mx2cms",
+        "@control": ["@cms", "@content", "@deliver"],
+        "@variable": {
+          "ui_type": "cms_interface"
+        }
+      }
+    }
+
+  ⟁ Xul ⟁
+
+
+  /* ==========================================================
+     SITE DELIVERY C@@L BLOCKS - REST API Functions
+     ========================================================== */
+
+  /* CMS PAGE DELIVERY (C@@L BLOCK - Atomic Page Rendering) */
+  [Pop cms_page_get]
+    /* @control: [@route, @cache, @render]
+       @variable: {page_id, cache_ttl, content_type}
+       @Sek: Extract page from ATOMIC_BLOCK_SITE_CONTENT
+       @Ch'en: Render atomic HTML with CSS injection */
+
+    [Wo @page_id]→[Ch'en page_id]
+
+    // Get page from site content database
+    [Wo ATOMIC_BLOCK_SITE_CONTENT.pages[page_id]]→[Ch'en page_data]
+
+    [@if page_data == null]→[@then
+      [Wo {
+        "ok": false,
+        "error": "Page not found",
+        "page_id": page_id,
+        "available": Object.keys(ATOMIC_BLOCK_SITE_CONTENT.pages)
+      }]→[Xul return]
+    ]
+
+    // Extract atomic content
+    [Wo page_data["@content"]]→[Ch'en content]
+    [Wo page_data["@variable"]]→[Ch'en meta]
+
+    // Return atomic page block
+    [Wo {
+      "ok": true,
+      "mode": "page",
+      "@id": page_data["@id"],
+      "@type": page_data["@type"],
+      "@control": page_data["@control"],
+      "@variable": meta,
+      "content": content,
+      "route": page_data["@route"]
+    }]→[Xul return]
+  [Xul]
+
+
+  /* CMS COMPONENT DELIVERY (C@@L BLOCK - Atomic Component) */
+  [Pop cms_component_get]
+    /* @control: [@render, @cache, @reuse]
+       @variable: {component_id, props}
+       @Sek: Extract component from site content
+       @Ch'en: Return atomic component block */
+
+    [Wo @component_id]→[Ch'en component_id]
+    [Wo @props]→[Ch'en props]
+
+    [Wo ATOMIC_BLOCK_SITE_CONTENT.components[component_id]]→[Ch'en component_data]
+
+    [@if component_data == null]→[@then
+      [Wo {
+        "ok": false,
+        "error": "Component not found",
+        "component_id": component_id
+      }]→[Xul return]
+    ]
+
+    [Wo {
+      "ok": true,
+      "mode": "component",
+      "@id": component_data["@id"],
+      "@type": component_data["@type"],
+      "@control": component_data["@control"],
+      "@variable": {**component_data["@variable"], **props},
+      "content": component_data["@content"],
+      "route": component_data["@route"]
+    }]→[Xul return]
+  [Xul]
+
+
+  /* CMS TAPE DELIVERY (C@@L BLOCK - Tape as REST Resource) */
+  [Pop cms_tape_get]
+    /* @control: [@load, @boot, @execute]
+       @variable: {tape_id}
+       @Sek: Get tape from manifest and REST registry
+       @Ch'en: Return tape atomic block */
+
+    [Wo @tape_id]→[Ch'en tape_id]
+
+    // Get tape from manifest
+    [Wo manifest_ast.tapes[tape_id]]→[Ch'en tape_manifest]
+
+    // Get tape REST info
+    [Wo ATOMIC_BLOCK_SITE_CONTENT.tapes_rest[tape_id]]→[Ch'en tape_rest]
+
+    [@if tape_manifest == null]→[@then
+      [Wo {
+        "ok": false,
+        "error": "Tape not found",
+        "tape_id": tape_id
+      }]→[Xul return]
+    ]
+
+    [Wo {
+      "ok": true,
+      "mode": "tape",
+      "@id": tape_manifest.id,
+      "@type": "tape",
+      "@control": tape_rest ? tape_rest["@control"] : ["@boot", "@execute"],
+      "@variable": {
+        "label": tape_manifest.label,
+        "role": tape_manifest.role,
+        "entry": tape_manifest.entry,
+        "boot": tape_manifest.boot,
+        "agents": tape_manifest.agents,
+        "shards": tape_manifest.shards,
+        **tape_rest["@variable"]
+      },
+      "route": tape_rest ? tape_rest["@route"] : "/site/tape/" + tape_id,
+      "manifest": tape_manifest
+    }]→[Xul return]
+  [Xul]
+
+
+  /* CMS ASSET DELIVERY (C@@L BLOCK - Binary/Data Assets) */
+  [Pop cms_asset_get]
+    /* @control: [@cache, @deliver, @encode]
+       @variable: {asset_id}
+       @Sek: Get asset from site content
+       @Ch'en: Return with correct MIME type */
+
+    [Wo @asset_id]→[Ch'en asset_id]
+
+    [Wo ATOMIC_BLOCK_SITE_CONTENT.assets[asset_id]]→[Ch'en asset_data]
+
+    [@if asset_data == null]→[@then
+      [Wo {
+        "ok": false,
+        "error": "Asset not found",
+        "asset_id": asset_id
+      }]→[Xul return]
+    ]
+
+    [Wo {
+      "ok": true,
+      "mode": "asset",
+      "@id": asset_data["@id"],
+      "@type": asset_data["@type"],
+      "@control": asset_data["@control"],
+      "@variable": asset_data["@variable"],
+      "content": asset_data["@content"],
+      "mime": asset_data["@variable"].mime,
+      "cache_duration": asset_data["@variable"].cache_duration
+    }]→[Xul return]
+  [Xul]
+
+
+  /* CMS SITE MAP (C@@L BLOCK - Full Site Structure) */
+  [Pop cms_site_map]
+    /* @control: [@discover, @index, @route]
+       @variable: {}
+       @Sek: Build complete site map from all content
+       @Ch'en: Return atomic site structure */
+
+    [Wo Object.keys(ATOMIC_BLOCK_SITE_CONTENT.pages)]→[Ch'en page_ids]
+    [Wo Object.keys(ATOMIC_BLOCK_SITE_CONTENT.components)]→[Ch'en component_ids]
+    [Wo Object.keys(ATOMIC_BLOCK_SITE_CONTENT.assets)]→[Ch'en asset_ids]
+    [Wo Object.keys(ATOMIC_BLOCK_SITE_CONTENT.tapes_rest)]→[Ch'en tape_ids]
+
+    // Build page routes
+    [Wo page_ids.map(id => ({
+      "id": id,
+      "route": ATOMIC_BLOCK_SITE_CONTENT.pages[id]["@route"],
+      "title": ATOMIC_BLOCK_SITE_CONTENT.pages[id]["@variable"].title
+    }))]→[Ch'en pages]
+
+    // Build component routes
+    [Wo component_ids.map(id => ({
+      "id": id,
+      "route": ATOMIC_BLOCK_SITE_CONTENT.components[id]["@route"]
+    }))]→[Ch'en components]
+
+    // Build tape routes
+    [Wo tape_ids.map(id => ({
+      "id": id,
+      "route": ATOMIC_BLOCK_SITE_CONTENT.tapes_rest[id]["@route"]
+    }))]→[Ch'en tapes]
+
+    [Wo {
+      "ok": true,
+      "mode": "site_map",
+      "pages": pages,
+      "components": components,
+      "assets": asset_ids,
+      "tapes": tapes,
+      "total_routes": pages.length + components.length + tapes.length + asset_ids.length
+    }]→[Xul return]
+  [Xul]
+
+
+  /* CMS ATOMIC BLOCK SEARCH (C@@L BLOCK - Content Discovery) */
+  [Pop cms_atomic_search]
+    /* @control: [@search, @index, @rank]
+       @variable: {query, type_filter}
+       @Sek: Search all atomic blocks by content/metadata
+       @Ch'en: Return ranked results */
+
+    [Wo @query]→[Ch'en query]
+    [Wo @type_filter]→[Ch'en type_filter]
+
+    [Wo query.toLowerCase()]→[Ch'en query_lower]
+    [Wo []]→[Ch'en results]
+
+    // Search pages
+    [@if type_filter == null || type_filter == "page"]→[@then
+      [Wo Object.values(ATOMIC_BLOCK_SITE_CONTENT.pages)]→[Ch'en pages]
+      [@loop pages]→[@as page]→[
+        [Wo page["@variable"].title + " " + page["@variable"].description]→[Ch'en searchable]
+        [Wo searchable.toLowerCase()]→[Ch'en searchable_lower]
+
+        [@if searchable_lower.includes(query_lower)]→[@then
+          [Wo results.push({
+            "type": "page",
+            "id": page["@id"],
+            "route": page["@route"],
+            "title": page["@variable"].title,
+            "description": page["@variable"].description
+          })]→[Sek exec]
+        ]
+      ]
+    ]
+
+    // Search components
+    [@if type_filter == null || type_filter == "component"]→[@then
+      [Wo Object.values(ATOMIC_BLOCK_SITE_CONTENT.components)]→[Ch'en components]
+      [@loop components]→[@as component]→[
+        [Wo component["@id"]]→[Ch'en comp_id]
+
+        [@if comp_id.includes(query_lower)]→[@then
+          [Wo results.push({
+            "type": "component",
+            "id": component["@id"],
+            "route": component["@route"]
+          })]→[Sek exec]
+        ]
+      ]
+    ]
+
+    [Wo {
+      "ok": true,
+      "mode": "search",
+      "query": query,
+      "results": results,
+      "count": results.length
+    }]→[Xul return]
+  [Xul]
+
 
 ⟁ Xul ⟁
