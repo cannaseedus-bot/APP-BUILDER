@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>👻 Ghost Shell - ASXR Terminal</title>
+  <style>
+    :root {
+      --bg: #000;
+      --ghost: rgba(22, 242, 170, 0.15);
+      --ghost-text: #16f2aa;
+      --ghost-dim: rgba(22, 242, 170, 0.5);
+      --ghost-border: rgba(22, 242, 170, 0.3);
+      --cursor: #ffd000;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ghost-text);
+      font-family: 'Courier New', Monaco, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    .ghost-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at center, var(--ghost), transparent 70%);
+    }
+
+    .ghost-header {
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--ghost-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .ghost-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    .ghost-status {
+      display: flex;
+      gap: 15px;
+      font-size: 11px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--ghost-text);
+      display: inline-block;
+      animation: pulse 2s ease-in-out infinite;
+      margin-right: 5px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .ghost-output {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      font-size: 13px;
+    }
+
+    .ghost-line {
+      margin-bottom: 8px;
+      opacity: 0;
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ghost-prompt {
+      color: var(--cursor);
+    }
+
+    .ghost-command {
+      color: var(--ghost-text);
+    }
+
+    .ghost-result {
+      color: var(--ghost-dim);
+      margin-left: 20px;
+    }
+
+    .ghost-error {
+      color: #ff3366;
+      margin-left: 20px;
+    }
+
+    .ghost-input-row {
+      padding: 15px 20px;
+      border-top: 1px solid var(--ghost-border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    #ghostPrompt {
+      color: var(--cursor);
+      font-family: inherit;
+      font-size: inherit;
+    }
+
+    #ghostInput {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--ghost-text);
+      font-family: inherit;
+      font-size: inherit;
+      outline: none;
+      caret-color: var(--cursor);
+    }
+
+    .ghost-help {
+      position: fixed;
+      bottom: 60px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.95);
+      border: 1px solid var(--ghost-border);
+      border-radius: 8px;
+      padding: 15px;
+      font-size: 11px;
+      max-width: 300px;
+      display: none;
+    }
+
+    .ghost-help.visible {
+      display: block;
+    }
+
+    .ghost-help-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--ghost-text);
+    }
+
+    .ghost-help-cmd {
+      margin: 5px 0;
+      color: var(--ghost-dim);
+    }
+
+    .ghost-help-cmd strong {
+      color: var(--cursor);
+    }
+
+    .ghost-ascii {
+      color: var(--ghost-dim);
+      font-size: 10px;
+      line-height: 1.2;
+      margin-bottom: 15px;
+      opacity: 0.7;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--ghost-border);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--ghost-dim);
+    }
+  </style>
+</head>
+<body>
+  <div class="ghost-container">
+    <!-- Header -->
+    <div class="ghost-header">
+      <div class="ghost-title">👻 GHOST SHELL v1.0.0</div>
+      <div class="ghost-status">
+        <span><span class="status-dot"></span><span id="kernelStatus">KERNEL</span></span>
+        <span><span class="status-dot"></span><span id="dbStatus">MX2CMS</span></span>
+        <span><span class="status-dot"></span><span id="meshStatus">MESH</span></span>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="ghost-output" id="output">
+      <pre class="ghost-ascii">
+    ██████╗ ██╗  ██╗ ██████╗ ███████╗████████╗    ███████╗██╗  ██╗███████╗██╗     ██╗
+   ██╔════╝ ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝    ██╔════╝██║  ██║██╔════╝██║     ██║
+   ██║  ███╗███████║██║   ██║███████╗   ██║       ███████╗███████║█████╗  ██║     ██║
+   ██║   ██║██╔══██║██║   ██║╚════██║   ██║       ╚════██║██╔══██║██╔══╝  ██║     ██║
+   ╚██████╔╝██║  ██║╚██████╔╝███████║   ██║       ███████║██║  ██║███████╗███████╗███████╗
+    ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝       ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
+      </pre>
+      <div class="ghost-line">
+        <span class="ghost-result">ASXR Trinity v3.2.0 - Micro-ASXR Operating System Ecosystem</span>
+      </div>
+      <div class="ghost-line">
+        <span class="ghost-result">立v = "13.2.0-XCFE-POLYGLOT-ETERNAL"</span>
+      </div>
+      <div class="ghost-line">
+        <span class="ghost-result">Type 'help' for available commands or '?' for quick reference</span>
+      </div>
+      <div class="ghost-line">
+        <span class="ghost-result">---</span>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="ghost-input-row">
+      <span id="ghostPrompt">ghost@asxr:~$</span>
+      <input type="text" id="ghostInput" autofocus autocomplete="off" spellcheck="false">
+    </div>
+
+    <!-- Help Panel -->
+    <div class="ghost-help" id="helpPanel">
+      <div class="ghost-help-title">👻 Ghost Shell Commands</div>
+      <div class="ghost-help-cmd"><strong>help</strong> - Show all commands</div>
+      <div class="ghost-help-cmd"><strong>status</strong> - System status</div>
+      <div class="ghost-help-cmd"><strong>ls [system]</strong> - List systems/data</div>
+      <div class="ghost-help-cmd"><strong>ram [get|set|list]</strong> - ASX-RAM ops</div>
+      <div class="ghost-help-cmd"><strong>db [query|put]</strong> - MX2DB ops</div>
+      <div class="ghost-help-cmd"><strong>exec [code]</strong> - Execute JS</div>
+      <div class="ghost-help-cmd"><strong>clear</strong> - Clear screen</div>
+      <div class="ghost-help-cmd"><strong>?</strong> - Toggle this help</div>
+    </div>
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════════════════════════════════
+    // 👻 Ghost Shell - Lightweight Terminal UI for ASXR Trinity
+    // All logic lives in service worker (sw.js) and manifest (ASXR DB)
+    // This is just a "ghost" - transparent UI layer
+    // ═══════════════════════════════════════════════════════════════════
+
+    const output = document.getElementById('output');
+    const input = document.getElementById('ghostInput');
+    const helpPanel = document.getElementById('helpPanel');
+    const kernelStatus = document.getElementById('kernelStatus');
+    const dbStatus = document.getElementById('dbStatus');
+    const meshStatus = document.getElementById('meshStatus');
+
+    let commandHistory = [];
+    let historyIndex = -1;
+
+    // ═══════════════════════════════════════════════════════════════════
+    // 🚀 Initialize Ghost Shell
+    // ═══════════════════════════════════════════════════════════════════
+
+    // Register service workers
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/cms/sw.js')
+        .then(() => {
+          kernelStatus.textContent = 'ONLINE';
+          checkSystemStatus();
+        })
+        .catch(() => kernelStatus.textContent = 'ERROR');
+    }
+
+    async function checkSystemStatus() {
+      try {
+        const res = await fetch('/os/health');
+        const data = await res.json();
+        dbStatus.textContent = data.ok ? 'ONLINE' : 'OFFLINE';
+        meshStatus.textContent = 'READY';
+      } catch {
+        dbStatus.textContent = 'ERROR';
+        meshStatus.textContent = 'ERROR';
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // 📝 Output Functions
+    // ═══════════════════════════════════════════════════════════════════
+
+    function addLine(content, type = 'result') {
+      const line = document.createElement('div');
+      line.className = 'ghost-line';
+      line.innerHTML = `<span class="ghost-${type}">${content}</span>`;
+      output.appendChild(line);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function addCommand(cmd) {
+      const line = document.createElement('div');
+      line.className = 'ghost-line';
+      line.innerHTML = `<span class="ghost-prompt">ghost@asxr:~$</span> <span class="ghost-command">${cmd}</span>`;
+      output.appendChild(line);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function clearScreen() {
+      output.innerHTML = '';
+      addLine('Screen cleared.', 'result');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // 🎯 Command Processor
+    // ═══════════════════════════════════════════════════════════════════
+
+    const commands = {
+      help: () => {
+        addLine('👻 Ghost Shell Commands:', 'result');
+        addLine('', 'result');
+        addLine('  help              - Show this help', 'result');
+        addLine('  status            - System status', 'result');
+        addLine('  ls [system]       - List systems or data', 'result');
+        addLine('  ram get [key]     - Get ASX-RAM value', 'result');
+        addLine('  ram set [key] [val] - Set ASX-RAM value', 'result');
+        addLine('  ram list          - List all RAM keys', 'result');
+        addLine('  db query [scope]  - Query MX2DB scope', 'result');
+        addLine('  db put [scope] [data] - Put data in MX2DB', 'result');
+        addLine('  exec [code]       - Execute JavaScript', 'result');
+        addLine('  clear             - Clear screen', 'result');
+        addLine('  ?                 - Toggle quick help', 'result');
+        addLine('', 'result');
+        addLine('Systems: MX2CMS, MX2CX, MX2GIT, MX2LM, GAS, CMS', 'result');
+      },
+
+      status: async () => {
+        addLine('Checking system status...', 'result');
+        try {
+          const res = await fetch('/os/health');
+          const data = await res.json();
+          addLine('', 'result');
+          addLine(`Kernel: ${data.kernel}`, 'result');
+          addLine(`Version: ${data.version}`, 'result');
+          addLine(`Status: ${data.ok ? 'ONLINE' : 'OFFLINE'}`, 'result');
+          addLine(`RAM Keys: ${data.ram_keys}`, 'result');
+          addLine(`DB Scopes: ${data.scopes.join(', ')}`, 'result');
+          addLine(`Timestamp: ${new Date(data.ts).toLocaleString()}`, 'result');
+        } catch (err) {
+          addLine(`Error: ${err.message}`, 'error');
+        }
+      },
+
+      ls: async (args) => {
+        if (!args[0]) {
+          addLine('Available systems:', 'result');
+          addLine('  MX2CMS - Database OS', 'result');
+          addLine('  MX2CX  - Builder Codex AI', 'result');
+          addLine('  MX2GIT - GitHub Sync', 'result');
+          addLine('  MX2LM  - Brain Builders', 'result');
+          addLine('  GAS    - Plugin System', 'result');
+          addLine('  CMS    - Content Management', 'result');
+          addLine('', 'result');
+          addLine('Use: ls [system] to see details', 'result');
+        } else {
+          const system = args[0].toLowerCase();
+          const urls = {
+            mx2cms: '/cms/',
+            mx2cx: '/mx2cx/',
+            mx2git: '/mx2git/',
+            mx2lm: '/python/mx2lm/brains.html',
+            gas: '/gas/',
+            cms: '/cms/'
+          };
+          if (urls[system]) {
+            addLine(`${system.toUpperCase()} → ${urls[system]}`, 'result');
+            addLine(`Navigate: window.location.href='${urls[system]}'`, 'result');
+          } else {
+            addLine(`Unknown system: ${system}`, 'error');
+          }
+        }
+      },
+
+      ram: async (args) => {
+        const action = args[0];
+        if (action === 'get') {
+          const key = args[1];
+          if (!key) {
+            addLine('Usage: ram get [key]', 'error');
+            return;
+          }
+          try {
+            const res = await fetch(`/ram/get?key=${encodeURIComponent(key)}`);
+            const data = await res.json();
+            addLine(`Key: ${data.key}`, 'result');
+            addLine(`Value: ${JSON.stringify(data.value, null, 2)}`, 'result');
+          } catch (err) {
+            addLine(`Error: ${err.message}`, 'error');
+          }
+        } else if (action === 'set') {
+          const key = args[1];
+          const value = args.slice(2).join(' ');
+          if (!key || !value) {
+            addLine('Usage: ram set [key] [value]', 'error');
+            return;
+          }
+          try {
+            const res = await fetch('/ram/set', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ key, value })
+            });
+            const data = await res.json();
+            addLine(`Set: ${data.key} = ${data.value}`, 'result');
+          } catch (err) {
+            addLine(`Error: ${err.message}`, 'error');
+          }
+        } else if (action === 'list') {
+          try {
+            const res = await fetch('/ram/list');
+            const data = await res.json();
+            if (data.entries.length === 0) {
+              addLine('ASX-RAM is empty', 'result');
+            } else {
+              addLine(`ASX-RAM Keys (${data.entries.length}):`, 'result');
+              data.entries.forEach(e => {
+                addLine(`  ${e.key} = ${JSON.stringify(e.value)}`, 'result');
+              });
+            }
+          } catch (err) {
+            addLine(`Error: ${err.message}`, 'error');
+          }
+        } else {
+          addLine('Usage: ram [get|set|list]', 'error');
+        }
+      },
+
+      db: async (args) => {
+        const action = args[0];
+        if (action === 'query') {
+          const scope = args[1] || 'profiles';
+          try {
+            const res = await fetch(`/mx2db/query?scope=${scope}`);
+            const data = await res.json();
+            addLine(`MX2DB Query [${scope}]: ${data.count} records`, 'result');
+            if (data.count > 0) {
+              data.results.slice(0, 5).forEach(r => {
+                addLine(`  ID: ${r.id} - ${JSON.stringify(r.data).substring(0, 80)}...`, 'result');
+              });
+              if (data.count > 5) {
+                addLine(`  ... and ${data.count - 5} more`, 'result');
+              }
+            }
+          } catch (err) {
+            addLine(`Error: ${err.message}`, 'error');
+          }
+        } else if (action === 'put') {
+          addLine('Usage: db put [scope] [json_data]', 'result');
+          addLine('Example: db put profiles {"name":"test","role":"admin"}', 'result');
+        } else {
+          addLine('Usage: db [query|put]', 'error');
+        }
+      },
+
+      exec: async (args) => {
+        const code = args.join(' ');
+        if (!code) {
+          addLine('Usage: exec [javascript_code]', 'error');
+          return;
+        }
+        try {
+          const result = await eval(`(async () => { return ${code}; })()`);
+          addLine(`Result: ${JSON.stringify(result, null, 2)}`, 'result');
+        } catch (err) {
+          addLine(`Error: ${err.message}`, 'error');
+        }
+      },
+
+      clear: () => {
+        clearScreen();
+      },
+
+      '?': () => {
+        helpPanel.classList.toggle('visible');
+      }
+    };
+
+    // ═══════════════════════════════════════════════════════════════════
+    // ⌨️ Input Handler
+    // ═══════════════════════════════════════════════════════════════════
+
+    input.addEventListener('keydown', async (e) => {
+      if (e.key === 'Enter') {
+        const cmd = input.value.trim();
+        if (cmd) {
+          addCommand(cmd);
+          commandHistory.unshift(cmd);
+          historyIndex = -1;
+
+          const parts = cmd.split(/\s+/);
+          const command = parts[0].toLowerCase();
+          const args = parts.slice(1);
+
+          if (commands[command]) {
+            await commands[command](args);
+          } else {
+            addLine(`Unknown command: ${command}. Type 'help' for available commands.`, 'error');
+          }
+        }
+        input.value = '';
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (historyIndex < commandHistory.length - 1) {
+          historyIndex++;
+          input.value = commandHistory[historyIndex];
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIndex > 0) {
+          historyIndex--;
+          input.value = commandHistory[historyIndex];
+        } else {
+          historyIndex = -1;
+          input.value = '';
+        }
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        // Auto-complete could be added here
+      }
+    });
+
+    // Keep focus on input
+    document.addEventListener('click', () => {
+      input.focus();
+    });
+
+    // Initialize
+    console.log('👻 Ghost Shell initialized');
+    console.log('ASX = XCFE = XJSON = KUHUL = AST = MX2DB');
+  </script>
+</body>
+</html>
