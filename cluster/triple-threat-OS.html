@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TRIPLE THREAT OS — MX2LM / K’UHUL / ASXR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: #050b16;
+      --border: #16f2aa;
+      --accent: #22d3ee;
+      --accent-soft: rgba(34,211,238,0.18);
+      --text: #e5f4ff;
+      --muted: #7f8ea3;
+      --danger: #f97373;
+      --good: #4ade80;
+      --mono: "JetBrains Mono","Fira Code",ui-monospace,monospace;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, #0b1220 0, #020617 55%, #000 100%);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      padding: 16px;
+    }
+
+    .tt-shell {
+      display: grid;
+      grid-template-columns: 260px minmax(0,1.4fr) minmax(0,1.1fr);
+      gap: 14px;
+      width: 100%;
+      max-width: 1400px;
+      height: calc(100vh - 32px);
+      border-radius: 20px;
+      border: 1px solid rgba(22,242,170,0.18);
+      background: radial-gradient(circle at 10% 0, #020617 0, #000 70%);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.8),
+        0 30px 120px rgba(0,0,0,0.9);
+      overflow: hidden;
+    }
+
+    .tt-panel {
+      background: linear-gradient(145deg,#020617,#020617,#020617,#050816);
+      border-radius: 16px;
+      border: 1px solid rgba(15,23,42,0.9);
+      position: relative;
+      padding: 12px 12px 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .tt-panel::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      border: 1px solid transparent;
+      background: radial-gradient(circle at top left,
+        rgba(34,211,238,0.35),
+        transparent 55%) border-box;
+      mix-blend-mode: screen;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+
+    .tt-header {
+      grid-column: 1 / -1;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(15,23,42,0.9);
+      background: radial-gradient(circle at 0 0,#0b1120 0,transparent 55%);
+    }
+
+    .tt-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .tt-logo-mark {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(34,211,238,0.7);
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 30% 0,
+        rgba(34,211,238,0.35),
+        transparent 70%);
+      box-shadow: 0 0 18px rgba(34,211,238,0.5);
+      font-size: 11px;
+    }
+
+    .tt-chip-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .tt-chip {
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.25);
+      padding: 3px 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: radial-gradient(circle at 50% 0,
+        rgba(15,23,42,0.6),
+        rgba(15,23,42,0.95));
+    }
+
+    .tt-chip-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0,#22c55e,#166534);
+      box-shadow: 0 0 14px rgba(34,197,94,0.9);
+    }
+
+    .tt-chip-dot.red {
+      background: radial-gradient(circle at 30% 0,#f97373,#7f1d1d);
+      box-shadow: 0 0 14px rgba(248,113,113,0.9);
+    }
+
+    .tt-chip-label {
+      text-transform: uppercase;
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      color: #9ca3af;
+    }
+
+    .tt-chip-value {
+      font-size: 10px;
+      color: #e5e7eb;
+    }
+
+    .panel-title {
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-family: var(--mono);
+      color: var(--muted);
+      padding: 0 2px 6px;
+      border-bottom: 1px solid rgba(15,23,42,0.9);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title span {
+      color: var(--accent);
+    }
+
+    .panel-tag {
+      font-size: 9px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(45,212,191,0.4);
+      background: radial-gradient(circle at 40% 0,
+        rgba(34,197,94,0.12),
+        rgba(15,23,42,0.9));
+      color: #a5f3fc;
+    }
+
+    .tt-sidebar-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .tt-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.28);
+      padding: 6px 9px;
+      background: radial-gradient(circle at 10% 0,
+        rgba(15,23,42,0.8),
+        rgba(15,23,42,1));
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.12s ease-out;
+    }
+
+    .tt-btn span {
+      opacity: 0.6;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .tt-btn:hover {
+      border-color: rgba(34,211,238,0.9);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.9),
+        0 0 16px rgba(34,211,238,0.4);
+      transform: translateY(-0.5px);
+    }
+
+    .tt-btn.primary {
+      border-color: rgba(22,242,170,0.85);
+      background: radial-gradient(circle at 0 0,
+        rgba(22,242,170,0.2),
+        rgba(15,23,42,1));
+      box-shadow: 0 0 18px rgba(22,242,170,0.42);
+      color: #ecfeff;
+    }
+
+    .tt-badge-grid {
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 6px;
+      margin-top: 6px;
+      margin-bottom: 10px;
+    }
+
+    .tt-badge {
+      border-radius: 9px;
+      border: 1px solid rgba(30,64,175,0.7);
+      background: radial-gradient(circle at 0 0,#020617,#020617);
+      padding: 5px 6px;
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .tt-badge-label {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 8px;
+      color: #6b7280;
+    }
+
+    .tt-badge-value {
+      color: #e5e7eb;
+    }
+
+    .tt-log {
+      flex: 1;
+      margin-top: 4px;
+      border-radius: 10px;
+      border: 1px solid rgba(15,23,42,0.9);
+      background: radial-gradient(circle at 0 0,#020617,#020617);
+      padding: 6px 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .tt-log-line { margin-bottom: 2px; }
+    .tt-log-line.ok { color: var(--good); }
+    .tt-log-line.warn { color: #facc15; }
+    .tt-log-line.err { color: var(--danger); }
+
+    .tt-main {
+      gap: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tt-main-row {
+      display: grid;
+      grid-template-columns: minmax(0,1.1fr) minmax(0,0.9fr);
+      gap: 10px;
+      flex: 1;
+    }
+
+    .tt-console {
+      flex: 1;
+      border-radius: 10px;
+      border: 1px solid rgba(15,23,42,0.9);
+      background:
+        radial-gradient(circle at 0 0,rgba(22,242,170,0.16),transparent 55%),
+        radial-gradient(circle at 100% 0,rgba(56,189,248,0.14),transparent 60%),
+        #020617;
+      padding: 7px 8px 6px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .console-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .console-tabs {
+      display: flex;
+      gap: 6px;
+    }
+
+    .console-tab {
+      border-radius: 999px;
+      border: 1px solid rgba(51,65,85,0.9);
+      padding: 2px 8px;
+      font-size: 10px;
+      color: #9ca3af;
+      cursor: pointer;
+    }
+
+    .console-tab.active {
+      border-color: rgba(22,242,170,0.9);
+      color: #e5e7eb;
+      background: radial-gradient(circle at 0 0,
+        rgba(22,242,170,0.2),
+        rgba(15,23,42,1));
+    }
+
+    .console-body {
+      flex: 1;
+      border-radius: 8px;
+      border: 1px solid rgba(15,23,42,0.9);
+      background: #020617;
+      padding: 6px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      font-family: var(--mono);
+    }
+
+    .console-line {
+      line-height: 1.35;
+      color: var(--muted);
+    }
+
+    .console-line strong {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .console-input-row {
+      margin-top: 4px;
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .console-input-prefix {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #4ade80;
+    }
+
+    .console-input {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid rgba(31,41,55,0.9);
+      background: #020617;
+      padding: 4px 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .console-input:focus {
+      border-color: rgba(22,242,170,0.9);
+      box-shadow: 0 0 0 1px rgba(8,47,73,0.9);
+    }
+
+    .tt-chipboard {
+      height: 220px;
+      border-radius: 10px;
+      border: 1px solid rgba(15,23,42,0.9);
+      background:
+        radial-gradient(circle at 30% 0,rgba(22,242,170,0.18),transparent 65%),
+        radial-gradient(circle at 80% 10%,rgba(56,189,248,0.18),transparent 70%),
+        #020617;
+      padding: 4px;
+      overflow: hidden;
+    }
+
+    .tt-chipboard svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      filter: drop-shadow(0 0 12px rgba(22,242,170,0.55));
+    }
+
+    .tt-metrics {
+      flex: 1;
+      border-radius: 10px;
+      border: 1px solid rgba(15,23,42,0.9);
+      background: radial-gradient(circle at 0 0,rgba(22,242,170,0.14),transparent 55%),#020617;
+      padding: 8px 8px 6px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .metric-card {
+      border-radius: 10px;
+      border: 1px solid rgba(30,64,175,0.9);
+      background: radial-gradient(circle at 0 0,#020617,#020617);
+      padding: 4px 6px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: #9ca3af;
+    }
+
+    .metric-label {
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #6b7280;
+      margin-bottom: 2px;
+    }
+
+    .metric-value {
+      color: #e5e7eb;
+    }
+
+    .metric-spark {
+      height: 28px;
+      margin-top: 3px;
+      border-radius: 7px;
+      background:
+        linear-gradient(90deg,rgba(15,23,42,1),rgba(15,23,42,1)),
+        repeating-linear-gradient(90deg,rgba(31,41,55,0.8) 0,rgba(15,23,42,0.8) 1px,transparent 1px,transparent 3px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-spark-line {
+      position: absolute;
+      inset: 0;
+      stroke: rgba(22,242,170,0.9);
+      fill: none;
+      stroke-width: 1.6;
+    }
+
+    .metric-log {
+      flex: 1;
+      border-radius: 8px;
+      border: 1px solid rgba(15,23,42,0.9);
+      background: #020617;
+      padding: 5px 6px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: #9ca3af;
+      overflow-y: auto;
+    }
+
+    .metric-log-line { margin-bottom: 2px; }
+
+    /* hidden tape SVGs */
+    .tt-hidden-svg {
+      position: absolute;
+      width: 0;
+      height: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+<div class="tt-shell">
+
+  <!-- HEADER -->
+  <header class="tt-header">
+    <div class="tt-logo">
+      <div class="tt-logo-mark">⟁</div>
+      <div>
+        <div>K’UHUL TRIPLE THREAT OS</div>
+        <div style="font-size:10px;color:var(--muted);letter-spacing:0.18em;">
+          MX2LM · K’UHUL · ASXR
+        </div>
+      </div>
+    </div>
+    <div class="tt-chip-row">
+      <div class="tt-chip">
+        <div class="tt-chip-dot"></div>
+        <div class="tt-chip-label">scheduler</div>
+        <div class="tt-chip-value">fractal-k’uhul</div>
+      </div>
+      <div class="tt-chip">
+        <div class="tt-chip-dot"></div>
+        <div class="tt-chip-label">tapes</div>
+        <div class="tt-chip-value" id="tt-tape-count">0 loaded</div>
+      </div>
+      <div class="tt-chip">
+        <div class="tt-chip-dot red"></div>
+        <div class="tt-chip-label">backend</div>
+        <div class="tt-chip-value">browser-only</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- LEFT: CONTROL / LOG -->
+  <section class="tt-panel">
+    <div class="panel-title">
+      <div>MX2LM CORE / <span>K’UHUL SCHEDULER</span></div>
+      <div class="panel-tag">LOCAL NODE</div>
+    </div>
+
+    <div class="tt-sidebar-buttons">
+      <button class="tt-btn primary" id="btn-boot">
+        BOOT TRIPLE THREAT
+        <span>boot · init</span>
+      </button>
+      <button class="tt-btn" id="btn-load-tapes">
+        LOAD GLYPH TAPES
+        <span>scxq2 · svg</span>
+      </button>
+      <button class="tt-btn" id="btn-list-tapes">
+        LIST TAPES
+        <span>asxr · inventory</span>
+      </button>
+      <button class="tt-btn" id="btn-run-demo">
+        RUN DEMO TAPE
+        <span>mx2lm · hello</span>
+      </button>
+      <button class="tt-btn" id="btn-schedule">
+        SCHEDULE 3 TASKS
+        <span>k’uhul · queue</span>
+      </button>
+    </div>
+
+    <div class="tt-badge-grid">
+      <div class="tt-badge">
+        <div class="tt-badge-label">mx2lm core</div>
+        <div class="tt-badge-value" id="mx2lm-status">idle</div>
+      </div>
+      <div class="tt-badge">
+        <div class="tt-badge-label">k’uhul queue</div>
+        <div class="tt-badge-value" id="kuhul-queue">0 tasks</div>
+      </div>
+      <div class="tt-badge">
+        <div class="tt-badge-label">asxr profile</div>
+        <div class="tt-badge-value" id="asxr-profile">unloaded</div>
+      </div>
+      <div class="tt-badge">
+        <div class="tt-badge-label">fractal node</div>
+        <div class="tt-badge-value" id="fractal-node">cpu-main / svg-chip</div>
+      </div>
+    </div>
+
+    <div class="tt-log" id="tt-log"></div>
+  </section>
+
+  <!-- CENTER: CONSOLE + CHIP VIS -->
+  <section class="tt-panel tt-main">
+    <div class="panel-title">
+      <div>ASXR CONSOLE / <span>MX2LM ROUTER</span></div>
+      <div class="panel-tag">INTERACTIVE</div>
+    </div>
+
+    <div class="tt-main-row">
+      <div class="tt-console">
+        <div class="console-header">
+          <div style="font-size:10px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;">
+            asxr://triple-threat
+          </div>
+          <div class="console-tabs">
+            <div class="console-tab active" data-tab="router">router</div>
+            <div class="console-tab" data-tab="tapes">tapes</div>
+            <div class="console-tab" data-tab="scheduler">scheduler</div>
+          </div>
+        </div>
+        <div class="console-body" id="console-body"></div>
+        <div class="console-input-row">
+          <div class="console-input-prefix">⟁</div>
+          <input id="console-input" class="console-input"
+                 placeholder="mx2lm.use('mx2lm_core_demo','entry') or help()…">
+        </div>
+      </div>
+
+      <div class="tt-chipboard">
+        <!-- visual: “fractal chip” with 3 agent pads -->
+        <svg viewBox="0 0 240 140">
+          <defs>
+            <linearGradient id="padGrad" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="#22c55e"/>
+              <stop offset="1" stop-color="#22d3ee"/>
+            </linearGradient>
+            <radialGradient id="coreGlow" cx="50%" cy="40%" r="60%">
+              <stop offset="0" stop-color="#22c55e" stop-opacity="0.9"/>
+              <stop offset="0.6" stop-color="#0f172a" stop-opacity="0.0"/>
+              <stop offset="1" stop-color="#020617" stop-opacity="0.0"/>
+            </radialGradient>
+          </defs>
+
+          <rect x="8" y="8" width="224" height="124" rx="16"
+                fill="#020617" stroke="#0f172a" stroke-width="1.4"/>
+          <rect x="22" y="20" width="196" height="100" rx="12"
+                fill="#020617" stroke="#1f2937" stroke-width="1.1"/>
+
+          <!-- bus grid -->
+          <g stroke="#0b1120" stroke-width="0.6" opacity="0.8">
+            <path d="M40 32 H200"/>
+            <path d="M40 48 H200"/>
+            <path d="M40 64 H200"/>
+            <path d="M40 80 H200"/>
+            <path d="M40 96 H200"/>
+            <path d="M40 112 H200"/>
+            <path d="M60 28 V116"/>
+            <path d="M96 28 V116"/>
+            <path d="M132 28 V116"/>
+            <path d="M168 28 V116"/>
+          </g>
+
+          <!-- central “fractal core” -->
+          <circle cx="120" cy="70" r="42" fill="url(#coreGlow)"/>
+          <circle cx="120" cy="70" r="26"
+                  fill="#020617" stroke="#16f2aa" stroke-width="1.2"/>
+          <circle cx="120" cy="70" r="16"
+                  fill="#0f172a" stroke="#22d3ee" stroke-width="1.2"/>
+          <path d="M120 56 L132 70 L120 84 L108 70 Z"
+                fill="none" stroke="#38bdf8" stroke-width="1.2"/>
+
+          <!-- 3 “flash BIOS” agent pads -->
+          <g class="pad pad-mx2lm" stroke="url(#padGrad)" stroke-width="1.2" fill="#020617">
+            <rect x="32" y="44" width="24" height="24" rx="5"/>
+            <circle cx="44" cy="56" r="4" fill="#22c55e"/>
+          </g>
+          <g class="pad pad-kuhul" stroke="url(#padGrad)" stroke-width="1.2" fill="#020617">
+            <rect x="184" y="36" width="24" height="24" rx="5"/>
+            <circle cx="196" cy="48" r="4" fill="#22d3ee"/>
+          </g>
+          <g class="pad pad-asxr" stroke="url(#padGrad)" stroke-width="1.2" fill="#020617">
+            <rect x="184" y="92" width="24" height="24" rx="5"/>
+            <circle cx="196" cy="104" r="4" fill="#facc15"/>
+          </g>
+
+          <!-- labels -->
+          <g font-family="var(--mono, monospace)" font-size="7" fill="#9ca3af">
+            <text x="44" y="76" text-anchor="middle">MX2LM</text>
+            <text x="196" y="66" text-anchor="middle">K’UHUL</text>
+            <text x="196" y="120" text-anchor="middle">ASXR</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- RIGHT: METRICS -->
+  <section class="tt-panel">
+    <div class="panel-title">
+      <div>K’UHUL METRICS / <span>LOCAL FRACTAL NODE</span></div>
+      <div class="panel-tag">TELEMETRY</div>
+    </div>
+
+    <div class="tt-metrics">
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-label">cpu main</div>
+          <div class="metric-value" id="metric-cpu">0.0%</div>
+          <div class="metric-spark">
+            <svg class="metric-spark-line" viewBox="0 0 100 28" id="spark-cpu">
+              <polyline points="0,18 10,16 20,14 30,12 40,11 50,10 60,9 70,8 80,7 90,6 100,6"/>
+            </svg>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">svg chip</div>
+          <div class="metric-value" id="metric-svg">idle</div>
+          <div class="metric-spark">
+            <svg class="metric-spark-line" viewBox="0 0 100 28" id="spark-svg">
+              <polyline points="0,22 10,22 20,22 30,22 40,22 50,22 60,22 70,22 80,22 90,22 100,22"/>
+            </svg>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">queue depth</div>
+          <div class="metric-value" id="metric-queue">0</div>
+          <div class="metric-spark">
+            <svg class="metric-spark-line" viewBox="0 0 100 28" id="spark-queue">
+              <polyline points="0,24 10,24 20,24 30,24 40,24 50,24 60,24 70,24 80,24 90,24 100,24"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-log" id="metric-log"></div>
+    </div>
+  </section>
+
+  <!-- HIDDEN SCXQ2-LITE TAPES (Option 5: in SVG path data) -->
+  <svg id="tt-tape-mx2lm-core" class="tt-hidden-svg" viewBox="0 0 10 10">
+    <path d="M0 0 L10 0 L10 10 L0 10 Z"
+          scxq2="EUgECwcPSFBIBxJYBgc1CQUYDzUODwcFSEZIHA8YGQMFBEhQSFtEWkhGSA4PGQkYAxoeAwUESFBIJwMEAwcLBkonMlgmJ0pFSjIgOSUkSgIPBgYFSh4LGg9ESEZIDwQeGBNIUBFIKhkPHkhQEUgECwcPSFBIDRgPDx4DBA1IRkgcCwYfD0hQSCIPBgYFSgwYBQdKJzJYJidKCQUYD0oODwcFSh4LGg9ESBcXFw=="/>
+  </svg>
+
+  <svg id="tt-tape-kuhul-sched" class="tt-hidden-svg" viewBox="0 0 10 10">
+    <path d="M0 0 L10 0 L10 10 L0 10 Z"
+          scxq2="EUgECwcPSFBIAR8CHwY1GQkCDw4fBg8YNR4PGR5IRkgcDxgZAwUESFBIW0RaSEZIDg8ZCRgDGh4DBQRIUEg+DxkeSh4LGg9KHgILHkoPBBsfDx8PGUoeAhgPD0oMCwEPSh4LGQEZSgMEHgVKHgIPSiFNHwIfBkoZCQIPDh8GDxhESEZIHgsZARlIUDERSAYLCA8GSFBIHgsZATVbSEZIDg8GCxM1BxlIUFoXRhFIBgsIDwZIQUEeCxkBNVhIRkgODwYLEzUHGUhQW1oXRhFIBgsIDwZIUEgeCxkBNVlIRkgODwYLEzUHGUhQWFoXNxc="/>
+  </svg>
+
+  <svg id="tt-tape-asxr-console" class="tt-hidden-svg" viewBox="0 0 10 10">
+    <path d="M0 0 L10 0 L10 10 L0 10 Z"
+          scxq2="EUgECwcPSFBICxkSGDUJBQQZBQYPSEZIHA8YGQMFBEhQSFtEWkhGSA4PGQkYAxoeAwUESFBIKzkyOEoJBQQZBQYPShoYBQwDBg9KTEoeAg8HD0oJBQQMAw1ESEZIHgIPBw9IUBFICA1IUEhJWlhaXFtdSEZIDA1IUEhJD18MXgwMSEZICwkJDwQeSFBISVtcDFgLC0gXRkgYBR8eDxlIUDERSBoLHgJIUEhFGR4LHh8ZSEZIAgsEDgYPGEhQSCoZHgseHxlIF0YRSBoLHgJIUEhFHgsaDxlIRkgCCwQOBg8YSFBIKgYDGR41HgsaDxlIFzcX"/>
+  </svg>
+
+</div>
+
+<script>
+/* ============================================================
+   MX2LM-CORE + K’UHUL SCHEDULER + ASXR VIEW
+   (Pure JS, CPU-only, SCXQ2-LITE decoder)
+   ============================================================ */
+
+(function(global){
+
+  const MX2LM = {
+    registry: {
+      tapes: Object.create(null),
+      kernels: Object.create(null)
+    },
+
+    /* ---------- SCXQ2-LITE: base64 + XOR 0x6A ---------- */
+    scx: {
+      decode(b64) {
+        try {
+          const raw = atob(b64);
+          let out = "";
+          for (let i = 0; i < raw.length; i++) {
+            out += String.fromCharCode(raw.charCodeAt(i) ^ 0x6A);
+          }
+          return out;
+        } catch (e) {
+          console.error("[SCXQ2] decode error:", e);
+          throw e;
+        }
+      },
+      parseTapeFromScxq2(b64) {
+        const json = this.decode(b64);
+        return JSON.parse(json);
+      }
+    },
+
+    /* ---------- TAPE MANAGEMENT ---------- */
+    loadTape(name, obj) {
+      MX2LM.registry.tapes[name] = obj;
+      logOS(`TAPE LOADED: ${name}`, "ok");
+      bumpTapeCount();
+      return obj;
+    },
+
+    loadTapeSVG(name, svgText) {
+      const m = svgText.match(/scxq2="([^"]+)"/);
+      if (!m) {
+        logOS(`SVG tape ${name} missing scxq2 attribute`, "err");
+        return null;
+      }
+      const tape = MX2LM.scx.parseTapeFromScxq2(m[1]);
+      return MX2LM.loadTape(name, tape);
+    },
+
+    listTapes() {
+      return Object.keys(MX2LM.registry.tapes);
+    },
+
+    getTape(name) {
+      return MX2LM.registry.tapes[name] || null;
+    },
+
+    /* ---------- XJSON-ish walker ---------- */
+    use(tapeName, path) {
+      const tape = MX2LM.getTape(tapeName);
+      if (!tape) throw new Error(`Tape not found: ${tapeName}`);
+      if (!path) return tape;
+      const parts = path.split(".");
+      let cur = tape;
+      for (const p of parts) {
+        if (cur && Object.prototype.hasOwnProperty.call(cur, p)) {
+          cur = cur[p];
+        } else {
+          throw new Error(`Path not found: ${path}`);
+        }
+      }
+      return cur;
+    }
+  };
+
+  /* ---------- K’UHUL FRACTAL SCHEDULER (CPU-only) ---------- */
+  const Scheduler = {
+    queue: [],
+    isRunning: false,
+    enqueue(label, fn, delayMs = 0) {
+      this.queue.push({ label, fn, delayMs });
+      updateQueueMetrics();
+      if (!this.isRunning) this._drain();
+    },
+    _drain() {
+      if (this.queue.length === 0) {
+        this.isRunning = false;
+        updateQueueMetrics();
+        return;
+      }
+      this.isRunning = true;
+      const job = this.queue.shift();
+      updateQueueMetrics();
+      setTimeout(() => {
+        try {
+          logMetric(`K’UHUL exec: ${job.label}`);
+          job.fn();
+        } catch (e) {
+          logMetric(`K’UHUL error in ${job.label}: ${e}`, "err");
+        }
+        this._drain();
+      }, job.delayMs || 0);
+    }
+  };
+
+  MX2LM.Scheduler = Scheduler;
+
+  /* ---------- ASXR VIEW (thin wrapper) ---------- */
+  const ASXR = {
+    listTapes() {
+      return MX2LM.listTapes();
+    },
+    status() {
+      const asxrTape = MX2LM.getTape("asxr_console");
+      if (!asxrTape) return { loaded: false };
+      return {
+        loaded: true,
+        theme: asxrTape.theme || null,
+        routes: asxrTape.routes || []
+      };
+    }
+  };
+
+  /* ---------- OS UI HELPERS ---------- */
+
+  const logBox = () => document.getElementById("tt-log");
+  const metricBox = () => document.getElementById("metric-log");
+
+  function logOS(msg, level = "info") {
+    const el = document.createElement("div");
+    el.className = "tt-log-line" + (level === "ok" ? " ok" : level === "err" ? " err" : level === "warn" ? " warn" : "");
+    el.textContent = `[${new Date().toISOString().split("T")[1].slice(0,8)}] ${msg}`;
+    const box = logBox();
+    box.appendChild(el);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function logMetric(msg, level = "info") {
+    const el = document.createElement("div");
+    el.className = "metric-log-line";
+    if (level === "err") el.style.color = "#f97373";
+    metricBox().appendChild(el);
+    el.textContent = msg;
+    metricBox().scrollTop = metricBox().scrollHeight;
+  }
+
+  function bumpTapeCount() {
+    const c = MX2LM.listTapes().length;
+    const el = document.getElementById("tt-tape-count");
+    el.textContent = `${c} loaded`;
+  }
+
+  function updateQueueMetrics() {
+    const depth = Scheduler.queue.length;
+    document.getElementById("kuhul-queue").textContent = `${depth} tasks`;
+    document.getElementById("metric-queue").textContent = depth.toString();
+  }
+
+  function setMx2lmStatus(text) {
+    document.getElementById("mx2lm-status").textContent = text;
+  }
+
+  function setAsxrProfile(text) {
+    document.getElementById("asxr-profile").textContent = text;
+  }
+
+  /* ---------- SPARKLINE FAKE METRICS ---------- */
+
+  let cpuPhase = 0;
+  let svgPhase = 0;
+
+  function updateMetrics() {
+    cpuPhase += 0.12;
+    svgPhase += 0.05;
+
+    const cpuUse = 3 + Math.abs(Math.sin(cpuPhase) * 18);
+    const svgUse = Math.max(0, 10 + Math.sin(svgPhase) * 10);
+
+    document.getElementById("metric-cpu").textContent = cpuUse.toFixed(1) + "%";
+    document.getElementById("metric-svg").textContent =
+      MX2LM.listTapes().length ? "tapes-active" : "idle";
+
+    // trivial "spark" wiggle
+    const cpuPoly = document.getElementById("spark-cpu").querySelector("polyline");
+    const svgPoly = document.getElementById("spark-svg").querySelector("polyline");
+    const qPoly   = document.getElementById("spark-queue").querySelector("polyline");
+
+    const makePoints = (amp, base) => {
+      const pts = [];
+      for (let i = 0; i <= 10; i++) {
+        const t = cpuPhase + i * 0.35;
+        const y = base - Math.sin(t) * amp;
+        pts.push((i*10)+","+(y.toFixed(2)));
+      }
+      return pts.join(" ");
+    };
+
+    if (cpuPoly) cpuPoly.setAttribute("points", makePoints(4, 15));
+    if (svgPoly) svgPoly.setAttribute("points", makePoints(3, 20));
+    if (qPoly)   qPoly.setAttribute("points", makePoints(Scheduler.queue.length * 1.5, 24));
+
+    requestAnimationFrame(updateMetrics);
+  }
+
+  /* ---------- CONSOLE HANDLER ---------- */
+
+  function initConsole() {
+    const body = document.getElementById("console-body");
+    const input = document.getElementById("console-input");
+
+    function write(line) {
+      const el = document.createElement("div");
+      el.className = "console-line";
+      el.textContent = line;
+      body.appendChild(el);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function help() {
+      write("Available helpers:");
+      write("  MX2LM.listTapes()");
+      write("  MX2LM.use('mx2lm_core_demo','entry')");
+      write("  ASXR.status()");
+      write("  Scheduler.enqueue('label', () => { ... })");
+    }
+
+    body.innerHTML = "";
+    write("asxr://triple-threat ready.");
+    write("type `help()` or use the left-side buttons.");
+
+    input.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") {
+        const code = input.value.trim();
+        if (!code) return;
+        write("⟁ " + code);
+        input.value = "";
+        try {
+          // sandbox: only allow expression with our known globals
+          const fn = new Function("MX2LM","ASXR","Scheduler","KUHUL",
+            `"use strict"; return (${code});`);
+          const KUHUL = { Scheduler };
+          const out = fn(MX2LM, ASXR, Scheduler, KUHUL);
+          if (out !== undefined) {
+            write(String(out));
+          }
+        } catch (e) {
+          write("ERR: " + e.message);
+        }
+      }
+    });
+
+    // switch tabs (just cosmetic text for now)
+    document.querySelectorAll(".console-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".console-tab").forEach(x => x.classList.remove("active"));
+        tab.classList.add("active");
+        body.innerHTML = "";
+        if (tab.dataset.tab === "router") {
+          write("MX2LM / ASXR router view.");
+          write("Use `MX2LM.listTapes()` and `ASXR.status()`.");
+        } else if (tab.dataset.tab === "tapes") {
+          write("Tape inventory:");
+          MX2LM.listTapes().forEach(name => {
+            write("  - " + name);
+          });
+        } else if (tab.dataset.tab === "scheduler") {
+          write("K’UHUL scheduler view.");
+          write("Queue depth: " + Scheduler.queue.length);
+        }
+      });
+    });
+
+    // expose help in window for quick typing
+    global.help = help;
+  }
+
+  /* ---------- BOOT SEQUENCE ---------- */
+
+  function loadGlyphTapes() {
+    const svg1 = document.getElementById("tt-tape-mx2lm-core");
+    const svg2 = document.getElementById("tt-tape-kuhul-sched");
+    const svg3 = document.getElementById("tt-tape-asxr-console");
+    if (!svg1 || !svg2 || !svg3) {
+      logOS("Hidden SVG tapes not found", "err");
+      return;
+    }
+    MX2LM.loadTapeSVG("mx2lm_core_demo", svg1.outerHTML);
+    MX2LM.loadTapeSVG("kuhul_scheduler_test", svg2.outerHTML);
+    MX2LM.loadTapeSVG("asxr_console", svg3.outerHTML);
+
+    // reflect ASXR profile
+    const info = ASXR.status();
+    if (info.loaded && info.theme) {
+      setAsxrProfile(`theme ${info.theme.bg} / ${info.theme.accent}`);
+    } else {
+      setAsxrProfile("loaded / no theme");
+    }
+  }
+
+  function bootTripleThreat() {
+    logOS("TRIPLE THREAT OS booting…");
+    setMx2lmStatus("warming up");
+    setTimeout(() => {
+      setMx2lmStatus("ready (mx2lm-core)");
+      logOS("MX2LM core online", "ok");
+      logOS("K’UHUL scheduler online", "ok");
+      logOS("ASXR console ready", "ok");
+    }, 400);
+  }
+
+  function runDemoTape() {
+    try {
+      const entry = MX2LM.use("mx2lm_core_demo","entry.@set");
+      logOS("Demo tape greeting: " + entry.value, "ok");
+    } catch (e) {
+      logOS("Demo tape error: " + e.message, "err");
+    }
+  }
+
+  function scheduleThreeTasks() {
+    const tape = MX2LM.getTape("kuhul_scheduler_test");
+    if (!tape || !Array.isArray(tape.tasks)) {
+      logOS("kuhul_scheduler_test tape missing or invalid", "err");
+      return;
+    }
+    tape.tasks.forEach(t => {
+      Scheduler.enqueue(t.label, () => {
+        logOS(`Task executed: ${t.label}`, "ok");
+      }, t.delay_ms);
+    });
+    logOS(`Enqueued ${tape.tasks.length} tasks into K’UHUL`, "ok");
+  }
+
+  /* ---------- WIRE UI ---------- */
+
+  function wireButtons() {
+    document.getElementById("btn-boot").addEventListener("click", bootTripleThreat);
+    document.getElementById("btn-load-tapes").addEventListener("click", loadGlyphTapes);
+    document.getElementById("btn-list-tapes").addEventListener("click", () => {
+      const names = MX2LM.listTapes();
+      logOS("TAPES: " + (names.length ? names.join(", ") : "(none)"));
+    });
+    document.getElementById("btn-run-demo").addEventListener("click", runDemoTape);
+    document.getElementById("btn-schedule").addEventListener("click", scheduleThreeTasks);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    wireButtons();
+    initConsole();
+    bumpTapeCount();
+    logOS("TRIPLE THREAT shell loaded.");
+    requestAnimationFrame(updateMetrics);
+  });
+
+  // export to window for direct console hacking
+  global.MX2LM = MX2LM;
+  global.ASXR = ASXR;
+  global.KUHUL = { Scheduler };
+
+})(window);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,77 @@
+{
+  "version": "1.0.0",
+  "engines": {
+    "cline-java": {
+      "type": "remote-http",
+      "runtime": "cline-java",
+      "host": "http://localhost:8088",
+      "endpoint": "/v1/chat",
+      "role": "orchestrator",
+      "weight": 0.9
+    },
+    "janus-deepseek": {
+      "type": "remote-http",
+      "runtime": "janus",
+      "host": "http://localhost:7001",
+      "endpoint": "/janus",
+      "role": "vision+narrative",
+      "weight": 0.8
+    },
+    "llama-devmicro": {
+      "type": "local-llama",
+      "runtime": "llama",
+      "modelPath": "./devmicro-ai/models/devmicro-llama.gguf",
+      "role": "general-text",
+      "weight": 0.7
+    },
+    "llama-kuhul": {
+      "type": "local-llama",
+      "runtime": "kuhul",
+      "modelPath": "./KUHUL/models/kuhul-core.gguf",
+      "role": "symbolic+scxq2",
+      "weight": 0.9
+    },
+    "qwen-asx": {
+      "type": "http-qwen",
+      "host": "http://localhost:9001",
+      "endpoint": "/qwen",
+      "role": "code+asx",
+      "weight": 0.85
+    },
+    "rombos-qwen-7b": {
+      "type": "local-llama",
+      "runtime": "llama",
+      "modelPath": "./Rombos-Coder-V2.5-Qwen-7b/rombos-qwen7b.gguf",
+      "role": "coder",
+      "weight": 0.9
+    },
+    "ollama-main": {
+      "type": "ollama",
+      "host": "http://localhost:11434",
+      "model": "qwen2.5:7b",
+      "role": "fallback",
+      "weight": 0.6
+    },
+    "deepseek-r1": {
+      "type": "remote-http",
+      "host": "http://localhost:9100",
+      "endpoint": "/deepseek",
+      "role": "reasoning",
+      "weight": 0.95
+    }
+  },
+  "fusion": {
+    "legion": {
+      "models": [
+        "cline-java",
+        "janus-deepseek",
+        "llama-kuhul",
+        "rombos-qwen-7b",
+        "deepseek-r1"
+      ],
+      "mode": "consensus",
+      "strategy": "fusion-math",
+      "rlhfChannel": "global"
+    }
+  }
+}
