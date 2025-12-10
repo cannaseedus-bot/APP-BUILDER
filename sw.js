@@ -14,8 +14,124 @@ let MX2DB = {
   rlhf_traces: new Map(),
   agent_state: new Map(),
   training_history: new Map(),
-  tapes: new Map()
+  tapes: new Map(),
+  feed_entries: new Map()
 };
+
+/* ============================================================
+   FOLDS - JavaScript Runtime Modules
+   Each fold orchestrates K'UHUL kernel execution
+   ============================================================ */
+
+const FOLDS = {
+  "local_rest": {
+    mount: "/local/api",
+    description: "Local REST API fold for CMS OS, RLHF, and MX2DB",
+    version: "1.0.0",
+
+    routes: {
+      "GET /rlhf/case":      "cms_rlhf_list",
+      "GET /rlhf/case/:id":  "cms_rlhf_get",
+      "POST /rlhf/case":     "cms_rlhf_post",
+      "POST /rlhf/score":    "cms_rlhf_update_score",
+
+      "GET /cms/page/:slug": "cms_get_page",
+      "GET /cms/feed/:name": "cms_get_feed",
+
+      "GET /db/:table":          "db_list_rows",
+      "GET /db/:table/:id":      "db_get_row",
+      "POST /db/:table":         "db_insert_row",
+      "PUT /db/:table/:id":      "db_update_row",
+      "DELETE /db/:table/:id":   "db_delete_row",
+
+      "GET /health":         "health_check_extended",
+      "GET /meta/routes":    "meta_routes",
+
+      "POST /feed/import":   "feed_import",
+      "POST /feed/sync":     "feed_sync",
+
+      "GET /mesh/ping":      "mesh_ping",
+      "POST /mesh/register": "mesh_register"
+    },
+
+    /**
+     * Main fold dispatch logic
+     * Bridges REST requests to K'UHUL kernel execution
+     */
+    async dispatch(request) {
+      // request = { method, path, query, body, headers, auth, params }
+      const handler = request.handler;
+
+      // Build payload for K'UHUL kernel
+      const payload = {
+        '@route': handler,
+        '@query': { ...request.query, ...request.params },
+        '@body': request.body
+      };
+
+      const kernelResp = await self.__KUHUL_KERNEL_EXEC__(payload, 'local_rest_fold');
+
+      return {
+        status: kernelResp.status || 200,
+        body: JSON.parse(kernelResp.body || '{"ok":false,"error":"invalid_kernel_response"}')
+      };
+    }
+  }
+};
+
+/* ============================================================
+   FOLD ROUTE PARSER HELPERS
+   Pattern matching for REST routes
+   ============================================================ */
+
+/**
+ * Parse fold route and extract parameters
+ * @param {Object} fold - Fold object with routes
+ * @param {string} method - HTTP method
+ * @param {string} path - Request path (without fold mount)
+ * @returns {Object|null} - { handler, params } or null
+ */
+function parseFoldRoute(fold, method, path) {
+  for (const key of Object.keys(fold.routes)) {
+    const [m, pattern] = key.split(' ');
+
+    if (m !== method) continue;
+
+    const match = matchPattern(pattern, path);
+    if (match) {
+      return {
+        handler: fold.routes[key],
+        params: match
+      };
+    }
+  }
+  return null;
+}
+
+/**
+ * Match URL pattern with actual path
+ * Supports :param syntax for path parameters
+ * @param {string} pattern - Route pattern (e.g., "/db/:table/:id")
+ * @param {string} actual - Actual path (e.g., "/db/users/123")
+ * @returns {Object|null} - Extracted params or null
+ */
+function matchPattern(pattern, actual) {
+  const p = pattern.split('/').filter(Boolean);
+  const a = actual.split('/').filter(Boolean);
+
+  if (p.length !== a.length) return null;
+
+  const params = {};
+
+  for (let i = 0; i < p.length; i++) {
+    if (p[i].startsWith(':')) {
+      params[p[i].slice(1)] = a[i];
+    } else if (p[i] !== a[i]) {
+      return null;
+    }
+  }
+  return params;
+}
 
 /* ============================================================
    K'UHUL ROM PARSER
@@ -181,15 +297,23 @@ self.addEventListener('activate', async (event) => {
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
+  const path = url.pathname;
+  const method = event.request.method;
+
+  // Local REST API bypass (FOLDS architecture)
+  if (path.startsWith('/local/api')) {
+    event.respondWith(handleLocalRestApi(event.request));
+    return;
+  }
 
   // RLHF Forum CMS shard routes
-  if (url.pathname.startsWith('/cms/rlhf/')) {
+  if (path.startsWith('/cms/rlhf/')) {
     event.respondWith(handleCmsRlhfRequest(event.request));
     return;
   }
 
   // Check if this is a REST mesh route
-  const route = manifest?.rest_mesh?.routes?.[url.pathname];
+  const route = manifest?.rest_mesh?.routes?.[path];
 
   if (route) {
     event.respondWith(handleRestMeshRoute(url, event.request, route));
@@ -197,6 +321,95 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(handleStaticAsset(event.request));
   }
 });
+
+/* ============================================================
+   LOCAL REST API HANDLER (FOLDS Architecture)
+   ============================================================ */
+
+async function handleLocalRestApi(request) {
+  const url = new URL(request.url);
+  const path = url.pathname;
+  const method = request.method;
+
+  try {
+    const fold = FOLDS["local_rest"];
+
+    // Remove fold mount from path for pattern matching
+    const relativePath = path.replace(fold.mount, '');
+
+    // Parse route and extract parameters
+    const parsed = parseFoldRoute(fold, method, relativePath);
+
+    if (!parsed) {
+      return new Response(JSON.stringify({
+        ok: false,
+        error: 'Route not found',
+        path: path,
+        method: method,
+        available_routes: Object.keys(fold.routes)
+      }), {
+        status: 404,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Fold': 'local_rest',
+          'X-Kernel': 'sw.khl Ω.∞.Ω'
+        }
+      });
+    }
+
+    // Parse request body if present
+    let reqBody = null;
+    if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
+      try {
+        reqBody = await request.json();
+      } catch (e) {
+        reqBody = null;
+      }
+    }
+
+    // Build REST request object
+    const restRequest = {
+      method: method,
+      path: path,
+      query: Object.fromEntries(url.searchParams),
+      body: reqBody,
+      headers: Object.fromEntries(request.headers),
+      auth: {}, // Future: SecuroLink/JWT validation goes here
+      params: parsed.params,
+      handler: parsed.handler
+    };
+
+    // Dispatch to fold
+    const response = await fold.dispatch(restRequest);
+
+    return new Response(JSON.stringify(response.body, null, 2), {
+      status: response.status || 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Fold': 'local_rest',
+        'X-Handler': parsed.handler,
+        'X-Kernel': 'sw.khl Ω.∞.Ω',
+        'X-Law': manifest?.atomic_law || 'ASX'
+      }
+    });
+
+  } catch (error) {
+    console.error('⟁ Local REST API error:', error);
+    return new Response(JSON.stringify({
+      ok: false,
+      error: error.message,
+      stack: error.stack,
+      path: path,
+      method: method
+    }, null, 2), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Fold': 'local_rest'
+      }
+    });
+  }
+}
 
 /* ============================================================
    REST MESH ROUTE HANDLERS
@@ -927,6 +1140,77 @@ self.__KUHUL_KERNEL_EXEC__ = async function(payload, caller) {
           results: results,
           count: results.length
         };
+        break;
+      }
+
+      // LOCAL REST API Fold Aliases
+      case 'cms_get_page': {
+        // Alias for cms_page_get - supports slug-based lookup
+        const slug = query.slug || query.id || query.page_id;
+        const pages = manifest?.site_content?.pages || {};
+
+        // Try direct lookup first, then search by slug
+        let pageData = pages[slug];
+        if (!pageData) {
+          // Search by slug in @route
+          pageData = Object.values(pages).find(p =>
+            p['@route'] === `/${slug}` ||
+            p['@route'] === slug ||
+            p['@id'] === slug
+          );
+        }
+
+        if (!pageData) {
+          result = {
+            ok: false,
+            error: 'Page not found',
+            slug: slug,
+            available: Object.keys(pages)
+          };
+        } else {
+          result = {
+            ok: true,
+            mode: 'page',
+            '@id': pageData['@id'],
+            '@type': pageData['@type'],
+            '@control': pageData['@control'],
+            '@variable': pageData['@variable'],
+            content: pageData['@content'],
+            route: pageData['@route']
+          };
+        }
+        break;
+      }
+
+      case 'cms_get_feed': {
+        // Get feed/tape content by name
+        const feedName = query.name || query.feed_name;
+        const tapes = manifest?.site_content?.tapes_rest || {};
+
+        let feedData = tapes[feedName];
+        if (!feedData) {
+          // Try searching by label
+          feedData = Object.values(manifest?.tapes || {}).find(t =>
+            t.label === feedName ||
+            t.id === feedName
+          );
+        }
+
+        if (!feedData) {
+          result = {
+            ok: false,
+            error: 'Feed not found',
+            feed_name: feedName,
+            available: Object.keys(tapes)
+          };
+        } else {
+          result = {
+            ok: true,
+            mode: 'feed',
+            feed_name: feedName,
+            feed_data: feedData
+          };
+        }
         break;
       }
 
