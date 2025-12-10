@@ -35,6 +35,31 @@ function parseKuhlRom(khlSource) {
     const manifestJson = manifestMatch[1];
     const manifest = JSON.parse(manifestJson);
     console.log('⟁ Manifest AST extracted from ROM:', manifest.n);
+
+    // Extract CMS RLHF Database from ATOMIC_BLOCK_DATABASE_RLHF
+    const rlhfDbMatch = khlSource.match(/⟁ ATOMIC_BLOCK_DATABASE_RLHF ⟁\s*\n\s*@shard_id:\s*"([^"]+)"[\s\S]*?@sample_data:\s*(\[[^\]]*\{[\s\S]*?\}\s*\])/);
+
+    if (rlhfDbMatch) {
+      try {
+        const sampleDataJson = rlhfDbMatch[2];
+        const sampleData = JSON.parse(sampleDataJson);
+
+        // Extract categories
+        const categoriesMatch = khlSource.match(/@categories:\s*(\[[^\]]*\])/);
+        const categories = categoriesMatch ? JSON.parse(categoriesMatch[1]) : [];
+
+        manifest.cms_rlhf = {
+          shard_id: rlhfDbMatch[1],
+          sample_data: sampleData,
+          categories: categories
+        };
+
+        console.log('⟁ CMS RLHF Database extracted:', sampleData.length, 'cases');
+      } catch (e) {
+        console.warn('⟁ Failed to parse CMS RLHF database:', e);
+      }
+    }
+
     return manifest;
   } catch (e) {
     console.error('⟁ Failed to parse manifest_ast JSON:', e);
@@ -108,6 +133,12 @@ self.addEventListener('activate', async (event) => {
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
+
+  // RLHF Forum CMS shard routes
+  if (url.pathname.startsWith('/cms/rlhf/')) {
+    event.respondWith(handleCmsRlhfRequest(event.request));
+    return;
+  }
 
   // Check if this is a REST mesh route
   const route = manifest?.rest_mesh?.routes?.[url.pathname];
@@ -425,6 +456,242 @@ async function executeBasherCommand(command) {
     return { ok: false, error: error.message };
   }
 }
+
+/* ============================================================
+   CMS RLHF FORUM HANDLER
+   ============================================================ */
+
+async function handleCmsRlhfRequest(request) {
+  const url = new URL(request.url);
+  const path = url.pathname;
+  const method = request.method;
+  const query = Object.fromEntries(url.searchParams.entries());
+
+  let body = null;
+  if (method === 'POST') {
+    try {
+      body = await request.json();
+    } catch (e) {
+      return new Response(JSON.stringify({ ok: false, error: 'Invalid JSON body' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+  }
+
+  const payload = {
+    '@kernel': 'kuhul',
+    '@app': 'cms_rlhf_forum_v2',
+    '@route': mapPathToRlhfRoute(path, method),
+    '@method': method,
+    '@query': query,
+    '@body': body
+  };
+
+  const kernelResult = await self.__KUHUL_KERNEL_EXEC__(payload, 'sw.js');
+
+  return new Response(kernelResult.body || JSON.stringify({ status: 'error' }), {
+    status: kernelResult.status || 200,
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+
+function mapPathToRlhfRoute(path, method) {
+  if (method === 'GET' && path === '/cms/rlhf/list') return 'cms_rlhf_list';
+  if (method === 'GET' && path === '/cms/rlhf/get') return 'cms_rlhf_get';
+  if (method === 'GET' && path === '/cms/rlhf/search') return 'cms_rlhf_search';
+  if (method === 'GET' && path === '/cms/rlhf/stats') return 'cms_rlhf_stats';
+  if (method === 'POST' && path === '/cms/rlhf/post') return 'cms_rlhf_post';
+  if (method === 'POST' && path === '/cms/rlhf/update_score') return 'cms_rlhf_update_score';
+  return 'cms_rlhf_list'; // default fallback
+}
+
+/* ============================================================
+   K'UHUL KERNEL EXECUTOR
+   Bridge to C@@L BLOCK functions in sw.khl ROM
+   ============================================================ */
+
+self.__KUHUL_KERNEL_EXEC__ = async function(payload, caller) {
+  const route = payload['@route'];
+  const query = payload['@query'] || {};
+  const body = payload['@body'] || {};
+
+  console.log('⟁ K\'UHUL EXEC:', route, 'from', caller);
+
+  try {
+    let result;
+
+    switch (route) {
+      // CMS RLHF Routes
+      case 'cms_rlhf_list': {
+        const label = query.label || null;
+        const limit = parseInt(query.limit) || 50;
+        const offset = parseInt(query.offset) || 0;
+
+        // Simulate C@@L BLOCK execution: cms_rlhf_list
+        // In real implementation, this would execute the K'UHUL code
+        // For now, we directly access the embedded manifest data
+
+        const allCases = manifest?.cms_rlhf?.sample_data || [];
+        let filteredCases = allCases;
+
+        if (label) {
+          filteredCases = allCases.filter(c => c.label === label);
+        }
+
+        const paginated = filteredCases.slice(offset, offset + limit);
+
+        result = {
+          ok: true,
+          mode: 'list',
+          shard: 'cms_rlhf_forum_v2',
+          items: paginated,
+          total: filteredCases.length
+        };
+        break;
+      }
+
+      case 'cms_rlhf_get': {
+        const caseId = query.id;
+        const allCases = manifest?.cms_rlhf?.sample_data || [];
+        const found = allCases.find(c => c.case_id === caseId);
+
+        if (found) {
+          result = {
+            ok: true,
+            mode: 'get',
+            item: found
+          };
+        } else {
+          result = {
+            ok: false,
+            error: 'Case not found',
+            case_id: caseId
+          };
+        }
+        break;
+      }
+
+      case 'cms_rlhf_post': {
+        // Create new RLHF case
+        const newCase = {
+          case_id: `rlhf_${Date.now()}`,
+          title: body.title || 'Untitled',
+          label: body.label || 'General Discussion',
+          author: body.author || 'anonymous',
+          body: body.body || '',
+          snippet: (body.body || '').substring(0, 150),
+          created_at: Date.now(),
+          updated_at: Date.now(),
+          comment_count: 0,
+          score: 0,
+          metadata: body.metadata || {}
+        };
+
+        // Store in MX2DB
+        MX2DB.rlhf_traces.set(newCase.case_id, newCase);
+
+        result = {
+          ok: true,
+          mode: 'post',
+          case_id: newCase.case_id,
+          message: 'RLHF case created'
+        };
+        break;
+      }
+
+      case 'cms_rlhf_search': {
+        const searchQuery = query.q || '';
+        const allCases = manifest?.cms_rlhf?.sample_data || [];
+
+        // Simple tokenization and search
+        const tokens = searchQuery.toLowerCase().split(/\s+/);
+        const matches = allCases.filter(c => {
+          const searchText = `${c.title} ${c.body} ${c.label}`.toLowerCase();
+          return tokens.some(token => searchText.includes(token));
+        });
+
+        result = {
+          ok: true,
+          mode: 'search',
+          query: searchQuery,
+          items: matches,
+          count: matches.length
+        };
+        break;
+      }
+
+      case 'cms_rlhf_stats': {
+        const allCases = manifest?.cms_rlhf?.sample_data || [];
+        const categories = manifest?.cms_rlhf?.categories || [];
+
+        const categoryStats = {};
+        categories.forEach(cat => {
+          categoryStats[cat] = allCases.filter(c => c.label === cat).length;
+        });
+
+        result = {
+          ok: true,
+          mode: 'stats',
+          total_cases: allCases.length,
+          categories: categoryStats,
+          avg_score: allCases.reduce((sum, c) => sum + (c.score || 0), 0) / allCases.length
+        };
+        break;
+      }
+
+      case 'cms_rlhf_update_score': {
+        const caseId = body.case_id;
+        const newScore = body.score;
+
+        // Try to find in MX2DB first
+        const stored = MX2DB.rlhf_traces.get(caseId);
+        if (stored) {
+          stored.score = newScore;
+          stored.updated_at = Date.now();
+          MX2DB.rlhf_traces.set(caseId, stored);
+
+          result = {
+            ok: true,
+            mode: 'update_score',
+            case_id: caseId,
+            new_score: newScore
+          };
+        } else {
+          result = {
+            ok: false,
+            error: 'Case not found in MX2DB',
+            case_id: caseId
+          };
+        }
+        break;
+      }
+
+      default:
+        result = {
+          ok: false,
+          error: 'Unknown K\'UHUL route',
+          route: route
+        };
+    }
+
+    return {
+      status: result.ok ? 200 : 400,
+      body: JSON.stringify(result, null, 2)
+    };
+
+  } catch (error) {
+    console.error('⟁ K\'UHUL EXEC ERROR:', error);
+    return {
+      status: 500,
+      body: JSON.stringify({
+        ok: false,
+        error: error.message,
+        stack: error.stack
+      })
+    };
+  }
+};
 
 /* ============================================================
    STATIC ASSET HANDLER (Cache-First Strategy)

@@ -1,0 +1,300 @@
+{
+  "@type": "atomic_xjson",
+  "@version": "1.0.0",
+  "@shard": "cms_rlhf_forum_v2",
+  "@kernel": "sw.khl Ω.∞.Ω",
+  "@quantum_state": "|RLHF⟩⊗|CMS⟩⊗|ATOMIC_UI⟩",
+
+  "manifest": {
+    "id": "rlhf_forum",
+    "label": "RLHF Forum",
+    "role": "cms_rlhf_ui",
+    "description": "Reinforcement Learning from Human Feedback Forum - CMS Shard Interface",
+    "entry": "/rlhf_forum.atomic.xjson",
+    "boot": false
+  },
+
+  "bindings": {
+    "@kernel_routes": {
+      "list": "/cms/rlhf/list",
+      "get": "/cms/rlhf/get",
+      "post": "/cms/rlhf/post",
+      "search": "/cms/rlhf/search",
+      "stats": "/cms/rlhf/stats",
+      "update_score": "/cms/rlhf/update_score"
+    },
+    "@css_source": "manifest.atomic.css_vars",
+    "@theme": "emerald-ghost"
+  },
+
+  "ui": {
+    "@type": "atomic_component_tree",
+    "@root": "rlhf_forum_container",
+
+    "components": {
+      "rlhf_forum_container": {
+        "@element": "div",
+        "@class": "flex flex-col h-screen bg-slate-950",
+        "@children": ["forum_header", "forum_main", "forum_footer"]
+      },
+
+      "forum_header": {
+        "@element": "header",
+        "@class": "p-4 border-b border-emerald-500/30",
+        "@children": ["header_title", "search_bar"]
+      },
+
+      "header_title": {
+        "@element": "h1",
+        "@class": "text-2xl font-bold text-emerald-400 mb-2",
+        "@text": "⟁ RLHF Forum v2"
+      },
+
+      "search_bar": {
+        "@element": "div",
+        "@class": "flex gap-2",
+        "@children": ["search_input", "search_button"]
+      },
+
+      "search_input": {
+        "@element": "input",
+        "@type": "text",
+        "@placeholder": "Search cases...",
+        "@class": "flex-1 px-3 py-2 bg-slate-900 border border-emerald-500/30 rounded text-emerald-100",
+        "@bind": {
+          "input": "handleSearch",
+          "model": "state.searchQuery"
+        }
+      },
+
+      "search_button": {
+        "@element": "button",
+        "@class": "px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-500",
+        "@text": "Search",
+        "@bind": {
+          "click": "executeSearch"
+        }
+      },
+
+      "forum_main": {
+        "@element": "main",
+        "@class": "flex-1 overflow-y-auto",
+        "@children": ["sidebar", "content_area"]
+      },
+
+      "sidebar": {
+        "@element": "aside",
+        "@class": "w-64 p-4 bg-slate-900 border-r border-emerald-500/30",
+        "@children": ["categories_title", "categories_list", "stats_section"]
+      },
+
+      "categories_title": {
+        "@element": "h2",
+        "@class": "text-lg font-semibold text-emerald-400 mb-3",
+        "@text": "Categories"
+      },
+
+      "categories_list": {
+        "@element": "ul",
+        "@class": "space-y-2",
+        "@bind": {
+          "data_source": "/cms/rlhf/stats",
+          "data_path": "categories",
+          "render": "renderCategoryItem"
+        }
+      },
+
+      "stats_section": {
+        "@element": "div",
+        "@class": "mt-6 p-3 bg-slate-800 rounded",
+        "@children": ["stats_title", "stats_content"],
+        "@bind": {
+          "data_source": "/cms/rlhf/stats"
+        }
+      },
+
+      "stats_title": {
+        "@element": "h3",
+        "@class": "text-sm font-semibold text-emerald-400 mb-2",
+        "@text": "Forum Stats"
+      },
+
+      "stats_content": {
+        "@element": "div",
+        "@class": "text-xs text-slate-300 space-y-1",
+        "@bind": {
+          "render": "renderStats"
+        }
+      },
+
+      "content_area": {
+        "@element": "div",
+        "@class": "flex-1 p-6",
+        "@children": ["content_header", "cases_list", "pagination"]
+      },
+
+      "content_header": {
+        "@element": "div",
+        "@class": "flex justify-between items-center mb-4",
+        "@children": ["content_title", "new_case_button"]
+      },
+
+      "content_title": {
+        "@element": "h2",
+        "@class": "text-xl font-semibold text-emerald-400",
+        "@text": "Recent Cases"
+      },
+
+      "new_case_button": {
+        "@element": "button",
+        "@class": "px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-500",
+        "@text": "+ New Case",
+        "@bind": {
+          "click": "showNewCaseModal"
+        }
+      },
+
+      "cases_list": {
+        "@element": "div",
+        "@class": "space-y-4",
+        "@bind": {
+          "data_source": "/cms/rlhf/list",
+          "data_path": "items",
+          "render": "renderCaseCard"
+        }
+      },
+
+      "pagination": {
+        "@element": "div",
+        "@class": "mt-6 flex justify-center gap-2",
+        "@bind": {
+          "render": "renderPagination"
+        }
+      },
+
+      "forum_footer": {
+        "@element": "footer",
+        "@class": "p-3 border-t border-emerald-500/30 text-center text-sm text-slate-500",
+        "@text": "ASX Ghost OS | K'UHUL Kernel Ω.∞.Ω | CMS RLHF Forum v2"
+      }
+    }
+  },
+
+  "state": {
+    "@type": "reactive_state",
+    "@storage": "asx_ram",
+
+    "searchQuery": "",
+    "currentCategory": null,
+    "currentPage": 1,
+    "limit": 20,
+    "selectedCase": null,
+    "showModal": false,
+    "cases": [],
+    "stats": {}
+  },
+
+  "actions": {
+    "handleSearch": {
+      "@trigger": "input",
+      "@handler": "debounce(updateSearchQuery, 300)"
+    },
+
+    "executeSearch": {
+      "@trigger": "click",
+      "@handler": "async function() { await fetchCases({ q: state.searchQuery }); }"
+    },
+
+    "selectCategory": {
+      "@trigger": "click",
+      "@handler": "async function(category) { state.currentCategory = category; await fetchCases({ label: category }); }"
+    },
+
+    "showNewCaseModal": {
+      "@trigger": "click",
+      "@handler": "function() { state.showModal = true; }"
+    },
+
+    "submitNewCase": {
+      "@trigger": "submit",
+      "@handler": "async function(formData) { await createCase(formData); state.showModal = false; }"
+    },
+
+    "updateScore": {
+      "@trigger": "click",
+      "@handler": "async function(caseId, score) { await updateCaseScore(caseId, score); }"
+    },
+
+    "fetchCases": {
+      "@type": "kernel_call",
+      "@route": "/cms/rlhf/list",
+      "@method": "GET",
+      "@handler": "function(params) { return fetch(this.route + '?' + new URLSearchParams(params)).then(r => r.json()); }"
+    },
+
+    "createCase": {
+      "@type": "kernel_call",
+      "@route": "/cms/rlhf/post",
+      "@method": "POST",
+      "@handler": "function(data) { return fetch(this.route, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(r => r.json()); }"
+    },
+
+    "updateCaseScore": {
+      "@type": "kernel_call",
+      "@route": "/cms/rlhf/update_score",
+      "@method": "POST",
+      "@handler": "function(caseId, score) { return fetch(this.route, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ case_id: caseId, score }) }).then(r => r.json()); }"
+    }
+  },
+
+  "renderers": {
+    "renderCategoryItem": {
+      "@template": "<li class='category-item'><button class='w-full text-left px-3 py-2 rounded hover:bg-slate-800 text-emerald-100' data-category='{{category}}'>{{category}} ({{count}})</button></li>",
+      "@bind_click": "selectCategory"
+    },
+
+    "renderStats": {
+      "@template": "<div><p>Total Cases: {{total_cases}}</p><p>Avg Score: {{avg_score.toFixed(2)}}</p></div>"
+    },
+
+    "renderCaseCard": {
+      "@template": `
+        <div class='case-card p-4 bg-slate-900 border border-emerald-500/20 rounded hover:border-emerald-500/50 transition'>
+          <div class='flex justify-between items-start mb-2'>
+            <h3 class='text-lg font-semibold text-emerald-400'>{{title}}</h3>
+            <span class='text-xs px-2 py-1 bg-emerald-600/30 text-emerald-300 rounded'>{{label}}</span>
+          </div>
+          <p class='text-sm text-slate-400 mb-3'>{{snippet}}</p>
+          <div class='flex justify-between items-center text-xs text-slate-500'>
+            <span>by {{author}}</span>
+            <div class='flex items-center gap-2'>
+              <span>Score: {{score.toFixed(2)}}</span>
+              <span>💬 {{comment_count}}</span>
+            </div>
+          </div>
+        </div>
+      `
+    },
+
+    "renderPagination": {
+      "@template": "<div class='flex gap-2'><button class='px-3 py-1 bg-slate-800 text-emerald-400 rounded hover:bg-slate-700'>← Prev</button><button class='px-3 py-1 bg-slate-800 text-emerald-400 rounded hover:bg-slate-700'>Next →</button></div>"
+    }
+  },
+
+  "lifecycle": {
+    "onMount": {
+      "@handler": "async function() { await fetchCases({}); await fetchStats(); }"
+    },
+
+    "onUnmount": {
+      "@handler": "function() { state.searchQuery = ''; state.currentCategory = null; }"
+    }
+  },
+
+  "compression": {
+    "@enabled": false,
+    "@algorithm": "scxq2",
+    "@threshold": 5000,
+    "@comment": "SCXQ2 compression activates when file exceeds 5000 lines"
+  }
+}

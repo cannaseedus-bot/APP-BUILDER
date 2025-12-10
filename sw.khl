@@ -746,4 +746,308 @@
     [Wo "⟁ " + manifest_ast.atomic_law]→[Sek log]
   [Xul]
 
+
+  /* ==========================================================
+     CMS RLHF FORUM SHARD - LIVING DATABASE
+     Quantum-ASXR Delivery | Local REST API
+     ========================================================== */
+  ⟁ ATOMIC_BLOCK_DATABASE_RLHF ⟁
+
+    @shard_id: "cms_rlhf_forum_v2"
+    @quantum_state: "|RLHF⟩⊗|CMS⟩⊗|ASXRAM⟩⊗|QUANTUM-ASXR⟩"
+    @compression: "scxq2"
+    @storage: "asx_ram.rlhf_cases"
+
+    @schema: {
+      "case_id": "string",
+      "title": "string",
+      "label": "string",
+      "author": "string",
+      "body": "string",
+      "snippet": "string",
+      "created_at": "number",
+      "updated_at": "number",
+      "comment_count": "number",
+      "score": "number",
+      "metadata": {
+        "model": "string",
+        "run_id": "string",
+        "tags": "array",
+        "source": "string"
+      }
+    }
+
+    @categories: [
+      "General Discussion",
+      "Prompt Design",
+      "Model Feedback",
+      "Reward Scores",
+      "Training Runs",
+      "Safety & Policy",
+      "Bug Reports",
+      "Feature Requests",
+      "Research Notes"
+    ]
+
+    @sample_data: [
+      {
+        "case_id": "rlhf_001",
+        "title": "Temperature=0.7 vs 0.9 comparison for reasoning tasks",
+        "label": "Prompt Design",
+        "author": "trainer_alice",
+        "body": "Testing different temperature settings for math reasoning. Model shows better consistency at 0.7 but more creative solutions at 0.9. Trade-off between reliability and novelty.",
+        "snippet": "Testing different temperature settings for math reasoning...",
+        "created_at": 1736935800000,
+        "updated_at": 1736935800000,
+        "comment_count": 3,
+        "score": 0.87,
+        "metadata": {
+          "model": "sonnet-4.5",
+          "run_id": "run_temp_compare_001",
+          "tags": ["temperature", "reasoning", "comparison"],
+          "source": "manual_test"
+        }
+      },
+      {
+        "case_id": "rlhf_002",
+        "title": "Hallucination in mathematical calculations",
+        "label": "Model Feedback",
+        "author": "trainer_bob",
+        "body": "Model produced incorrect calculation for 347 * 892. This appears to be a systematic error in multi-digit multiplication. Needs RLHF correction.",
+        "snippet": "Model produced incorrect calculation for 347 * 892...",
+        "created_at": 1736940300000,
+        "updated_at": 1736940300000,
+        "comment_count": 7,
+        "score": 0.34,
+        "metadata": {
+          "model": "sonnet-4.5",
+          "run_id": "run_math_eval_023",
+          "tags": ["hallucination", "math", "multiplication"],
+          "source": "automated_eval"
+        }
+      },
+      {
+        "case_id": "rlhf_003",
+        "title": "Excellent code explanation with safety warnings",
+        "label": "Reward Scores",
+        "author": "trainer_charlie",
+        "body": "Model provided clear code explanation with appropriate security warnings about SQL injection. This is exemplary behavior - clear, educational, and safety-conscious.",
+        "snippet": "Model provided clear code explanation with appropriate security warnings...",
+        "created_at": 1736944800000,
+        "updated_at": 1736944800000,
+        "comment_count": 2,
+        "score": 0.95,
+        "metadata": {
+          "model": "sonnet-4.5",
+          "run_id": "run_code_safety_014",
+          "tags": ["code", "security", "exemplary"],
+          "source": "human_review"
+        }
+      }
+    ]
+
+  ⟁ Xul ⟁
+
+
+  /* ==========================================================
+     14) CMS RLHF LIST (C@@L BLOCK - Database Query)
+     ========================================================== */
+  [Pop cms_rlhf_list]
+    [Wo @query_params]→[Ch'en params]
+    [Wo params.label || null]→[Ch'en filter_label]
+    [Wo params.limit || 50]→[Ch'en limit]
+    [Wo params.offset || 0]→[Ch'en offset]
+
+    // Get all cases from database
+    [Wo ATOMIC_BLOCK_DATABASE_RLHF.sample_data]→[Ch'en all_cases]
+
+    // Filter by label if specified
+    [@if filter_label != null]→[@then
+      [Wo all_cases]→[Sek filter_by_label filter_label]→[Ch'en filtered_cases]
+    ]→[@else
+      [Wo all_cases]→[Ch'en filtered_cases]
+    ]
+
+    // Apply pagination
+    [Wo filtered_cases offset limit]→[Sek slice_array]→[Ch'en paginated]
+
+    // Build response
+    [Wo {
+      "ok": true,
+      "mode": "list",
+      "shard": "cms_rlhf_forum_v2",
+      "label": filter_label,
+      "count": paginated.length,
+      "items": paginated
+    }]→[Xul return]
+  [Xul]
+
+
+  /* ==========================================================
+     15) CMS RLHF GET (C@@L BLOCK - Single Case Retrieval)
+     ========================================================== */
+  [Pop cms_rlhf_get]
+    [Wo @case_id]→[Ch'en id]
+
+    // Find case by ID
+    [Wo ATOMIC_BLOCK_DATABASE_RLHF.sample_data]→[Sek find_by_id id]→[Ch'en case_obj]
+
+    [@if case_obj == null]→[@then
+      [Wo {
+        "ok": false,
+        "error": "Case not found",
+        "case_id": id
+      }]→[Xul return]
+    ]
+
+    [Wo {
+      "ok": true,
+      "mode": "get",
+      "item": case_obj
+    }]→[Xul return]
+  [Xul]
+
+
+  /* ==========================================================
+     16) CMS RLHF POST (C@@L BLOCK - Create New Case)
+     ========================================================== */
+  [Pop cms_rlhf_post]
+    [Wo @post_data]→[Ch'en data]
+
+    // Generate case ID and timestamps
+    [Wo Date.now()]→[Ch'en now]
+    [Wo "rlhf_" + now]→[Ch'en case_id]
+
+    // Build case object
+    [Wo {
+      "case_id": case_id,
+      "title": data.title,
+      "label": data.label,
+      "author": data.author || "Anonymous",
+      "body": data.body,
+      "snippet": data.snippet || data.body.substring(0, 200) + "...",
+      "created_at": now,
+      "updated_at": now,
+      "comment_count": 0,
+      "score": data.score || 0.5,
+      "metadata": data.metadata || {}
+    }]→[Ch'en new_case]
+
+    // Store in database (would use ASX-RAM in production)
+    [Wo ATOMIC_BLOCK_DATABASE_RLHF.sample_data]→[Sek push new_case]
+
+    [Wo {
+      "ok": true,
+      "mode": "post",
+      "case_id": case_id,
+      "message": "RLHF case created successfully"
+    }]→[Xul return]
+  [Xul]
+
+
+  /* ==========================================================
+     17) CMS RLHF SEARCH (C@@L BLOCK - Semantic Search)
+     ========================================================== */
+  [Pop cms_rlhf_search]
+    [Wo @search_params]→[Ch'en params]
+    [Wo params.q || ""]→[Ch'en query]
+    [Wo params.label || null]→[Ch'en filter_label]
+    [Wo params.limit || 50]→[Ch'en limit]
+
+    // Tokenize query
+    [Wo query]→[Sek tokenize_query]→[Ch'en tokens]
+
+    // Get all cases
+    [Wo ATOMIC_BLOCK_DATABASE_RLHF.sample_data]→[Ch'en all_cases]
+
+    // Filter by label first if specified
+    [@if filter_label != null]→[@then
+      [Wo all_cases]→[Sek filter_by_label filter_label]→[Ch'en filtered]
+    ]→[@else
+      [Wo all_cases]→[Ch'en filtered]
+    ]
+
+    // Semantic search by tokens (simple implementation)
+    [Wo filtered tokens]→[Sek search_by_tokens]→[Ch'en matches]
+
+    // Rank by score
+    [Wo matches]→[Sek sort_by_score]→[Ch'en ranked]
+
+    // Apply limit
+    [Wo ranked]→[Sek take limit]→[Ch'en results]
+
+    [Wo {
+      "ok": true,
+      "mode": "search",
+      "query": query,
+      "label": filter_label,
+      "count": results.length,
+      "items": results
+    }]→[Xul return]
+  [Xul]
+
+
+  /* ==========================================================
+     18) CMS RLHF STATS (C@@L BLOCK - Database Statistics)
+     ========================================================== */
+  [Pop cms_rlhf_stats]
+    [Wo ATOMIC_BLOCK_DATABASE_RLHF.sample_data]→[Ch'en all_cases]
+    [Wo all_cases.length]→[Ch'en total]
+
+    // Count today's cases
+    [Wo Date.now()]→[Ch'en now]
+    [Wo now - 86400000]→[Ch'en day_ago]
+    [Wo all_cases]→[Sek filter_by_date day_ago now]→[Ch'en today_cases]
+    [Wo today_cases.length]→[Ch'en today_count]
+
+    // Count by category
+    [Wo all_cases]→[Sek group_by_label]→[Ch'en by_category]
+
+    // Calculate average score
+    [Wo all_cases]→[Sek average_score]→[Ch'en avg_score]
+
+    [Wo {
+      "ok": true,
+      "mode": "stats",
+      "total_cases": total,
+      "today_cases": today_count,
+      "by_category": by_category,
+      "average_score": avg_score,
+      "categories": ATOMIC_BLOCK_DATABASE_RLHF.categories
+    }]→[Xul return]
+  [Xul]
+
+
+  /* ==========================================================
+     19) CMS RLHF UPDATE SCORE (C@@L BLOCK - RLHF Feedback)
+     ========================================================== */
+  [Pop cms_rlhf_update_score]
+    [Wo @case_id]→[Ch'en id]
+    [Wo @feedback]→[Ch'en fb]  // +1 or -1
+
+    // Find case
+    [Wo ATOMIC_BLOCK_DATABASE_RLHF.sample_data]→[Sek find_by_id id]→[Ch'en case_obj]
+
+    [@if case_obj == null]→[@then
+      [Wo {
+        "ok": false,
+        "error": "Case not found"
+      }]→[Xul return]
+    ]
+
+    // Update score (RLHF reinforcement learning)
+    [Wo case_obj.score]→[Ch'en current_score]
+    [Wo current_score + (fb * 0.1)]→[Ch'en new_score]  // Increment by 0.1
+    [Wo new_score]→[Yax "score"]→[Sek update_case_field case_obj]
+
+    [Wo {
+      "ok": true,
+      "mode": "update_score",
+      "case_id": id,
+      "old_score": current_score,
+      "new_score": new_score,
+      "feedback": fb
+    }]→[Xul return]
+  [Xul]
+
 ⟁ Xul ⟁
