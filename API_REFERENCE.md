@@ -18,11 +18,12 @@
 5. [RLHF APIs (local_rest fold)](#rlhf-apis-local_rest-fold)
 6. [Feed & Import APIs](#feed--import-apis)
 7. [@Gram Learning APIs](#gram-learning-apis)
-8. [Mesh & Coordination APIs](#mesh--coordination-apis)
-9. [Runtime & Execution APIs](#runtime--execution-apis)
-10. [Tape Management APIs](#tape-management-apis)
-11. [ASX-RAM APIs](#asx-ram-apis)
-12. [SCXQ2 Compression APIs](#scxq2-compression-apis)
+8. [OMNIBRAIN Ω.0.0 - Triple Recursion APIs](#omnibrain-ω00---triple-recursion-apis)
+9. [Mesh & Coordination APIs](#mesh--coordination-apis)
+10. [Runtime & Execution APIs](#runtime--execution-apis)
+11. [Tape Management APIs](#tape-management-apis)
+12. [ASX-RAM APIs](#asx-ram-apis)
+13. [SCXQ2 Compression APIs](#scxq2-compression-apis)
 
 ---
 
@@ -461,6 +462,340 @@ curl -H "x-api-key: dev-trainer-key" \
 
 ---
 
+## 🧠 OMNIBRAIN Ω.0.0 - Triple Recursion APIs
+
+**Architecture:** XJSON → KUHUL → AST → Better XJSON (∞ loop)
+
+The OMNIBRAIN engine provides infinite triple recursion that continuously improves code through the XJSON-KUHUL-AST cycle, asymptotically approaching perfect unification.
+
+### POST `/omnibrain/cycle`
+**Execute one complete triple recursion iteration**
+- **Fold:** omnibrain
+- **Handler:** omnibrain_cycle
+- **Auth:** admin
+- **Body:** `{xjson_input}`
+- **Returns:** Next generation XJSON + cycle metrics
+
+```bash
+curl -X POST http://localhost:8080/omnibrain/cycle \
+  -H "content-type: application/json" \
+  -H "x-api-key: dev-admin-key" \
+  -d '{
+    "xjson_input": {
+      "@xjson_type": "user_code",
+      "@kuhul_binding": "fn.execute.code",
+      "complexity": 1.0,
+      "structure": {"code": "function add(a,b){return a+b;}"}
+    }
+  }'
+```
+
+**Response:**
+```json
+{
+  "ok": true,
+  "mode": "cycle_complete",
+  "cycle_time_ms": 47,
+  "input_generation": 0,
+  "output_generation": 1,
+  "compression_ratio": 0.85,
+  "unification_improvement": 0.15,
+  "next_xjson": {
+    "@xjson_type": "recursion_improved",
+    "@generation": 1,
+    "structure": {...},
+    "compression_ratio": 0.85
+  },
+  "phases": {
+    "analysis": {...},
+    "kuhul_blocks": 3,
+    "ast_nodes": 5,
+    "compilation": "success"
+  }
+}
+```
+
+---
+
+### POST `/omnibrain/analyze`
+**Analyze XJSON for recursion potential**
+- **Fold:** omnibrain
+- **Handler:** omnibrain_analyze_xjson
+- **Auth:** trainer, admin
+- **Body:** `{xjson_input}`
+- **Returns:** Analysis metadata
+
+```bash
+curl -X POST http://localhost:8080/omnibrain/analyze \
+  -H "content-type: application/json" \
+  -H "x-api-key: dev-trainer-key" \
+  -d '{"xjson_input": {"@xjson_type": "code", "structure": {...}}}'
+```
+
+**Response:**
+```json
+{
+  "ok": true,
+  "phase": "xjson_analysis",
+  "analysis": {
+    "structure_complexity": 0.7,
+    "execution_potential": 0.8,
+    "transformation_potential": 0.9,
+    "unification_score": 0.5,
+    "recursive_depth": 2,
+    "type_analysis": {
+      "xjson_type": "code",
+      "has_kuhul_binding": true,
+      "has_ast_transform": false
+    }
+  },
+  "ready_for_kuhul": true
+}
+```
+
+---
+
+### POST `/omnibrain/generate`
+**Generate KUHUL logic from XJSON**
+- **Fold:** omnibrain
+- **Handler:** omnibrain_generate_kuhul
+- **Auth:** admin
+- **Body:** `{xjson_input, analysis}`
+- **Returns:** Executable KUHUL blocks
+
+```bash
+curl -X POST http://localhost:8080/omnibrain/generate \
+  -H "content-type: application/json" \
+  -H "x-api-key: dev-admin-key" \
+  -d '{
+    "xjson_input": {...},
+    "analysis": {"ready_for_kuhul": true, "unification_score": 0.5}
+  }'
+```
+
+**Response:**
+```json
+{
+  "ok": true,
+  "phase": "kuhul_generation",
+  "kuhul": {
+    "@type": "kuhul_block",
+    "blocks": ["[Pop fn]", "[Sek ...]", "[Xul]"],
+    "atomic_ops": ["Sek", "Wo", "Xul"],
+    "control_flow": {...}
+  },
+  "block_count": 3,
+  "ready_for_ast": true
+}
+```
+
+---
+
+### POST `/omnibrain/transform`
+**Transform KUHUL to universal AST**
+- **Fold:** omnibrain
+- **Handler:** omnibrain_kuhul_to_ast
+- **Auth:** admin
+- **Body:** `{kuhul_logic}`
+- **Returns:** AST representation
+
+```bash
+curl -X POST http://localhost:8080/omnibrain/transform \
+  -H "content-type: application/json" \
+  -H "x-api-key: dev-admin-key" \
+  -d '{"kuhul_logic": {"blocks": [...], "ready_for_ast": true}}'
+```
+
+**Response:**
+```json
+{
+  "ok": true,
+  "phase": "ast_transformation",
+  "ast": {
+    "@type": "universal_ast",
+    "nodes": [...],
+    "tree": {...},
+    "metadata": {
+      "total_nodes": 5,
+      "depth": 2,
+      "execution_cost": 120
+    }
+  },
+  "nodes": 5,
+  "ready_for_compilation": true
+}
+```
+
+---
+
+### POST `/omnibrain/compile`
+**Compile AST back to improved XJSON**
+- **Fold:** omnibrain
+- **Handler:** omnibrain_ast_to_xjson
+- **Auth:** admin
+- **Body:** `{ast, original_xjson}`
+- **Returns:** Next generation XJSON
+
+```bash
+curl -X POST http://localhost:8080/omnibrain/compile \
+  -H "content-type: application/json" \
+  -H "x-api-key: dev-admin-key" \
+  -d '{
+    "ast": {"nodes": [...], "ready_for_compilation": true},
+    "original_xjson": {"@generation": 0}
+  }'
+```
+
+**Response:**
+```json
+{
+  "ok": true,
+  "phase": "compilation_to_xjson",
+  "xjson": {
+    "@xjson_type": "recursion_improved",
+    "@generation": 1,
+    "structure": {...},
+    "compression_ratio": 0.85
+  },
+  "generation": 1,
+  "compression_ratio": 0.85,
+  "improvement": 0.15
+}
+```
+
+---
+
+### POST `/omnibrain/start`
+**Start infinite triple recursion loop**
+- **Fold:** omnibrain
+- **Handler:** omnibrain_start_infinite
+- **Auth:** admin
+- **Body:** `{initial_xjson, max_iterations?}`
+- **Returns:** Loop control handle
+
+```bash
+curl -X POST http://localhost:8080/omnibrain/start \
+  -H "content-type: application/json" \
+  -H "x-api-key: dev-admin-key" \
+  -d '{
+    "initial_xjson": {
+      "@xjson_type": "code",
+      "structure": {...}
+    },
+    "max_iterations": 1000
+  }'
+```
+
+**Response:**
+```json
+{
+  "ok": true,
+  "mode": "infinite_loop_started",
+  "max_iterations": 1000,
+  "loop_id": "uuid-1234",
+  "started_at": 1702345678901
+}
+```
+
+---
+
+### GET `/omnibrain/metrics`
+**Get current OMNIBRAIN recursion metrics**
+- **Fold:** omnibrain
+- **Handler:** omnibrain_get_metrics
+- **Auth:** guest, trainer, admin (PUBLIC)
+- **Returns:** Current recursion metrics
+
+```bash
+curl http://localhost:8080/omnibrain/metrics
+```
+
+**Response:**
+```json
+{
+  "ok": true,
+  "mode": "omnibrain_metrics",
+  "metrics": {
+    "total_cycles": 143,
+    "current_iteration": 143,
+    "compression_ratio": 0.0234,
+    "unification_score": 0.9812,
+    "avg_cycle_time_ms": 45,
+    "divergences_detected": 0,
+    "loop_active": true,
+    "loop_running_time_ms": 6435
+  },
+  "timestamp": 1702345678901
+}
+```
+
+---
+
+### POST `/omnibrain/convergence`
+**Check if recursion is converging**
+- **Fold:** omnibrain
+- **Handler:** omnibrain_check_convergence
+- **Auth:** trainer, admin
+- **Body:** `{cycle_result}`
+- **Returns:** Convergence status
+
+```bash
+curl -X POST http://localhost:8080/omnibrain/convergence \
+  -H "content-type: application/json" \
+  -H "x-api-key: dev-trainer-key" \
+  -d '{
+    "cycle_result": {
+      "unification_improvement": 0.0008,
+      "compression_ratio": 0.0234,
+      "output_generation": 143
+    }
+  }'
+```
+
+**Response:**
+```json
+{
+  "ok": true,
+  "converged": true,
+  "diverged": false,
+  "status": {
+    "converged": true,
+    "diverged": false,
+    "improvement": 0.0008,
+    "compression": 0.0234,
+    "threshold": 0.001,
+    "iterations_to_convergence": 143
+  }
+}
+```
+
+---
+
+### POST `/omnibrain/stop`
+**Emergency stop - halt infinite recursion loop**
+- **Fold:** omnibrain
+- **Handler:** omnibrain_stop_loop
+- **Auth:** admin
+- **Returns:** Stop confirmation
+
+```bash
+curl -X POST http://localhost:8080/omnibrain/stop \
+  -H "x-api-key: dev-admin-key"
+```
+
+**Response:**
+```json
+{
+  "ok": true,
+  "mode": "loop_stopped",
+  "was_active": true,
+  "final_iteration": 143,
+  "timestamp": 1702345678901
+}
+```
+
+---
+
 ## 🌐 Mesh & Coordination APIs
 
 ### GET `/mesh/ping`
@@ -729,6 +1064,7 @@ curl -H "x-api-key: dev-trainer-key" \
 | **cms** | 8 | Public/Mixed | Content delivery |
 | **local_rest** | 4 | Mixed | RLHF forum |
 | **gram** | 8 | Mixed | Self-learning |
+| **omnibrain** | 9 | Mixed | Triple recursion |
 | **mesh** | 4 | Mixed | Network coordination |
 | **runtime** | 4 | Public | Execution engine |
 | **tapes** | 3 | Public | Tape management |
@@ -736,7 +1072,7 @@ curl -H "x-api-key: dev-trainer-key" \
 | **trainer** | 2 | Public | Training jobs |
 | **ai** | 1 | Public | AI modules |
 
-**Total:** 45 REST endpoints across 11 folds
+**Total:** 54 REST endpoints across 12 folds
 
 ---
 

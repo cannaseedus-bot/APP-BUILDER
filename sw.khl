@@ -115,7 +115,16 @@
         "/gram/start":       { "fold": "gram",    "handler": "gram_learning_loop" },
         "/gram/metrics":     { "fold": "gram",    "handler": "gram_get_metrics" },
         "/gram/patterns":    { "fold": "gram",    "handler": "gram_get_patterns" },
-        "/gram/macros":      { "fold": "gram",    "handler": "gram_get_macros" }
+        "/gram/macros":      { "fold": "gram",    "handler": "gram_get_macros" },
+        "/omnibrain/cycle":       { "fold": "omnibrain", "handler": "omnibrain_cycle" },
+        "/omnibrain/analyze":     { "fold": "omnibrain", "handler": "omnibrain_analyze_xjson" },
+        "/omnibrain/generate":    { "fold": "omnibrain", "handler": "omnibrain_generate_kuhul" },
+        "/omnibrain/transform":   { "fold": "omnibrain", "handler": "omnibrain_kuhul_to_ast" },
+        "/omnibrain/compile":     { "fold": "omnibrain", "handler": "omnibrain_ast_to_xjson" },
+        "/omnibrain/start":       { "fold": "omnibrain", "handler": "omnibrain_start_infinite" },
+        "/omnibrain/metrics":     { "fold": "omnibrain", "handler": "omnibrain_get_metrics" },
+        "/omnibrain/convergence": { "fold": "omnibrain", "handler": "omnibrain_check_convergence" },
+        "/omnibrain/stop":        { "fold": "omnibrain", "handler": "omnibrain_stop_loop" }
       }
     },
 
@@ -189,6 +198,63 @@
         "suggestions_generated": 0,
         "macros_created": 0,
         "entropy": 1.0
+      }
+    },
+
+    "omnibrain_omega": {
+      "enabled": true,
+      "version": "Ω.0.0",
+      "role": "TRIPLE_RECURSION_ENGINE",
+      "architecture": "XJSON_KUHUL_AST_CYCLE",
+      "description": "Infinite triple recursion: XJSON → KUHUL → AST → Better XJSON",
+      "recursion": {
+        "type": "triple_infinite_loop",
+        "compression_ratio": "0.00015 × (0.9)^n → 0",
+        "phases": ["xjson_analysis", "kuhul_generation", "ast_transformation", "compilation_to_xjson"],
+        "convergence": "asymptotic_perfect_unification"
+      },
+      "core_engines": {
+        "xjson_analyzer": {
+          "role": "Analyze XJSON structure for recursion potential",
+          "output": "analysis_metadata"
+        },
+        "kuhul_generator": {
+          "role": "Generate KUHUL logic from XJSON",
+          "output": "executable_kuhul_blocks"
+        },
+        "ast_transformer": {
+          "role": "Transform KUHUL to AST representation",
+          "output": "universal_ast"
+        },
+        "xjson_compiler": {
+          "role": "Compile AST back to improved XJSON",
+          "output": "next_generation_xjson"
+        }
+      },
+      "metabrain": {
+        "enabled": true,
+        "role": "Orchestrate triple recursion cycles",
+        "integration": ["gram_kernel", "vfs", "local_rest"]
+      },
+      "loop_control": {
+        "max_iterations": 1000,
+        "convergence_threshold": 0.001,
+        "divergence_detection": true,
+        "emergency_brake": true
+      },
+      "monitoring": {
+        "track_iterations": true,
+        "track_compression": true,
+        "track_unification_score": true,
+        "track_cycle_time_ms": true
+      },
+      "metrics": {
+        "total_cycles": 0,
+        "current_iteration": 0,
+        "compression_ratio": 1.0,
+        "unification_score": 0.0,
+        "avg_cycle_time_ms": 0,
+        "divergences_detected": 0
       }
     },
 
@@ -2405,6 +2471,350 @@
       "mode": "macros",
       "macros": macros || [],
       "count": (macros || []).length
+    }]→[Xul return]
+  [Xul]
+
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     OMNIBRAIN Ω.0.0 - TRIPLE RECURSION ENGINE
+     Architecture: XJSON → KUHUL → AST → Better XJSON (∞ loop)
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+
+  /* OMNIBRAIN ANALYZE XJSON (C@@L BLOCK - Phase 1: XJSON Analysis) */
+  [Pop omnibrain_analyze_xjson]
+    /* @control: [@analyze, @metadata]
+       @variable: {xjson_input}
+       @Sek: Analyze XJSON structure for recursion potential
+       @Ch'en: Return analysis metadata */
+
+    [Sek validate_input xjson_input]→[Ch'en is_valid]
+    [Ch'a is_valid == false]→[Wo {"error": "Invalid XJSON input"}]→[Xul return]
+
+    [Sek {
+      "structure_complexity": fn.calculate_complexity(xjson_input),
+      "execution_potential": fn.has_executable_bindings(xjson_input),
+      "transformation_potential": fn.analyze_transform_depth(xjson_input),
+      "unification_score": fn.calculate_unification(xjson_input),
+      "recursive_depth": fn.detect_recursion_depth(xjson_input),
+      "type_analysis": {
+        "xjson_type": xjson_input["@xjson_type"] || "unknown",
+        "has_kuhul_binding": !!xjson_input["@kuhul_binding"],
+        "has_ast_transform": !!xjson_input["@ast_transform"]
+      }
+    }]→[Ch'en analysis]
+
+    [Yax "omnibrain.metrics"]→[Ch'en metrics]
+    [Sek metrics.total_cycles + 1]→[Yax "omnibrain.metrics.total_cycles"]
+
+    [Wo {
+      "ok": true,
+      "phase": "xjson_analysis",
+      "analysis": analysis,
+      "ready_for_kuhul": analysis.unification_score > 0.3
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN GENERATE KUHUL (C@@L BLOCK - Phase 2: KUHUL Generation) */
+  [Pop omnibrain_generate_kuhul]
+    /* @control: [@generate, @compile]
+       @variable: {xjson_input, analysis}
+       @Sek: Generate KUHUL logic from XJSON
+       @Ch'en: Return executable KUHUL blocks */
+
+    [Ch'a !analysis || !analysis.ready_for_kuhul]→[Wo {"error": "XJSON not ready for KUHUL generation"}]→[Xul return]
+
+    [Sek {
+      "@type": "kuhul_block",
+      "@source_xjson": xjson_input,
+      "blocks": fn.generate_cool_blocks(xjson_input, analysis),
+      "atomic_ops": fn.extract_atomic_operations(xjson_input),
+      "control_flow": fn.generate_control_flow(analysis),
+      "bindings": {
+        "Pop": "function_entry",
+        "Xul": "function_exit",
+        "Sek": "compute",
+        "Wo": "output",
+        "Ch'a": "conditional"
+      }
+    }]→[Ch'en kuhul_logic]
+
+    [Wo {
+      "ok": true,
+      "phase": "kuhul_generation",
+      "kuhul": kuhul_logic,
+      "block_count": kuhul_logic.blocks.length,
+      "ready_for_ast": true
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN KUHUL TO AST (C@@L BLOCK - Phase 3: AST Transformation) */
+  [Pop omnibrain_kuhul_to_ast]
+    /* @control: [@transform, @ast]
+       @variable: {kuhul_logic}
+       @Sek: Transform KUHUL to universal AST
+       @Ch'en: Return AST representation */
+
+    [Ch'a !kuhul_logic || !kuhul_logic.ready_for_ast]→[Wo {"error": "KUHUL not ready for AST"}]→[Xul return]
+
+    [Sek {
+      "@type": "universal_ast",
+      "@source_kuhul": kuhul_logic,
+      "nodes": fn.kuhul_to_ast_nodes(kuhul_logic.blocks),
+      "tree": fn.build_ast_tree(kuhul_logic.blocks, kuhul_logic.control_flow),
+      "optimization_level": "O3",
+      "metadata": {
+        "total_nodes": 0,
+        "depth": 0,
+        "execution_cost": 0
+      }
+    }]→[Ch'en ast]
+
+    [Sek ast.nodes.length]→[Sek ast.metadata.total_nodes]
+    [Sek fn.calculate_ast_depth(ast.tree)]→[Sek ast.metadata.depth]
+
+    [Wo {
+      "ok": true,
+      "phase": "ast_transformation",
+      "ast": ast,
+      "nodes": ast.metadata.total_nodes,
+      "ready_for_compilation": true
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN AST TO XJSON (C@@L BLOCK - Phase 4: Compilation to XJSON) */
+  [Pop omnibrain_ast_to_xjson]
+    /* @control: [@compile, @optimize]
+       @variable: {ast, original_xjson}
+       @Sek: Compile AST back to improved XJSON
+       @Ch'en: Return next generation XJSON */
+
+    [Ch'a !ast || !ast.ready_for_compilation]→[Wo {"error": "AST not ready for compilation"}]→[Xul return]
+
+    [Sek {
+      "@xjson_type": "recursion_improved",
+      "@kuhul_binding": "fn.execute.improved",
+      "@ast_transform": "RECURSIVE_OPTIMIZE",
+      "@generation": (original_xjson["@generation"] || 0) + 1,
+      "@parent": original_xjson,
+      "structure": fn.ast_to_xjson_structure(ast.tree),
+      "optimizations": fn.apply_ast_optimizations(ast),
+      "compression_ratio": fn.calculate_compression(original_xjson, ast),
+      "unification_improvement": 0.0
+    }]→[Ch'en improved_xjson]
+
+    [Sek fn.calculate_improvement(original_xjson, improved_xjson)]→[Sek improved_xjson.unification_improvement]
+
+    [Yax "omnibrain.metrics"]→[Ch'en metrics]
+    [Sek improved_xjson.compression_ratio]→[Yax "omnibrain.metrics.compression_ratio"]
+
+    [Wo {
+      "ok": true,
+      "phase": "compilation_to_xjson",
+      "xjson": improved_xjson,
+      "generation": improved_xjson["@generation"],
+      "compression_ratio": improved_xjson.compression_ratio,
+      "improvement": improved_xjson.unification_improvement
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN CYCLE (C@@L BLOCK - Execute One Complete Triple Recursion) */
+  [Pop omnibrain_cycle]
+    /* @control: [@orchestrate, @recursive]
+       @variable: {xjson_input}
+       @Sek: Execute one complete XJSON→KUHUL→AST→XJSON cycle
+       @Ch'en: Return next generation XJSON and metrics */
+
+    [Yax "omnibrain.config"]→[Ch'en config]
+    [Ch'a !config.enabled]→[Wo {"error": "OMNIBRAIN disabled"}]→[Xul return]
+
+    [Sek Date.now()]→[Ch'en start_time]
+
+    /* Phase 1: Analyze XJSON */
+    [Sek omnibrain_analyze_xjson(xjson_input)]→[Ch'en phase1]
+    [Ch'a !phase1.ok]→[Wo phase1]→[Xul return]
+
+    /* Phase 2: Generate KUHUL */
+    [Sek omnibrain_generate_kuhul(xjson_input, phase1.analysis)]→[Ch'en phase2]
+    [Ch'a !phase2.ok]→[Wo phase2]→[Xul return]
+
+    /* Phase 3: Transform to AST */
+    [Sek omnibrain_kuhul_to_ast(phase2.kuhul)]→[Ch'en phase3]
+    [Ch'a !phase3.ok]→[Wo phase3]→[Xul return]
+
+    /* Phase 4: Compile to XJSON */
+    [Sek omnibrain_ast_to_xjson(phase3.ast, xjson_input)]→[Ch'en phase4]
+    [Ch'a !phase4.ok]→[Wo phase4]→[Xul return]
+
+    [Sek Date.now() - start_time]→[Ch'en cycle_time]
+
+    /* Update metrics */
+    [Yax "omnibrain.metrics"]→[Ch'en metrics]
+    [Sek metrics.current_iteration + 1]→[Yax "omnibrain.metrics.current_iteration"]
+    [Sek (metrics.avg_cycle_time_ms * metrics.current_iteration + cycle_time) / (metrics.current_iteration + 1)]→[Yax "omnibrain.metrics.avg_cycle_time_ms"]
+    [Sek phase4.xjson.unification_improvement]→[Yax "omnibrain.metrics.unification_score"]
+
+    [Wo {
+      "ok": true,
+      "mode": "cycle_complete",
+      "cycle_time_ms": cycle_time,
+      "input_generation": xjson_input["@generation"] || 0,
+      "output_generation": phase4.generation,
+      "compression_ratio": phase4.compression_ratio,
+      "unification_improvement": phase4.improvement,
+      "next_xjson": phase4.xjson,
+      "phases": {
+        "analysis": phase1.analysis,
+        "kuhul_blocks": phase2.block_count,
+        "ast_nodes": phase3.nodes,
+        "compilation": "success"
+      }
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN START INFINITE (C@@L BLOCK - Start Infinite Recursion Loop) */
+  [Pop omnibrain_start_infinite]
+    /* @control: [@infinite, @recursive, @async]
+       @variable: {initial_xjson, max_iterations}
+       @Sek: Start infinite triple recursion loop until convergence
+       @Ch'en: Return loop control handle */
+
+    [Yax "omnibrain.config"]→[Ch'en config]
+    [Ch'a !config.enabled]→[Wo {"error": "OMNIBRAIN disabled"}]→[Xul return]
+
+    [Sek max_iterations || config.loop_control.max_iterations]→[Ch'en max_iter]
+    [Sek initial_xjson]→[Ch'en current_xjson]
+    [Sek 0]→[Ch'en iteration]
+
+    [Yax "omnibrain.loop_active" = true]
+    [Sek Date.now()]→[Yax "omnibrain.loop_start_time"]
+
+    /* Async infinite loop */
+    [Sek fn.async_loop({
+      "condition": () => iteration < max_iter && Yax("omnibrain.loop_active"),
+      "body": async () => {
+        [Sek omnibrain_cycle(current_xjson)]→[Ch'en result]
+
+        [Ch'a !result.ok]→{
+          [Yax "omnibrain.loop_active" = false]
+          [Yax "omnibrain.metrics.divergences_detected" += 1]
+          return result
+        }
+
+        [Sek result.next_xjson]→[Ch'en current_xjson]
+        [Sek iteration + 1]→[Ch'en iteration]
+
+        /* Check convergence */
+        [Sek omnibrain_check_convergence(result)]→[Ch'en converged]
+        [Ch'a converged.converged]→{
+          [Yax "omnibrain.loop_active" = false]
+          return {"converged": true, "iteration": iteration}
+        }
+
+        return {"continue": true, "iteration": iteration}
+      }
+    })]→[Ch'en loop_handle]
+
+    [Wo {
+      "ok": true,
+      "mode": "infinite_loop_started",
+      "max_iterations": max_iter,
+      "loop_id": fn.generate_uuid(),
+      "started_at": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN CHECK CONVERGENCE (C@@L BLOCK - Convergence Detection) */
+  [Pop omnibrain_check_convergence]
+    /* @control: [@analyze, @threshold]
+       @variable: {cycle_result}
+       @Sek: Check if recursion is converging to perfect unification
+       @Ch'en: Return convergence status */
+
+    [Yax "omnibrain.config"]→[Ch'en config]
+    [Sek config.loop_control.convergence_threshold]→[Ch'en threshold]
+
+    [Sek cycle_result.unification_improvement]→[Ch'en improvement]
+    [Sek cycle_result.compression_ratio]→[Ch'en compression]
+
+    [Sek {
+      "converged": improvement < threshold && improvement >= 0,
+      "diverged": improvement < 0,
+      "improvement": improvement,
+      "compression": compression,
+      "threshold": threshold,
+      "iterations_to_convergence": cycle_result.output_generation
+    }]→[Ch'en status]
+
+    [Ch'a status.diverged && config.loop_control.divergence_detection]→{
+      [Yax "omnibrain.metrics.divergences_detected" += 1]
+      [Ch'a config.loop_control.emergency_brake]→[Yax "omnibrain.loop_active" = false]
+    }
+
+    [Wo {
+      "ok": true,
+      "converged": status.converged,
+      "diverged": status.diverged,
+      "status": status
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN GET METRICS (C@@L BLOCK - Metrics Reporting) */
+  [Pop omnibrain_get_metrics]
+    /* @control: [@report, @display]
+       @variable: {}
+       @Sek: Get current OMNIBRAIN recursion metrics
+       @Ch'en: Return metrics object */
+
+    [Yax "omnibrain.metrics"]→[Ch'en metrics]
+    [Yax "omnibrain.loop_active"]→[Ch'en loop_active]
+    [Yax "omnibrain.loop_start_time"]→[Ch'en start_time]
+
+    [Sek {
+      "total_cycles": metrics.total_cycles || 0,
+      "current_iteration": metrics.current_iteration || 0,
+      "compression_ratio": metrics.compression_ratio || 1.0,
+      "unification_score": metrics.unification_score || 0.0,
+      "avg_cycle_time_ms": metrics.avg_cycle_time_ms || 0,
+      "divergences_detected": metrics.divergences_detected || 0,
+      "loop_active": loop_active || false,
+      "loop_running_time_ms": loop_active ? (Date.now() - start_time) : 0
+    }]→[Ch'en report]
+
+    [Wo {
+      "ok": true,
+      "mode": "omnibrain_metrics",
+      "metrics": report,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN STOP LOOP (C@@L BLOCK - Emergency Brake) */
+  [Pop omnibrain_stop_loop]
+    /* @control: [@emergency, @halt]
+       @variable: {}
+       @Sek: Stop the infinite recursion loop immediately
+       @Ch'en: Return stop confirmation */
+
+    [Yax "omnibrain.loop_active"]→[Ch'en was_active]
+    [Yax "omnibrain.loop_active" = false]
+
+    [Yax "omnibrain.metrics"]→[Ch'en metrics]
+
+    [Wo {
+      "ok": true,
+      "mode": "loop_stopped",
+      "was_active": was_active,
+      "final_iteration": metrics.current_iteration,
+      "timestamp": Date.now()
     }]→[Xul return]
   [Xul]
 
