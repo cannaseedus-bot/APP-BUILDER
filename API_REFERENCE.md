@@ -4,7 +4,7 @@
 
 > Last Updated: 2025-12-11
 > Version: Ω.∞.Ω
-> Total Endpoints: 45
+> Total Endpoints: 94
 > Authentication: Securolink v2 (local/remote modes)
 
 ---
@@ -20,11 +20,14 @@
 7. [@Gram Learning APIs](#gram-learning-apis)
 8. [OMNIBRAIN Ω.0.0 - Triple Recursion APIs](#omnibrain-ω00---triple-recursion-apis)
 9. [GAS Shards - Cloud Integration](#gas-shards---cloud-integration)
-10. [Mesh & Coordination APIs](#mesh--coordination-apis)
-11. [Runtime & Execution APIs](#runtime--execution-apis)
-12. [Tape Management APIs](#tape-management-apis)
-13. [ASX-RAM APIs](#asx-ram-apis)
-14. [SCXQ2 Compression APIs](#scxq2-compression-apis)
+10. [MX2CX Builder Codex - AI Assistant & Research](#mx2cx-builder-codex---ai-assistant--research)
+11. [Todo System - RLHF Task Planning & Suggestions](#todo-system---rlhf-task-planning--suggestions)
+12. [Colab Nodes - K'UHUL Distributed Training](#colab-nodes---kuhul-distributed-training)
+13. [Mesh & Coordination APIs](#mesh--coordination-apis)
+14. [Runtime & Execution APIs](#runtime--execution-apis)
+15. [Tape Management APIs](#tape-management-apis)
+16. [ASX-RAM APIs](#asx-ram-apis)
+17. [SCXQ2 Compression APIs](#scxq2-compression-apis)
 
 ---
 
@@ -841,6 +844,293 @@ curl -X POST http://localhost:8080/gas/frontend/generate-ui \
 
 ---
 
+## ⚛️ MX2CX Builder Codex - AI Assistant & Research
+
+**MX2CX Builder Codex** provides AI-powered chat inference with built-in knowledge about XJSON, K'UHUL, XCFE, JSON AST, and Atomic ASX. Also includes template research, stack management, and agent creation via mesh proxy.
+
+### Chat Inference (Local AI)
+
+- **POST `/builder/chat`** - Chat with AI knowledge base (guest/trainer/admin) - `{question}`
+  - Built-in knowledge: XJSON, K'UHUL Pipeline, XCFE, JSON AST, Atomic CSS
+  - Returns: answer, topics, examples, suggestions
+
+### Builder Research & Tools (Mesh Proxy)
+
+- **GET `/builder/manifest`** - Get builder manifest (guest/trainer/admin)
+- **POST `/builder/research`** - Research templates (guest/trainer/admin) - `{query}`
+- **POST `/builder/template/build`** - Build template (admin) - `{template, options}`
+- **POST `/builder/template/stack`** - Manage tech stack (guest/trainer/admin) - `{stack}`
+- **POST `/builder/agent/create`** - Create custom agent (admin) - `{name, role, actions}`
+- **GET `/builder/rlhf/metrics`** - Get RLHF metrics (guest/trainer/admin) - Cached 10 min
+
+### Mesh Configuration
+
+- **POST `/builder/mesh/override`** - Override mesh base URL (admin) - `{mesh_base}`
+- **GET `/builder/mesh/config`** - Get mesh configuration (guest/trainer/admin)
+
+**Example:**
+```bash
+# Ask AI about XJSON
+curl -X POST http://localhost:8080/builder/chat \
+  -H "content-type: application/json" \
+  -d '{"question": "What is XJSON?"}'
+
+# Research templates
+curl -X POST http://localhost:8080/builder/research \
+  -H "content-type: application/json" \
+  -d '{"query": "React TypeScript starter"}'
+
+# Override mesh API
+curl -X POST http://localhost:8080/builder/mesh/override \
+  -H "x-api-key: dev-admin-key" \
+  -H "content-type: application/json" \
+  -d '{"mesh_base": "https://custom-api.example.com"}'
+```
+
+---
+
+## ✅ Todo System - RLHF Task Planning & Suggestions
+
+**Todo System** provides AI-powered task planning with RLHF-based suggestions for the app builder workflow. Tracks task completion, effectiveness, and learns from user feedback to improve suggestions over time.
+
+### Task Management
+
+- **POST `/todo/create`** - Create new task (guest/trainer/admin) - `{title, description, category, build_id, pipeline_stage}`
+  - Returns task with RLHF-based suggestions
+  - Categories: design, development, content, deployment, optimization
+
+- **POST `/todo/update`** - Update task (guest/trainer/admin) - `{task_id, build_id, updates}`
+  - Updates: status, title, description, category, pipeline_stage
+  - Auto-tracks started_at and completed_at timestamps
+
+- **POST `/todo/delete`** - Delete task (admin) - `{task_id, build_id}`
+
+- **GET `/todo/list`** - List tasks (guest/trainer/admin) - `?build_id=xxx&status_filter=planned`
+  - Returns tasks with stats (total, completed, in_progress, planned)
+
+- **POST `/todo/complete`** - Complete task with RLHF (guest/trainer/admin) - `{task_id, build_id, effectiveness_rating}`
+  - Rating: 0.0 to 1.0
+  - Records feedback for RLHF training
+
+### RLHF-Powered Suggestions
+
+- **GET `/todo/suggestions`** - Get AI task suggestions (guest/trainer/admin) - `?build_id=xxx&category=development&pipeline_stage=parse_intent`
+  - Returns suggestions based on:
+    - Category best practices (design, development, content, deployment, optimization)
+    - Pipeline stage tasks (parse_intent, select_template, customize_template, generate_files, validate_and_preview)
+    - RLHF learned patterns (effectiveness ratings from past tasks)
+  - Filters out existing tasks automatically
+  - Includes RLHF stats (total samples, avg effectiveness, training readiness)
+
+- **POST `/todo/from-template`** - Generate tasks from template (admin) - `{build_id, template_name, app_type}`
+  - App types: ecommerce, saas, blog, portfolio
+  - Generates 10 pre-configured tasks per template
+
+- **POST `/todo/rlhf/record`** - Record RLHF feedback (guest/trainer/admin) - `{task_id, build_id, suggestion_accepted, suggestion_relevance, task_helpfulness}`
+  - All ratings: 0.0 to 1.0
+  - Training threshold: 50+ samples
+
+**Task Lifecycle:** planned → in_progress → completed (or blocked/skipped)
+
+**Example:**
+```bash
+# Create task with suggestions
+curl -X POST http://localhost:8080/todo/create \
+  -H "content-type: application/json" \
+  -d '{
+    "title": "Design landing page",
+    "description": "Create hero section and CTA",
+    "category": "design",
+    "build_id": "build_123",
+    "pipeline_stage": "customize_template"
+  }'
+
+# Get RLHF suggestions
+curl "http://localhost:8080/todo/suggestions?build_id=build_123&category=development&pipeline_stage=parse_intent"
+
+# Generate tasks from template
+curl -X POST http://localhost:8080/todo/from-template \
+  -H "x-api-key: dev-admin-key" \
+  -H "content-type: application/json" \
+  -d '{
+    "build_id": "build_123",
+    "template_name": "ecommerce_starter",
+    "app_type": "ecommerce"
+  }'
+
+# Complete task with effectiveness rating
+curl -X POST http://localhost:8080/todo/complete \
+  -H "content-type: application/json" \
+  -d '{
+    "task_id": "task_123",
+    "build_id": "build_123",
+    "effectiveness_rating": 0.9
+  }'
+
+# List all tasks
+curl "http://localhost:8080/todo/list?build_id=build_123"
+
+# Record RLHF feedback
+curl -X POST http://localhost:8080/todo/rlhf/record \
+  -H "content-type: application/json" \
+  -d '{
+    "task_id": "task_123",
+    "build_id": "build_123",
+    "suggestion_accepted": true,
+    "suggestion_relevance": 0.95,
+    "task_helpfulness": 0.9
+  }'
+```
+
+---
+
+## 🖥️ Colab Nodes - K'UHUL Distributed Training
+
+**Colab Nodes** turn free Google Colab instances into distributed K'UHUL training nodes - a $20K rig alternative. Uses Python polyglot (PI GOAT) integration for seamless browser-to-Colab communication with SVG weights, SCXQ2 compression, and QLoRA training support.
+
+### Node Management
+
+- **POST `/colab/nodes/register`** - Register Colab node (admin) - `{node_url, node_id, capabilities}`
+  - Registers Colab instance running colab_launcher.py
+  - Supports T4, A100, V100, P100, K80 GPUs
+  - Python polyglot bridge: kuhul_colab_integration.py
+
+- **GET `/colab/nodes/list`** - List all registered nodes (guest/trainer/admin) - `?status_filter=connected`
+  - Returns nodes with stats (total, connected, busy, idle)
+
+- **GET `/colab/nodes/status`** - Get node status (guest/trainer/admin) - `?node_id=xxx`
+  - Health check, uptime, current job
+
+- **POST `/colab/nodes/disconnect`** - Disconnect node (admin) - `{node_id}`
+  - Cannot disconnect if node has active job
+
+### Job Orchestration
+
+- **POST `/colab/jobs/submit`** - Submit training/processing job (admin) - `{job_type, config}`
+  - Job types: training, svg_processing, scxq2_compression
+  - Auto-queues if no nodes available
+  - Load balancing: round_robin
+
+- **GET `/colab/jobs/status`** - Get job status (guest/trainer/admin) - `?job_id=xxx`
+  - Real-time status via Python bridge
+  - Returns runtime, node_id, progress
+
+- **POST `/colab/jobs/cancel`** - Cancel running job (admin) - `{job_id}`
+  - Frees up node for new jobs
+
+- **GET `/colab/jobs/list`** - List all jobs (guest/trainer/admin) - `?status_filter=submitted&limit=10`
+  - Filter: submitted, completed, error, cancelled, queued
+  - Stats: active, completed, errors
+
+### System Statistics
+
+- **GET `/colab/stats`** - Get system statistics (guest/trainer/admin)
+  - Node stats: total, connected, idle
+  - Job stats: active, completed, queued
+  - GPU distribution by type
+  - Polyglot Python status
+
+**Capabilities:**
+- Training: QLoRA, LoRA, full finetune, DPO
+- Compression: SCXQ2, SVG weights, 8-bit/4-bit quantization
+- GPU Types: T4 (free), A100, V100, P100, K80
+- Max batch size: 4 (Colab optimized)
+- Python runtime: 3.10+
+
+**Example:**
+```bash
+# Register Colab node
+curl -X POST http://localhost:8080/colab/nodes/register \
+  -H "x-api-key: dev-admin-key" \
+  -H "content-type: application/json" \
+  -d '{
+    "node_url": "https://abc123.ngrok.io",
+    "node_id": "colab_gpu_t4_001",
+    "capabilities": {
+      "training": true,
+      "svg_processing": true,
+      "scxq2_compression": true,
+      "quantization": ["8bit", "4bit"],
+      "gpu_type": "T4",
+      "gpu_memory_gb": 15
+    }
+  }'
+
+# Submit training job
+curl -X POST http://localhost:8080/colab/jobs/submit \
+  -H "x-api-key: dev-admin-key" \
+  -H "content-type: application/json" \
+  -d '{
+    "job_type": "training",
+    "config": {
+      "model": {
+        "base_model": "unsloth/mistral-7b-v0.3-bnb-4bit"
+      },
+      "steps": 500,
+      "kuhul_config": {
+        "svg_weight_storage": true,
+        "quantization": 8,
+        "scxq2_compression": true,
+        "lora_rank": 16
+      },
+      "dataset_url": "https://example.com/dataset.jsonl"
+    }
+  }'
+
+# Check job status
+curl "http://localhost:8080/colab/jobs/status?job_id=job_20251211_123456_abc123"
+
+# Get system stats
+curl http://localhost:8080/colab/stats
+
+# List all nodes
+curl http://localhost:8080/colab/nodes/list
+
+# Submit SVG weight processing
+curl -X POST http://localhost:8080/colab/jobs/submit \
+  -H "x-api-key: dev-admin-key" \
+  -H "content-type: application/json" \
+  -d '{
+    "job_type": "svg_processing",
+    "config": {
+      "operation": "compress",
+      "weights": {...},
+      "config": {
+        "format": "scxq2",
+        "precision": 3
+      }
+    }
+  }'
+```
+
+**Python Polyglot Integration:**
+```javascript
+// Browser-side (runs in K'UHUL OS)
+const colab = new BrowserColabIntegrator();
+
+// Connect to Colab node
+await colab.connectToColab('https://abc123.ngrok.io');
+
+// Submit training job
+const job = await colab.submitTrainingJob(
+  { base_model: 'unsloth/mistral-7b-v0.3-bnb-4bit' },
+  500,
+  { svgWeights: true, quantization: 8, compression: true }
+);
+
+// Monitor progress
+colab.monitorJobProgress(job.job_id);
+```
+
+**Setup Colab Node:**
+1. Open Google Colab: https://colab.research.google.com/
+2. Upload `colab_launcher.py` and `kuhul_colab_integration.py`
+3. Run: `python colab_launcher.py`
+4. Connect via ngrok: `!ngrok http 5000`
+5. Register node URL in K'UHUL OS
+
+---
+
 ## 🌐 Mesh & Coordination APIs
 
 ### GET `/mesh/ping`
@@ -1111,6 +1401,9 @@ curl -H "x-api-key: dev-trainer-key" \
 | **gram** | 8 | Mixed | Self-learning |
 | **omnibrain** | 9 | Mixed | Triple recursion |
 | **gas** | 14 | Mixed | Cloud integration |
+| **builder** | 9 | Mixed | AI chat & research |
+| **todo** | 8 | Mixed | RLHF task planning |
+| **colab** | 9 | Mixed | Distributed training |
 | **mesh** | 4 | Mixed | Network coordination |
 | **runtime** | 4 | Public | Execution engine |
 | **tapes** | 3 | Public | Tape management |
@@ -1118,7 +1411,13 @@ curl -H "x-api-key: dev-trainer-key" \
 | **trainer** | 2 | Public | Training jobs |
 | **ai** | 1 | Public | AI modules |
 
-**Total:** 68 REST endpoints across 13 folds
+**Total:** 94 REST endpoints across 16 folds
+
+**Special Features:**
+- **Colab Nodes:** Python polyglot (PI GOAT) integration via kuhul_colab_integration.py
+- **Free GPU Training:** Turn Google Colab into $20K rig alternative
+- **SVG Weights:** Compress neural weights to SVG geometry with SCXQ2
+- **Distributed:** Queue jobs across multiple Colab instances with load balancing
 
 ---
 

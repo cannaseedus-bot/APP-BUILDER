@@ -1,0 +1,156 @@
+{
+  "@version": "kuhul_delta.v1",
+  "@context": "xjson://kuhul/delta/v1",
+  "@law": "DELTA = SYMBOLIC_GRADIENT + SCXQ2_COMPRESSION + LAYER_MAP",
+
+  "base_model": "Qwen-7B",
+  "apply_mode": "add",
+  "scale": 0.1,
+
+  "training_metadata": {
+    "run_id": "kuhul_cluster_run001",
+    "iterations": 1000000,
+    "final_loss": 0.234,
+    "cluster_size": 1000,
+    "training_time_seconds": 45.7,
+    "timestamp": "2025-12-11T20:00:00Z",
+    "dataset": "asx_xjson_corpus_v1",
+    "learning_rate": 1e-4,
+    "batch_size": 32,
+    "nodes": [
+      "colab_node_001",
+      "colab_node_002",
+      "...998 more nodes..."
+    ]
+  },
+
+  "compression": {
+    "scxq2_enabled": true,
+    "compression_ratio": 0.00008,
+    "original_size_bytes": 134217728,
+    "compressed_size_bytes": 10737,
+    "svg_weights": true,
+    "quantum_lattice": true
+  },
+
+  "layers": [
+    {
+      "name": "model.embed_tokens.weight",
+      "encoding": "raw",
+      "shape": [151936, 4096],
+      "data": "kuhul://blob/embed_delta_001",
+      "scale": 1.0,
+      "checksum": "sha256:7a91c2f91bb1d4e7abc123def456789...",
+      "comment": "Embedding layer delta - XJSON token enhancements"
+    },
+    {
+      "name": "model.layers.0.self_attn.q_proj.weight",
+      "encoding": "raw",
+      "shape": [4096, 4096],
+      "data": "kuhul://blob/l0_qproj_delta",
+      "scale": 1.0,
+      "checksum": "sha256:abc123def456789...",
+      "comment": "Layer 0 Q projection - C@@L BLOCK pattern learning"
+    },
+    {
+      "name": "model.layers.0.self_attn.k_proj.weight",
+      "encoding": "raw",
+      "shape": [4096, 4096],
+      "data": "kuhul://blob/l0_kproj_delta",
+      "scale": 1.0,
+      "checksum": "sha256:def456789abc123..."
+    },
+    {
+      "name": "model.layers.0.self_attn.v_proj.weight",
+      "encoding": "raw",
+      "shape": [4096, 4096],
+      "data": "kuhul://blob/l0_vproj_delta",
+      "scale": 1.0,
+      "checksum": "sha256:789abc123def456..."
+    },
+    {
+      "name": "model.layers.0.self_attn.o_proj.weight",
+      "encoding": "raw",
+      "shape": [4096, 4096],
+      "data": "kuhul://blob/l0_oproj_delta",
+      "scale": 1.0,
+      "checksum": "sha256:456789abc123def..."
+    },
+    {
+      "name": "model.layers.0.mlp.gate_proj.weight",
+      "encoding": "raw",
+      "shape": [11008, 4096],
+      "data": "kuhul://blob/l0_gate_delta",
+      "scale": 1.0,
+      "checksum": "sha256:123def456789abc..."
+    },
+    {
+      "name": "model.layers.0.mlp.up_proj.weight",
+      "encoding": "raw",
+      "shape": [11008, 4096],
+      "data": "kuhul://blob/l0_up_delta",
+      "scale": 1.0,
+      "checksum": "sha256:def456789abc123..."
+    },
+    {
+      "name": "model.layers.0.mlp.down_proj.weight",
+      "encoding": "raw",
+      "shape": [4096, 11008],
+      "data": "kuhul://blob/l0_down_delta",
+      "scale": 1.0,
+      "checksum": "sha256:456789abc123def..."
+    },
+    {
+      "name": "model.layers.1.self_attn.q_proj.weight",
+      "encoding": "raw",
+      "shape": [4096, 4096],
+      "data": "kuhul://blob/l1_qproj_delta",
+      "scale": 1.0,
+      "checksum": "sha256:789abc123def456...",
+      "comment": "Layer 1 - ASX-RAM pattern recognition"
+    },
+    {
+      "name": "model.layers.1.self_attn.k_proj.weight",
+      "encoding": "raw",
+      "shape": [4096, 4096],
+      "data": "kuhul://blob/l1_kproj_delta",
+      "scale": 1.0
+    },
+    {
+      "comment": "...Additional layers follow same pattern...",
+      "note": "Full Qwen-7B has 32 layers × ~8 tensors/layer = 256 layer deltas"
+    },
+    {
+      "name": "model.layers.31.self_attn.q_proj.weight",
+      "encoding": "raw",
+      "shape": [4096, 4096],
+      "data": "kuhul://blob/l31_qproj_delta",
+      "scale": 1.0,
+      "comment": "Final layer - output refinement"
+    },
+    {
+      "name": "model.norm.weight",
+      "encoding": "raw",
+      "shape": [4096],
+      "data": "kuhul://blob/norm_delta",
+      "scale": 1.0,
+      "comment": "Layer normalization delta"
+    },
+    {
+      "name": "lm_head.weight",
+      "encoding": "raw",
+      "shape": [151936, 4096],
+      "data": "kuhul://blob/lm_head_delta",
+      "scale": 1.0,
+      "checksum": "sha256:abc123def456789...",
+      "comment": "Language model head - XJSON vocabulary enhancements"
+    }
+  ],
+
+  "notes": [
+    "This is an example K'UHUL delta manifest for Qwen-7B",
+    "To use: Place delta .pt files in ./blobs/ directory",
+    "Run: python kuhul_export_safetensors.py --base qwen-7b/model.safetensors --delta kuhul_delta_example.json --out qwen-asx.safetensors",
+    "For SCXQ2 compression (v2), change encoding to 'scxq2' and add 'quant' field"
+  ]
+}

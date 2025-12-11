@@ -1,0 +1,213 @@
+{
+  "@context": "xjson://kuhul/delta/schema/v1",
+  "@version": "kuhul_delta.v1",
+  "@law": "DELTA = SYMBOLIC_GRADIENT + SCXQ2_COMPRESSION + LAYER_MAP",
+  "@description": "K'UHUL training delta schema for safetensors export",
+
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "K'UHUL Delta Manifest",
+  "type": "object",
+
+  "required": ["@version", "base_model", "layers"],
+
+  "properties": {
+    "@version": {
+      "type": "string",
+      "const": "kuhul_delta.v1",
+      "description": "Delta format version"
+    },
+
+    "@context": {
+      "type": "string",
+      "description": "XJSON context URI"
+    },
+
+    "@law": {
+      "type": "string",
+      "description": "K'UHUL law describing delta composition"
+    },
+
+    "base_model": {
+      "type": "string",
+      "description": "Base model name/identifier (e.g., 'Qwen-7B', 'Mistral-7B-v0.1')",
+      "examples": ["Qwen-7B", "Mistral-7B-v0.1", "Llama-2-7b"]
+    },
+
+    "apply_mode": {
+      "type": "string",
+      "enum": ["add", "replace", "scale_add"],
+      "default": "add",
+      "description": "How to apply deltas: add (LoRA-style), replace (full), scale_add (weighted blend)"
+    },
+
+    "scale": {
+      "type": "number",
+      "default": 1.0,
+      "minimum": 0.0,
+      "maximum": 10.0,
+      "description": "Global scaling factor for all deltas"
+    },
+
+    "training_metadata": {
+      "type": "object",
+      "description": "Optional training run metadata",
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "description": "K'UHUL cluster training run ID"
+        },
+        "iterations": {
+          "type": "integer",
+          "description": "Number of training iterations"
+        },
+        "final_loss": {
+          "type": "number",
+          "description": "Final training loss"
+        },
+        "cluster_size": {
+          "type": "integer",
+          "description": "Number of K'UHUL nodes used"
+        },
+        "training_time_seconds": {
+          "type": "number",
+          "description": "Total training time"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Training completion timestamp"
+        }
+      }
+    },
+
+    "compression": {
+      "type": "object",
+      "description": "Compression statistics",
+      "properties": {
+        "scxq2_enabled": {
+          "type": "boolean",
+          "description": "Whether SCXQ2 compression was used"
+        },
+        "compression_ratio": {
+          "type": "number",
+          "description": "Achieved compression ratio"
+        },
+        "original_size_bytes": {
+          "type": "integer",
+          "description": "Uncompressed delta size"
+        },
+        "compressed_size_bytes": {
+          "type": "integer",
+          "description": "Compressed delta size"
+        }
+      }
+    },
+
+    "layers": {
+      "type": "array",
+      "description": "Per-layer delta specifications",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "shape"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Full tensor name in model (e.g., 'model.layers.0.self_attn.q_proj.weight')",
+            "pattern": "^model\\."
+          },
+
+          "encoding": {
+            "type": "string",
+            "enum": ["raw", "scxq2"],
+            "default": "raw",
+            "description": "Delta encoding format: raw (v1), scxq2 (v2)"
+          },
+
+          "shape": {
+            "type": "array",
+            "description": "Tensor shape as [dim1, dim2, ...]",
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "minItems": 1
+          },
+
+          "quant": {
+            "type": "string",
+            "enum": ["int4", "int8", "float16", "float32"],
+            "description": "Quantization format (for SCXQ2 encoding)"
+          },
+
+          "data": {
+            "type": "string",
+            "description": "Delta data reference: kuhul://blob/<id> or file://<path>",
+            "pattern": "^(kuhul|file|scxq2)://"
+          },
+
+          "ref": {
+            "type": "string",
+            "description": "Alternative name for 'data' field",
+            "pattern": "^(kuhul|file|scxq2)://"
+          },
+
+          "scale": {
+            "type": "number",
+            "default": 1.0,
+            "description": "Per-layer scaling factor (multiplied by global scale)"
+          },
+
+          "checksum": {
+            "type": "string",
+            "description": "SHA256 checksum of delta blob (format: 'sha256:<hex>')",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        }
+      }
+    }
+  },
+
+  "examples": [
+    {
+      "@version": "kuhul_delta.v1",
+      "@context": "xjson://kuhul/delta/v1",
+      "base_model": "Qwen-7B",
+      "apply_mode": "add",
+      "scale": 0.1,
+      "training_metadata": {
+        "run_id": "kuhul_cluster_001",
+        "iterations": 1000000,
+        "final_loss": 0.23,
+        "cluster_size": 1000,
+        "training_time_seconds": 45.7,
+        "timestamp": "2025-12-11T20:00:00Z"
+      },
+      "compression": {
+        "scxq2_enabled": true,
+        "compression_ratio": 0.00008,
+        "original_size_bytes": 134217728,
+        "compressed_size_bytes": 10737
+      },
+      "layers": [
+        {
+          "name": "model.embed_tokens.weight",
+          "encoding": "raw",
+          "shape": [151936, 4096],
+          "data": "kuhul://blob/embed_delta_001",
+          "scale": 1.0,
+          "checksum": "sha256:7a91c2f91bb1d4e7abc123..."
+        },
+        {
+          "name": "model.layers.0.self_attn.q_proj.weight",
+          "encoding": "scxq2",
+          "shape": [4096, 4096],
+          "quant": "int4",
+          "ref": "scxq2://deltas/run_001/l0_qproj.delta",
+          "scale": 1.0,
+          "checksum": "sha256:abc123def456..."
+        }
+      ]
+    }
+  ]
+}
