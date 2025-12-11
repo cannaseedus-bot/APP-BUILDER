@@ -1,0 +1,273 @@
+{
+  "@context": "xjson://kuhul/colab/requirements/v1",
+  "@v": "1.0.0",
+  "@law": "KUHUL_COLAB_TOOLS = PYTHON_DEPS + KUHUL_WRAPPERS + POLYGLOT",
+  "n": "K'UHUL Colab Requirements Manifest",
+  "d": "Complete tool and dependency specifications for K'UHUL Colab nodes",
+
+  "core_dependencies": {
+    "pytorch": {
+      "package": "torch",
+      "version": ">=2.1.0",
+      "kuhul_wrapper": "KUHULTorchWrapper",
+      "purpose": "Neural network training & GPU acceleration",
+      "install": "pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118",
+      "features": ["gpu_monitoring", "kuhul_metrics", "memory_tracking"],
+      "required": true
+    },
+    "transformers": {
+      "package": "transformers",
+      "version": ">=4.37.0",
+      "kuhul_wrapper": "KUHULModelLoader",
+      "purpose": "Hugging Face model loading & inference",
+      "install": "pip install transformers>=4.37.0",
+      "features": ["svg_weights", "flash_attention", "quantization"],
+      "required": true
+    },
+    "peft": {
+      "package": "peft",
+      "version": ">=0.8.0",
+      "kuhul_wrapper": "KUHULLoRATrainer",
+      "purpose": "Parameter-Efficient Fine-Tuning (LoRA/QLoRA)",
+      "install": "pip install peft>=0.8.0",
+      "features": ["lora", "qlora", "scxq2_compression"],
+      "required": true
+    },
+    "accelerate": {
+      "package": "accelerate",
+      "version": ">=0.27.0",
+      "kuhul_wrapper": "KUHULAccelerator",
+      "purpose": "Distributed training & mixed precision",
+      "install": "pip install accelerate>=0.27.0",
+      "features": ["gradient_accumulation", "mixed_precision", "device_map"],
+      "required": true
+    },
+    "datasets": {
+      "package": "datasets",
+      "version": ">=2.16.0",
+      "kuhul_wrapper": "KUHULDatasetLoader",
+      "purpose": "Dataset loading & preprocessing",
+      "install": "pip install datasets>=2.16.0",
+      "features": ["jsonl", "csv", "huggingface_hub"],
+      "required": true
+    },
+    "bitsandbytes": {
+      "package": "bitsandbytes",
+      "version": ">=0.42.0",
+      "kuhul_wrapper": "KUHULQuantizer",
+      "purpose": "8-bit/4-bit quantization",
+      "install": "pip install bitsandbytes>=0.42.0",
+      "features": ["4bit_quant", "8bit_quant", "nf4"],
+      "required": true
+    },
+    "websockets": {
+      "package": "websockets",
+      "version": ">=12.0",
+      "kuhul_wrapper": "KUHULWebSocketClient",
+      "purpose": "K'UHUL hive communication",
+      "install": "pip install websockets>=12.0",
+      "features": ["mesh_protocol", "async_comm", "job_listening"],
+      "required": true
+    },
+    "flask": {
+      "package": "flask",
+      "version": ">=3.0.0",
+      "kuhul_wrapper": "KUHULHTTPServer",
+      "purpose": "REST API server on Colab",
+      "install": "pip install flask>=3.0.0",
+      "features": ["kuhul_endpoints", "health_check", "metrics_api"],
+      "required": true
+    },
+    "requests": {
+      "package": "requests",
+      "version": ">=2.31.0",
+      "kuhul_wrapper": "KUHULHTTPClient",
+      "purpose": "HTTP client for dataset downloads",
+      "install": "pip install requests>=2.31.0",
+      "features": ["dataset_download", "model_download", "api_calls"],
+      "required": true
+    },
+    "aiohttp": {
+      "package": "aiohttp",
+      "version": ">=3.9.0",
+      "kuhul_wrapper": "KUHULAsyncHTTP",
+      "purpose": "Async HTTP client",
+      "install": "pip install aiohttp>=3.9.0",
+      "features": ["async_api", "mesh_calls", "concurrent_requests"],
+      "required": true
+    }
+  },
+
+  "enhancement_tools": {
+    "unsloth": {
+      "package": "unsloth",
+      "version": "latest",
+      "kuhul_wrapper": "KUHULFastTrainer",
+      "purpose": "2x faster training, 60% less memory",
+      "install": "pip install \"unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git\"",
+      "features": ["fast_training", "memory_optimization", "flash_attention"],
+      "required": false,
+      "recommended": true
+    },
+    "trl": {
+      "package": "trl",
+      "version": ">=0.7.10",
+      "kuhul_wrapper": "KUHULRLHFTrainer",
+      "purpose": "Transformer Reinforcement Learning",
+      "install": "pip install trl>=0.7.10",
+      "features": ["dpo", "rlhf", "preference_learning"],
+      "required": false,
+      "recommended": true
+    },
+    "pyngrok": {
+      "package": "pyngrok",
+      "version": ">=6.0.0",
+      "kuhul_wrapper": "KUHULTunnel",
+      "purpose": "Expose Colab to public URL",
+      "install": "pip install pyngrok>=6.0.0",
+      "features": ["tunnel_creation", "auto_registration", "https_tunnel"],
+      "required": false,
+      "recommended": true
+    },
+    "huggingface_hub": {
+      "package": "huggingface_hub",
+      "version": ">=0.20.0",
+      "kuhul_wrapper": "KUHULModelHub",
+      "purpose": "Model/dataset hosting",
+      "install": "pip install huggingface_hub>=0.20.0",
+      "features": ["model_push", "dataset_push", "hub_download"],
+      "required": false
+    },
+    "wandb": {
+      "package": "wandb",
+      "version": ">=0.16.0",
+      "kuhul_wrapper": "KUHULMetricsTracker",
+      "purpose": "Training metrics tracking",
+      "install": "pip install wandb>=0.16.0",
+      "features": ["metric_logging", "visualization", "experiment_tracking"],
+      "required": false
+    },
+    "tensorboard": {
+      "package": "tensorboard",
+      "version": ">=2.15.0",
+      "kuhul_wrapper": "KUHULTensorBoard",
+      "purpose": "Training visualization",
+      "install": "pip install tensorboard>=2.15.0",
+      "features": ["training_curves", "loss_plots", "real_time_monitoring"],
+      "required": false
+    }
+  },
+
+  "kuhul_exclusive_tools": {
+    "svg_compressor": {
+      "class": "KUHULSVGCompressor",
+      "purpose": "SVG weight geometry compression",
+      "features": ["weight_to_svg", "svg_to_weight", "3x_compression"],
+      "compression_ratio": 3.0,
+      "file": "kuhul_colab_tools.py"
+    },
+    "scxq2": {
+      "class": "KUHULSCXQ2",
+      "purpose": "Quantum lattice compression",
+      "features": ["scxq2_compress", "scxq2_decompress", "0.00008_ratio"],
+      "compression_ratio": 0.00008,
+      "file": "kuhul_colab_tools.py"
+    },
+    "polyglot_bridge": {
+      "class": "KUHULColabBridge",
+      "purpose": "Browser-to-Colab Python bridge",
+      "features": ["pi_goat_integration", "job_orchestration", "node_management"],
+      "file": "kuhul_colab_integration.py"
+    }
+  },
+
+  "system_requirements": {
+    "free_colab_t4": {
+      "gpu": "NVIDIA T4",
+      "vram_gb": 15,
+      "ram_gb": 12,
+      "storage_gb": 78,
+      "runtime_hours": 12,
+      "recommended_batch_size": 2,
+      "gradient_accumulation": 4
+    },
+    "colab_pro_a100": {
+      "gpu": "NVIDIA A100",
+      "vram_gb": 40,
+      "ram_gb": 83,
+      "storage_gb": 166,
+      "runtime_hours": 24,
+      "recommended_batch_size": 8,
+      "gradient_accumulation": 2
+    },
+    "colab_pro_plus_a100": {
+      "gpu": "NVIDIA A100",
+      "vram_gb": 40,
+      "ram_gb": 166,
+      "storage_gb": 498,
+      "runtime_hours": "background",
+      "recommended_batch_size": 8,
+      "gradient_accumulation": 1
+    }
+  },
+
+  "installation_profiles": {
+    "minimal": {
+      "description": "Minimum viable K'UHUL Colab node",
+      "packages": ["torch", "transformers", "peft", "accelerate", "datasets", "bitsandbytes", "websockets", "flask"],
+      "install_command": "pip install torch transformers peft accelerate datasets bitsandbytes websockets flask"
+    },
+    "recommended": {
+      "description": "Recommended K'UHUL Colab setup with optimizations",
+      "packages": ["torch", "transformers", "peft", "accelerate", "datasets", "bitsandbytes", "websockets", "flask", "requests", "aiohttp", "unsloth", "trl", "pyngrok"],
+      "install_command": "pip install torch transformers peft accelerate datasets bitsandbytes websockets flask requests aiohttp trl pyngrok && pip install 'unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git'"
+    },
+    "full": {
+      "description": "Complete K'UHUL toolset with tracking and visualization",
+      "packages": ["torch", "transformers", "peft", "accelerate", "datasets", "bitsandbytes", "websockets", "flask", "requests", "aiohttp", "unsloth", "trl", "pyngrok", "huggingface_hub", "wandb", "tensorboard"],
+      "install_command": "pip install torch transformers peft accelerate datasets bitsandbytes websockets flask requests aiohttp trl pyngrok huggingface_hub wandb tensorboard && pip install 'unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git'"
+    }
+  },
+
+  "kuhul_wrappers": {
+    "KUHULTorchWrapper": "PyTorch with K'UHUL monitoring",
+    "KUHULModelLoader": "Model loading with SVG weight support",
+    "KUHULLoRATrainer": "LoRA training with SCXQ2 compression",
+    "KUHULAccelerator": "Training acceleration with K'UHUL metrics",
+    "KUHULDatasetLoader": "Dataset loading with K'UHUL format support",
+    "KUHULQuantizer": "Quantization with SVG weight output",
+    "KUHULWebSocketClient": "WebSocket client for K'UHUL mesh",
+    "KUHULHTTPServer": "Flask server with K'UHUL endpoints",
+    "KUHULHTTPClient": "HTTP client with K'UHUL protocol",
+    "KUHULAsyncHTTP": "Async HTTP with K'UHUL mesh",
+    "KUHULTunnel": "Tunneling with auto-registration",
+    "KUHULFastTrainer": "Unsloth integration with K'UHUL",
+    "KUHULRLHFTrainer": "RLHF/DPO with K'UHUL feedback",
+    "KUHULSVGCompressor": "SVG weight geometry compression",
+    "KUHULSCXQ2": "Quantum lattice compression (0.00008 ratio)"
+  },
+
+  "quick_start": {
+    "step1": "Upload colab_launcher.py and kuhul_colab_integration.py to Colab",
+    "step2": "Run: from kuhul_colab_tools import install_kuhul_tools; install_kuhul_tools()",
+    "step3": "Run: from colab_launcher import setup_kuhul_colab_node",
+    "step4": "Run: node = setup_kuhul_colab_node()",
+    "step5": "Connect via ngrok and register node URL in K'UHUL OS"
+  },
+
+  "environment_variables": {
+    "NGROK_AUTH_TOKEN": "Required for ngrok tunnel",
+    "HF_TOKEN": "Optional: Hugging Face for model uploads",
+    "WANDB_API_KEY": "Optional: Weights & Biases tracking",
+    "KUHUL_HIVE_URL": "K'UHUL hive WebSocket URL",
+    "KUHUL_NODE_ID": "Custom node identifier"
+  },
+
+  "metadata": {
+    "created_by": "K'UHUL OS",
+    "version": "1.0.0",
+    "protocol": "kuhul_colab_1.0",
+    "compatible_with": ["colab_launcher.py", "kuhul_colab_integration.py"],
+    "last_updated": "2025-12-11"
+  }
+}
