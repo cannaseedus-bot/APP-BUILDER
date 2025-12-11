@@ -94,7 +94,16 @@ const FOLDS = {
       "POST /feed/sync":     ["admin"],
 
       "GET /mesh/ping":      ["guest", "trainer", "admin"],
-      "POST /mesh/register": ["admin"]
+      "POST /mesh/register": ["admin"],
+
+      "POST /gram/observe":  ["trainer", "admin"],
+      "GET /gram/analyze":   ["trainer", "admin"],
+      "POST /gram/suggest":  ["guest", "trainer", "admin"],
+      "POST /gram/generate": ["admin"],
+      "POST /gram/start":    ["admin"],
+      "GET /gram/metrics":   ["guest", "trainer", "admin"],
+      "GET /gram/patterns":  ["trainer", "admin"],
+      "GET /gram/macros":    ["trainer", "admin"]
     },
 
     routes: {
@@ -119,7 +128,16 @@ const FOLDS = {
       "POST /feed/sync":     "feed_sync",
 
       "GET /mesh/ping":      "mesh_ping",
-      "POST /mesh/register": "mesh_register"
+      "POST /mesh/register": "mesh_register",
+
+      "POST /gram/observe":  "gram_observe",
+      "GET /gram/analyze":   "gram_analyze_patterns",
+      "POST /gram/suggest":  "gram_suggest_next",
+      "POST /gram/generate": "gram_auto_generate",
+      "POST /gram/start":    "gram_learning_loop",
+      "GET /gram/metrics":   "gram_get_metrics",
+      "GET /gram/patterns":  "gram_get_patterns",
+      "GET /gram/macros":    "gram_get_macros"
     },
 
     /**

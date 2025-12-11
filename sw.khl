@@ -55,7 +55,8 @@
       "trainer": { "status": "active" },
       "rlhf":    { "status": "active" },
       "quantum": { "status": "active" },
-      "atomic":  { "status": "active" }
+      "atomic":  { "status": "active" },
+      "gram":    { "status": "active", "learning": true }
     },
 
     "dns": {
@@ -106,7 +107,15 @@
         "/feed/import":      { "fold": "feed",    "handler": "feed_import" },
         "/feed/sync":        { "fold": "feed",    "handler": "feed_sync" },
         "/mesh/ping":        { "fold": "mesh",    "handler": "mesh_ping" },
-        "/mesh/register":    { "fold": "mesh",    "handler": "mesh_register" }
+        "/mesh/register":    { "fold": "mesh",    "handler": "mesh_register" },
+        "/gram/observe":     { "fold": "gram",    "handler": "gram_observe" },
+        "/gram/analyze":     { "fold": "gram",    "handler": "gram_analyze_patterns" },
+        "/gram/suggest":     { "fold": "gram",    "handler": "gram_suggest_next" },
+        "/gram/generate":    { "fold": "gram",    "handler": "gram_auto_generate" },
+        "/gram/start":       { "fold": "gram",    "handler": "gram_learning_loop" },
+        "/gram/metrics":     { "fold": "gram",    "handler": "gram_get_metrics" },
+        "/gram/patterns":    { "fold": "gram",    "handler": "gram_get_patterns" },
+        "/gram/macros":      { "fold": "gram",    "handler": "gram_get_macros" }
       }
     },
 
@@ -144,7 +153,43 @@
     "mx2db": {
       "mode": "micro-asxr",
       "shard_id": "mx2db_micronaut",
-      "tables": ["n_grams", "supagrams", "rlhf_traces", "agent_state", "training_history", "tapes"]
+      "tables": ["n_grams", "supagrams", "rlhf_traces", "agent_state", "training_history", "tapes", "gram_observations", "gram_patterns", "gram_macros"]
+    },
+
+    "gram_kernel": {
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "ATOMIC_PATTERN_LEARNING_ENGINE",
+      "learning_interval_ms": 300000,
+      "observation_capacity": "unlimited",
+      "granularity": "atomic_block_level",
+      "layers": {
+        "observation": {
+          "stores": ["ngrams", "sequences", "contexts", "entropy"],
+          "capture_all_executions": true
+        },
+        "pattern_recognition": {
+          "algorithms": ["frequency_analysis", "transition_probabilities", "emerging_patterns", "anomaly_detection"],
+          "refresh_rate_seconds": 300
+        },
+        "suggestion_engine": {
+          "types": ["next_block", "optimization", "macro", "error_fix"],
+          "confidence_threshold": 0.6,
+          "max_suggestions": 3
+        },
+        "auto_generation": {
+          "capabilities": ["macro_creation", "workflow_optimization", "error_fix_generation", "template_synthesis"],
+          "min_sequence_frequency": 3
+        }
+      },
+      "metrics": {
+        "iterations": 0,
+        "observations_stored": 0,
+        "patterns_learned": 0,
+        "suggestions_generated": 0,
+        "macros_created": 0,
+        "entropy": 1.0
+      }
     },
 
     "user_backing": {
@@ -1986,5 +2031,381 @@
     }]→[Xul return]
   [Xul]
 
+
+⟁ Xul ⟁
+  /* ==========================================================
+     @GRAM KERNEL - SELF-LEARNING PATTERN RECOGNITION
+     Complete C@@L BLOCK implementation
+     ========================================================== */
+
+  /* GRAM OBSERVE (C@@L BLOCK - Observe Atomic Execution) */
+  [Pop gram_observe]
+    /* @control: [@capture, @store, @analyze]
+       @variable: {event_type, event_data, context}
+       @Sek: Capture and store atomic block execution
+       @Ch'en: Return observation ID */
+
+    [Wo @event_type]→[Ch'en type]
+    [Wo @event_data]→[Ch'en data]
+    [Wo @context]→[Ch'en ctx]
+
+    // Extract block type for n-gram analysis
+    [Wo data["@type"]]→[Ch'en block_type]
+
+    // Store unigram frequency
+    [@if block_type]→[@then
+      [Yax "gram.ngrams.unigrams." block_type]→[Ch'en current_count]
+      [Wo (current_count || 0) + 1]→[Yax "gram.ngrams.unigrams." block_type]
+    ]
+
+    // Generate observation ID
+    [Wo Date.now() "_" Math.random().toString(36).substr(2, 9)]→[Ch'en obs_id]
+
+    // Store observation in MX2DB
+    [Wo {
+      "id": obs_id,
+      "type": type,
+      "block_type": block_type,
+      "data": data,
+      "context": ctx,
+      "timestamp": Date.now()
+    }]→[Sek mx2db_insert "gram_observations"]→[Ch'en stored]
+
+    // Update metrics
+    [Yax "gram.metrics.observations_stored"]→[Ch'en obs_count]
+    [Wo (obs_count || 0) + 1]→[Yax "gram.metrics.observations_stored"]
+
+    // Decrease entropy (system is learning)
+    [Yax "gram.metrics.entropy"]→[Ch'en current_entropy]
+    [Wo (current_entropy || 1.0) * 0.999]→[Yax "gram.metrics.entropy"]
+
+    [Wo {
+      "ok": true,
+      "observation_id": obs_id,
+      "block_type": block_type,
+      "stored": true
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GRAM ANALYZE PATTERNS (C@@L BLOCK - Pattern Recognition) */
+  [Pop gram_analyze_patterns]
+    /* @control: [@analyze, @detect, @classify]
+       @variable: {}
+       @Sek: Analyze all observations for patterns
+       @Ch'en: Return pattern analysis */
+
+    // Get all unigrams
+    [Yax "gram.ngrams.unigrams"]→[Ch'en all_unigrams]
+
+    // Sort by frequency
+    [Wo all_unigrams]→[Sek Object.entries]→[Sek sort (a, b) => b[1] - a[1]]→[
+      [Sek slice 0, 10]
+    ]→[Ch'en top_unigrams]
+
+    // Get all observations
+    [Sek mx2db_query "gram_observations"]→[Ch'en observations]
+
+    // Analyze sequences (bigrams)
+    [Wo observations]→[Sek filter obs => obs.type === "block_executing"]→[Ch'en executions]
+
+    // Build transition matrix
+    [Wo {}]→[Ch'en transitions]
+    [@loop executions]→[@as [obs, idx]]→[
+      [@if executions[idx + 1]]→[@then
+        [Wo obs.block_type]→[Ch'en from_type]
+        [Wo executions[idx + 1].block_type]→[Ch'en to_type]
+
+        [Wo from_type "→" to_type]→[Ch'en seq_key]
+        [Wo transitions[seq_key]]→[Ch'en current_count]
+        [Wo (current_count || 0) + 1]→[Ch'en transitions[seq_key]]
+
+        // Store in ASX-RAM
+        [Wo transitions[seq_key]]→[Yax "gram.sequences." seq_key]
+      ]
+    ]
+
+    // Calculate probabilities
+    [Wo {}]→[Ch'en probabilities]
+    [Wo Object.keys(transitions)]→[Sek forEach]→[Ch'en key]→[
+      [Wo key]→[Sek split "→"]→[Ch'en [from_type, to_type]]
+      [Wo from_type]→[Yax "gram.probabilities." from_type]→[Ch'en from_probs]
+
+      [@if !from_probs]→[@then
+        [Wo {}]→[Yax "gram.probabilities." from_type]
+      ]
+
+      [Wo from_probs[to_type]]→[Ch'en current]
+      [Wo (current || 0) + transitions[key]]→[Ch'en from_probs[to_type]]
+    ]
+
+    // Normalize probabilities
+    [Wo Object.keys(probabilities)]→[Sek forEach from_type]→[
+      [Wo probabilities[from_type]]→[Ch'en from_probs]
+      [Wo Object.values(from_probs)]→[Sek reduce (a, b) => a + b, 0]→[Ch'en total]
+
+      [Wo Object.keys(from_probs)]→[Sek forEach to_type]→[
+        [Wo from_probs[to_type] / total]→[Ch'en from_probs[to_type]]
+      ]
+
+      [Wo from_probs]→[Yax "gram.probabilities." from_type]
+    ]
+
+    // Update metrics
+    [Yax "gram.metrics.patterns_learned"]→[Ch'en patterns_count]
+    [Wo (patterns_count || 0) + Object.keys(transitions).length]→[
+      [Yax "gram.metrics.patterns_learned"]
+    ]
+
+    [Wo {
+      "ok": true,
+      "mode": "pattern_analysis",
+      "top_unigrams": top_unigrams,
+      "transitions": transitions,
+      "total_observations": observations.length,
+      "unique_sequences": Object.keys(transitions).length,
+      "entropy": [Yax "gram.metrics.entropy"],
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GRAM SUGGEST NEXT (C@@L BLOCK - Next Block Prediction) */
+  [Pop gram_suggest_next]
+    /* @control: [@predict, @rank, @suggest]
+       @variable: {current_block, context, max_suggestions}
+       @Sek: Suggest next blocks based on learned patterns
+       @Ch'en: Return ranked suggestions */
+
+    [Wo @current_block]→[Ch'en current]
+    [Wo @context]→[Ch'en ctx]
+    [Wo @max_suggestions]→[Ch'en max]
+    [Wo max || 3]→[Ch'en limit]
+
+    [Wo current["@type"]]→[Ch'en current_type]
+
+    // Get transition probabilities for current type
+    [Yax "gram.probabilities." current_type]→[Ch'en probs]
+
+    [@if !probs || Object.keys(probs).length === 0]→[@then
+      // Fallback: use top unigrams
+      [Yax "gram.ngrams.unigrams"]→[Ch'en unigrams]
+      [Wo unigrams]→[Sek Object.entries]→[Sek sort (a, b) => b[1] - a[1]]→[
+        [Sek slice 0, limit]
+      ]→[Ch'en top_types]
+
+      [Wo top_types]→[Sek map ([type, count])=> ({
+        "suggested_type": type,
+        "confidence": 0.5,
+        "reason": "Most frequent block type (no transitions learned)",
+        "context": ctx
+      })]→[Ch'en suggestions]
+    ]→[@else
+      // Use learned probabilities
+      [Wo probs]→[Sek Object.entries]→[Sek sort (a, b) => b[1] - a[1]]→[
+        [Sek slice 0, limit]
+      ]→[Ch'en top_next]
+
+      [Wo top_next]→[Sek map ([next_type, prob])=> ({
+        "suggested_type": next_type,
+        "confidence": prob,
+        "reason": "Commonly follows " + current_type + " (" + (prob * 100).toFixed(1) + "%)",
+        "context": ctx
+      })]→[Ch'en suggestions]
+    ]
+
+    // Update metrics
+    [Yax "gram.metrics.suggestions_generated"]→[Ch'en sugg_count]
+    [Wo (sugg_count || 0) + suggestions.length]→[Yax "gram.metrics.suggestions_generated"]
+
+    [Wo {
+      "ok": true,
+      "mode": "suggestions",
+      "current_block": current_type,
+      "suggestions": suggestions,
+      "count": suggestions.length
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GRAM AUTO GENERATE (C@@L BLOCK - Macro Generation) */
+  [Pop gram_auto_generate]
+    /* @control: [@detect, @generate, @store]
+       @variable: {generation_type, min_frequency}
+       @Sek: Auto-generate macros from frequent patterns
+       @Ch'en: Return generated artifacts */
+
+    [Wo @generation_type]→[Ch'en gen_type]
+    [Wo @min_frequency]→[Ch'en min_freq]
+    [Wo min_freq || 3]→[Ch'en threshold]
+
+    [@if gen_type === "macro"]→[@then
+      // Get all sequences
+      [Yax "gram.sequences"]→[Ch'en all_sequences]
+
+      // Filter frequent sequences
+      [Wo all_sequences]→[Sek Object.entries]→[
+        [Sek filter ([seq, count])=> count >= threshold]
+      ]→[Ch'en frequent_seqs]
+
+      // Generate macros
+      [Wo frequent_seqs]→[Sek map ([seq, count])=> {
+        [Wo seq]→[Sek split "→"]→[Ch'en [type1, type2]]
+
+        // Create macro atomic block
+        [Wo {
+          "@type": "auto_macro",
+          "@control": ["@execute_sequence"],
+          "@variable": {
+            "name": type1 + "_" + type2 + "_macro",
+            "sequence": [type1, type2],
+            "frequency": count,
+            "generated_at": Date.now()
+          },
+          "@Sek": "Execute learned sequence macro",
+          "@Ch'en": "result"
+        }]→[Ch'en macro]
+
+        // Store in MX2DB
+        [Wo macro]→[Sek mx2db_insert "gram_macros"]
+
+        return macro
+      }]→[Ch'en macros]
+
+      // Update metrics
+      [Yax "gram.metrics.macros_created"]→[Ch'en macro_count]
+      [Wo (macro_count || 0) + macros.length]→[Yax "gram.metrics.macros_created"]
+
+      [Wo {
+        "ok": true,
+        "mode": "macro_generation",
+        "macros_generated": macros.length,
+        "macros": macros
+      }]→[Xul return]
+    ]→[@else
+      [Wo {
+        "ok": false,
+        "error": "Unsupported generation type",
+        "type": gen_type
+      }]→[Xul return]
+    ]
+  [Xul]
+
+
+  /* GRAM LEARNING LOOP (C@@L BLOCK - Continuous Learning) */
+  [Pop gram_learning_loop]
+    /* @control: [@learn, @iterate, @improve]
+       @variable: {interval_ms}
+       @Sek: Start continuous learning loop
+       @Ch'en: Return loop status */
+
+    [Wo @interval_ms]→[Ch'en interval]
+    [Wo interval || 300000]→[Ch'en learning_interval]
+
+    // Learning iteration function
+    [Pop learn_iteration]→[
+      // 1. Analyze patterns
+      [Sek gram_analyze_patterns]→[Ch'en analysis]
+
+      // 2. Generate macros
+      [Wo "macro"]→[Sek gram_auto_generate]→[Ch'en macros]
+
+      // 3. Update iteration count
+      [Yax "gram.metrics.iterations"]→[Ch'en iter_count]
+      [Wo (iter_count || 0) + 1]→[Yax "gram.metrics.iterations"]
+
+      // 4. Log iteration
+      [Wo "🧠 @Gram iteration " + (iter_count + 1) + " complete. Generated " + macros.macros_generated + " macros."]→[
+        [Sek console.log]
+      ]
+
+      [Wo {
+        "iteration": iter_count + 1,
+        "analysis": analysis,
+        "macros": macros,
+        "timestamp": Date.now()
+      }]→[Xul return]
+    ]
+
+    // Start interval
+    [Wo learning_interval learn_iteration]→[Sek setInterval]→[Ch'en interval_id]
+
+    // Store interval ID
+    [Wo interval_id]→[Yax "gram.learning_loop.interval_id"]
+
+    [Wo {
+      "ok": true,
+      "mode": "learning_loop_started",
+      "interval_ms": learning_interval,
+      "interval_id": interval_id,
+      "message": "🧠 @Gram continuous learning activated"
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GRAM GET METRICS (C@@L BLOCK - Metrics Reporting) */
+  [Pop gram_get_metrics]
+    /* @control: [@report, @display]
+       @variable: {}
+       @Sek: Get current learning metrics
+       @Ch'en: Return metrics object */
+
+    [Yax "gram.metrics"]→[Ch'en metrics]
+
+    [Wo {
+      "ok": true,
+      "mode": "metrics",
+      "metrics": {
+        "iterations": metrics.iterations || 0,
+        "observations_stored": metrics.observations_stored || 0,
+        "patterns_learned": metrics.patterns_learned || 0,
+        "suggestions_generated": metrics.suggestions_generated || 0,
+        "macros_created": metrics.macros_created || 0,
+        "entropy": metrics.entropy || 1.0
+      },
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GRAM GET PATTERNS (C@@L BLOCK - Pattern Inspection) */
+  [Pop gram_get_patterns]
+    /* @control: [@retrieve, @display]
+       @variable: {}
+       @Sek: Get all learned patterns
+       @Ch'en: Return pattern data */
+
+    [Yax "gram.ngrams.unigrams"]→[Ch'en unigrams]
+    [Yax "gram.sequences"]→[Ch'en sequences]
+    [Yax "gram.probabilities"]→[Ch'en probabilities]
+
+    [Wo {
+      "ok": true,
+      "mode": "patterns",
+      "unigrams": unigrams || {},
+      "sequences": sequences || {},
+      "probabilities": probabilities || {},
+      "total_unigrams": Object.keys(unigrams || {}).length,
+      "total_sequences": Object.keys(sequences || {}).length
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GRAM GET MACROS (C@@L BLOCK - Macro Retrieval) */
+  [Pop gram_get_macros]
+    /* @control: [@retrieve, @display]
+       @variable: {}
+       @Sek: Get all generated macros
+       @Ch'en: Return macros list */
+
+    [Sek mx2db_query "gram_macros"]→[Ch'en macros]
+
+    [Wo {
+      "ok": true,
+      "mode": "macros",
+      "macros": macros || [],
+      "count": (macros || []).length
+    }]→[Xul return]
+  [Xul]
 
 ⟁ Xul ⟁
