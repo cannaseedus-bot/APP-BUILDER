@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASX Universal Console - AI Cartridge System</title>
+    <style>
+        /* SCX Atomic CSS */
+        [x]{all:unset;display:block;box-sizing:border-box}
+        .⟁F{display:flex}
+        .⟁Fcol{flex-direction:column}
+        .⟁Acenter{align-items:center}
+        .⟁Jcenter{justify-content:center}
+        .⟁Jbetween{justify-content:space-between}
+        .⟁Wrap{flex-wrap:wrap}
+        .⟁Gap1{gap:1rem}
+        .⟁Gap2{gap:2rem}
+        .⟁P1{padding:1rem}
+        .⟁P2{padding:2rem}
+        .⟁Px1{padding-left:1rem;padding-right:1rem}
+        .⟁Py1{padding-top:1rem;padding-bottom:1rem}
+        .⟁Wfull{width:100%}
+        .⟁Hfull{height:100%}
+        .⟁Hscreen{height:100vh}
+        .⟁MinH0{min-height:0}
+        .⟁OverflowY{overflow-y:auto}
+        .⟁BorderB1{border-bottom:1px solid rgba(22,242,170,0.3)}
+        .⟁BorderR1{border-right:1px solid rgba(22,242,170,0.3)}
+        .⟁BgPrimary{background:#020617}
+        .⟁BgSecondary{background:#0f172a}
+        .⟁BgSurface{background:rgba(15,23,42,0.8)}
+        .⟁BgAccent{background:rgba(22,242,170,0.1)}
+        .⟁TextPrimary{color:#e8fff6}
+        .⟁TextSecondary{color:#94a3b8}
+        .⟁TextAccent{color:#16f2aa}
+        .⟁TextGradient{
+            background:linear-gradient(45deg, #16f2aa, #00ffff);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+        }
+        .⟁FontMono{font-family:'Courier New',monospace}
+        .⟁FontBold{font-weight:bold}
+        .⟁TextXl{font-size:2rem}
+        .⟁TextSm{font-size:0.9rem}
+        .⟁TextXs{font-size:0.8rem}
+        .⟁UpperCase{text-transform:uppercase}
+        .⟁TrackingWide{letter-spacing:2px}
+        .⟁CursorPointer{cursor:pointer}
+        .⟁Transition{transition:all 0.3s ease}
+        .⟁Rounded{border-radius:8px}
+        .⟁RoundedFull{border-radius:20px}
+        .⟁ShadowGlow{box-shadow:0 0 30px rgba(22,242,170,0.2)}
+        .⟁BorderAccent{border:1px solid #16f2aa}
+        .⟁BorderTransparent{border:1px solid transparent}
+        
+        /* Grid System */
+        .⟁Grid{display:grid}
+        .⟁GridColsSidebar{grid-template-columns:280px 1fr}
+        .⟁GridRowsHeader{grid-template-rows:80px 1fr 120px}
+        .⟁GridSpanFull{grid-column:1/-1}
+        
+        /* Hover States */
+        .⟁HoverBorder:hover{border-color:#16f2aa}
+        .⟁HoverBg:hover{background:rgba(22,242,170,0.05)}
+        
+        body {
+            margin: 0;
+            background: #020617;
+            color: #e8fff6;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="⟁BgPrimary ⟁TextPrimary ⟁FontMono ⟁Hscreen">
+    <!-- ASX Universal Console -->
+    <div class="⟁Grid ⟁GridColsSidebar ⟁GridRowsHeader ⟁Hscreen ⟁BgSecondary" style="gap:1px">
+        
+        <!-- Header -->
+        <div class="⟁GridSpanFull ⟁BgSecondary ⟁BorderB1 ⟁F ⟁Acenter ⟁Jbetween ⟁Px2 ⟁ShadowGlow">
+            <div class="⟁F ⟁Acenter ⟁Gap1">
+                <div class="⟁TextXl ⟁FontBold ⟁TextGradient">ASX CONSOLE</div>
+            </div>
+            <div class="⟁F ⟁Gap1">
+                <div class="⟁TextSm ⟁BgAccent ⟁BorderAccent ⟁RoundedFull ⟁Px1 ⟁Py1">AI: ONLINE</div>
+                <div class="⟁TextSm ⟁BgAccent ⟁BorderAccent ⟁RoundedFull ⟁Px1 ⟁Py1">CARTRIDGES: 4</div>
+                <div class="⟁TextSm ⟁BgAccent ⟁BorderAccent ⟁RoundedFull ⟁Px1 ⟁Py1">MEMORY: 87%</div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="⟁BgSurface ⟁BorderR1 ⟁P2 ⟁OverflowY ⟁MinH0">
+            <div class="⟁Fcol ⟁Gap2">
+                <!-- Navigation -->
+                <div>
+                    <div class="⟁TextSecondary ⟁TextXs ⟁UpperCase ⟁TrackingWide">NAVIGATION</div>
+                    <div class="⟁Fcol ⟁Gap1 ⟁Mt1">
+                        <div class="⟁P1 ⟁BgAccent ⟁BorderTransparent ⟁Rounded ⟁CursorPointer ⟁Transition ⟁HoverBorder ⟁HoverBg">Dashboard</div>
+                        <div class="⟁P1 ⟁BgAccent ⟁BorderTransparent ⟁Rounded ⟁CursorPointer ⟁Transition ⟁HoverBorder ⟁HoverBg">Cartridge Library</div>
+                        <div class="⟁P1 ⟁BgAccent ⟁BorderTransparent ⟁Rounded ⟁CursorPointer ⟁Transition ⟁HoverBorder ⟁HoverBg">AI Assistant</div>
+                        <div class="⟁P1 ⟁BgAccent ⟁BorderTransparent ⟁Rounded ⟁CursorPointer ⟁Transition ⟁HoverBorder ⟁HoverBg">Settings</div>
+                    </div>
+                </div>
+                
+                <!-- Active Cartridges -->
+                <div>
+                    <div class="⟁TextSecondary ⟁TextXs ⟁UpperCase ⟁TrackingWide">ACTIVE SLOTS</div>
+                    <div class="⟁Fcol ⟁Gap1 ⟁Mt1">
+                        <div class="⟁P1 ⟁BgAccent ⟁BorderAccent ⟁Rounded">
+                            <div class="⟁TextAccent">SLOT 1</div>
+                            <div class="⟁TextSm">ASX Game Studio</div>
+                        </div>
+                        <div class="⟁P1 ⟁BgAccent ⟁BorderAccent ⟁Rounded">
+                            <div class="⟁TextAccent">SLOT 2</div>
+                            <div class="⟁TextSm">NES Emulator</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Recommendations -->
+                <div>
+                    <div class="⟁TextSecondary ⟁TextXs ⟁UpperCase ⟁TrackingWide">AI SUGGESTIONS</div>
+                    <div class="⟁Fcol ⟁Gap1 ⟁Mt1">
+                        <div class="⟁P1 ⟁BgAccent ⟁BorderTransparent ⟁Rounded ⟁CursorPointer ⟁Transition ⟁HoverBorder">
+                            <div class="⟁TextSm">Load Web Studio</div>
+                            <div class="⟁TextSecondary ⟁TextXs">For web development</div>
+                        </div>
+                        <div class="⟁P1 ⟁BgAccent ⟁BorderTransparent ⟁Rounded ⟁CursorPointer ⟁Transition ⟁HoverBorder">
+                            <div class="⟁TextSm">Optimize Performance</div>
+                            <div class="⟁TextSecondary ⟁TextXs">AI-detected opportunity</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="⟁BgPrimary ⟁P2 ⟁OverflowY ⟁MinH0">
+            <div class="⟁Fcol ⟁Gap2">
+                <!-- Hero Section -->
+                <div class="⟁F ⟁Jbetween ⟁Acenter ⟁P2 ⟁BgSurface ⟁BorderAccent ⟁Rounded ⟁ShadowGlow">
+                    <div class="⟁Fcol ⟁Gap1">
+                        <div class="⟁TextSecondary ⟁TextXs ⟁UpperCase ⟁TrackingWide">ASX UNIVERSAL CONSOLE</div>
+                        <div class="⟁TextXl ⟁FontBold">AI-Powered Cartridge System</div>
+                        <div class="⟁TextSecondary">Smart cartridge management with predictive loading</div>
+                        <div class="⟁F ⟁Gap1 ⟁Mt1">
+                            <div class="⟁P1 ⟁BgAccent ⟁BorderAccent ⟁Rounded ⟁CursorPointer">Load Cartridge</div>
+                            <div class="⟁P1 ⟁BgAccent ⟁BorderTransparent ⟁Rounded ⟁CursorPointer">AI Optimize</div>
+                        </div>
+                    </div>
+                    <div class="⟁P2 ⟁BgAccent ⟁Rounded">
+                        <div class="⟁TextSecondary">ACTIVE BOTS</div>
+                        <div class="⟁TextXl ⟁FontBold">2 online</div>
+                    </div>
+                </div>
+                
+                <!-- Cartridge Grid -->
+                <div class="⟁Grid" style="grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:1rem">
+                    <div class="⟁P2 ⟁BgSurface ⟁BorderTransparent ⟁Rounded ⟁Fcol ⟁Gap1">
+                        <div class="⟁TextAccent ⟁FontBold">ASX Game Studio</div>
+                        <div class="⟁TextSecondary">Game development environment</div>
+                        <div class="⟁P1 ⟁BgAccent ⟁BorderTransparent ⟁Rounded ⟁CursorPointer ⟁Mt1">Load in Slot 1</div>
+                    </div>
+                    <div class="⟁P2 ⟁BgSurface ⟁BorderTransparent ⟁Rounded ⟁Fcol ⟁Gap1">
+                        <div class="⟁TextAccent ⟁FontBold">Web Studio</div>
+                        <div class="⟁TextSecondary">Web development tools</div>
+                        <div class="⟁P1 ⟁BgAccent ⟁BorderTransparent ⟁Rounded ⟁CursorPointer ⟁Mt1">Load in Slot 2</div>
+                    </div>
+                    <div class="⟁P2 ⟁BgSurface ⟁BorderTransparent ⟁Rounded ⟁Fcol ⟁Gap1">
+                        <div class="⟁TextAccent ⟁FontBold">NES Emulator</div>
+                        <div class="⟁TextSecondary">Retro gaming</div>
+                        <div class="⟁P1 ⟁BgAccent ⟁BorderTransparent ⟁Rounded ⟁CursorPointer ⟁Mt1">Load in Slot 3</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer/Status -->
+        <div class="⟁GridSpanFull ⟁BgSecondary ⟁BorderB1 ⟁F ⟁Acenter ⟁Jbetween ⟁Px2">
+            <div class="⟁F ⟁Gap2">
+                <div class="⟁TextSecondary">READY</div>
+                <div class="⟁TextAccent">AI: PREDICTIVE LOADING ACTIVE</div>
+            </div>
+            <div class="⟁F ⟁Gap1">
+                <div class="⟁TextSecondary">MEM: 87%</div>
+                <div class="⟁TextSecondary">CPU: 42%</div>
+                <div class="⟁TextAccent">SLOTS: 2/4 ACTIVE</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Brain Script -->
+    <script>
+        // CartridgeAI - Built-in AI for smart cartridge management
+        window.CartridgeAI = {
+            suggestCartridges: function(context) {
+                const suggestions = {
+                    'game-dev': ['asx-game-studio', 'unreal-project', 'designer-ui'],
+                    'retro-gaming': ['nes-mario', 'snes-zelda', 'dos-doom'],
+                    'web-dev': ['asx-web-studio', 'designer-ui'],
+                    'ai-experiments': ['asx-game-studio', 'designer-ui']
+                };
+                return suggestions[context] || ['asx-game-studio', 'nes-mario'];
+            },
+            
+            optimizeSettings: function(cartridge) {
+                const presets = {
+                    'nes': { scale: 3, fps: 60 },
+                    'snes': { scale: 2, fps: 60 }, 
+                    'dos': { scale: 2, cpu: 20000 },
+                    'asx': { scale: 'native', performance: 'max' }
+                };
+                return presets[cartridge.format] || {};
+            },
+            
+            predictAndPreload: function() {
+                const timeOfDay = new Date().getHours();
+                const isWeekend = [0, 6].includes(new Date().getDay());
+                
+                if (timeOfDay >= 18 || isWeekend) {
+                    return this.suggestCartridges('weekend-gamer');
+                } else {
+                    return this.suggestCartridges('weekday-dev');
+                }
+            }
+        };
+
+        // Initialize AI predictions
+        console.log('🎯 AI Suggestions:', CartridgeAI.predictAndPreload());
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('🔧 Service Worker registered:', registration);
+                })
+                .catch(error => {
+                    console.log('❌ Service Worker registration failed:', error);
+                });
+        }
+    </script>
+</body>
+</html>

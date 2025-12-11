@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ASX ATOMIC HTML GUIDE V4 — Atomic CSS + Atomic Blocks + XCFE (@if/@then/@else)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!--
+    ASX ATOMIC HTML GUIDE V4
+    - Single-file, no external deps
+    - Atomic CSS pattern for ASX UIs
+    - ASX Atomic Block JSON language
+    - XCFE-style control flow: @if / @then / @else
+    - Tiny ASX Block Runtime + XCFE engine in pure JS
+  -->
+
+  <style>
+    :root {
+      /* Core theme */
+      --bg: #020617;
+      --bg-alt: #030917;
+      --panel: #020817;
+      --panel-soft: #020b18;
+      --border: #1f2937;
+      --accent: #16f2aa;
+      --accent-soft: rgba(22,242,170,0.15);
+      --accent-strong: #22c55e;
+      --text: #e8fff6;
+      --muted: #9ca3af;
+      --muted-soft: #6b7280;
+      --danger: #f97373;
+      --warning: #fbbf24;
+      --code-bg: #050b16;
+
+      /* Radius + spacing scale (Atomic CSS uses these) */
+      --r-1: 4px;
+      --r-2: 8px;
+      --r-3: 12px;
+      --r-4: 16px;
+
+      --s-1: 4px;
+      --s-2: 8px;
+      --s-3: 12px;
+      --s-4: 16px;
+      --s-5: 24px;
+      --s-6: 32px;
+
+      --shadow-soft: 0 16px 40px rgba(0,0,0,0.6);
+      --shadow-hard: 0 0 0 1px rgba(22,242,170,0.2), 0 20px 45px rgba(0,0,0,0.85);
+    }
+
+    /* Global baseline */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #020b18 0, #020617 40%, #020214 100%);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Atomic HTML root tag – any element with [x] is "atomic" */
+    [x] {
+      all: unset;
+      display: block;
+      box-sizing: border-box;
+      color: inherit;
+      font: inherit;
+    }
+
+    /* Inline text elements using atomic tags */
+    [xt] {
+      all: unset;
+      display: inline;
+      box-sizing: border-box;
+      color: inherit;
+      font: inherit;
+    }
+
+    /* ========== ATOMIC LAYOUT TOKENS ========== */
+    [row] { display: flex; flex-direction: row; }
+    [col] { display: flex; flex-direction: column; }
+    [center] { align-items: center; justify-content: center; }
+    [align-center] { align-items: center; }
+    [justify-center] { justify-content: center; }
+    [spread] { justify-content: space-between; }
+    [wrap] { flex-wrap: wrap; }
+
+    /* Gap scale */
+    [gap="1"] { gap: var(--s-1); }
+    [gap="2"] { gap: var(--s-2); }
+    [gap="3"] { gap: var(--s-3); }
+    [gap="4"] { gap: var(--s-4); }
+    [gap="5"] { gap: var(--s-5); }
+
+    /* Padding scale */
+    [pad="1"] { padding: var(--s-1); }
+    [pad="2"] { padding: var(--s-2); }
+    [pad="3"] { padding: var(--s-3); }
+    [pad="4"] { padding: var(--s-4); }
+    [pad="5"] { padding: var(--s-5); }
+
+    /* Margin scale */
+    [mt="1"] { margin-top: var(--s-1); }
+    [mt="2"] { margin-top: var(--s-2); }
+    [mt="3"] { margin-top: var(--s-3); }
+    [mt="4"] { margin-top: var(--s-4); }
+    [mb="1"] { margin-bottom: var(--s-1); }
+    [mb="2"] { margin-bottom: var(--s-2); }
+    [mb="3"] { margin-bottom: var(--s-3); }
+    [mb="4"] { margin-bottom: var(--s-4); }
+
+    /* Width helpers */
+    [w="full"] { width: 100%; }
+    [w="half"] { width: 50%; }
+    [w="third"] { width: 33.333%; }
+    [w="auto"] { width: auto; }
+
+    /* ========== ATOMIC SURFACE TOKENS ========== */
+    [panel] {
+      background: linear-gradient(145deg, var(--panel), var(--panel-soft));
+      border-radius: var(--r-3);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      padding: var(--s-4);
+    }
+
+    [panel-soft] {
+      background: radial-gradient(circle at top left, #020b18, #020617 55%);
+      border-radius: var(--r-2);
+      border: 1px solid rgba(148,163,184,0.35);
+      padding: var(--s-3);
+    }
+
+    [panel-accent] {
+      background: radial-gradient(circle at top left, rgba(22,242,170,0.12), #020815 55%);
+      border-radius: var(--r-3);
+      border: 1px solid rgba(22,242,170,0.4);
+      box-shadow: var(--shadow-hard);
+      padding: var(--s-4);
+    }
+
+    [divider] {
+      border-bottom: 1px solid rgba(148,163,184,0.35);
+      margin: var(--s-3) 0;
+    }
+
+    /* Highlight strips */
+    [strip] {
+      border-radius: var(--r-1);
+      padding: var(--s-1) var(--s-2);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid rgba(148,163,184,0.5);
+      background: radial-gradient(circle at left, rgba(22,242,170,0.15), transparent 60%);
+      color: var(--muted);
+    }
+
+    [strip-accent] {
+      border-radius: var(--r-1);
+      padding: var(--s-1) var(--s-2);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid rgba(22,242,170,0.75);
+      background: linear-gradient(90deg, rgba(22,242,170,0.15), rgba(22,242,170,0.02));
+      color: var(--accent-strong);
+    }
+
+    /* ========== ATOMIC TYPOGRAPHY TOKENS ========== */
+    [h1] {
+      font-size: 28px;
+      font-weight: 650;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    [h2] {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    [h3] {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    [label] {
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted-soft);
+    }
+
+    [lead] {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    [code] {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+    }
+
+    [code-block] {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      background: var(--code-bg);
+      border-radius: var(--r-2);
+      border: 1px solid rgba(15,23,42,0.9);
+      padding: var(--s-3);
+      overflow-x: auto;
+      line-height: 1.4;
+      position: relative;
+    }
+
+    [code-block]::before {
+      content: attr(data-lang);
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted-soft);
+    }
+
+    [pill] {
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11px;
+      background: rgba(148,163,184,0.08);
+      border: 1px solid rgba(148,163,184,0.4);
+      color: var(--muted);
+    }
+
+    [pill-accent] {
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11px;
+      background: rgba(22,242,170,0.1);
+      border: 1px solid rgba(22,242,170,0.7);
+      color: var(--accent-strong);
+    }
+
+    /* ========== ATOMIC BUTTONS ========== */
+    [btn] {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid rgba(148,163,184,0.55);
+      background: rgba(15,23,42,0.9);
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 120ms ease, border-color 120ms ease, transform 80ms ease, box-shadow 120ms ease;
+      user-select: none;
+      gap: 8px;
+    }
+
+    [btn]:hover {
+      background: radial-gradient(circle at top, rgba(148,163,184,0.35), rgba(15,23,42,0.9));
+      border-color: rgba(226,232,240,0.85);
+      color: var(--text);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.8);
+    }
+
+    [btn]:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    [btn-accent] {
+      border-color: rgba(22,242,170,0.85);
+      color: var(--accent-strong);
+      background: radial-gradient(circle at top, rgba(22,242,170,0.18), rgba(15,23,42,0.96));
+    }
+
+    [btn-accent]:hover {
+      background: radial-gradient(circle at top, rgba(22,242,170,0.3), rgba(2,6,23,1));
+    }
+
+    /* ========== GUIDE PAGE LAYOUT ========== */
+    .guide-shell {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: var(--s-5) var(--s-4) var(--s-6);
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: var(--s-4);
+    }
+
+    @media (max-width: 900px) {
+      .guide-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    /* Mini callouts */
+    [callout] {
+      border-radius: var(--r-2);
+      border: 1px solid rgba(148,163,184,0.4);
+      background: radial-gradient(circle at top left, rgba(15,118,110,0.45), rgba(15,23,42,0.98));
+      padding: var(--s-3);
+      font-size: 13px;
+    }
+
+    [callout-warn] {
+      border-radius: var(--r-2);
+      border: 1px solid rgba(251,191,36,0.7);
+      background: radial-gradient(circle at top left, rgba(251,191,36,0.18), rgba(15,23,42,0.98));
+      padding: var(--s-3);
+      font-size: 13px;
+    }
+
+    /* Table */
+    table[token-table] {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    table[token-table] th,
+    table[token-table] td {
+      padding: 6px 8px;
+      border-bottom: 1px solid rgba(30,41,59,0.9);
+    }
+
+    table[token-table] th {
+      text-align: left;
+      font-weight: 500;
+      color: var(--muted-soft);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+    }
+
+    table[token-table] td:first-child {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      color: var(--accent-strong);
+    }
+
+    /* Scroll hint on code */
+    [scroll-hint] {
+      font-size: 11px;
+      color: var(--muted-soft);
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    /* Simple badge row */
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    /* ASX Block demo styling */
+    .demo-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--s-3);
+    }
+
+    .demo-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    /* Live demo area */
+    #demo-output {
+      min-height: 200px;
+      transition: all 0.3s ease;
+    }
+
+    .demo-block {
+      border: 2px dashed rgba(22,242,170,0.3);
+      border-radius: var(--r-2);
+      padding: var(--s-3);
+      margin: var(--s-2) 0;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="guide-shell">
+
+  <!-- HEADER -->
+  <div x panel-accent col gap="3">
+    <div row align-center spread gap="3">
+      <div col gap="2">
+        <div strip-accent>
+          ASX / ATOMIC HTML RUNTIME GUIDE · V4 · XCFE READY
+        </div>
+        <div h1>Atomic CSS &amp; Atomic Blocks</div>
+        <div lead>
+          Single-file Atomic HTML runtime for the ASX stack:
+          Atomic CSS tokens, ASX Atomic Blocks, and XCFE-style
+          <xt>@if / @then / @else</xt> control flow.
+        </div>
+      </div>
+      <div col align-center gap="2" style="min-width: 240px;">
+        <div label>ASX ATOMIC STACK</div>
+        <div class="badge-row">
+          <div pill-accent>Atomic HTML</div>
+          <div pill>Atomic CSS</div>
+          <div pill>ASX Blocks</div>
+          <div pill>@if/@then/@else</div>
+          <div pill>XCFE-Lite</div>
+        </div>
+        <div mt="2">
+          <button x btn btn-accent id="btn-render-demo">
+            Render Demo Blocks
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div divider></div>
+
+    <div row gap="3" wrap>
+      <div pill-accent>Single-file index.html</div>
+      <div pill>All logic in pure JS</div>
+      <div pill>ASX Atomic Block language</div>
+      <div pill>@if/@then/@else JSON control</div>
+      <div pill>Ready for cPanel / static hosting</div>
+    </div>
+  </div>
+
+  <div class="guide-grid" style="margin-top: var(--s-4);">
+
+    <!-- LEFT: OUTLINE / CHEAT SHEET -->
+    <aside x panel-soft col gap="3">
+      <div h3>1. Mental Model</div>
+      <div lead>
+        Atomic HTML for ASX is:
+      </div>
+      <ul style="margin: 0 0 0 16px; padding: 0; font-size: 13px; color: var(--muted); list-style: square;">
+        <li>HTML as the canvas</li>
+        <li>Atomic CSS tokens on attributes</li>
+        <li>ASX Blocks as JSON payloads</li>
+        <li>XCFE-style blocks for @if / @then / @else</li>
+        <li>A tiny runtime that binds everything</li>
+      </ul>
+
+      <div divider></div>
+
+      <div h3>2. Atomic CSS Tokens</div>
+      <div lead>Use attributes instead of class chains.</div>
+
+      <table token-table>
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th>Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>[x]</td><td>Atomic element baseline</td></tr>
+          <tr><td>[xt]</td><td>Atomic inline text</td></tr>
+          <tr><td>[row], [col]</td><td>Flex row / column</td></tr>
+          <tr><td>[panel], [panel-soft]</td><td>Card surfaces</td></tr>
+          <tr><td>[pad="N"]</td><td>Pad using scale (1–5)</td></tr>
+          <tr><td>[gap="N"]</td><td>Flex gap scale</td></tr>
+          <tr><td>[h1], [h2], [h3]</td><td>Heading styles</td></tr>
+          <tr><td>[code], [code-block]</td><td>Code text / blocks</td></tr>
+          <tr><td>[btn], [btn-accent]</td><td>Interactive buttons</td></tr>
+        </tbody>
+      </table>
+
+      <div divider></div>
+
+      <div h3>3. ASX Block Shape</div>
+      <div code-block data-lang="json">
+{
+  "type": "asx-block",
+  "id": "block:player-card",
+  "component": "PlayerCard",
+  "encrypted": false,
+  "props": { ... }
+}
+      </div>
+
+      <div callout mt="2">
+        <strong>Rule:</strong> Every ASX Block is a self-contained JSON record.
+        The runtime decides how to render each <xt>component</xt> using its <xt>props</xt>.
+      </div>
+
+      <div divider></div>
+
+      <div h3>4. XCFE Block Shape</div>
+      <div code-block data-lang="json">
+{
+  "@if": "props.balance &gt; 0",
+  "@then": {
+    "type": "asx-block",
+    "component": "TokenBalance",
+    "props": { "balance": 2840 }
+  },
+  "@else": {
+    "type": "asx-block",
+    "component": "EmptyState",
+    "props": {
+      "label": "No balance yet",
+      "hint": "Connect a wallet to begin."
+    }
+  }
+}
+      </div>
+
+      <div callout mt="2">
+        <strong>XCFE-lite:</strong> V4 lets you drive UI branching directly
+        from JSON using <xt>@if / @then / @else</xt> blocks. Conditions see a
+        tiny context object (<xt>props</xt>, <xt>env</xt>) and pick the correct branch.
+      </div>
+    </aside>
+
+    <!-- RIGHT: FULL GUIDE + LIVE DEMO -->
+    <main x col gap="4">
+
+      <!-- SECTION 1: ATOMIC HTML PRIMER -->
+      <section x panel col gap="3">
+        <div h2>Section 1 · Atomic HTML Primer</div>
+        <div lead>
+          Atomic HTML keeps the page minimal: everything you see is the
+          combination of three layers:
+        </div>
+
+        <ol style="margin: 0 0 0 18px; padding: 0; font-size: 14px; color: var(--muted); line-height: 1.7;">
+          <li><strong>Atomic CSS</strong> — small, named tokens defined as attributes.</li>
+          <li><strong>Semantic HTML</strong> — your document structure, no framework.</li>
+          <li><strong>ASX Blocks</strong> — JSON packets carrying UI state and logic hints.</li>
+          <li><strong>XCFE Blocks</strong> — JSON packets that decide <em>which</em> blocks to render.</li>
+        </ol>
+
+        <div divider></div>
+
+        <div h3>1.1 Base Atomic Pattern</div>
+        <div lead>
+          You mark any element as "atomic" by adding <xt>[x]</xt>. From there you apply tokens:
+          <xt>[row]</xt>, <xt>[panel]</xt>, <xt>[h1]</xt>, etc.
+        </div>
+
+        <div code-block data-lang="html">
+&lt;div x panel row gap="3"&gt;
+  &lt;div col gap="2"&gt;
+    &lt;div h1&gt;ASX Atomic HTML&lt;/div&gt;
+    &lt;div lead&gt;
+      Single-file OS-style layout using pure HTML, CSS variables,
+      and ASX JSON blocks.
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;button x btn btn-accent&gt;Do Something&lt;/button&gt;
+&lt;/div&gt;
+        </div>
+        <div scroll-hint>Atomic tokens are just attributes. No class names necessary.</div>
+
+        <div callout-warn mt="2">
+          <strong>Design discipline:</strong> resist the urge to invent ad-hoc CSS.
+          If something feels reusable, encode it as a new Atomic token and reuse that
+          instead of custom styles.
+        </div>
+      </section>
+
+      <!-- SECTION 2: ATOMIC CSS REFERENCE -->
+      <section x panel col gap="3">
+        <div h2>Section 2 · Atomic CSS Reference (ASX Edition)</div>
+        <div lead>
+          This guide ships with a minimal but expressive Atomic CSS vocabulary.
+          You can extend it, but these tokens are enough to build dashboards,
+          consoles, and cockpit UIs.
+        </div>
+
+        <div h3>2.1 Layout Tokens</div>
+        <div code-block data-lang="css">
+[row] { display: flex; flex-direction: row; }
+[col] { display: flex; flex-direction: column; }
+[center] { align-items: center; justify-content: center; }
+[align-center] { align-items: center; }
+[justify-center] { justify-content: center; }
+[spread] { justify-content: space-between; }
+[wrap] { flex-wrap: wrap; }
+
+/* Gap scale */
+[gap="1"] { gap: var(--s-1); }
+[gap="2"] { gap: var(--s-2); }
+[gap="3"] { gap: var(--s-3); }
+[gap="4"] { gap: var(--s-4); }
+[gap="5"] { gap: var(--s-5); }
+        </div>
+
+        <div h3>2.2 Surface Tokens</div>
+        <div code-block data-lang="css">
+[panel] {
+  background: linear-gradient(145deg, var(--panel), var(--panel-soft));
+  border-radius: var(--r-3);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  padding: var(--s-4);
+}
+
+[panel-accent] {
+  background: radial-gradient(circle at top left, 
+    rgba(22,242,170,0.12), #020815 55%);
+  border: 1px solid rgba(22,242,170,0.4);
+  box-shadow: var(--shadow-hard);
+}
+        </div>
+
+        <div h3>2.3 Typography Tokens</div>
+        <div code-block data-lang="css">
+[h1] {
+  font-size: 28px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[lead] {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+[code-block] {
+  font-family: "JetBrains Mono", ui-monospace;
+  background: var(--code-bg);
+  border-radius: var(--r-2);
+  padding: var(--s-3);
+}
+        </div>
+      </section>
+
+      <!-- SECTION 3: ASX BLOCKS LANGUAGE -->
+      <section x panel col gap="3">
+        <div h2>Section 3 · ASX Blocks Language</div>
+        <div lead>
+          ASX Blocks are JSON objects that describe UI components and their data.
+          The runtime interprets these blocks and renders them using Atomic HTML.
+        </div>
+
+        <div h3>3.1 Block Structure</div>
+        <div code-block data-lang="json">
+{
+  "type": "asx-block",
+  "id": "block:user-profile:abc123",
+  "component": "UserProfile",
+  "encrypted": false,
+  "signature": "asx-sha256-...",
+  "props": {
+    "user": {
+      "name": "Sarah Chen",
+      "role": "Developer",
+      "avatar": "/avatars/sarah.jpg"
+    },
+    "stats": {
+      "projects": 12,
+      "tokens": 4500
+    }
+  },
+  "layout": {
+    "gridArea": "sidebar",
+    "priority": 2
+  }
+}
+        </div>
+
+        <div h3>3.2 Component Registry</div>
+        <div lead>
+          The runtime maintains a registry of components that know how to render
+          different block types:
+        </div>
+
+        <div code-block data-lang="javascript">
+// Component registry
+ASX.Components = {
+  UserProfile: (props) =&gt; `
+    &lt;div x panel col gap="2"&gt;
+      &lt;div row align-center gap="2"&gt;
+        &lt;img src="${props.user.avatar}" width="40" height="40" 
+             style="border-radius: 50%;"&gt;
+        &lt;div col&gt;
+          &lt;div style="font-weight: 600;"&gt;${props.user.name}&lt;/div&gt;
+          &lt;div lead&gt;${props.user.role}&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div row spread&gt;
+        &lt;div&gt;Projects: ${props.stats.projects}&lt;/div&gt;
+        &lt;div&gt;Tokens: ${props.stats.tokens}&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  `,
+  
+  TokenBalance: (props) =&gt; `
+    &lt;div x panel-accent center gap="2"&gt;
+      &lt;div h2&gt;Token Balance&lt;/div&gt;
+      &lt;div style="font-size: 24px; font-weight: 700;"&gt;
+        ${props.balance} ASX
+      &lt;/div&gt;
+    &lt;/div&gt;
+  `
+};
+        </div>
+
+        <div h3>3.3 XCFE-style Control Blocks (@if / @then / @else)</div>
+        <div lead>
+          Instead of branching in JavaScript, you can describe conditional UI directly
+          in JSON. ASX V4 adds XCFE-lite support for <xt>@if / @then / @else</xt>:
+        </div>
+
+        <div code-block data-lang="json">
+{
+  "@if": "props.balance &gt;= 1",
+  "@then": {
+    "type": "asx-block",
+    "component": "TokenBalance",
+    "props": { "balance": 2840 }
+  },
+  "@else": {
+    "type": "asx-block",
+    "component": "EmptyState",
+    "props": {
+      "label": "No balance yet",
+      "hint": "Earn or deposit ASX tokens."
+    }
+  }
+}
+        </div>
+
+        <div callout mt="2">
+          <strong>How it works:</strong> the runtime flattens the block list:
+          every node with <xt>@if</xt> picks either <xt>@then</xt> or <xt>@else</xt>,
+          and only the chosen branch is rendered. Branches can be single blocks
+          or arrays of blocks, and they can nest other <xt>@if</xt> nodes.
+        </div>
+      </section>
+
+      <!-- SECTION 4: LIVE DEMO -->
+      <section x panel col gap="3">
+        <div h2>Section 4 · Live Demo</div>
+        <div lead>
+          Click the buttons to render ASX Blocks using the built-in runtime
+          and XCFE-lite control flow.
+        </div>
+
+        <div row gap="2" wrap>
+          <button x btn btn-accent id="btn-demo-simple">Simple Blocks</button>
+          <button x btn id="btn-demo-advanced">Advanced Layout (with @if)</button>
+          <button x btn id="btn-demo-clear">Clear</button>
+        </div>
+
+        <div id="demo-output" class="demo-block">
+          <div lead>Demo output will appear here...</div>
+        </div>
+
+        <div h3>4.1 Demo Block Definitions</div>
+        <div code-block data-lang="javascript" id="demo-code">
+// Demo blocks will be shown here
+        </div>
+      </section>
+
+      <!-- SECTION 5: RUNTIME IMPLEMENTATION -->
+      <section x panel col gap="3">
+        <div h2>Section 5 · ASX Block Runtime + XCFE-lite</div>
+        <div lead>
+          The complete ASX Block runtime in vanilla JavaScript, upgraded for XCFE-style
+          <xt>@if / @then / @else</xt> control flow.
+        </div>
+
+        <div code-block data-lang="javascript">
+// ASX Block Runtime V4 (XCFE-lite)
+window.ASX = {
+  Components: {},
+  env: {},
+
+  registerComponent(name, renderFn) {
+    this.Components[name] = renderFn;
+  },
+
+  // Evaluate @if expressions against a tiny context
+  evalCondition(expr, ctx) {
+    try {
+      /* XCFE-lite: expression sees props/env via "ctx" */
+      const fn = new Function("ctx", "with(ctx){ return !!(" + expr + "); }");
+      return !!fn(ctx);
+    } catch (e) {
+      console.warn("XCFE condition error:", e);
+      return false;
+    }
+  },
+
+  // Flatten XCFE blocks (@if/@then/@else) to plain ASX blocks
+  processNode(node) {
+    if (!node) return [];
+
+    // Arrays: process each child
+    if (Array.isArray(node)) {
+      return node.flatMap(n =&gt; this.processNode(n));
+    }
+
+    // Control-flow node
+    if (typeof node === "object" &amp;&amp; "@if" in node) {
+      const expr = node["@if"];
+      const ctx = {
+        props: node.props || {},
+        env: this.env || {}
+      };
+      const passed = this.evalCondition(expr, ctx);
+      const branch = passed ? node["@then"] : node["@else"];
+      if (!branch) return [];
+      return this.processNode(branch);
+    }
+
+    // Plain ASX block
+    if (typeof node === "object" &amp;&amp; node.component) {
+      return [node];
+    }
+
+    return [];
+  },
+
+  renderBlock(block) {
+    const component = this.Components[block.component];
+    if (!component) {
+      return `&lt;div style="color: var(--danger);"&gt;
+        Unknown component: ${block.component}
+      &lt;/div&gt;`;
+    }
+
+    try {
+      return component(block.props || {});
+    } catch (error) {
+      return `&lt;div style="color: var(--danger);"&gt;
+        Render error: ${error.message}
+      &lt;/div&gt;`;
+    }
+  },
+
+  renderBlocks(blocks, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const flat = this.processNode(blocks || []);
+    const html = flat.map(block =&gt; this.renderBlock(block)).join("");
+    container.innerHTML = html;
+  },
+
+  init() {
+    console.log("🧩 ASX Block Runtime V4 (XCFE-lite) ready");
+  }
+};
+
+// Auto-initialize
+ASX.init();
+        </div>
+
+        <div callout mt="2">
+          <strong>Production pattern:</strong> you can swap out <xt>evalCondition</xt>
+          for a stricter XCFE evaluator (no <xt>new Function</xt>), but the block
+          shapes (<xt>@if/@then/@else</xt>) stay the same. The UI remains 100% JSON-driven.
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- ASX BLOCK RUNTIME + DEMO IMPLEMENTATION -->
+<script>
+// ASX Block Runtime V4 (XCFE-lite)
+window.ASX = {
+  Components: {},
+  env: {},
+
+  registerComponent(name, renderFn) {
+    this.Components[name] = renderFn;
+  },
+
+  // Evaluate @if expressions against a tiny context
+  evalCondition(expr, ctx) {
+    try {
+      const fn = new Function("ctx", "with(ctx){ return !!(" + expr + "); }");
+      return !!fn(ctx);
+    } catch (e) {
+      console.warn("XCFE condition error:", e);
+      return false;
+    }
+  },
+
+  // Flatten XCFE blocks (@if/@then/@else) to plain ASX blocks
+  processNode(node) {
+    if (!node) return [];
+
+    if (Array.isArray(node)) {
+      return node.flatMap(n => this.processNode(n));
+    }
+
+    if (typeof node === "object" && "@if" in node) {
+      const expr = node["@if"];
+      const ctx = {
+        props: node.props || {},
+        env: this.env || {}
+      };
+      const passed = this.evalCondition(expr, ctx);
+      const branch = passed ? node["@then"] : node["@else"];
+      if (!branch) return [];
+      return this.processNode(branch);
+    }
+
+    if (typeof node === "object" && node.component) {
+      return [node];
+    }
+
+    return [];
+  },
+
+  renderBlock(block) {
+    const component = this.Components[block.component];
+    if (!component) {
+      return `<div style="color: var(--danger);">
+        Unknown component: ${block.component}
+      </div>`;
+    }
+
+    try {
+      return component(block.props || {});
+    } catch (error) {
+      return `<div style="color: var(--danger);">
+        Render error: ${error.message}
+      </div>`;
+    }
+  },
+
+  renderBlocks(blocks, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const flat = this.processNode(blocks || []);
+    const html = flat.map(block => this.renderBlock(block)).join("");
+    container.innerHTML = html;
+  },
+
+  init() {
+    // Register demo components
+    this.registerComponent("UserCard", (props) => `
+      <div x panel col gap="2">
+        <div row align-center gap="2">
+          <div style="
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(45deg, #16f2aa, #3b82f6);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold;
+          ">${props.initials}</div>
+          <div col>
+            <div style="font-weight: 600;">${props.name}</div>
+            <div lead>${props.role}</div>
+          </div>
+        </div>
+        <div class="demo-chip-row">
+          <div pill>${props.status}</div>
+          <div pill>${props.tokens} tokens</div>
+        </div>
+      </div>
+    `);
+
+    this.registerComponent("TokenBalance", (props) => `
+      <div x panel-accent center gap="2" style="text-align: center;">
+        <div label>Token Balance</div>
+        <div style="font-size: 24px; font-weight: 700; color: var(--accent);">
+          ${props.balance} ASX
+        </div>
+        <div lead>$${(props.balance * 0.15).toFixed(2)} USD</div>
+      </div>
+    `);
+
+    this.registerComponent("EmptyState", (props) => `
+      <div x panel-soft col gap="2" style="text-align: center;">
+        <div label>${props.label || "Empty"}</div>
+        <div lead>${props.hint || "No data yet."}</div>
+      </div>
+    `);
+
+    this.registerComponent("ActionBar", (props) => `
+      <div x panel row gap="2" wrap style="background: rgba(15,23,42,0.8);">
+        ${(props.actions || []).map(action => `
+          <button x btn ${action.accent ? "btn-accent" : ""}>
+            ${action.icon ? `${action.icon} ` : ""}${action.label}
+          </button>
+        `).join("")}
+      </div>
+    `);
+
+    console.log("🧩 ASX Block Runtime V4 (XCFE-lite) ready");
+  }
+};
+
+// Demo data
+const demoBlocks = {
+  simple: [
+    {
+      type: "asx-block",
+      id: "demo:user:1",
+      component: "UserCard",
+      props: {
+        name: "Alex Johnson",
+        role: "Blockchain Developer",
+        initials: "AJ",
+        status: "Active",
+        tokens: 1250
+      }
+    },
+    {
+      type: "asx-block",
+      id: "demo:tokens:1",
+      component: "TokenBalance",
+      props: {
+        balance: 1250
+      }
+    }
+  ],
+
+  advanced: [
+    // XCFE wrapper chooses which balance view to show
+    {
+      "@if": "props.balance >= 1",
+      "props": { "balance": 2840 },   // context for the condition
+      "@then": {
+        type: "asx-block",
+        id: "demo:tokens:2",
+        component: "TokenBalance",
+        props: {
+          balance: 2840
+        }
+      },
+      "@else": {
+        type: "asx-block",
+        id: "demo:tokens:empty",
+        component: "EmptyState",
+        props: {
+          label: "No balance yet",
+          hint: "Earn or deposit ASX tokens to unlock features."
+        }
+      }
+    },
+    {
+      type: "asx-block",
+      id: "demo:user:2",
+      component: "UserCard",
+      props: {
+        name: "Sarah Chen",
+        role: "AI Engineer",
+        initials: "SC",
+        status: "Pro",
+        tokens: 2840
+      }
+    },
+    {
+      type: "asx-block",
+      id: "demo:actions:1",
+      component: "ActionBar",
+      props: {
+        actions: [
+          { label: "Swap Tokens", icon: "🔄", accent: true },
+          { label: "Add Funds",  icon: "💰" },
+          { label: "Send",       icon: "↗️" },
+          { label: "History",    icon: "📊" }
+        ]
+      }
+    }
+  ]
+};
+
+// Initialize and set up demo buttons
+document.addEventListener("DOMContentLoaded", () => {
+  ASX.init();
+
+  const codeEl = document.getElementById("demo-code");
+  const outEl = document.getElementById("demo-output");
+
+  document.getElementById("btn-demo-simple").addEventListener("click", () => {
+    ASX.renderBlocks(demoBlocks.simple, "demo-output");
+    codeEl.textContent = "const blocks = " + JSON.stringify(demoBlocks.simple, null, 2) + ";";
+  });
+
+  document.getElementById("btn-demo-advanced").addEventListener("click", () => {
+    ASX.renderBlocks(demoBlocks.advanced, "demo-output");
+    codeEl.textContent = "const blocks = " + JSON.stringify(demoBlocks.advanced, null, 2) + ";";
+  });
+
+  document.getElementById("btn-demo-clear").addEventListener("click", () => {
+    outEl.innerHTML = '<div lead>Demo output will appear here...</div>';
+    codeEl.textContent = "// Demo blocks will be shown here";
+  });
+
+  document.getElementById("btn-render-demo").addEventListener("click", () => {
+    ASX.renderBlocks(demoBlocks.simple, "demo-output");
+    codeEl.textContent = "const blocks = " + JSON.stringify(demoBlocks.simple, null, 2) + ";";
+  });
+});
+</script>
+<script>
+// ===========================================
+// TAPE SELF-REGISTRATION (GHOST + KUHUL + KLH)
+// ===========================================
+
+(function(){
+
+  // -----------------------------------------
+  // 1. AUTO-DETECT TAPE FILE NAME
+  // -----------------------------------------
+  const TAPE_ID = location.pathname
+    .split('/')
+    .pop()
+    .replace('.html','')
+    .toLowerCase();
+
+  // -----------------------------------------
+  // 2. REST PING → KLH / XJSON Static API
+  // -----------------------------------------
+  fetch('/api/hive/heartbeat?tape=' + encodeURIComponent(TAPE_ID))
+    .catch(()=>{});
+
+  // -----------------------------------------
+  // 3. SERVICE WORKER → KUHUL PROCESS TABLE
+  // -----------------------------------------
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    const chan = new MessageChannel();
+
+    navigator.serviceWorker.controller.postMessage(
+      {
+        type: "TAPE_HEARTBEAT",
+        tape: TAPE_ID,
+        url: location.href,
+        time: Date.now()
+      },
+      [chan.port2]
+    );
+  }
+
+})();
+</script>
+
+</body>
+</html>

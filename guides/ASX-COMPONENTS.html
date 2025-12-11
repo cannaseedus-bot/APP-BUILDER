@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="atomic" data-os="prime">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ATOMIC OS — ASX Blocks Glyph System</title>
+<style>
+/* ===== ATOMIC OS CORE VARIABLES ===== */
+:root {
+  --atomic-bg: #010307;
+  --atomic-panel: #060d17;
+  --atomic-surface: #0a1520;
+  --atomic-text: #e8fff6;
+  --atomic-muted: #7e8a92;
+  --atomic-border: #16f2aa;
+  --atomic-accent: #00ffff;
+  --asx-color: #f9a826;
+  --kuhul-color: #16f2aa;
+  --scx-color: #ff6b6b;
+}
+
+.atomic-body {
+  background: radial-gradient(circle at top, #07101e, var(--atomic-bg) 60%);
+  color: var(--atomic-text);
+  font-family: system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+}
+
+.atomic-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.atomic-panel {
+  background: var(--atomic-panel);
+  border: 1px solid rgba(22, 242, 170, 0.35);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 20px 0;
+  box-shadow: 0 0 26px rgba(0, 0, 0, 0.7);
+}
+
+.atomic-code {
+  font-family: 'SF Mono', Monaco, monospace;
+  font-size: 12px;
+  background: #020408;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  padding: 16px;
+  white-space: pre;
+  overflow-x: auto;
+  margin: 8px 0;
+  color: #d5f5ff;
+}
+
+/* ===== ASX BLOCKS SYSTEM ===== */
+.asx-block {
+  background: rgba(249, 168, 38, 0.1);
+  border: 1px solid var(--asx-color);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.asx-block::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--asx-color), transparent);
+}
+
+.asx-glyph {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--asx-color);
+  margin-right: 10px;
+  display: inline-block;
+  width: 30px;
+  text-align: center;
+}
+
+.asx-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.asx-composition {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0;
+  padding: 20px;
+  background: rgba(22, 242, 170, 0.05);
+  border-radius: 12px;
+  border: 1px dashed var(--kuhul-color);
+  min-height: 200px;
+  align-items: flex-start;
+}
+
+.asx-block-draggable {
+  cursor: grab;
+  user-select: none;
+}
+
+.asx-block-draggable:active {
+  cursor: grabbing;
+}
+
+/* Mobile stacking */
+@media (max-width: 768px) {
+  .asx-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .asx-composition {
+    flex-direction: column;
+  }
+  
+  .asx-block {
+    width: 100%;
+  }
+}
+
+/* ===== DEMO AREAS ===== */
+.demo-controls {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.demo-button {
+  background: var(--asx-color);
+  color: var(--atomic-bg);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.demo-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(249, 168, 38, 0.3);
+}
+
+.visualization-area {
+  background: var(--atomic-surface);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  min-height: 300px;
+  border: 1px solid rgba(0, 255, 255, 0.1);
+}
+</style>
+</head>
+<body class="atomic-body">
+<div class="atomic-container">
+
+  <!-- ASX BLOCKS INTRODUCTION -->
+  <section class="atomic-panel">
+    <h1 style="color: var(--asx-color); text-align: center; margin-bottom: 10px;">
+      🧱 ASX BLOCKS: Component Glyph System
+    </h1>
+    <p style="text-align: center; color: var(--atomic-muted); max-width: 800px; margin: 0 auto 20px;">
+      DOM components represented as glyphs for Lego-like composition and responsive stacking
+    </p>
+    
+    <div class="demo-controls" style="justify-content: center;">
+      <button class="demo-button" onclick="demonstrateComposition()">Compose Layout</button>
+      <button class="demo-button" onclick="demonstrateMobileStack()">Mobile Stacking</button>
+      <button class="demo-button" onclick="demonstrateGlyphCode()">Show Glyph Code</button>
+    </div>
+  </section>
+
+  <!-- ASX BLOCKS GLYPH LIBRARY -->
+  <section class="atomic-panel">
+    <h2 style="color: var(--asx-color);">📚 ASX Blocks Glyph Library</h2>
+    
+    <div class="asx-grid">
+      <div class="asx-block">
+        <span class="asx-glyph">⎔</span>
+        <strong>Container Block</strong>
+        <div style="font-size: 12px; color: var(--atomic-muted); margin-top: 8px;">
+          Main layout container with responsive behavior
+        </div>
+      </div>
+      
+      <div class="asx-block">
+        <span class="asx-glyph">▦</span>
+        <strong>Grid Block</strong>
+        <div style="font-size: 12px; color: var(--atomic-muted); margin-top: 8px;">
+          CSS Grid layout with auto-fit columns
+        </div>
+      </div>
+      
+      <div class="asx-block">
+        <span class="asx-glyph">◰</span>
+        <strong>Panel Block</strong>
+        <div style="font-size: 12px; color: var(--atomic-muted); margin-top: 8px;">
+          Content panel with border and shadow
+        </div>
+      </div>
+      
+      <div class="asx-block">
+        <span class="asx-glyph">⬡</span>
+        <strong>Header Block</strong>
+        <div style="font-size: 12px; color: var(--atomic-muted); margin-top: 8px;">
+          Page header with navigation elements
+        </div>
+      </div>
+      
+      <div class="asx-block">
+        <span class="asx-glyph">◷</span>
+        <strong>Sidebar Block</strong>
+        <div style="font-size: 12px; color: var(--atomic-muted); margin-top: 8px;">
+          Side navigation and secondary content
+        </div>
+      </div>
+      
+      <div class="asx-block">
+        <span class="asx-glyph">▣</span>
+        <strong>Content Block</strong>
+        <div style="font-size: 12px; color: var(--atomic-muted); margin-top: 8px;">
+          Main content area with text and media
+        </div>
+      </div>
+      
+      <div class="asx-block">
+        <span class="asx-glyph">◫</span>
+        <strong>Footer Block</strong>
+        <div style="font-size: 12px; color: var(--atomic-muted); margin-top: 8px;">
+          Page footer with links and info
+        </div>
+      </div>
+      
+      <div class="asx-block">
+        <span class="asx-glyph">◈</span>
+        <strong>Hero Block</strong>
+        <div style="font-size: 12px; color: var(--atomic-muted); margin-top: 8px;">
+          Promotional banner with call-to-action
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE COMPOSITION AREA -->
+  <section class="atomic-panel">
+    <h2 style="color: var(--asx-color);">🎨 Live Composition Workspace</h2>
+    <p style="color: var(--atomic-muted); margin-bottom: 20px;">
+      Drag blocks to compose layouts. On mobile, blocks automatically stack vertically.
+    </p>
+    
+    <div class="demo-controls">
+      <button class="demo-button" onclick="addBlockToWorkspace('⎔', 'Container')">Add Container</button>
+      <button class="demo-button" onclick="addBlockToWorkspace('▦', 'Grid')">Add Grid</button>
+      <button class="demo-button" onclick="addBlockToWorkspace('◰', 'Panel')">Add Panel</button>
+      <button class="demo-button" onclick="addBlockToWorkspace('⬡', 'Header')">Add Header</button>
+      <button class="demo-button" onclick="clearWorkspace()">Clear All</button>
+    </div>
+    
+    <div id="compositionWorkspace" class="asx-composition">
+      <div class="asx-block asx-block-draggable" draggable="true">
+        <span class="asx-glyph">⎔</span>
+        <span>Root Container</span>
+      </div>
+    </div>
+    
+    <div id="mobilePreview" style="display: none; margin-top: 20px;">
+      <h4>📱 Mobile Stacking Preview</h4>
+      <div class="asx-composition" style="flex-direction: column;">
+        <!-- Mobile stacked blocks will appear here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ASX RUNTIME SPECIFICATION -->
+  <section class="atomic-panel">
+    <h2 style="color: var(--asx-color);">⚙️ ASX Runtime Specification</h2>
+    
+    <div class="atomic-code">
+// ===== ASX BLOCKS RUNTIME ENGINE =====
+ASX_RUNTIME = {
+  version: "asx-blocks-v1",
+  engine: "DOMFirstLoader",
+  composition: "GlyphBased",
+  responsive: "MobileStacking",
+  
+  // Core ASX Blocks
+  blocks: {
+    "⎔": {
+      name: "Container",
+      html: "&lt;div class='asx-container'&gt;&lt;/div&gt;",
+      css: ".asx-container { display: flex; flex-wrap: wrap; gap: 16px; }",
+      mobile: "stack-vertical"
+    },
+    "▦": {
+      name: "Grid", 
+      html: "&lt;div class='asx-grid'&gt;&lt;/div&gt;",
+      css: ".asx-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }",
+      mobile: "single-column"
+    },
+    "◰": {
+      name: "Panel",
+      html: "&lt;div class='asx-panel'&gt;&lt;/div&gt;",
+      css: ".asx-panel { background: var(--atomic-panel); border-radius: 12px; padding: 20px; }",
+      mobile: "full-width"
+    },
+    "⬡": {
+      name: "Header",
+      html: "&lt;header class='asx-header'&gt;&lt;/header&gt;",
+      css: ".asx-header { padding: 20px; background: rgba(249, 168, 38, 0.1); }",
+      mobile: "fixed-top"
+    },
+    "◷": {
+      name: "Sidebar", 
+      html: "&lt;aside class='asx-sidebar'&gt;&lt;/aside&gt;",
+      css: ".asx-sidebar { width: 280px; background: var(--atomic-surface); }",
+      mobile: "hidden-drawer"
+    },
+    "▣": {
+      name: "Content",
+      html: "&lt;main class='asx-content'&gt;&lt;/main&gt;",
+      css: ".asx-content { flex: 1; padding: 20px; }",
+      mobile: "full-width"
+    },
+    "◫": {
+      name: "Footer",
+      html: "&lt;footer class='asx-footer'&gt;&lt;/footer&gt;",
+      css: ".asx-footer { padding: 20px; text-align: center; }",
+      mobile: "stack-vertical" 
+    },
+    "◈": {
+      name: "Hero",
+      html: "&lt;section class='asx-hero'&gt;&lt;/section&gt;",
+      css: ".asx-hero { text-align: center; padding: 60px 20px; }",
+      mobile: "compact"
+    }
+  },
+  
+  // K'uhul + SCX Integration
+  integrations: {
+    kuhul: "GlyphExecutionEngine",
+    scx: "SymbolicCompression",
+    klh: "BackendOrchestration"
+  },
+  
+  // Mobile stacking behaviors
+  mobileBehaviors: {
+    "stack-vertical": "flex-direction: column;",
+    "single-column": "grid-template-columns: 1fr;",
+    "full-width": "width: 100%;",
+    "fixed-top": "position: sticky; top: 0;",
+    "hidden-drawer": "transform: translateX(-100%);",
+    "compact": "padding: 30px 20px;"
+  }
+}
+
+// ===== ASX COMPOSITION ENGINE =====
+class ASXCompositionEngine {
+  constructor() {
+    this.workspace = document.getElementById('compositionWorkspace');
+    this.blocks = new Map();
+    this.isMobile = window.innerWidth <= 768;
+    
+    // Listen for mobile changes
+    window.addEventListener('resize', this.handleResize.bind(this));
+    
+    // Initialize drag and drop
+    this.initializeDragAndDrop();
+  }
+  
+  handleResize() {
+    const wasMobile = this.isMobile;
+    this.isMobile = window.innerWidth <= 768;
+    
+    if (wasMobile !== this.isMobile) {
+      this.reflowComposition();
+    }
+  }
+  
+  initializeDragAndDrop() {
+    this.workspace.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', e.target.dataset.blockId);
+      e.target.classList.add('dragging');
+    });
+    
+    this.workspace.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      const afterElement = this.getDragAfterElement(e.clientY);
+      const draggable = document.querySelector('.dragging');
+      
+      if (afterElement == null) {
+        this.workspace.appendChild(draggable);
+      } else {
+        this.workspace.insertBefore(draggable, afterElement);
+      }
+    });
+    
+    this.workspace.addEventListener('dragend', (e) => {
+      e.target.classList.remove('dragging');
+    });
+  }
+  
+  getDragAfterElement(y) {
+    const draggableElements = [...this.workspace.querySelectorAll('.asx-block-draggable:not(.dragging)')];
+    
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+  
+  addBlock(glyph, name) {
+    const blockId = 'block-' + Date.now();
+    const block = document.createElement('div');
+    block.className = 'asx-block asx-block-draggable';
+    block.draggable = true;
+    block.dataset.blockId = blockId;
+    
+    block.innerHTML = `
+      <span class="asx-glyph">${glyph}</span>
+      <span>${name} Block</span>
+    `;
+    
+    this.workspace.appendChild(block);
+    this.blocks.set(blockId, { glyph, name, element: block });
+    
+    return blockId;
+  }
+  
+  reflowComposition() {
+    // Apply mobile stacking or desktop layout
+    if (this.isMobile) {
+      this.workspace.style.flexDirection = 'column';
+      document.querySelectorAll('.asx-block').forEach(block => {
+        block.style.width = '100%';
+      });
+    } else {
+      this.workspace.style.flexDirection = 'row';
+      document.querySelectorAll('.asx-block').forEach(block => {
+        block.style.width = 'auto';
+      });
+    }
+  }
+  
+  generateGlyphCode() {
+    const glyphs = [];
+    this.workspace.querySelectorAll('.asx-block').forEach(block => {
+      const glyph = block.querySelector('.asx-glyph').textContent;
+      glyphs.push(glyph);
+    });
+    
+    return glyphs.join(' ');
+  }
+  
+  compileToHTML() {
+    const blocks = [];
+    this.blocks.forEach(block => {
+      const definition = ASX_RUNTIME.blocks[block.glyph];
+      if (definition) {
+        blocks.push({
+          glyph: block.glyph,
+          name: block.name,
+          html: definition.html,
+          css: definition.css
+        });
+      }
+    });
+    
+    return blocks;
+  }
+}
+    </div>
+  </section>
+
+  <!-- VISUALIZATION AREA -->
+  <section class="atomic-panel">
+    <h2 style="color: var(--asx-color);">🔍 ASX Blocks Visualization</h2>
+    
+    <div class="visualization-area" id="visualizationArea">
+      <div style="text-align: center; color: var(--atomic-muted); padding: 60px 20px;">
+        Compose blocks in the workspace to see visualization here
+      </div>
+    </div>
+    
+    <div id="glyphOutput" style="display: none; margin-top: 20px;">
+      <h4>Generated Glyph Code</h4>
+      <div class="atomic-code" id="glyphCodeOutput"></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+// ===== ASX RUNTIME INITIALIZATION =====
+const asxEngine = new ASXCompositionEngine();
+
+// ===== DEMONSTRATION FUNCTIONS =====
+function demonstrateComposition() {
+  // Add a sample composition
+  asxEngine.addBlock('⬡', 'Header');
+  asxEngine.addBlock('◷', 'Sidebar');
+  asxEngine.addBlock('▣', 'Content');
+  asxEngine.addBlock('◫', 'Footer');
+  
+  updateVisualization();
+}
+
+function demonstrateMobileStack() {
+  const mobilePreview = document.getElementById('mobilePreview');
+  mobilePreview.style.display = 'block';
+  
+  // Simulate mobile stacking
+  const mobileWorkspace = mobilePreview.querySelector('.asx-composition');
+  mobileWorkspace.innerHTML = '';
+  
+  asxEngine.blocks.forEach(block => {
+    const mobileBlock = document.createElement('div');
+    mobileBlock.className = 'asx-block';
+    mobileBlock.style.width = '100%';
+    mobileBlock.style.marginBottom = '12px';
+    mobileBlock.innerHTML = `
+      <span class="asx-glyph">${block.glyph}</span>
+      <span>${block.name} (Mobile Stacked)</span>
+    `;
+    mobileWorkspace.appendChild(mobileBlock);
+  });
+}
+
+function demonstrateGlyphCode() {
+  const glyphCode = asxEngine.generateGlyphCode();
+  document.getElementById('glyphCodeOutput').textContent = glyphCode;
+  document.getElementById('glyphOutput').style.display = 'block';
+  
+  // Show in visualization too
+  const vizArea = document.getElementById('visualizationArea');
+  vizArea.innerHTML = `
+    <div style="text-align: center; padding: 40px 20px;">
+      <div style="font-size: 48px; margin-bottom: 20px;">${glyphCode}</div>
+      <div style="color: var(--atomic-muted);">Glyph Composition Code</div>
+    </div>
+  `;
+}
+
+function addBlockToWorkspace(glyph, name) {
+  asxEngine.addBlock(glyph, name);
+  updateVisualization();
+}
+
+function clearWorkspace() {
+  const workspace = document.getElementById('compositionWorkspace');
+  workspace.innerHTML = '';
+  asxEngine.blocks.clear();
+  
+  // Keep only the root container
+  const rootBlock = document.createElement('div');
+  rootBlock.className = 'asx-block asx-block-draggable';
+  rootBlock.draggable = true;
+  rootBlock.dataset.blockId = 'root-container';
+  rootBlock.innerHTML = `
+    <span class="asx-glyph">⎔</span>
+    <span>Root Container</span>
+  `;
+  workspace.appendChild(rootBlock);
+  
+  document.getElementById('mobilePreview').style.display = 'none';
+  document.getElementById('glyphOutput').style.display = 'none';
+  
+  updateVisualization();
+}
+
+function updateVisualization() {
+  const blocks = asxEngine.compileToHTML();
+  const vizArea = document.getElementById('visualizationArea');
+  
+  if (blocks.length <= 1) {
+    vizArea.innerHTML = `
+      <div style="text-align: center; color: var(--atomic-muted); padding: 60px 20px;">
+        Add more blocks to see visualization
+      </div>
+    `;
+    return;
+  }
+  
+  let visualizationHTML = '<div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start;">';
+  
+  blocks.forEach(block => {
+    if (block.glyph !== '⎔') { // Skip root container in visualization
+      visualizationHTML += `
+        <div style="background: rgba(249, 168, 38, 0.1); border: 1px solid var(--asx-color); border-radius: 8px; padding: 16px; min-width: 120px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 8px;">${block.glyph}</div>
+          <div style="font-size: 12px; color: var(--atomic-muted);">${block.name}</div>
+        </div>
+      `;
+    }
+  });
+  
+  visualizationHTML += '</div>';
+  vizArea.innerHTML = visualizationHTML;
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('🧱 ASX Blocks Runtime Initialized');
+  console.log('Available Blocks:', Object.keys(ASX_RUNTIME.blocks));
+});
+</script>
+</body>
+</html>

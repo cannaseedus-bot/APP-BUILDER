@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PRIME-IFAL v4 — ASX PRIME COMMAND COCKPIT</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --cyan:#00ffff;--lime:#00ff00;--yellow:#ffff00;
+      --bg:#000000;--panel:rgba(0,0,0,0.86);--line:rgba(0,255,255,0.6);
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;background:var(--bg);color:#0ff;
+      font-family:'Orbitron','Courier New',monospace;overflow:hidden;
+    }
+    #star-field{position:fixed;inset:0;background:#000;z-index:0;}
+    .star-layer{position:absolute;inset:0;animation:starScroll 20s linear infinite;}
+    @keyframes starScroll{from{transform:translateY(0)}to{transform:translateY(100%)}}
+    .star{position:absolute;border-radius:50%;}
+    .star.cyan{background:#0ff;box-shadow:0 0 10px #0ff;}
+    .star.yellow{background:#ff0;box-shadow:0 0 10px #ff0;}
+    .star.white{background:#fff;box-shadow:0 0 6px #fff;}
+
+    .hud-frame{
+      position:fixed;inset:40px;border:3px solid var(--line);
+      box-shadow:inset 0 0 30px rgba(0,255,255,.3),0 0 30px rgba(0,255,255,.3);
+      pointer-events:none;z-index:1;animation:framePulse 3s ease-in-out infinite;
+    }
+    @keyframes framePulse{
+      0%,100%{border-color:rgba(0,255,255,.6)}
+      50%{border-color:rgba(0,255,255,.9)}
+    }
+    .scanlines{
+      position:fixed;inset:0;
+      background:linear-gradient(transparent 0%,rgba(0,255,255,.04) 50%,transparent 100%);
+      background-size:100% 5px;pointer-events:none;z-index:999;
+      animation:scanline 10s linear infinite;
+    }
+    @keyframes scanline{
+      0%{background-position:0 0}
+      100%{background-position:0 100%}
+    }
+
+    .asx-logo{
+      position:absolute;top:8%;left:50%;transform:translateX(-50%);
+      text-align:center;z-index:2;user-select:none;pointer-events:none;
+    }
+    .asx-title{
+      font-size:90px;font-weight:900;letter-spacing:14px;color:#0ff;
+      text-shadow:0 0 10px #0ff,0 0 20px #0ff,0 0 40px #0ff;
+      animation:titlePulse 2s ease-in-out infinite;
+    }
+    .asx-subtitle{
+      font-size:16px;letter-spacing:6px;color:#ff0;
+      text-shadow:0 0 10px #ff0,0 0 20px #ff0;margin-top:6px;font-weight:700;
+    }
+    @keyframes titlePulse{
+      0%,100%{text-shadow:0 0 10px #0ff,0 0 20px #0ff,0 0 40px #0ff}
+      50%{text-shadow:0 0 20px #0ff,0 0 40px #0ff,0 0 80px #0ff,0 0 120px #0ff}
+    }
+
+    .crosshair{
+      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+      width:70px;height:70px;z-index:2;pointer-events:none;
+    }
+    .crosshair::before,.crosshair::after{
+      content:"";position:absolute;background:#0ff;box-shadow:0 0 8px #0ff;
+    }
+    .crosshair::before{left:0;right:0;top:50%;height:2px;transform:translateY(-50%);}
+    .crosshair::after{top:0;bottom:0;left:50%;width:2px;transform:translateX(-50%);}
+
+    .dock{
+      position:fixed;left:50%;bottom:7%;transform:translateX(-50%);
+      display:grid;grid-template-columns:repeat(3,1fr);gap:16px;z-index:3;
+    }
+    .btn{
+      width:220px;height:80px;
+      background:linear-gradient(135deg,rgba(0,255,255,.15),rgba(0,255,0,.1));
+      border:3px solid #0ff;color:#0ff;font-size:15px;font-weight:bold;
+      cursor:pointer;position:relative;transition:all .25s;
+      text-decoration:none;display:flex;align-items:center;justify-content:center;
+      flex-direction:column;text-transform:uppercase;letter-spacing:2px;
+      clip-path:polygon(15% 0%,100% 0%,85% 100%,0% 100%);
+      box-shadow:0 0 25px rgba(0,255,255,.4);
+    }
+    .btn:hover{
+      background:linear-gradient(135deg,rgba(0,255,255,.4),rgba(0,255,0,.3));
+      border-color:#0f0;color:#0f0;box-shadow:0 0 50px rgba(0,255,255,.8);
+      transform:scale(1.06) translateY(-3px);
+    }
+    .btn.engage{
+      grid-column:1/-1;width:100%;height:110px;font-size:32px;
+      background:linear-gradient(135deg,rgba(255,255,0,.25),rgba(0,255,255,.2));
+      border-color:#ff0;color:#ff0;
+      clip-path:polygon(5% 0%,95% 0%,100% 50%,95% 100%,5% 100%,0% 50%);
+      animation:engagePulse 1.6s ease-in-out infinite;
+    }
+    @keyframes engagePulse{
+      0%,100%{box-shadow:0 0 30px rgba(255,255,0,.6);transform:scale(1)}
+      50%{box-shadow:0 0 70px rgba(255,255,0,.9);transform:scale(1.02)}
+    }
+
+    .overlay{
+      position:fixed;inset:80px;z-index:5;display:none;
+    }
+    .overlay.show{
+      display:grid;grid-template-columns:320px 1fr;gap:12px;
+    }
+    .panel{
+      background:var(--panel);border:1px solid rgba(0,255,255,.35);
+      border-radius:12px;box-shadow:0 0 24px rgba(0,255,255,.2);
+    }
+    .stack{display:grid;grid-template-rows:auto 1fr;gap:10px;height:100%;}
+    .panel.heads{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 12px;border-bottom:1px solid rgba(0,255,255,.25);
+    }
+    .title{font-weight:900;letter-spacing:2px;}
+    .close{
+      appearance:none;border:2px solid #0ff;background:transparent;color:#0ff;
+      border-radius:8px;padding:6px 10px;font-weight:800;cursor:pointer;
+    }
+    .scroll{overflow:auto;padding:12px;}
+    .term{
+      background:#000;color:#0f0;height:260px;overflow:auto;
+      border:1px solid #0f0;border-radius:8px;padding:10px;
+      font-family:'Courier New',monospace;font-size:13px;
+    }
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;}
+    .tab{
+      padding:8px 12px;border:1px solid rgba(0,255,255,.35);border-radius:999px;
+      background:rgba(0,255,255,.08);cursor:pointer;font-size:12px;
+    }
+    .tab.active{background:rgba(255,255,0,.1);border-color:#ff0;color:#ff0;}
+
+    .grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;
+    }
+    .mini-runtime{
+      position:relative;background:#051119;border:1px solid rgba(0,255,255,.25);
+      border-radius:12px;overflow:hidden;
+    }
+    .mini-runtime canvas{
+      display:block;width:100%;height:220px;background:#000;
+    }
+    .mini-hud{
+      position:absolute;left:10px;bottom:10px;display:flex;gap:8px;
+    }
+    .badge{
+      border:1px solid rgba(0,255,255,.45);background:rgba(0,255,255,.08);
+      padding:4px 8px;border-radius:8px;font-size:11px;
+    }
+    iframe.guide{width:100%;height:220px;border:none;background:#020;}
+    .pdf-wrap{height:500px;}
+    .pdf-wrap embed{width:100%;height:100%;border:none;}
+
+    /* PRIME CHAT MODAL */
+    #primeModal{
+      position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+      width:520px;max-width:92%;background:rgba(0,0,0,.92);
+      border:2px solid #0ff;border-radius:16px;box-shadow:0 0 36px rgba(0,255,255,.6);
+      z-index:6;display:none;
+    }
+    #primeModalHead{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 14px;border-bottom:1px solid rgba(0,255,255,.4);
+    }
+    #primeModalBody{padding:10px 14px;max-height:340px;overflow:auto;}
+    #primeChatLog{
+      background:#000;border:1px solid #0f0;border-radius:8px;padding:8px;
+      height:180px;overflow:auto;font-family:'Courier New',monospace;
+      font-size:12px;color:#aaffaa;margin-top:8px;margin-bottom:4px;
+    }
+    #primeChatInput{
+      width:100%;background:#001100;color:#aaffaa;
+      border:1px solid #004400;border-radius:8px;padding:6px 8px;
+      font-family:'Courier New',monospace;
+    }
+    #primeChatSend{margin-top:6px;float:right;}
+
+    @media(max-width:1200px){
+      .overlay.show{grid-template-columns:1fr;}
+      .dock{grid-template-columns:1fr;gap:10px;width:90%;}
+      .asx-title{font-size:60px;letter-spacing:6px;}
+      .hud-frame{inset:20px;}
+    }
+  </style>
+</head>
+<body>
+  <!-- Star field + HUD -->
+  <div id="star-field"></div>
+  <div class="hud-frame"></div>
+  <div class="scanlines"></div>
+  <div class="crosshair"></div>
+
+  <div class="asx-logo">
+    <div class="asx-title">ASX PRIME</div>
+    <div class="asx-subtitle">PRIME-IFAL v4 • XJSON • SCX • K’UHUL • PRIMEOS</div>
+  </div>
+
+  <!-- Cockpit dock -->
+  <div class="dock">
+    <button class="btn engage" id="btnEngage">🚀 ENGAGE</button>
+    <button class="btn" id="btnPrime">📘 PRIME MANUAL</button>
+    <button class="btn" id="btnPrimeChat">💬 PRIME CHAT</button>
+    <button class="btn" id="btnTerminal">🛰 HF TERMINAL</button>
+    <button class="btn" id="btnGames">🎮 MINI RUNTIMES</button>
+    <button class="btn" id="btnGuides">📖 ALL GUIDES</button>
+    <button class="btn" id="btnDiagnostics">🧪 DIAGNOSTICS</button>
+  </div>
+
+  <!-- Main dual-panel overlay -->
+  <div class="overlay" id="overlay">
+    <!-- Left: modules list + terminal input -->
+    <div class="panel stack">
+      <div class="panel heads">
+        <div class="title">MODULES</div>
+        <button class="close" id="closeOverlay">Close</button>
+      </div>
+      <div class="scroll">
+        <div class="tabs" id="tabs"></div>
+      </div>
+      <div class="scroll">
+        <div class="term" id="term"></div>
+        <div class="tabs" style="margin-top:8px">
+          <div class="badge">Crew: nav / eng / ana</div>
+          <div class="badge">Core: XJSON • SCX • K’UHUL</div>
+          <div class="badge">HF Router (optional)</div>
+        </div>
+        <div class="tabs" style="margin-top:8px">
+          <input id="aiInput"
+            placeholder="HF Terminal: nav: scan sector-7"
+            style="flex:1;background:#001100;color:#aaffaa;border:1px solid #004400;border-radius:8px;padding:8px;font-family:'Courier New',monospace" />
+          <button id="sendAI" class="close">Send</button>
+        </div>
+        <div class="tabs" style="margin-top:8px">
+          <input id="hfKey"
+            placeholder="HF Token (router.huggingface.co) — optional for live crew"
+            style="flex:1;background:#001100;color:#aaffaa;border:1px solid #004400;border-radius:8px;padding:8px;font-family:'Courier New',monospace" />
+          <button id="testAI" class="close">Test HF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: active module view -->
+    <div class="panel stack">
+      <div class="panel heads">
+        <div class="title" id="activeTitle">Welcome</div>
+        <div class="tabs">
+          <button class="close" id="minimize">Min</button>
+          <button class="close" id="maximize">Max</button>
+        </div>
+      </div>
+      <div class="scroll" id="activeView"></div>
+    </div>
+  </div>
+
+  <!-- PRIME OS Chat Modal (NOT HF terminal) -->
+  <div id="primeModal">
+    <div id="primeModalHead">
+      <div class="title">PRIME OS CHAT • K’UHUL REASONER</div>
+      <button class="close" id="primeClose">Close</button>
+    </div>
+    <div id="primeModalBody">
+      <div id="primeManualSlot"></div>
+      <div id="primeChatLog"></div>
+      <input id="primeChatInput" placeholder="Ask PRIME about KLH, XJSON, SCXQ2, K’UHUL, multi-hive, tapes..." />
+      <button class="close" id="primeChatSend">Send</button>
+    </div>
+  </div>
+
+  <!-- PRIME MANUAL MICRO-HTML -->
+  <script>
+  window.PRIME_MANUAL = `
+  <div style="font-family:Orbitron,monospace;color:#0ff;padding:16px;line-height:1.6">
+    <h1 style="color:#0ff;text-shadow:0 0 12px #0ff;margin-top:0">PRIME OS — GODMODE MICRO-MANUAL</h1>
+    <p>The PRIME OS stack fuses four engines into a single browser-native operating layer:</p>
+    <ul style="color:#0f0">
+      <li><strong>KLH</strong> — Hive Orchestrator</li>
+      <li><strong>XJSON</strong> — OS Language &amp; declarative AST</li>
+      <li><strong>K’UHUL</strong> — Execution Engine / TPU-OS</li>
+      <li><strong>SCXQ2</strong> — Symbolic Compression Layer</li>
+    </ul>
+    <h2 style="color:#ff0">Architecture</h2>
+    <p>PRIME OS runs as a single-file runtime: HUD + Terminal + Cockpit + Emulator Hub + Studio Mode inside one HTML document.</p>
+
+    <h3 style="color:#0ff">Core Components</h3>
+    <ul>
+      <li>PRIME Cockpit HUD — matrix rain, neon frame, holo-panels</li>
+      <li>PRIME-XJSON engine — @if / @then / @else control flow</li>
+      <li>K’UHUL TPU-OS — QLoRA, fractal chipsets, training dashboards</li>
+      <li>SCXQ2 — compressed guides, tapes, OS state</li>
+      <li>ASX Holotape Loader — .ASX / .ASXR / .ASXTAPE</li>
+    </ul>
+
+    <h2 style="color:#ff0">PRIME-04 Multi-Hive</h2>
+    <p>Five port-isolated shards:</p>
+    <ol style="color:#0f0">
+      <li>Dashboard</li>
+      <li>Users</li>
+      <li>Logistics</li>
+      <li>Intel</li>
+      <li>Settings</li>
+    </ol>
+    <p>Each shard is its own ASX tape server running XJSON duties + K’UHUL brain.</p>
+
+    <h2 style="color:#0ff">XJSON Master Spec</h2>
+    <pre style="color:#0f0;background:#001100;padding:8px;border-radius:6px;font-size:12px">
+{
+  "type": "panel",
+  "@if": "user.isLoggedIn",
+  "@then": { "show": "dashboard" },
+  "@else": { "show": "login" }
+}
+    </pre>
+
+    <h2 style="color:#0ff">K’UHUL Reactor Loop</h2>
+    <ul>
+      <li>HUD animation frames</li>
+      <li>Multi-agent loop (nav / eng / ana)</li>
+      <li>Event bus &amp; tape mount lifecycle</li>
+      <li>Mini-game coexecution (Galactica / Invaders / Pac-lite)</li>
+      <li>Window manager transitions</li>
+    </ul>
+
+    <h2 style="color:#0ff">ASX Holotape Boot</h2>
+    <pre style="color:#0f0;background:#001100;padding:8px;border-radius:6px;font-size:12px">
+/tapes/my_tape/cockpit.asxr → mount → run via K’UHUL
+    </pre>
+
+    <h2 style="color:#ff0">PRIME Studio Mode</h2>
+    <ul>
+      <li>File Tree</li>
+      <li>Editor (holo-pane)</li>
+      <li>Preview Window</li>
+      <li>PRIME Compiler (SCX/XJSON)</li>
+      <li>Tape Forge</li>
+    </ul>
+
+    <h2 style="color:#0ff">PRIME Chat (this modal)</h2>
+    <p>This box is the PRIME OS guidance channel, separate from the HF router terminal.</p>
+    <p>Use it for explanations, schematics, and OS-level help.</p>
+
+    <h2 style="color:#ff0">Example PRIME Commands (conceptual)</h2>
+    <pre style="color:#0f0;background:#001100;padding:8px;border-radius:6px;font-size:12px">
+prime.help
+prime.explain("SCX")
+prime.map("multi-hive")
+prime.load("asxr")
+prime.build("tape")
+prime.show("studio")
+    </pre>
+
+    <h2 style="color:#f0f">END OF PRIME OS MICRO-MANUAL</h2>
+  </div>
+  `;
+  </script>
+
+  <script>
+    // Minimal SCX stub (UTF-8 base64 decode) for any inline content if needed later
+    const SCX = {
+      decodeUtf8Base64(b64){
+        try { return decodeURIComponent(escape(atob(b64 || ""))); }
+        catch(e){ return "SCX-DECODE-ERR: " + e.message; }
+      }
+    };
+
+    // XJSON boot AST for PRIME-IFAL v4
+    const XJSON_BOOT = {
+      id:"prime.ifal.v4",
+      type:"os.cockpit",
+      state:{ activeModule:"terminal" },
+      modules:{
+        terminal:{id:"terminal",title:"HF Terminal",nodeType:"runtime.terminal"},
+        games:{id:"games",title:"Mini Runtimes",nodeType:"runtime.canvas.grid"},
+        guides:{id:"guides",title:"All Guides",nodeType:"runtime.guides"},
+        diagnostics:{id:"diagnostics",title:"Diagnostics",nodeType:"runtime.diag"},
+        prime_manual:{id:"prime_manual",title:"PRIME Manual",nodeType:"runtime.prime_manual"}
+      }
+    };
+
+    class KuhulCore {
+      constructor(ast){
+        this.ast = ast;
+        this.state = JSON.parse(JSON.stringify(ast.state||{}));
+        this.modules = ast.modules||{};
+        this.logEl = document.getElementById("term");
+        this.tabsEl = document.getElementById("tabs");
+        this.activeTitleEl = document.getElementById("activeTitle");
+        this.activeViewEl = document.getElementById("activeView");
+        this.overlay = document.getElementById("overlay");
+        this.hfTokenInput = document.getElementById("hfKey");
+        this.aiInput = document.getElementById("aiInput");
+
+        this.primeModal = document.getElementById("primeModal");
+        this.primeManualSlot = document.getElementById("primeManualSlot");
+        this.primeChatLog = document.getElementById("primeChatLog");
+        this.primeChatInput = document.getElementById("primeChatInput");
+
+        this.init();
+      }
+
+      init(){
+        this.bootLogs();
+        this.initStars();
+        this.initDock();
+        this.paintTabs();
+        this.selectModule(this.state.activeModule || "terminal");
+        this.showPrimeModal(); // PRIME OS chat appears at boot
+      }
+
+      bootLogs(){
+        this.logSys(">>> INIT: K’UHUL-CORE [+PRIMEOS]");
+        this.logSys(">>> LOADING: PRIME-IFAL v4 Cockpit");
+        this.logSys(">>> MODULES: terminal, games, guides, diagnostics, prime_manual");
+        this.logSys(">>> STATUS: Online — Awaiting Command");
+      }
+      logSys(msg){
+        const p=document.createElement("div");
+        p.innerHTML=`<span style="color:#0ff">[K’UHUL]</span> ${msg}`;
+        this.logEl.appendChild(p);
+        this.logEl.scrollTop=this.logEl.scrollHeight;
+      }
+      logUser(msg){
+        const p=document.createElement("div");
+        p.textContent="> "+msg;
+        this.logEl.appendChild(p);
+        this.logEl.scrollTop=this.logEl.scrollHeight;
+      }
+      logAI(msg){
+        const p=document.createElement("div");
+        p.textContent="AI: "+msg;
+        this.logEl.appendChild(p);
+        this.logEl.scrollTop=this.logEl.scrollHeight;
+      }
+
+      initStars(){
+        const starField=document.getElementById("star-field");
+        for(let layer=0;layer<3;layer++){
+          const L=document.createElement("div");
+          L.className="star-layer";
+          L.style.animationDuration=(20+layer*10)+"s";
+          L.style.animationDelay=(layer*-5)+"s";
+          const count=100-layer*20;
+          for(let i=0;i<count;i++){
+            const s=document.createElement("div");
+            s.className="star";
+            const types=["cyan","yellow","white"];
+            s.classList.add(types[(Math.random()*types.length)|0]);
+            const size=Math.random()*3+1;
+            s.style.width=size+"px";s.style.height=size+"px";
+            s.style.left=Math.random()*100+"%";
+            s.style.top=Math.random()*100+"%";
+            s.style.animationDelay=Math.random()*3+"s";
+            s.style.animationDuration=(Math.random()*2+2)+"s";
+            L.appendChild(s);
+          }
+          starField.appendChild(L);
+        }
+      }
+
+      initDock(){
+        const openOverlay = ()=>this.overlay.classList.add("show");
+        const bind=(id,mod)=>{
+          const el=document.getElementById(id);
+          if(!el) return;
+          el.onclick=()=>{
+            if(id==="btnPrimeChat"){
+              this.showPrimeModal();
+              return;
+            }
+            if(id==="btnEngage" || mod){
+              openOverlay();
+              this.selectModule(mod || "terminal");
+            }
+          };
+        };
+        bind("btnEngage","terminal");
+        bind("btnPrime","prime_manual");
+        bind("btnTerminal","terminal");
+        bind("btnGames","games");
+        bind("btnGuides","guides");
+        bind("btnDiagnostics","diagnostics");
+
+        document.getElementById("closeOverlay").onclick=()=>this.overlay.classList.remove("show");
+        document.getElementById("sendAI").onclick=()=>this.handleCrew(this.aiInput.value.trim());
+        document.getElementById("testAI").onclick=()=>this.testHF();
+
+        document.getElementById("primeClose").onclick=()=>this.primeModal.style.display="none";
+        document.getElementById("primeChatSend").onclick=()=>this.handlePrimeChat(this.primeChatInput.value.trim());
+        document.getElementById("btnPrimeChat").onclick=()=>this.showPrimeModal();
+      }
+
+      showPrimeModal(){
+        this.primeManualSlot.innerHTML = window.PRIME_MANUAL || "";
+        this.primeModal.style.display="block";
+      }
+
+      paintTabs(){
+        this.tabsEl.innerHTML="";
+        Object.keys(this.modules).forEach(id=>{
+          const m=this.modules[id];
+          const t=document.createElement("div");
+          t.className="tab";t.dataset.id=id;t.textContent=m.title;
+          t.onclick=()=>this.selectModule(id);
+          this.tabsEl.appendChild(t);
+        });
+      }
+
+      selectModule(id){
+        if(!this.modules[id]) return;
+        this.state.activeModule=id;
+        [...this.tabsEl.children].forEach(el=>el.classList.toggle("active",el.dataset.id===id));
+        const mod=this.modules[id];
+        this.activeTitleEl.textContent=mod.title;
+        this.activeViewEl.innerHTML="";
+        switch(mod.nodeType){
+          case "runtime.terminal": this.renderTerminal(this.activeViewEl); break;
+          case "runtime.canvas.grid": this.renderGames(this.activeViewEl); break;
+          case "runtime.guides": this.renderGuides(this.activeViewEl); break;
+          case "runtime.diag": this.renderDiagnostics(this.activeViewEl); break;
+          case "runtime.prime_manual": this.renderPrimeManual(this.activeViewEl); break;
+        }
+      }
+
+      async handleCrew(text){
+        if(!text) return;
+        this.logUser(text);
+        const [tagRaw,...rest]=text.split(":");
+        const tag=(tagRaw||"").trim();
+        const content=(rest.join(":")||text).trim();
+        const Crew={
+          nav:q=>`Navigator: plotting course — "${q}"`,
+          eng:q=>`Engineer: rerouting power for "${q}"`,
+          ana:q=>`Analyst: running heuristics on "${q}"`
+        };
+        if(Crew[tag]) this.logSys(Crew[tag](content));
+
+        const token=this.hfTokenInput.value.trim();
+        if(token){
+          try{
+            const out = await this.hfChat(token,[
+              {role:"user",content:[{type:"text",text:content}]}
+            ]);
+            const reply=out?.choices?.[0]?.message?.content?.[0]?.text || JSON.stringify(out);
+            this.logAI(reply);
+          }catch(e){
+            this.logSys("HF error: "+e.message);
+          }
+        }else{
+          // offline echo
+          const echo=content.split("").reverse().join("");
+          this.logAI(echo+" • [local echo]");
+        }
+        this.aiInput.value="";
+      }
+
+      async testHF(){
+        const token=this.hfTokenInput.value.trim();
+        if(!token){ this.logSys("Set HF token before testing live chat."); return; }
+        const out=await this.hfChat(token,[
+          {role:"user",content:[{type:"text",text:"Ping from PRIME-IFAL cockpit."}]}
+        ]);
+        const reply=out?.choices?.[0]?.message?.content?.[0]?.text || JSON.stringify(out);
+        this.logSys("HF ▶ "+reply);
+      }
+
+      async hfChat(token,messages){
+        const r=await fetch("https://router.huggingface.co/v1/chat/completions",{
+          method:"POST",
+          headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
+          body:JSON.stringify({model:"Qwen/Qwen3-VL-8B-Instruct:novita",messages})
+        });
+        if(!r.ok) throw new Error("HTTP "+r.status);
+        return r.json();
+      }
+
+      // PRIME Chat Reasoner (local, non-HF)
+      appendPrimeLog(role,text){
+        const line=document.createElement("div");
+        line.textContent=`[${role}] ${text}`;
+        this.primeChatLog.appendChild(line);
+        this.primeChatLog.scrollTop=this.primeChatLog.scrollHeight;
+      }
+      handlePrimeChat(text){
+        if(!text) return;
+        this.appendPrimeLog("YOU",text);
+        this.primeChatInput.value="";
+        const q=text.toLowerCase();
+        let ans="PRIME: micro-OS online.";
+        if(q.includes("klh")) ans="KLH: hive orchestrator routing duties between shards and agents.";
+        else if(q.includes("xjson")) ans="XJSON: declarative OS language with AST and @if/@then/@else.";
+        else if(q.includes("scx")) ans="SCXQ2: symbolic compression — code & guides as glyphs.";
+        else if(q.includes("k'uhul") || q.includes("kuhul")) ans="K’UHUL: execution engine and TPU-OS reactor loop.";
+        else if(q.includes("hive")) ans="PRIME-04 multi-hive: dashboard, users, logistics, intel, settings.";
+        else if(q.includes("tape")) ans="ASX tapes (.ASX / .ASXR / .ASXTAPE) mount as XJSON trees in K’UHUL.";
+        else if(q.includes("studio")) ans="PRIME Studio: file tree + editor + preview + compiler + tape forge.";
+        this.appendPrimeLog("PRIME",ans);
+      }
+
+      // RENDERERS
+      renderTerminal(root){
+        const wrap=document.createElement("div");
+        wrap.style.color="#aaffaa";
+        wrap.innerHTML=`
+          <p>HF Terminal: crew bridge to router.huggingface.co.</p>
+          <p>Use <code>nav:</code>, <code>eng:</code>, <code>ana:</code> prefixes in the left console.</p>
+          <p>If no HF token is present, replies use local echo.</p>
+        `;
+        root.appendChild(wrap);
+      }
+
+      renderGames(root){
+        const wrap=document.createElement("div");
+        wrap.className="grid";
+        wrap.appendChild(this.makeGalactica());
+        wrap.appendChild(this.makeInvaders());
+        wrap.appendChild(this.makePacman());
+        root.appendChild(wrap);
+      }
+
+      makeCard(title,canvas){
+        const card=document.createElement("div");
+        card.className="mini-runtime";
+        const hud=document.createElement("div");
+        hud.className="mini-hud";
+        const b1=document.createElement("span");
+        b1.className="badge";b1.textContent=title;
+        const b2=document.createElement("span");
+        b2.className="badge";b2.textContent="AUTO";
+        hud.append(b1,b2);
+        card.append(canvas,hud);
+        return card;
+      }
+
+      makeGalactica(){
+        const cvs=document.createElement("canvas");
+        cvs.width=640;cvs.height=220;
+        const ctx=cvs.getContext("2d");
+        const W=cvs.width,H=cvs.height;
+        const state={t:0,last:performance.now(),bul:[],en:[],score:0,px:W/2,cd:0,auto:true};
+        for(let i=0;i<10;i++) state.en.push({x:60+i*50,y:80+(i%2)*20,v:50+Math.random()*50});
+        (function step(now){
+          requestAnimationFrame(step);
+          const dt=Math.min(.033,(now-(state.last||now))/1000);
+          state.last=now;state.t+=dt;state.cd-=dt;
+          if(state.auto && state.cd<=0){
+            state.bul.push({x:state.px,y:H-30,v:-300});
+            state.cd=.18;
+          }
+          state.en.forEach(e=>{e.x+=Math.sin(state.t*e.v/50)*.6;});
+          state.bul.forEach(b=>b.y+=b.v*dt);
+          for(const b of state.bul){
+            for(const e of state.en){
+              if(Math.abs(b.x-e.x)<14 && Math.abs(b.y-e.y)<12){
+                b.hit=true;e.hit=true;state.score+=50;
+              }
+            }
+          }
+          state.en=state.en.filter(e=>!e.hit);
+          state.bul=state.bul.filter(b=>!b.hit && b.y>-40);
+
+          ctx.fillStyle="#030b12";ctx.fillRect(0,0,W,H);
+          ctx.fillStyle="rgba(255,255,255,.35)";
+          for(let i=0;i<80;i++){
+            const sx=(i*97%W);const sy=(i*53*7+(state.t*60*i))%H;
+            ctx.fillRect(sx,sy,2,2);
+          }
+          ctx.fillStyle="#9ff";
+          ctx.beginPath();
+          ctx.moveTo(state.px,H-50);
+          ctx.lineTo(state.px+12,H-20);
+          ctx.lineTo(state.px-12,H-20);
+          ctx.closePath();ctx.fill();
+          ctx.fillStyle="#ffd37f";
+          state.en.forEach(e=>ctx.fillRect(e.x-10,e.y-8,20,16));
+          ctx.fillStyle="#fff";
+          state.bul.forEach(b=>ctx.fillRect(b.x-2,b.y-6,4,12));
+          ctx.fillStyle="#0fa";ctx.font="12px monospace";
+          ctx.fillText("Score "+state.score,10,18);
+        })(performance.now());
+        return this.makeCard("Galactica",cvs);
+      }
+
+      makeInvaders(){
+        const cvs=document.createElement("canvas");
+        cvs.width=640;cvs.height=220;
+        const ctx=cvs.getContext("2d");
+        const W=cvs.width,H=cvs.height;
+        const state={t:0,last:performance.now(),ship:{x:W/2},en:[],dx:1,bul:[],auto:true,cd:0,score:0};
+        for(let r=0;r<3;r++) for(let c=0;c<10;c++) state.en.push({x:60+c*45,y:50+r*24});
+        (function step(now){
+          requestAnimationFrame(step);
+          const dt=Math.min(.033,(now-(state.last||now))/1000);
+          state.last=now;state.t+=dt;state.cd-=dt;
+          let edge=false;
+          state.en.forEach(e=>{
+            e.x+=state.dx*40*dt;
+            if(e.x<20||e.x>W-20) edge=true;
+          });
+          if(edge){ state.dx*=-1; state.en.forEach(e=>e.y+=6); }
+          if(state.auto && state.cd<=0){
+            state.bul.push({x:state.ship.x,y:H-30,v:-260});
+            state.cd=.22;
+          }
+          state.bul.forEach(b=>b.y+=b.v*dt);
+          for(const b of state.bul){
+            for(const e of state.en){
+              if(Math.abs(b.x-e.x)<10 && Math.abs(b.y-e.y)<10){
+                b.hit=true;e.hit=true;state.score+=25;
+              }
+            }
+          }
+          state.en=state.en.filter(e=>!e.hit);
+          state.bul=state.bul.filter(b=>!b.hit && b.y>-40);
+          ctx.fillStyle="#01070d";ctx.fillRect(0,0,W,H);
+          ctx.fillStyle="#7fd3ff";
+          ctx.fillRect(state.ship.x-12,H-28,24,18);
+          ctx.fillStyle="#ffcc7a";
+          state.en.forEach(e=>ctx.fillRect(e.x-8,e.y-6,16,12));
+          ctx.fillStyle="#fff";
+          state.bul.forEach(b=>ctx.fillRect(b.x-2,b.y-6,4,12));
+          ctx.fillStyle="#0fa";ctx.font="12px monospace";
+          ctx.fillText("Score "+state.score,10,18);
+        })(performance.now());
+        return this.makeCard("Space Invaders (lite)",cvs);
+      }
+
+      makePacman(){
+        const cvs=document.createElement("canvas");
+        cvs.width=640;cvs.height=220;
+        const ctx=cvs.getContext("2d");
+        const W=cvs.width,H=cvs.height;
+        const grid=20,cols=(W/grid)|0,rows=(H/grid)|0;
+        const dots=new Set();
+        for(let y=2;y<rows-2;y++){
+          for(let x=2;x<cols-2;x++){
+            if((x+y)%2===0) dots.add(x+","+y);
+          }
+        }
+        const state={t:0,last:performance.now(),px:3,py:3,vx:1,vy:0,score:0};
+        (function step(now){
+          requestAnimationFrame(step);
+          const dt=Math.min(.033,(now-(state.last||now))/1000);
+          state.last=now;state.t+=dt;
+          if(((state.t*5)|0)%1===0){
+            state.px+=state.vx;state.py+=state.vy;
+            if(state.px<2) state.px=cols-3;
+            if(state.px>cols-3) state.px=2;
+            const key=state.px+","+state.py;
+            if(dots.has(key)){dots.delete(key);state.score+=10;}
+            if(Math.random()<.2){
+              const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+              const d=dirs[(Math.random()*4)|0];
+              state.vx=d[0];state.vy=d[1];
+            }
+          }
+          ctx.fillStyle="#000";ctx.fillRect(0,0,W,H);
+          ctx.strokeStyle="#0af";ctx.lineWidth=1;
+          for(let x=0;x<W;x+=grid){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+          for(let y=0;y<H;y+=grid){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+          ctx.fillStyle="#ff0";
+          dots.forEach(k=>{
+            const [x,y]=k.split(",").map(Number);
+            ctx.fillRect(x*grid+grid/2-2,y*grid+grid/2-2,4,4);
+          });
+          const px=state.px*grid+grid/2;const py=state.py*grid+grid/2;
+          ctx.fillStyle="#ff6fd8";ctx.beginPath();ctx.arc(px,py,8,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle="#0fa";ctx.font="12px monospace";
+          ctx.fillText("Score "+state.score,10,18);
+        })(performance.now());
+        return this.makeCard("Ms. Pac-Man (lite)",cvs);
+      }
+
+      renderGuides(root){
+        const wrap=document.createElement("div");
+        wrap.className="grid";
+
+        // NOTE: these src paths point at your uploaded files in this environment.
+        // In your own hosting, replace with real URLs/CDN paths.
+        const guides = [
+          ["Atomic HTML Runtime Guide v3","sandbox:/mnt/data/Atomic_HTML_Runtime_Guide_v3.html"],
+          ["Atomic ASX Guide v2","sandbox:/mnt/data/Atomic_ASX_Guide_v2.html"],
+          ["ASX Cypher Basic Example","sandbox:/mnt/data/ASX-CYPHER-BASIC-EXAMPLE.html"],
+          ["ATOMIC MX2LM Training Guide","sandbox:/mnt/data/ATOMIC_MX2LM_TRAINING_GUIDE.html"],
+          ["ASX Doctor Diagnostics","sandbox:/mnt/data/asx_doctor_diagnostics_galactica_joes_list_1_page.html"],
+          ["ASX Blocks CSS Style System Demo","sandbox:/mnt/data/asx_blocks_css_style_system_live_demo.html"]
+        ];
+
+        guides.forEach(([label,src])=>{
+          const card=document.createElement("div");
+          card.className="mini-runtime";
+          const iframe=document.createElement("iframe");
+          iframe.className="guide";
+          iframe.src=src;
+          const hud=document.createElement("div");hud.className="mini-hud";
+          const b=document.createElement("span");b.className="badge";b.textContent=label;
+          hud.appendChild(b);
+          card.append(iframe,hud);
+          wrap.appendChild(card);
+        });
+
+        // PDF guide (Liquid Atomic Symbolic Cipher ASX Guide)
+        const pdfCard=document.createElement("div");
+        pdfCard.className="mini-runtime pdf-wrap";
+        const embed=document.createElement("embed");
+        embed.type="application/pdf";
+        embed.src="sandbox:/mnt/data/Liquid_Atomic_Symbolic_Cipher_ASX_Guide.pdf";
+        const hud=document.createElement("div");hud.className="mini-hud";
+        const b=document.createElement("span");b.className="badge";
+        b.textContent="Liquid Atomic Symbolic Cipher ASX Guide (PDF)";
+        hud.appendChild(b);
+        pdfCard.append(embed,hud);
+        wrap.appendChild(pdfCard);
+
+        root.appendChild(wrap);
+      }
+
+      renderDiagnostics(root){
+        const wrap=document.createElement("div");wrap.className="grid";
+        const card=document.createElement("div");card.className="mini-runtime";
+        const inner=document.createElement("div");
+        inner.style.padding="10px";inner.style.color="#aaffaa";
+        inner.innerHTML = `
+          <div><strong>System Diagnostics</strong></div>
+          <ul style="margin:6px 0 0 16px">
+            <li>DOM Ready ✅</li>
+            <li>Service Worker API ${"serviceWorker" in navigator ? "✅" : "❌"}</li>
+            <li>PRIME-IFAL v4 Micro-OS Online ✅</li>
+            <li>Core: XJSON • SCX • K’UHUL • PRIMEOS ✅</li>
+          </ul>
+        `;
+        const hud=document.createElement("div");hud.className="mini-hud";
+        const b=document.createElement("span");b.className="badge";b.textContent="Diagnostics";
+        hud.appendChild(b);
+        card.append(inner,hud);
+        wrap.appendChild(card);
+        root.appendChild(wrap);
+      }
+
+      renderPrimeManual(root){
+        const wrap=document.createElement("div");
+        wrap.style.height="100%";
+        wrap.style.overflow="auto";
+        wrap.innerHTML = window.PRIME_MANUAL || "PRIME Manual missing.";
+        root.appendChild(wrap);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded",()=>{
+      window.KUHUL = new KuhulCore(XJSON_BOOT);
+    });
+  </script>
+
+  <!-- PRIMEOS AGENT SPAWNER - K'UHUL MICRONAUT FACTORY (frontend demo wiring) -->
+  <script>
+  // PRIMEOS AGENT SPAWNER - Spawn specialized agents with mini-OS runtimes
+
+  const MicronautFactory = {
+    async spawnTopicAgent(topic, userRequirements = {}) {
+      const agentId = `micronaut_${topic.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}`;
+      const miniOS = await this.generateMiniOS(topic, userRequirements);
+      const runtime = await this.createAgentRuntime(agentId, miniOS);
+      // In this frontend demo, KuhulKernel is not a real process manager,
+      // but we keep the ritual string to preserve your glyph contract.
+      const process = { pid: agentId, context:{topic,miniOS,runtime}, status:"demo" };
+      return {
+        agentId,
+        topic,
+        miniOS,
+        runtime,
+        processId: process.pid,
+        endpoints: this.generateAgentEndpoints(agentId),
+        status: 'active'
+      };
+    },
+
+    async generateMiniOS(topic, requirements) {
+      return {
+        "Ωv": "1.0",
+        "name": `${topic} Micronaut`,
+        "type": "specialized_agent",
+        "topic": topic,
+        "capabilities": this.deriveCapabilities(topic, requirements),
+
+        "⟁kproc": {
+          "⟁data_ingest": { "⟁sources": ["web", "apis", "files"], "⟁format": ["json", "html", "text"] },
+          "⟁analysis": { "⟁tools": ["pattern_matching", "summarization", "trend_detection"] },
+          "⟁output": { "⟁formats": ["api", "ui", "report", "alert"] }
+        },
+
+        "⟁endpoints": {
+          "⟁ingest": `/api/agents/${topic}/ingest`,
+          "⟁query": `/api/agents/${topic}/query`,
+          "⟁train": `/api/agents/${topic}/train`,
+          "⟁export": `/api/agents/${topic}/export`
+        },
+
+        "⟁ui_components": this.generateUIComponents(topic),
+        "⟁data_schema": await this.generateDataSchema(topic),
+        "⟁training_loop": requirements.training ? this.generateTrainingLoop(topic) : null
+      };
+    },
+
+    async createAgentRuntime(agentId, miniOS) {
+      const runtime = {
+        id: agentId,
+        memory: new Map(),
+        data: new Map(),
+        models: new Map(),
+        active: true,
+        createdAt: Date.now()
+      };
+      return runtime;
+    },
+
+    deriveCapabilities(topic, requirements) {
+      const baseCapabilities = ["data_ingestion", "query_processing", "basic_analysis"];
+      const topicSpecific = this.getTopicSpecificCapabilities(topic);
+      const requirementBased = this.getRequirementCapabilities(requirements);
+      return [...baseCapabilities, ...topicSpecific, ...requirementBased];
+    },
+
+    getTopicSpecificCapabilities(topic) {
+      const topicMap = {
+        'baseball': ['statistics_analysis', 'player_comparison', 'game_prediction'],
+        'cooking': ['recipe_analysis', 'ingredient_substitution', 'nutrition_calculation'],
+        'finance': ['market_analysis', 'trend_prediction', 'portfolio_suggestions'],
+        'research': ['paper_analysis', 'citation_tracking', 'summary_generation'],
+        'scraping': ['web_crawling', 'data_extraction', 'content_parsing'],
+        'training': ['model_training', 'hyperparameter_tuning', 'performance_evaluation']
+      };
+      return topicMap[topic.toLowerCase()] || ['topic_analysis', 'pattern_recognition'];
+    },
+
+    getRequirementCapabilities(requirements){
+      const caps=[];
+      if(requirements.capabilities) caps.push(...requirements.capabilities);
+      if(requirements.training) caps.push("training_loop");
+      return caps;
+    },
+
+    generateUIComponents(topic){
+      return [
+        { id:"dashboard", kind:"panel", label:`${topic} Dashboard`},
+        { id:"logs", kind:"panel", label:"Agent Logs"},
+        { id:"config", kind:"panel", label:"Config"}
+      ];
+    },
+
+    async generateDataSchema(topic){
+      return {
+        topic,
+        fields:[
+          {name:"title", selector:"<title>(.*?)</title>"},
+          {name:"body_snippet", selector:"<body[^>]*>([\\s\\S]{0,500})"}
+        ]
+      };
+    },
+
+    generateTrainingLoop(topic){
+      return {
+        strategy:"qlora",
+        schedule:"offline",
+        notes:`Training loop for ${topic} micronaut`
+      };
+    },
+
+    generateAgentEndpoints(agentId) {
+      return {
+        "control": `/api/agents/${agentId}/control`,
+        "ingest": `/api/agents/${agentId}/ingest`,
+        "query": `/api/agents/${agentId}/query`,
+        "train": `/api/agents/${agentId}/train`,
+        "status": `/api/agents/${agentId}/status`,
+        "export": `/api/agents/${agentId}/export`
+      };
+    }
+  };
+
+  console.log("PRIMEOS AGENT SPAWNING SYSTEM - K'UHUL MICRONAUT FACTORY ACTIVE (FRONTEND DEMO)");
+  </script>
+<script>
+// ===========================================
+// TAPE SELF-REGISTRATION (GHOST + KUHUL + KLH)
+// ===========================================
+
+(function(){
+
+  // -----------------------------------------
+  // 1. AUTO-DETECT TAPE FILE NAME
+  // -----------------------------------------
+  const TAPE_ID = location.pathname
+    .split('/')
+    .pop()
+    .replace('.html','')
+    .toLowerCase();
+
+  // -----------------------------------------
+  // 2. REST PING → KLH / XJSON Static API
+  // -----------------------------------------
+  fetch('/api/hive/heartbeat?tape=' + encodeURIComponent(TAPE_ID))
+    .catch(()=>{});
+
+  // -----------------------------------------
+  // 3. SERVICE WORKER → KUHUL PROCESS TABLE
+  // -----------------------------------------
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    const chan = new MessageChannel();
+
+    navigator.serviceWorker.controller.postMessage(
+      {
+        type: "TAPE_HEARTBEAT",
+        tape: TAPE_ID,
+        url: location.href,
+        time: Date.now()
+      },
+      [chan.port2]
+    );
+  }
+
+})();
+</script>
+
+</body>
+</html>

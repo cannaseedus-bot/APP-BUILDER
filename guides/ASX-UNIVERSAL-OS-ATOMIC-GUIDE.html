@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASX OS - Universal Operating System</title>
+    <style>
+        :root {
+            --bg: #020617;
+            --bg_alt: #050b1c;
+            --primary: #16f2aa;
+            --secondary: #38bdf8;
+            --text: #e5f2ff;
+            --text_soft: #9ca3af;
+            --sp-0: 0.25rem;
+            --sp-1: 0.5rem;
+            --sp-2: 0.75rem;
+            --sp-3: 1rem;
+            --sp-4: 1.5rem;
+            --radius-0: 0.375rem;
+            --radius-1: 0.75rem;
+            --radius-2: 1.25rem;
+            --radius-3: 999px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app {
+            min-height: 100vh;
+            padding: var(--sp-3);
+            display: flex;
+            flex-direction: column;
+            gap: var(--sp-3);
+        }
+
+        .asx-panel {
+            background: var(--bg_alt);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: var(--radius-1);
+            padding: var(--sp-2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .asx-panel:hover {
+            border-color: rgba(148, 163, 184, 0.5);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .asx-btn {
+            background: var(--primary);
+            color: var(--bg);
+            border: none;
+            padding: var(--sp-1) var(--sp-2);
+            border-radius: var(--radius-3);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--sp-1);
+        }
+
+        .asx-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(22, 242, 170, 0.3);
+        }
+
+        .asx-btn.secondary {
+            background: var(--secondary);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--sp-3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-2);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: var(--radius-0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--bg);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: var(--sp-2);
+            font-size: 0.875rem;
+            color: var(--text_soft);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-1);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+
+        .grid {
+            display: grid;
+            gap: var(--sp-3);
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .terminal {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-1);
+            padding: var(--sp-3);
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .terminal-line {
+            margin-bottom: var(--sp-1);
+            display: flex;
+            align-items: flex-start;
+            gap: var(--sp-2);
+        }
+
+        .terminal-prompt {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--sp-2);
+            margin-top: var(--sp-3);
+        }
+
+        .system-card {
+            display: flex;
+            flex-direction: column;
+            gap: var(--sp-2);
+        }
+
+        .system-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--primary);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            padding-bottom: var(--sp-1);
+        }
+
+        .glyph-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--sp-2);
+        }
+
+        .glyph-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--sp-2);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-0);
+            min-width: 80px;
+        }
+
+        .glyph-symbol {
+            font-size: 1.5rem;
+            margin-bottom: var(--sp-1);
+        }
+
+        .glyph-name {
+            font-size: 0.75rem;
+            color: var(--text_soft);
+        }
+
+        .footer {
+            text-align: center;
+            padding: var(--sp-3);
+            color: var(--text_soft);
+            font-size: 0.875rem;
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+            margin-top: auto;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="asx-panel header fade-in">
+            <div class="logo">
+                <div class="logo-icon">ASX</div>
+                <div class="logo-text">Universal OS</div>
+            </div>
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-dot pulse"></div>
+                    <span>Kernel Active</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot" style="background: var(--secondary);"></div>
+                    <span>Manifest Loaded</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot" style="background: #10b981;"></div>
+                    <span>Systems Ready</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid fade-in" style="animation-delay: 0.1s;">
+            <div class="asx-panel system-card">
+                <div class="system-title">Kuhul System</div>
+                <div class="glyph-list">
+                    <div class="glyph-item">
+                        <div class="glyph-symbol">Pop</div>
+                        <div class="glyph-name">function</div>
+                    </div>
+                    <div class="glyph-item">
+                        <div class="glyph-symbol">Wo</div>
+                        <div class="glyph-name">assign</div>
+                    </div>
+                    <div class="glyph-item">
+                        <div class="glyph-symbol">Sek</div>
+                        <div class="glyph-name">execute</div>
+                    </div>
+                    <div class="glyph-item">
+                        <div class="glyph-symbol">Ch'en</div>
+                        <div class="glyph-name">store</div>
+                    </div>
+                    <div class="glyph-item">
+                        <div class="glyph-symbol">Xul</div>
+                        <div class="glyph-name">return</div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="asx-btn" onclick="executeKuhul()">Execute Sample</button>
+                </div>
+            </div>
+
+            <div class="asx-panel system-card">
+                <div class="system-title">SCX System</div>
+                <div class="glyph-list">
+                    <div class="glyph-item">
+                        <div class="glyph-symbol">(?)</div>
+                        <div class="glyph-name">if</div>
+                    </div>
+                    <div class="glyph-item">
+                        <div class="glyph-symbol">(∴)</div>
+                        <div class="glyph-name">then</div>
+                    </div>
+                    <div class="glyph-item">
+                        <div class="glyph-symbol">⟁</div>
+                        <div class="glyph-name">block</div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="asx-btn secondary" onclick="decompressSCX()">Decompress Sample</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="asx-panel terminal fade-in" style="animation-delay: 0.2s;">
+            <div class="terminal-line">
+                <span class="terminal-prompt">ASX></span>
+                <span>System initialized. Welcome to ASX Universal OS.</span>
+            </div>
+            <div class="terminal-line">
+                <span class="terminal-prompt">ASX></span>
+                <span>Kernel: Manifest-centric architecture active.</span>
+            </div>
+            <div class="terminal-line">
+                <span class="terminal-prompt">ASX></span>
+                <span>All systems operational. Ready for commands.</span>
+            </div>
+            <div id="terminal-output"></div>
+        </div>
+
+        <div class="footer fade-in" style="animation-delay: 0.3s;">
+            ASX OS - Manifest Centric Architecture | Kernel: sw.js | Ghost: index.html
+        </div>
+    </div>
+
+    <script>
+        // ASX Ghost - Display layer only
+        class ASXGhost {
+            constructor() {
+                this.terminalOutput = document.getElementById('terminal-output');
+                this.init();
+            }
+
+            init() {
+                this.log('Ghost initialized. Ready to display kernel output.');
+            }
+
+            log(message, isCommand = false) {
+                const line = document.createElement('div');
+                line.className = 'terminal-line';
+                
+                const prompt = document.createElement('span');
+                prompt.className = 'terminal-prompt';
+                prompt.textContent = isCommand ? 'USER>' : 'ASX>';
+                
+                const text = document.createElement('span');
+                text.textContent = message;
+                
+                line.appendChild(prompt);
+                line.appendChild(text);
+                this.terminalOutput.appendChild(line);
+                
+                // Scroll to bottom
+                this.terminalOutput.parentElement.scrollTop = this.terminalOutput.parentElement.scrollHeight;
+            }
+
+            clearTerminal() {
+                this.terminalOutput.innerHTML = '';
+            }
+        }
+
+        // Global execution handlers
+        window.executeKuhul = function() {
+            const ghost = new ASXGhost();
+            ghost.log('Executing Kuhul sample: [Wo "Hello from Kuhul System"]', true);
+            
+            // Simulate execution
+            setTimeout(() => {
+                ghost.log('Kuhul execution complete: Hello from Kuhul System');
+            }, 800);
+        };
+
+        window.decompressSCX = function() {
+            const ghost = new ASXGhost();
+            ghost.log('Decompressing SCX sample: (?) condition (∴) action ⟁', true);
+            
+            // Simulate decompression
+            setTimeout(() => {
+                ghost.log('SCX decompression complete: if condition then action block');
+            }, 800);
+        };
+
+        // Initialize the ghost
+        document.addEventListener('DOMContentLoaded', () => {
+            new ASXGhost();
+            
+            // Simulate service worker registration
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(() => console.log('Service Worker registered'))
+                    .catch(err => console.log('Service Worker registration failed: ', err));
+            }
+        });
+    </script>
+</body>
+</html>

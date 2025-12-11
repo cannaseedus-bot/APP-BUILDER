@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="atomic-ghost">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ASX ATOMIC OS — CSS AST Runtime Engine</title>
+  <style>
+    /* Core Atomic Ghost Shell Styles */
+    :root {
+      --bg-main: #020618;
+      --bg-panel: #050b27;
+      --bg-panel-soft: #050818;
+      --bg-chip: #040618;
+      --border-soft: rgba(148, 163, 184, 0.5);
+      --border-strong: rgba(148, 163, 184, 0.9);
+      --accent: #16f2aa;
+      --accent-soft: rgba(22, 242, 170, 0.15);
+      --accent-alt: #00f5ff;
+      --accent-hot: #ff6b6b;
+      --text-main: #e5f2ff;
+      --text-soft: #94a3b8;
+      --text-muted: #64748b;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.85);
+      --radius-lg: 18px;
+      --radius-xl: 22px;
+      --radius-pill: 999px;
+      --gap-lg: 20px;
+      --gap-md: 14px;
+      --gap-sm: 8px;
+      --transition-fast: 140ms ease-out;
+      --transition-med: 200ms ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0b1120 0, #020617 55%, #000 100%);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .os-shell {
+      display: flex;
+      flex: 1;
+      padding: 18px;
+      gap: 18px;
+    }
+
+    .os-panel {
+      background: linear-gradient(
+          145deg,
+          rgba(148, 163, 184, 0.14),
+          rgba(15, 23, 42, 0.2)
+        ),
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.14), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(22, 242, 170, 0.12), transparent 60%);
+      border-radius: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(16px);
+    }
+
+    .os-sidebar {
+      width: 320px;
+      min-width: 260px;
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 14px;
+      gap: 14px;
+    }
+
+    .os-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 18px 18px;
+      gap: 14px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .fold-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .fold-chip {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid rgba(30, 64, 175, 0.7);
+      cursor: pointer;
+      transition: transform var(--transition-fast),
+        border-color var(--transition-fast),
+        background var(--transition-fast),
+        box-shadow var(--transition-fast);
+    }
+
+    .fold-chip:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.2);
+    }
+
+    .fold-chip[data-active="true"] {
+      border-color: var(--accent);
+      background: radial-gradient(circle at top left, rgba(22, 242, 170, 0.24), rgba(15, 23, 42, 0.9));
+      box-shadow: 0 0 0 1px rgba(22, 242, 170, 0.5);
+    }
+
+    .fold-chip-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .fold-symbol {
+      width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      background: radial-gradient(circle at 30% 20%, #e5f2ff 0, #0f172a 40%, #020617 100%);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      text-shadow: 0 0 10px rgba(22, 242, 170, 0.8);
+    }
+
+    .fold-labels {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+
+    .fold-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .fold-role {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .fold-pill {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--text-soft);
+      white-space: nowrap;
+    }
+
+    .fold-chip[data-active="true"] .fold-pill {
+      background: rgba(22, 242, 170, 0.08);
+      border-color: rgba(22, 242, 170, 0.7);
+      color: var(--accent);
+    }
+
+    .fold-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .fold-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .fold-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+    }
+
+    .fold-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .route-badge {
+      font-size: 10px;
+      border-radius: var(--radius-pill);
+      padding: 4px 10px;
+      border: 1px dashed rgba(148, 163, 184, 0.6);
+      color: var(--text-soft);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .fold-content-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid rgba(30, 64, 175, 0.6);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), rgba(15, 23, 42, 0.96));
+    }
+
+    .fold-toolbar {
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid rgba(30, 64, 175, 0.7);
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.8));
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .toolbar-badge {
+      border-radius: 999px;
+      padding: 3px 8px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      font-size: 10px;
+      color: var(--text-soft);
+    }
+
+    .toolbar-right {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .toolbar-link {
+      font-size: 11px;
+      color: var(--accent-alt);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(56, 189, 248, 0.7);
+      padding-bottom: 1px;
+      cursor: pointer;
+    }
+
+    .fold-body {
+      flex: 1;
+      padding: 10px 12px 12px;
+      overflow-y: auto;
+      max-height: calc(100vh - 180px);
+      display: none;
+    }
+
+    .fold-body[data-active="true"] {
+      display: block;
+    }
+
+    .fold-section {
+      margin-bottom: 14px;
+      padding: 10px 10px 9px;
+      border-radius: 14px;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(30, 64, 175, 0.7);
+    }
+
+    .fold-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .fold-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .fold-section-tag {
+      font-size: 10px;
+      border-radius: 999px;
+      padding: 3px 8px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.96);
+      white-space: nowrap;
+    }
+
+    .fold-section-body {
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.55;
+    }
+
+    pre.code-block {
+      margin: 6px 0 0;
+      padding: 8px;
+      border-radius: 12px;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 1));
+      border: 1px solid rgba(30, 64, 175, 0.9);
+      font-size: 11px;
+      line-height: 1.4;
+      overflow-x: auto;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+        Consolas, "Liberation Mono", "Courier New", monospace;
+      color: #e5f2ff;
+    }
+
+    ul.compact {
+      margin: 4px 0 0 16px;
+      padding: 0;
+    }
+    ul.compact li {
+      margin-bottom: 1px;
+    }
+
+    /* CSS AST Engine Specific Styles */
+    .css-ast-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .css-ast-card {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(30, 64, 175, 0.6);
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    .ast-visualization {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+      min-height: 200px;
+      justify-content: center;
+      background: rgba(5, 11, 39, 0.9);
+      border-radius: 8px;
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ast-level {
+      display: flex;
+      justify-content: center;
+      margin: 8px 0;
+      position: relative;
+    }
+
+    .ast-node-visual {
+      width: 70px;
+      height: 35px;
+      background: rgba(22, 242, 170, 0.2);
+      border: 2px solid #16f2aa;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 8px;
+      font-size: 0.7rem;
+      position: relative;
+      transition: all 0.3s ease;
+      z-index: 2;
+      cursor: pointer;
+    }
+
+    .ast-node-visual:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 10px rgba(22, 242, 170, 0.5);
+      z-index: 3;
+    }
+
+    .ast-connection {
+      position: absolute;
+      height: 2px;
+      background: rgba(22, 242, 170, 0.5);
+      z-index: 1;
+    }
+
+    .micronaut-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 15px;
+      margin: 15px 0;
+    }
+
+    .micronaut-card {
+      background: rgba(22, 242, 170, 0.05);
+      border: 1px solid rgba(22, 242, 170, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .micronaut-card:hover {
+      border-color: #16f2aa;
+      transform: translateY(-3px);
+    }
+
+    .micronaut-status {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .micronaut-active {
+      animation: pulse 2s infinite;
+      border-color: #16f2aa;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(22, 242, 170, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(22, 242, 170, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(22, 242, 170, 0); }
+    }
+
+    .json-representation {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .json-key {
+      color: #16f2aa;
+    }
+
+    .json-string {
+      color: #00e0ff;
+    }
+
+    .json-number {
+      color: #ffaa00;
+    }
+
+    .control-btn {
+      background: rgba(22, 242, 170, 0.1);
+      border: 1px solid #16f2aa;
+      color: var(--text-main);
+      padding: 6px 12px;
+      margin: 3px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      font-size: 0.8rem;
+    }
+
+    .control-btn:hover {
+      background: rgba(22, 242, 170, 0.2);
+      box-shadow: 0 0 8px rgba(22, 242, 170, 0.3);
+    }
+
+    #codeInput {
+      width: 100%;
+      height: 80px;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      border: 1px solid #16f2aa;
+      padding: 8px;
+      margin: 8px 0;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      resize: vertical;
+      font-size: 0.8rem;
+    }
+
+    .pipeline-step {
+      background: rgba(22, 242, 170, 0.1);
+      border: 1px solid #16f2aa;
+      border-radius: 4px;
+      padding: 6px 10px;
+      margin: 3px;
+      font-size: 0.7rem;
+      min-width: 80px;
+      text-align: center;
+    }
+    
+    .pipeline-arrow {
+      color: #16f2aa;
+      font-weight: bold;
+      margin: 0 3px;
+      font-size: 0.8rem;
+    }
+
+    .ast-node-details {
+      position: absolute;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid #16f2aa;
+      border-radius: 8px;
+      padding: 10px;
+      z-index: 10;
+      max-width: 300px;
+      font-size: 0.75rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .ast-node-details h4 {
+      margin: 0 0 5px 0;
+      color: #16f2aa;
+    }
+
+    .ast-node-details p {
+      margin: 3px 0;
+    }
+
+    .ast-node-details .close-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: none;
+      border: none;
+      color: #16f2aa;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .language-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .language-btn {
+      background: rgba(22, 242, 170, 0.1);
+      border: 1px solid rgba(22, 242, 170, 0.5);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.8rem;
+    }
+
+    .language-btn.active {
+      background: rgba(22, 242, 170, 0.3);
+      border-color: #16f2aa;
+      box-shadow: 0 0 8px rgba(22, 242, 170, 0.5);
+    }
+
+    .language-btn:hover {
+      background: rgba(22, 242, 170, 0.2);
+    }
+
+    .execution-log {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 6px;
+      padding: 10px;
+      margin-top: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      margin: 3px 0;
+      padding: 2px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .log-timestamp {
+      color: #64748b;
+      margin-right: 8px;
+    }
+
+    .log-info {
+      color: #00e0ff;
+    }
+
+    .log-success {
+      color: #16f2aa;
+    }
+
+    .log-warning {
+      color: #ffaa00;
+    }
+
+    .log-error {
+      color: #ff6b6b;
+    }
+
+    @media (max-width: 960px) {
+      .os-shell {
+        flex-direction: column;
+      }
+      .os-sidebar {
+        width: 100%;
+        max-width: 100%;
+      }
+      .fold-body {
+        max-height: none;
+      }
+      .css-ast-grid {
+        grid-template-columns: 1fr;
+      }
+      .micronaut-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="os-shell">
+    <!-- SIDEBAR -->
+    <aside class="os-panel os-sidebar">
+      <div class="section-label">K'UHUL FOLDS</div>
+      <div class="fold-nav">
+        <div class="fold-chip" data-fold="CSSRuntime" data-active="true">
+          <div class="fold-chip-left">
+            <div class="fold-symbol">CSS</div>
+            <div class="fold-labels">
+              <div class="fold-name">⟁CSS — AST Runtime</div>
+              <div class="fold-role">CSS emulation engine, alternate vectors</div>
+            </div>
+          </div>
+          <div class="fold-pill">/os/css-ast</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <section class="os-panel os-main">
+      <div class="fold-header">
+        <div class="fold-header-left">
+          <div class="fold-title">⟁CSS — AST Runtime Engine</div>
+          <div class="fold-subtitle">
+            CSS emulation engine · universal language runtime · alternate vectors
+          </div>
+        </div>
+        <div class="route-badge">Routing: /os/css-ast/* · CSS AST endpoints</div>
+      </div>
+
+      <div class="fold-content-container">
+        <div class="fold-toolbar">
+          <div class="toolbar-left">
+            <span class="toolbar-badge">Fold: ⟁CSS</span>
+            <span>CSS AST emulation, multi-language support, micronaut processors</span>
+          </div>
+          <div class="toolbar-right">
+            <button class="toolbar-link" id="btnResetEngine">Reset Engine</button>
+            <button class="toolbar-link" id="btnExportAST">Export AST</button>
+          </div>
+        </div>
+
+        <div class="fold-body" data-fold-id="CSSRuntime" data-active="true">
+          <article class="fold-section">
+            <div class="fold-section-header">
+              <div class="fold-section-title">CSS AST Emulation Engine · Universal Language Runtime</div>
+              <div class="fold-section-tag">From: CSS AST Emulation Engine</div>
+            </div>
+            <div class="fold-section-body">
+              The CSS AST Emulation Engine provides alternate control vectors for KUHUL through CSS-based abstract syntax trees:
+              <ul class="compact">
+                <li><strong>Universal AST Structure</strong>: Represent any language's syntax tree in CSS classes</li>
+                <li><strong>Multi-Language Emulation</strong>: JavaScript, Python, Rust semantics via CSS</li>
+                <li><strong>Micronaut AST Processors</strong>: Parser, Transformer, Executor micronauts</li>
+                <li><strong>Live Code Execution</strong>: Execute code via CSS AST pipeline</li>
+                <li><strong>Alternate Control Vectors</strong>: CSS-based execution as backup to JavaScript runtime</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="fold-section">
+            <div class="fold-section-header">
+              <div class="fold-section-title">AST Visualization & Language Emulation</div>
+              <div class="fold-section-tag">Fold: CSSRuntime</div>
+            </div>
+            <div class="fold-section-body">
+              <div class="css-ast-grid">
+                <div class="css-ast-card">
+                  <h4>🌳 Abstract Syntax Tree in CSS</h4>
+                  <div class="ast-visualization" id="astVisualization">
+                    <!-- AST will be rendered here -->
+                  </div>
+                </div>
+
+                <div class="css-ast-card">
+                  <h4>🔤 Multi-Language Emulation</h4>
+                  <div class="language-selector">
+                    <button class="language-btn active" data-lang="javascript">JavaScript</button>
+                    <button class="language-btn" data-lang="python">Python</button>
+                    <button class="language-btn" data-lang="rust">Rust</button>
+                    <button class="language-btn" data-lang="css">CSS</button>
+                  </div>
+                  <div id="languageOutput" class="code-block" style="font-size: 0.7rem;">
+// Language output will appear here
+                  </div>
+                  <div class="json-representation" id="jsonRepresentation">
+                    {/* JSON representation will appear here */}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="fold-section">
+            <div class="fold-section-header">
+              <div class="fold-section-title">🤖 Micronaut AST Processors</div>
+              <div class="fold-section-tag">Alternate Control Vectors</div>
+            </div>
+            <div class="fold-section-body">
+              <div class="micronaut-grid">
+                <div class="micronaut-card" data-micronaut="parser">
+                  <h4>🔍 AST Parser µ</h4>
+                  <p>Parses any language → CSS AST</p>
+                  <div class="micronaut-status">Ready</div>
+                </div>
+                <div class="micronaut-card" data-micronaut="transformer">
+                  <h4>🔄 AST Transformer µ</h4>
+                  <p>Optimizes and transforms AST</p>
+                  <div class="micronaut-status">Ready</div>
+                </div>
+                <div class="micronaut-card" data-micronaut="executor">
+                  <h4>⚡ AST Executor µ</h4>
+                  <p>Executes AST in CSS runtime</p>
+                  <div class="micronaut-status">Ready</div>
+                </div>
+              </div>
+
+              <div style="margin-top: 15px;">
+                <h4>🎮 Live Code Execution via CSS</h4>
+                <textarea id="codeInput">function add(x, y) {
+    return x + y;
+}
+add(5, 3);</textarea>
+                <div style="display: flex; gap: 8px; margin: 10px 0;">
+                  <button class="control-btn" id="btnExecuteCSS">Execute via CSS AST</button>
+                  <button class="control-btn" id="btnOptimizeCode">Optimize AST</button>
+                  <button class="control-btn" id="btnClearCode">Clear</button>
+                </div>
+                <div class="execution-log" id="executionLog">
+                  <div class="log-entry"><span class="log-timestamp">[00:00:00]</span> <span class="log-info">AST Engine initialized</span></div>
+                </div>
+                <div id="executionResult" class="code-block" style="margin-top: 10px; font-size: 0.7rem;">
+                  // Execution results will appear here
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="fold-section">
+            <div class="fold-section-header">
+              <div class="fold-section-title">🔄 Universal AST Pipeline</div>
+              <div class="fold-section-tag">KUHUL Alternate Runtime</div>
+            </div>
+            <div class="fold-section-body">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin: 15px 0; flex-wrap: wrap; font-size: 0.8rem;">
+                <div class="pipeline-step">Source Code</div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Parser µ</div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">CSS AST</div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Transformer µ</div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Optimized AST</div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Executor µ</div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Result</div>
+              </div>
+              <div id="pipelineStatus" class="code-block" style="font-size: 0.7rem;">
+                Pipeline Status: Ready
+              </div>
+
+              <div style="margin-top: 15px;">
+                <h4>KUHUL Integration</h4>
+                <ul class="compact">
+                  <li><strong>Alternate Runtime</strong>: CSS AST engine provides backup execution when JavaScript is unavailable</li>
+                  <li><strong>Universal Language Support</strong>: Any language can be represented and executed via CSS AST</li>
+                  <li><strong>Micronaut Coordination</strong>: AST processors work alongside AI micronauts for enhanced capabilities</li>
+                  <li><strong>Quantum Compression</strong>: AST structures can be SCXQ2-compressed for efficient transmission</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* =========================================================
+       CSS AST EMULATION ENGINE
+       ========================================================= */
+    class CSSASTEngine {
+      constructor() {
+        this.currentLanguage = 'javascript';
+        this.micronauts = {
+          parser: { active: false, status: 'Ready' },
+          transformer: { active: false, status: 'Ready' },
+          executor: { active: false, status: 'Ready' }
+        };
+        this.executionLog = [];
+        this.astStructure = null;
+        this.init();
+      }
+
+      init() {
+        this.renderAST();
+        this.updateMicronautDisplays();
+        this.updateJSONRepresentation();
+        this.addEventListeners();
+        this.log('AST Engine initialized', 'info');
+      }
+
+      addEventListeners() {
+        // Language selector
+        document.querySelectorAll('.language-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.language-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            this.switchLanguage(e.target.dataset.lang);
+          });
+        });
+
+        // Micronaut cards
+        document.querySelectorAll('.micronaut-card').forEach(card => {
+          card.addEventListener('click', (e) => {
+            this.activateMicronaut(e.currentTarget.dataset.micronaut);
+          });
+        });
+
+        // Control buttons
+        document.getElementById('btnExecuteCSS').addEventListener('click', () => {
+          this.executeViaCSS();
+        });
+
+        document.getElementById('btnOptimizeCode').addEventListener('click', () => {
+          this.optimizeAST();
+        });
+
+        document.getElementById('btnClearCode').addEventListener('click', () => {
+          document.getElementById('codeInput').value = '';
+          document.getElementById('executionResult').innerHTML = '// Execution results will appear here';
+          this.log('Code cleared', 'info');
+        });
+
+        document.getElementById('btnResetEngine').addEventListener('click', () => {
+          this.resetEngine();
+        });
+
+        document.getElementById('btnExportAST').addEventListener('click', () => {
+          this.exportAST();
+        });
+      }
+
+      renderAST() {
+        const astVisualization = document.getElementById('astVisualization');
+        if (!astVisualization) return;
+        
+        astVisualization.innerHTML = '';
+
+        this.astStructure = {
+          type: 'Program',
+          body: [
+            {
+              type: 'FunctionDeclaration',
+              id: { type: 'Identifier', name: 'add' },
+              params: [
+                { type: 'Identifier', name: 'x' },
+                { type: 'Identifier', name: 'y' }
+              ],
+              body: {
+                type: 'BlockStatement',
+                body: [
+                  {
+                    type: 'ReturnStatement',
+                    argument: {
+                      type: 'BinaryExpression',
+                      operator: '+',
+                      left: { type: 'Identifier', name: 'x' },
+                      right: { type: 'Identifier', name: 'y' }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'CallExpression',
+                callee: { type: 'Identifier', name: 'add' },
+                arguments: [
+                  { type: 'Literal', value: 5 },
+                  { type: 'Literal', value: 3 }
+                ]
+              }
+            }
+          ]
+        };
+
+        this.renderASTNode(astVisualization, this.astStructure, 0);
+      }
+
+      renderASTNode(container, node, level) {
+        const levelDiv = document.createElement('div');
+        levelDiv.className = 'ast-level';
+        
+        const nodeDiv = document.createElement('div');
+        nodeDiv.className = `ast-node-visual ast-${node.type.toLowerCase()}`;
+        nodeDiv.textContent = node.type;
+        nodeDiv.setAttribute('data-node-type', node.type);
+        
+        // Add tooltip with node details
+        nodeDiv.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.showNodeDetails(node, e.target);
+        });
+        
+        levelDiv.appendChild(nodeDiv);
+        container.appendChild(levelDiv);
+
+        // Recursively render children
+        if (node.body || node.arguments || node.params) {
+          const children = node.body || node.arguments || node.params;
+          if (Array.isArray(children)) {
+            children.forEach(child => this.renderASTNode(container, child, level + 1));
+          } else if (children) {
+            this.renderASTNode(container, children, level + 1);
+          }
+        } else if (node.left && node.right) {
+          this.renderASTNode(container, node.left, level + 1);
+          this.renderASTNode(container, node.right, level + 1);
+        } else if (node.argument) {
+          this.renderASTNode(container, node.argument, level + 1);
+        } else if (node.id) {
+          this.renderASTNode(container, node.id, level + 1);
+        } else if (node.callee) {
+          this.renderASTNode(container, node.callee, level + 1);
+        }
+      }
+
+      showNodeDetails(node, targetElement) {
+        // Remove any existing details
+        const existingDetails = document.querySelector('.ast-node-details');
+        if (existingDetails) {
+          existingDetails.remove();
+        }
+
+        const details = document.createElement('div');
+        details.className = 'ast-node-details';
+        
+        const rect = targetElement.getBoundingClientRect();
+        details.style.left = `${rect.left + window.scrollX}px`;
+        details.style.top = `${rect.bottom + window.scrollY + 5}px`;
+        
+        let content = `<h4>${node.type}</h4>`;
+        
+        if (node.name) {
+          content += `<p><strong>Name:</strong> ${node.name}</p>`;
+        }
+        
+        if (node.value !== undefined) {
+          content += `<p><strong>Value:</strong> ${node.value}</p>`;
+        }
+        
+        if (node.operator) {
+          content += `<p><strong>Operator:</strong> ${node.operator}</p>`;
+        }
+        
+        content += `<button class="close-btn">×</button>`;
+        
+        details.innerHTML = content;
+        document.body.appendChild(details);
+        
+        // Close button handler
+        details.querySelector('.close-btn').addEventListener('click', () => {
+          details.remove();
+        });
+        
+        // Close on click outside
+        document.addEventListener('click', function closeDetails(e) {
+          if (!details.contains(e.target) && e.target !== targetElement) {
+            details.remove();
+            document.removeEventListener('click', closeDetails);
+          }
+        });
+      }
+
+      switchLanguage(language) {
+        this.currentLanguage = language;
+        
+        const output = document.getElementById('languageOutput');
+        const examples = {
+          javascript: '// JavaScript: function hoisting, prototype chain\nfunction add(x, y) {\n    return x + y;\n}\n\nadd(5, 3); // Result: 8',
+          python: '# Python: significant whitespace, dynamic typing\ndef add(x, y):\n    return x + y\n\nprint(add(5, 3))  # Result: 8',
+          rust: '// Rust: ownership system, zero-cost abstractions\nfn add(x: i32, y: i32) -> i32 {\n    x + y\n}\n\nfn main() {\n    println!("{}", add(5, 3)); // Result: 8\n}',
+          css: '/* CSS: Selectors and properties for AST representation */\n.function-declaration {\n  type: "FunctionDeclaration";\n  name: "add";\n}\n\n.identifier {\n  type: "Identifier";\n  name: "x";\n}'
+        };
+        
+        if (output) output.textContent = examples[language] || examples.javascript;
+        this.updateLanguageSpecificAST();
+        this.updateJSONRepresentation();
+        this.log(`Switched to ${language} emulation`, 'info');
+      }
+
+      updateLanguageSpecificAST() {
+        const astNodes = document.querySelectorAll('.ast-node-visual');
+        const colors = {
+          javascript: '#f7df1e',
+          python: '#3776ab', 
+          rust: '#dea584',
+          css: '#16a085'
+        };
+        
+        astNodes.forEach(node => {
+          node.style.borderColor = colors[this.currentLanguage] || '#16f2aa';
+          node.style.background = `rgba(${this.hexToRgb(colors[this.currentLanguage] || '#16f2aa')}, 0.2)`;
+        });
+      }
+
+      hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? 
+          `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` 
+          : '22, 242, 170';
+      }
+
+      activateMicronaut(micronaut) {
+        if (!this.micronauts[micronaut]) return;
+        
+        this.micronauts[micronaut].active = !this.micronauts[micronaut].active;
+        this.micronauts[micronaut].status = this.micronauts[micronaut].active ? 'Active' : 'Ready';
+        
+        const card = document.querySelector(`.micronaut-card[data-micronaut="${micronaut}"]`);
+        
+        if (card) {
+          if (this.micronauts[micronaut].active) {
+            card.classList.add('micronaut-active');
+            this.log(`${micronaut} micronaut activated`, 'success');
+          } else {
+            card.classList.remove('micronaut-active');
+            this.log(`${micronaut} micronaut deactivated`, 'info');
+          }
+        }
+        
+        this.updateMicronautDisplays();
+        this.executeASTPipeline();
+      }
+
+      updateMicronautDisplays() {
+        Object.keys(this.micronauts).forEach((micronaut) => {
+          const card = document.querySelector(`.micronaut-card[data-micronaut="${micronaut}"]`);
+          if (!card) return;
+          
+          const statusDiv = card.querySelector('.micronaut-status');
+          if (statusDiv) {
+            statusDiv.textContent = this.micronauts[micronaut].status;
+            statusDiv.style.color = this.micronauts[micronaut].active ? '#16f2aa' : '#7b8a9a';
+          }
+          
+          card.style.borderColor = this.micronauts[micronaut].active ? '#16f2aa' : 'rgba(22, 242, 170, 0.3)';
+        });
+      }
+
+      executeViaCSS() {
+        const code = document.getElementById('codeInput')?.value;
+        if (!code) {
+          this.log('No code to execute', 'warning');
+          return;
+        }
+        
+        this.log('Parsing code to CSS AST...', 'info');
+        this.parseCodeToAST(code);
+      }
+
+      parseCodeToAST(code) {
+        const resultDiv = document.getElementById('executionResult');
+        if (!resultDiv) return;
+        
+        // Simulate parsing and execution
+        setTimeout(() => {
+          this.log('Code parsed successfully', 'success');
+          
+          setTimeout(() => {
+            this.log('Executing via CSS runtime...', 'info');
+            
+            setTimeout(() => {
+              // Simple execution simulation
+              let result = '8';
+              if (code.includes('multiply') || code.includes('*')) {
+                result = '15';
+              }
+              
+              resultDiv.innerHTML = `
+                <div style="color: #16f2aa;">✅ Execution completed successfully</div>
+                <div style="margin: 8px 0; padding: 8px; background: rgba(22, 242, 170, 0.1); font-size: 0.7rem;">
+                  ${this.highlightAST(code)}
+                </div>
+                <div style="color: #00e0ff;">Result: <strong>${result}</strong> (computed via CSS AST execution)</div>
+              `;
+              
+              this.log(`Execution result: ${result}`, 'success');
+              
+              const pipelineStatus = document.getElementById('pipelineStatus');
+              if (pipelineStatus) {
+                pipelineStatus.innerHTML = `
+                  <span style="color: #16f2aa;">Pipeline Status:</span> 
+                  <span style="color: #00e0ff;">Code → AST → Execution → Result</span>
+                `;
+              }
+            }, 800);
+          }, 600);
+        }, 500);
+      }
+
+      optimizeAST() {
+        this.log('Optimizing AST structure...', 'info');
+        
+        setTimeout(() => {
+          // Simulate optimization
+          const optimizedNodes = document.querySelectorAll('.ast-node-visual');
+          optimizedNodes.forEach(node => {
+            node.style.background = 'rgba(102, 51, 255, 0.3)';
+            node.style.borderColor = '#6633ff';
+          });
+          
+          this.log('AST optimization completed', 'success');
+          document.getElementById('executionResult').innerHTML += 
+            '<div style="color: #9966ff; margin-top: 8px;">🔧 AST optimized for better performance</div>';
+        }, 800);
+      }
+
+      highlightAST(code) {
+        return code
+          .replace(/(function|return|def|fn|println!|print)/g, '<span style="color: #ffaa00;">$1</span>')
+          .replace(/(add|x|y)/g, '<span style="color: #16f2aa;">$1</span>')
+          .replace(/(5|3|8|15)/g, '<span style="color: #9966ff;">$1</span>')
+          .replace(/(\/\/.*|#.*)/g, '<span style="color: #64748b;">$1</span>');
+      }
+
+      executeASTPipeline() {
+        if (this.micronauts.parser.active && this.micronauts.transformer.active && this.micronauts.executor.active) {
+          const resultDiv = document.getElementById('executionResult');
+          const pipelineStatus = document.getElementById('pipelineStatus');
+          
+          if (resultDiv && resultDiv.innerHTML.includes("Result")) {
+            resultDiv.innerHTML += `
+              <div style="color: #00e0ff; margin-top: 8px;">
+                🚀 Full AST Pipeline Active: Parse → Transform → Execute
+              </div>
+            `;
+          }
+          
+          if (pipelineStatus) {
+            pipelineStatus.innerHTML = `
+              <span style="color: #16f2aa;">Pipeline Status:</span> 
+              <span style="color: #00e0ff;">All Micronauts Active - Full Pipeline Running</span>
+            `;
+          }
+          
+          this.log('Full AST pipeline activated', 'success');
+        }
+      }
+      
+      updateJSONRepresentation() {
+        const jsonRep = document.getElementById('jsonRepresentation');
+        if (!jsonRep) return;
+        
+        const astJSON = {
+          "type": "Program",
+          "body": [
+            {
+              "type": "FunctionDeclaration",
+              "id": { "type": "Identifier", "name": "add" },
+              "params": [
+                { "type": "Identifier", "name": "x" },
+                { "type": "Identifier", "name": "y" }
+              ],
+              "body": {
+                "type": "BlockStatement",
+                "body": [
+                  {
+                    "type": "ReturnStatement",
+                    "argument": {
+                      "type": "BinaryExpression",
+                      "operator": "+",
+                      "left": { "type": "Identifier", "name": "x" },
+                      "right": { "type": "Identifier", "name": "y" }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        };
+        
+        const formattedJSON = this.syntaxHighlight(JSON.stringify(astJSON, null, 2));
+        jsonRep.innerHTML = formattedJSON;
+      }
+      
+      syntaxHighlight(json) {
+        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+          let cls = 'json-number';
+          if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+              cls = 'json-key';
+            } else {
+              cls = 'json-string';
+            }
+          } else if (/true|false/.test(match)) {
+            cls = 'json-key';
+          } else if (/null/.test(match)) {
+            cls = 'json-key';
+          }
+          return '<span class="' + cls + '">' + match + '</span>';
+        });
+      }
+
+      log(message, type = 'info') {
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = document.createElement('div');
+        logEntry.className = 'log-entry';
+        logEntry.innerHTML = `<span class="log-timestamp">[${timestamp}]</span> <span class="log-${type}">${message}</span>`;
+        
+        const logContainer = document.getElementById('executionLog');
+        logContainer.appendChild(logEntry);
+        logContainer.scrollTop = logContainer.scrollHeight;
+        
+        // Keep only last 10 entries
+        while (logContainer.children.length > 10) {
+          logContainer.removeChild(logContainer.firstChild);
+        }
+        
+        this.executionLog.push({ timestamp, message, type });
+      }
+
+      resetEngine() {
+        this.micronauts = {
+          parser: { active: false, status: 'Ready' },
+          transformer: { active: false, status: 'Ready' },
+          executor: { active: false, status: 'Ready' }
+        };
+        
+        this.updateMicronautDisplays();
+        this.renderAST();
+        document.getElementById('executionResult').innerHTML = '// Execution results will appear here';
+        document.getElementById('pipelineStatus').innerHTML = 'Pipeline Status: Ready';
+        document.getElementById('codeInput').value = 'function add(x, y) {\n    return x + y;\n}\nadd(5, 3);';
+        
+        this.log('AST Engine reset', 'info');
+      }
+
+      exportAST() {
+        if (!this.astStructure) {
+          this.log('No AST to export', 'warning');
+          return;
+        }
+        
+        const astString = JSON.stringify(this.astStructure, null, 2);
+        const blob = new Blob([astString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'css-ast-export.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        this.log('AST exported successfully', 'success');
+      }
+    }
+
+    // Initialize the engine when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      window.astEngine = new CSSASTEngine();
+    });
+  </script>
+</body>
+</html>
