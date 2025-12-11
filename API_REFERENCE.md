@@ -4,7 +4,7 @@
 
 > Last Updated: 2025-12-11
 > Version: Ω.∞.Ω
-> Total Endpoints: 45
+> Total Endpoints: 85
 > Authentication: Securolink v2 (local/remote modes)
 
 ---
@@ -20,11 +20,13 @@
 7. [@Gram Learning APIs](#gram-learning-apis)
 8. [OMNIBRAIN Ω.0.0 - Triple Recursion APIs](#omnibrain-ω00---triple-recursion-apis)
 9. [GAS Shards - Cloud Integration](#gas-shards---cloud-integration)
-10. [Mesh & Coordination APIs](#mesh--coordination-apis)
-11. [Runtime & Execution APIs](#runtime--execution-apis)
-12. [Tape Management APIs](#tape-management-apis)
-13. [ASX-RAM APIs](#asx-ram-apis)
-14. [SCXQ2 Compression APIs](#scxq2-compression-apis)
+10. [MX2CX Builder Codex - AI Assistant & Research](#mx2cx-builder-codex---ai-assistant--research)
+11. [Todo System - RLHF Task Planning & Suggestions](#todo-system---rlhf-task-planning--suggestions)
+12. [Mesh & Coordination APIs](#mesh--coordination-apis)
+13. [Runtime & Execution APIs](#runtime--execution-apis)
+14. [Tape Management APIs](#tape-management-apis)
+15. [ASX-RAM APIs](#asx-ram-apis)
+16. [SCXQ2 Compression APIs](#scxq2-compression-apis)
 
 ---
 
@@ -841,6 +843,146 @@ curl -X POST http://localhost:8080/gas/frontend/generate-ui \
 
 ---
 
+## ⚛️ MX2CX Builder Codex - AI Assistant & Research
+
+**MX2CX Builder Codex** provides AI-powered chat inference with built-in knowledge about XJSON, K'UHUL, XCFE, JSON AST, and Atomic ASX. Also includes template research, stack management, and agent creation via mesh proxy.
+
+### Chat Inference (Local AI)
+
+- **POST `/builder/chat`** - Chat with AI knowledge base (guest/trainer/admin) - `{question}`
+  - Built-in knowledge: XJSON, K'UHUL Pipeline, XCFE, JSON AST, Atomic CSS
+  - Returns: answer, topics, examples, suggestions
+
+### Builder Research & Tools (Mesh Proxy)
+
+- **GET `/builder/manifest`** - Get builder manifest (guest/trainer/admin)
+- **POST `/builder/research`** - Research templates (guest/trainer/admin) - `{query}`
+- **POST `/builder/template/build`** - Build template (admin) - `{template, options}`
+- **POST `/builder/template/stack`** - Manage tech stack (guest/trainer/admin) - `{stack}`
+- **POST `/builder/agent/create`** - Create custom agent (admin) - `{name, role, actions}`
+- **GET `/builder/rlhf/metrics`** - Get RLHF metrics (guest/trainer/admin) - Cached 10 min
+
+### Mesh Configuration
+
+- **POST `/builder/mesh/override`** - Override mesh base URL (admin) - `{mesh_base}`
+- **GET `/builder/mesh/config`** - Get mesh configuration (guest/trainer/admin)
+
+**Example:**
+```bash
+# Ask AI about XJSON
+curl -X POST http://localhost:8080/builder/chat \
+  -H "content-type: application/json" \
+  -d '{"question": "What is XJSON?"}'
+
+# Research templates
+curl -X POST http://localhost:8080/builder/research \
+  -H "content-type: application/json" \
+  -d '{"query": "React TypeScript starter"}'
+
+# Override mesh API
+curl -X POST http://localhost:8080/builder/mesh/override \
+  -H "x-api-key: dev-admin-key" \
+  -H "content-type: application/json" \
+  -d '{"mesh_base": "https://custom-api.example.com"}'
+```
+
+---
+
+## ✅ Todo System - RLHF Task Planning & Suggestions
+
+**Todo System** provides AI-powered task planning with RLHF-based suggestions for the app builder workflow. Tracks task completion, effectiveness, and learns from user feedback to improve suggestions over time.
+
+### Task Management
+
+- **POST `/todo/create`** - Create new task (guest/trainer/admin) - `{title, description, category, build_id, pipeline_stage}`
+  - Returns task with RLHF-based suggestions
+  - Categories: design, development, content, deployment, optimization
+
+- **POST `/todo/update`** - Update task (guest/trainer/admin) - `{task_id, build_id, updates}`
+  - Updates: status, title, description, category, pipeline_stage
+  - Auto-tracks started_at and completed_at timestamps
+
+- **POST `/todo/delete`** - Delete task (admin) - `{task_id, build_id}`
+
+- **GET `/todo/list`** - List tasks (guest/trainer/admin) - `?build_id=xxx&status_filter=planned`
+  - Returns tasks with stats (total, completed, in_progress, planned)
+
+- **POST `/todo/complete`** - Complete task with RLHF (guest/trainer/admin) - `{task_id, build_id, effectiveness_rating}`
+  - Rating: 0.0 to 1.0
+  - Records feedback for RLHF training
+
+### RLHF-Powered Suggestions
+
+- **GET `/todo/suggestions`** - Get AI task suggestions (guest/trainer/admin) - `?build_id=xxx&category=development&pipeline_stage=parse_intent`
+  - Returns suggestions based on:
+    - Category best practices (design, development, content, deployment, optimization)
+    - Pipeline stage tasks (parse_intent, select_template, customize_template, generate_files, validate_and_preview)
+    - RLHF learned patterns (effectiveness ratings from past tasks)
+  - Filters out existing tasks automatically
+  - Includes RLHF stats (total samples, avg effectiveness, training readiness)
+
+- **POST `/todo/from-template`** - Generate tasks from template (admin) - `{build_id, template_name, app_type}`
+  - App types: ecommerce, saas, blog, portfolio
+  - Generates 10 pre-configured tasks per template
+
+- **POST `/todo/rlhf/record`** - Record RLHF feedback (guest/trainer/admin) - `{task_id, build_id, suggestion_accepted, suggestion_relevance, task_helpfulness}`
+  - All ratings: 0.0 to 1.0
+  - Training threshold: 50+ samples
+
+**Task Lifecycle:** planned → in_progress → completed (or blocked/skipped)
+
+**Example:**
+```bash
+# Create task with suggestions
+curl -X POST http://localhost:8080/todo/create \
+  -H "content-type: application/json" \
+  -d '{
+    "title": "Design landing page",
+    "description": "Create hero section and CTA",
+    "category": "design",
+    "build_id": "build_123",
+    "pipeline_stage": "customize_template"
+  }'
+
+# Get RLHF suggestions
+curl "http://localhost:8080/todo/suggestions?build_id=build_123&category=development&pipeline_stage=parse_intent"
+
+# Generate tasks from template
+curl -X POST http://localhost:8080/todo/from-template \
+  -H "x-api-key: dev-admin-key" \
+  -H "content-type: application/json" \
+  -d '{
+    "build_id": "build_123",
+    "template_name": "ecommerce_starter",
+    "app_type": "ecommerce"
+  }'
+
+# Complete task with effectiveness rating
+curl -X POST http://localhost:8080/todo/complete \
+  -H "content-type: application/json" \
+  -d '{
+    "task_id": "task_123",
+    "build_id": "build_123",
+    "effectiveness_rating": 0.9
+  }'
+
+# List all tasks
+curl "http://localhost:8080/todo/list?build_id=build_123"
+
+# Record RLHF feedback
+curl -X POST http://localhost:8080/todo/rlhf/record \
+  -H "content-type: application/json" \
+  -d '{
+    "task_id": "task_123",
+    "build_id": "build_123",
+    "suggestion_accepted": true,
+    "suggestion_relevance": 0.95,
+    "task_helpfulness": 0.9
+  }'
+```
+
+---
+
 ## 🌐 Mesh & Coordination APIs
 
 ### GET `/mesh/ping`
@@ -1111,6 +1253,8 @@ curl -H "x-api-key: dev-trainer-key" \
 | **gram** | 8 | Mixed | Self-learning |
 | **omnibrain** | 9 | Mixed | Triple recursion |
 | **gas** | 14 | Mixed | Cloud integration |
+| **builder** | 9 | Mixed | AI chat & research |
+| **todo** | 8 | Mixed | RLHF task planning |
 | **mesh** | 4 | Mixed | Network coordination |
 | **runtime** | 4 | Public | Execution engine |
 | **tapes** | 3 | Public | Tape management |
@@ -1118,7 +1262,7 @@ curl -H "x-api-key: dev-trainer-key" \
 | **trainer** | 2 | Public | Training jobs |
 | **ai** | 1 | Public | AI modules |
 
-**Total:** 68 REST endpoints across 13 folds
+**Total:** 85 REST endpoints across 15 folds
 
 ---
 

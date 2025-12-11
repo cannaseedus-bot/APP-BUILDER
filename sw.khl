@@ -138,7 +138,24 @@
         "/gas/mx2lm/chat":             { "fold": "gas", "handler": "gas_mx2lm_chat" },
         "/gas/mx2lm/tokens":           { "fold": "gas", "handler": "gas_mx2lm_tokens" },
         "/gas/mx2lm/crowns":           { "fold": "gas", "handler": "gas_mx2lm_list_crowns" },
-        "/gas/mx2lm/builder":          { "fold": "gas", "handler": "gas_mx2lm_frontend_builder" }
+        "/gas/mx2lm/builder":          { "fold": "gas", "handler": "gas_mx2lm_frontend_builder" },
+        "/builder/manifest":           { "fold": "builder", "handler": "builder_get_manifest" },
+        "/builder/chat":               { "fold": "builder", "handler": "builder_chat_inference" },
+        "/builder/research":           { "fold": "builder", "handler": "builder_research_templates" },
+        "/builder/template/build":     { "fold": "builder", "handler": "builder_template_build" },
+        "/builder/template/stack":     { "fold": "builder", "handler": "builder_stack_manager" },
+        "/builder/agent/create":       { "fold": "builder", "handler": "builder_agent_create" },
+        "/builder/rlhf/metrics":       { "fold": "builder", "handler": "builder_rlhf_metrics" },
+        "/builder/mesh/override":      { "fold": "builder", "handler": "builder_mesh_override" },
+        "/builder/mesh/config":        { "fold": "builder", "handler": "builder_mesh_config" },
+        "/todo/create":                { "fold": "todo", "handler": "todo_create_task" },
+        "/todo/update":                { "fold": "todo", "handler": "todo_update_task" },
+        "/todo/delete":                { "fold": "todo", "handler": "todo_delete_task" },
+        "/todo/list":                  { "fold": "todo", "handler": "todo_list_tasks" },
+        "/todo/complete":              { "fold": "todo", "handler": "todo_complete_task" },
+        "/todo/suggestions":           { "fold": "todo", "handler": "todo_get_suggestions" },
+        "/todo/from-template":         { "fold": "todo", "handler": "todo_generate_from_template" },
+        "/todo/rlhf/record":           { "fold": "todo", "handler": "todo_record_rlhf_feedback" }
       }
     },
 
@@ -317,6 +334,173 @@
       "token_economy": {
         "default_balance": 100,
         "currency": "gas_tokens"
+      }
+    },
+
+    "mx2cx_builder": {
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "BUILDER_CODEX_AI_ASSISTANT",
+      "description": "AI-powered builder research & chat inference station with XJSON/K'UHUL/XCFE knowledge base",
+      "features": {
+        "chat_inference": {
+          "enabled": true,
+          "role": "AI chat with knowledge base",
+          "topics": ["xjson", "kuhul", "xcfe", "ast", "atomic"]
+        },
+        "builder_research": {
+          "enabled": true,
+          "role": "Template research and discovery",
+          "proxied_to_mesh": true
+        },
+        "template_forge": {
+          "enabled": true,
+          "role": "Generate project templates",
+          "proxied_to_mesh": true
+        },
+        "stack_manager": {
+          "enabled": true,
+          "role": "Manage technology stacks",
+          "proxied_to_mesh": true
+        },
+        "agent_forge": {
+          "enabled": true,
+          "role": "Create custom agents",
+          "proxied_to_mesh": true
+        },
+        "rlhf_visualizer": {
+          "enabled": true,
+          "role": "RLHF metrics visualization",
+          "proxied_to_mesh": true,
+          "cache_ttl": 600000
+        },
+        "mesh_proxy": {
+          "enabled": true,
+          "role": "REST mesh proxy with override",
+          "default_base": "https://api.asxtoken.com",
+          "shard": "builder_codex"
+        }
+      },
+      "knowledge_base": {
+        "xjson": {
+          "name": "XJSON",
+          "description": "Extensible JSON format with semantic metadata",
+          "keys": ["@context", "@v", "@law", "@entity", "n", "d"]
+        },
+        "kuhul": {
+          "name": "K'UHUL Pipeline",
+          "description": "Enhanced 6-stage execution pipeline",
+          "stages": ["SECURITY", "POP", "WO", "SEK", "XUL", "CH'EN"]
+        },
+        "xcfe": {
+          "name": "XCFE",
+          "description": "eXecution Control Flow Enforcement",
+          "vectors": ["@control", "@flow", "@view", "@variable"]
+        },
+        "ast": {
+          "name": "JSON AST",
+          "description": "JSON Abstract Syntax Tree for code generation",
+          "nodes": ["Program", "Statement", "Expression", "Identifier", "Literal"]
+        },
+        "atomic": {
+          "name": "Atomic ASX Blocks",
+          "description": "Utility-first CSS framework for ASXR interfaces",
+          "classes": ["flex", "grid", "p-*", "m-*", "bg-*", "text-*", "w-*", "h-*"]
+        }
+      },
+      "asxram_keys": {
+        "builder.last_query": { "ttl": 86400000, "description": "Last research query" },
+        "builder.last_stack": { "ttl": 86400000, "description": "Last selected stack" },
+        "builder.mesh_base": { "ttl": 604800000, "description": "Mesh API override URL" },
+        "builder.agent_state": { "ttl": 3600000, "description": "Active agent configuration" },
+        "builder.rlhf.metrics.cache": { "ttl": 600000, "description": "RLHF metrics cache" }
+      }
+    },
+
+    "todo_system": {
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "RLHF_TASK_PLANNING_AND_SUGGESTION_SYSTEM",
+      "description": "AI-powered to-do list with RLHF-based task suggestions for app builder workflow",
+      "task_lifecycle": ["planned", "in_progress", "blocked", "completed", "skipped"],
+      "features": {
+        "task_management": {
+          "enabled": true,
+          "role": "CRUD operations for tasks",
+          "max_tasks_per_build": 50,
+          "auto_archive_completed": true
+        },
+        "rlhf_suggestions": {
+          "enabled": true,
+          "role": "AI-powered task suggestions based on RLHF learning",
+          "track_acceptance_rate": true,
+          "track_completion_time": true,
+          "track_effectiveness": true,
+          "min_samples_for_training": 50
+        },
+        "template_tasks": {
+          "enabled": true,
+          "role": "Pre-built task lists for templates",
+          "sources": ["template_defaults", "rlhf_learned_patterns", "category_best_practices"]
+        },
+        "pipeline_integration": {
+          "enabled": true,
+          "role": "Auto-generate tasks from app builder pipeline stages",
+          "stages": {
+            "parse_intent": ["Extract requirements", "Identify key features", "List user stories"],
+            "select_template": ["Research templates", "Compare options", "Evaluate fit"],
+            "customize_template": ["Configure features", "Set styling preferences", "Add custom logic"],
+            "generate_files": ["Generate HTML", "Generate service worker", "Generate manifest"],
+            "validate_and_preview": ["Run linter", "Test functionality", "Preview app", "Fix bugs"]
+          }
+        }
+      },
+      "suggestion_categories": {
+        "design": {
+          "examples": ["Choose color scheme", "Design layout", "Create wireframes", "Select fonts", "Design icons"]
+        },
+        "development": {
+          "examples": ["Set up project structure", "Install dependencies", "Configure build tools", "Write tests", "Add error handling"]
+        },
+        "content": {
+          "examples": ["Write copy", "Create images", "Add SEO metadata", "Write documentation", "Create help guides"]
+        },
+        "deployment": {
+          "examples": ["Configure hosting", "Set up CI/CD", "Test production build", "Configure domain", "Enable HTTPS"]
+        },
+        "optimization": {
+          "examples": ["Optimize images", "Minify assets", "Enable caching", "Add lazy loading", "Improve performance"]
+        }
+      },
+      "rlhf_tracking": {
+        "metrics": {
+          "suggestion_acceptance_rate": {
+            "description": "Percentage of suggested tasks user accepts",
+            "scale": "0.0 to 1.0"
+          },
+          "task_completion_time": {
+            "description": "Average time to complete tasks by category",
+            "unit": "milliseconds"
+          },
+          "task_effectiveness": {
+            "description": "User rating of task helpfulness",
+            "scale": "0.0 to 1.0"
+          },
+          "suggestion_relevance": {
+            "description": "User rating of suggestion quality",
+            "scale": "0.0 to 1.0"
+          }
+        },
+        "storage": {
+          "local": "IndexedDB",
+          "cloud": "Supabase",
+          "retention": "90 days"
+        }
+      },
+      "asxram_keys": {
+        "todo.tasks.<build_id>": { "ttl": 2592000000, "description": "Tasks for build (30 days)" },
+        "todo.suggestions.<category>": { "ttl": 86400000, "description": "Cached suggestions (24h)" },
+        "todo.rlhf.feedback": { "ttl": 604800000, "description": "RLHF feedback data (7 days)" }
       }
     },
 
@@ -3275,6 +3459,738 @@
     [Yax "gas.tokens.balance" = new_balance]
 
     [Wo {"ok": true, "balance": new_balance}]→[Xul return]
+  [Xul]
+
+
+  /* ========================================================================== */
+  /* BUILDER CODEX - MX2CX C@@L BLOCKS                                          */
+  /* AI-Powered Builder Research & Chat Inference with XJSON/K'UHUL Knowledge   */
+  /* ========================================================================== */
+
+  /* BUILDER GET MANIFEST (C@@L BLOCK - Get Manifest) */
+  [Pop builder_get_manifest]
+    /* @control: [@manifest, @read]
+       @variable: {}
+       @Sek: Return builder codex manifest
+       @Ch'en: Return manifest data */
+
+    [Yax "sys.manifest"]→[Ch'en manifest]
+
+    [Wo {
+      "ok": true,
+      "manifest": manifest,
+      "source": "local",
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* BUILDER CHAT INFERENCE (C@@L BLOCK - AI Chat with Knowledge Base) */
+  [Pop builder_chat_inference]
+    /* @control: [@chat, @ai, @knowledge]
+       @variable: {question}
+       @Sek: Answer questions about XJSON, K'UHUL, XCFE, AST, Atomic
+       @Ch'en: Return AI answer with examples */
+
+    [Ch'a !question]→[Wo {"error": "question required"}]→[Xul return]
+
+    [Yax "mx2cx_builder.knowledge_base"]→[Ch'en kb]
+    [Sek question.toLowerCase()]→[Ch'en q]
+
+    /* Initialize results array */
+    [Sek []]→[Ch'en topics]
+    [Sek []]→[Ch'en examples]
+    [Sek []]→[Ch'en suggestions]
+
+    /* Search knowledge base for matches */
+    [Ch'a q.includes("xjson") || q.includes("json") || q.includes("format")]→{
+      [Sek kb.xjson]→[Ch'en xjson_topic]
+      [Sek topics.concat([{
+        "name": xjson_topic.name,
+        "description": xjson_topic.description,
+        "keys": xjson_topic.keys
+      }])]→[Ch'en topics]
+      [Sek examples.concat([{
+        "topic": "XJSON",
+        "example": "basic",
+        "code": "{\n  \"@context\": \"xjson://asxr/manifest/v1\",\n  \"@v\": \"1.0.0\",\n  \"n\": \"My App\"\n}"
+      }])]→[Ch'en examples]
+    }
+
+    [Ch'a q.includes("kuhul") || q.includes("pipeline") || q.includes("stage")]→{
+      [Sek kb.kuhul]→[Ch'en kuhul_topic]
+      [Sek topics.concat([{
+        "name": kuhul_topic.name,
+        "description": kuhul_topic.description,
+        "stages": kuhul_topic.stages
+      }])]→[Ch'en topics]
+      [Sek examples.concat([{
+        "topic": "K'UHUL",
+        "example": "pipeline",
+        "code": "SECURITY → POP → WO → SEK → XUL → CH'EN"
+      }])]→[Ch'en examples]
+    }
+
+    [Ch'a q.includes("xcfe") || q.includes("control") || q.includes("flow")]→{
+      [Sek kb.xcfe]→[Ch'en xcfe_topic]
+      [Sek topics.concat([{
+        "name": xcfe_topic.name,
+        "description": xcfe_topic.description,
+        "vectors": xcfe_topic.vectors
+      }])]→[Ch'en topics]
+      [Sek examples.concat([{
+        "topic": "XCFE",
+        "example": "control",
+        "code": "{\n  \"@control\": {\"@control.auth\": \"token_security\"}\n}"
+      }])]→[Ch'en examples]
+    }
+
+    [Ch'a q.includes("ast") || q.includes("tree") || q.includes("syntax")]→{
+      [Sek kb.ast]→[Ch'en ast_topic]
+      [Sek topics.concat([{
+        "name": ast_topic.name,
+        "description": ast_topic.description,
+        "nodes": ast_topic.nodes
+      }])]→[Ch'en topics]
+    }
+
+    [Ch'a q.includes("atomic") || q.includes("css") || q.includes("class")]→{
+      [Sek kb.atomic]→[Ch'en atomic_topic]
+      [Sek topics.concat([{
+        "name": atomic_topic.name,
+        "description": atomic_topic.description,
+        "classes": atomic_topic.classes
+      }])]→[Ch'en topics]
+    }
+
+    /* Build answer from topics */
+    [Ch'a topics.length > 0]→{
+      [Sek topics.map(t => "**" + t.name + "**: " + t.description).join("\n\n")]→[Ch'en answer]
+      [Wo {
+        "ok": true,
+        "response": answer,
+        "topics": topics,
+        "examples": examples,
+        "suggestions": ["What is XJSON?", "Explain K'UHUL pipeline", "How does XCFE work?"],
+        "timestamp": new Date().toISOString()
+      }]→[Xul return]
+    }
+
+    /* Default fallback */
+    [Wo {
+      "ok": true,
+      "response": "I'm the Builder Codex AI. I can answer questions about XJSON, K'UHUL Pipeline, XCFE, JSON AST, and Atomic ASX Blocks.",
+      "suggestions": [
+        "What is XJSON?",
+        "Explain K'UHUL pipeline stages",
+        "Show XCFE control flow example",
+        "What is JSON AST?",
+        "How to use Atomic CSS classes?"
+      ],
+      "topics": [],
+      "examples": [],
+      "timestamp": new Date().toISOString()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* BUILDER RESEARCH TEMPLATES (C@@L BLOCK - Template Research via Mesh) */
+  [Pop builder_research_templates]
+    /* @control: [@research, @proxy]
+       @variable: {query}
+       @Sek: Proxy template research to mesh API
+       @Ch'en: Return research results */
+
+    [Ch'a !query]→[Wo {"error": "query required"}]→[Xul return]
+
+    /* Store query in ASX-RAM */
+    [Yax "builder.last_query" = query]
+
+    /* Get mesh config */
+    [Yax "builder.mesh_base"]→[Ch'en mesh_override]
+    [Sek mesh_override || "https://api.asxtoken.com"]→[Ch'en mesh_base]
+    [Sek mesh_base + "/builder/research"]→[Ch'en url]
+
+    /* Proxy to mesh */
+    [Sek fn.fetch(url, {
+      "method": "POST",
+      "headers": {"Content-Type": "application/json", "X-ASX-Shard": "builder_codex"},
+      "body": JSON.stringify({query})
+    })]→[Ch'en response]
+
+    [Ch'a response.ok]→{
+      [Sek response.json()]→[Ch'en data]
+      [Wo {"ok": true, "data": data, "source": "mesh"}]→[Xul return]
+    }
+
+    [Wo {"ok": false, "error": "Mesh proxy failed", "status": response.status}]→[Xul return]
+  [Xul]
+
+
+  /* BUILDER TEMPLATE BUILD (C@@L BLOCK - Template Build via Mesh) */
+  [Pop builder_template_build]
+    /* @control: [@build, @proxy]
+       @variable: {template, options}
+       @Sek: Proxy template build to mesh API
+       @Ch'en: Return built template */
+
+    [Ch'a !template]→[Wo {"error": "template required"}]→[Xul return]
+
+    [Yax "builder.mesh_base"]→[Ch'en mesh_override]
+    [Sek mesh_override || "https://api.asxtoken.com"]→[Ch'en mesh_base]
+    [Sek mesh_base + "/builder/template/build"]→[Ch'en url]
+
+    [Sek fn.fetch(url, {
+      "method": "POST",
+      "headers": {"Content-Type": "application/json", "X-ASX-Shard": "builder_codex"},
+      "body": JSON.stringify({template, options})
+    })]→[Ch'en response]
+
+    [Ch'a response.ok]→{
+      [Sek response.json()]→[Ch'en data]
+      [Wo {"ok": true, "data": data, "source": "mesh"}]→[Xul return]
+    }
+
+    [Wo {"ok": false, "error": "Mesh proxy failed"}]→[Xul return]
+  [Xul]
+
+
+  /* BUILDER STACK MANAGER (C@@L BLOCK - Stack Management via Mesh) */
+  [Pop builder_stack_manager]
+    /* @control: [@stack, @proxy]
+       @variable: {stack}
+       @Sek: Proxy stack management to mesh API
+       @Ch'en: Return stack config */
+
+    [Ch'a !stack]→[Wo {"error": "stack required"}]→[Xul return]
+
+    [Yax "builder.last_stack" = stack]
+
+    [Yax "builder.mesh_base"]→[Ch'en mesh_override]
+    [Sek mesh_override || "https://api.asxtoken.com"]→[Ch'en mesh_base]
+    [Sek mesh_base + "/builder/template/stack"]→[Ch'en url]
+
+    [Sek fn.fetch(url, {
+      "method": "POST",
+      "headers": {"Content-Type": "application/json", "X-ASX-Shard": "builder_codex"},
+      "body": JSON.stringify({stack})
+    })]→[Ch'en response]
+
+    [Ch'a response.ok]→{
+      [Sek response.json()]→[Ch'en data]
+      [Wo {"ok": true, "data": data, "source": "mesh"}]→[Xul return]
+    }
+
+    [Wo {"ok": false, "error": "Mesh proxy failed"}]→[Xul return]
+  [Xul]
+
+
+  /* BUILDER AGENT CREATE (C@@L BLOCK - Agent Creation via Mesh) */
+  [Pop builder_agent_create]
+    /* @control: [@agent, @proxy]
+       @variable: {name, role, actions}
+       @Sek: Proxy agent creation to mesh API
+       @Ch'en: Return created agent */
+
+    [Ch'a !name || !role]→[Wo {"error": "name and role required"}]→[Xul return]
+
+    [Yax "builder.agent_state" = {name, role, actions}]
+
+    [Yax "builder.mesh_base"]→[Ch'en mesh_override]
+    [Sek mesh_override || "https://api.asxtoken.com"]→[Ch'en mesh_base]
+    [Sek mesh_base + "/builder/agent/create"]→[Ch'en url]
+
+    [Sek fn.fetch(url, {
+      "method": "POST",
+      "headers": {"Content-Type": "application/json", "X-ASX-Shard": "builder_codex"},
+      "body": JSON.stringify({name, role, actions})
+    })]→[Ch'en response]
+
+    [Ch'a response.ok]→{
+      [Sek response.json()]→[Ch'en data]
+      [Wo {"ok": true, "data": data, "source": "mesh"}]→[Xul return]
+    }
+
+    [Wo {"ok": false, "error": "Mesh proxy failed"}]→[Xul return]
+  [Xul]
+
+
+  /* BUILDER RLHF METRICS (C@@L BLOCK - RLHF Metrics with Cache) */
+  [Pop builder_rlhf_metrics]
+    /* @control: [@rlhf, @metrics, @cache]
+       @variable: {}
+       @Sek: Get RLHF metrics from cache or mesh
+       @Ch'en: Return metrics data */
+
+    /* Check cache first (10 min TTL) */
+    [Yax "builder.rlhf.metrics.cache"]→[Ch'en cached]
+    [Ch'a cached]→{
+      [Wo {"ok": true, "data": cached, "source": "cache"}]→[Xul return]
+    }
+
+    /* Fetch from mesh */
+    [Yax "builder.mesh_base"]→[Ch'en mesh_override]
+    [Sek mesh_override || "https://api.asxtoken.com"]→[Ch'en mesh_base]
+    [Sek mesh_base + "/rlhf/metrics"]→[Ch'en url]
+
+    [Sek fn.fetch(url, {
+      "method": "GET",
+      "headers": {"Content-Type": "application/json", "X-ASX-Shard": "builder_codex"}
+    })]→[Ch'en response]
+
+    [Ch'a response.ok]→{
+      [Sek response.json()]→[Ch'en data]
+      [Yax "builder.rlhf.metrics.cache" = data]
+      [Wo {"ok": true, "data": data, "source": "mesh"}]→[Xul return]
+    }
+
+    [Wo {"ok": false, "error": "Mesh proxy failed"}]→[Xul return]
+  [Xul]
+
+
+  /* BUILDER MESH OVERRIDE (C@@L BLOCK - Override Mesh Base URL) */
+  [Pop builder_mesh_override]
+    /* @control: [@mesh, @config]
+       @variable: {mesh_base}
+       @Sek: Override default mesh API base URL
+       @Ch'en: Return confirmation */
+
+    [Ch'a !mesh_base]→[Wo {"error": "mesh_base required"}]→[Xul return]
+
+    [Yax "builder.mesh_base" = mesh_base]
+
+    [Wo {
+      "ok": true,
+      "mesh_base": mesh_base,
+      "message": "Mesh base URL overridden successfully"
+    }]→[Xul return]
+  [Xul]
+
+
+  /* BUILDER MESH CONFIG (C@@L BLOCK - Get Mesh Configuration) */
+  [Pop builder_mesh_config]
+    /* @control: [@mesh, @config]
+       @variable: {}
+       @Sek: Get current mesh configuration
+       @Ch'en: Return config */
+
+    [Yax "builder.mesh_base"]→[Ch'en mesh_override]
+    [Sek mesh_override || "https://api.asxtoken.com"]→[Ch'en mesh_base]
+
+    [Wo {
+      "ok": true,
+      "config": {
+        "mesh_base": mesh_base,
+        "shard": "builder_codex",
+        "features": ["chat", "research", "template_forge", "stack_manager", "agent_forge", "rlhf"]
+      }
+    }]→[Xul return]
+  [Xul]
+
+
+  /* ========================================================================== */
+  /* TODO SYSTEM - RLHF-BASED TASK PLANNING C@@L BLOCKS                        */
+  /* AI-Powered To-Do List with Smart Suggestions for App Builder              */
+  /* ========================================================================== */
+
+  /* TODO CREATE TASK (C@@L BLOCK - Create New Task) */
+  [Pop todo_create_task]
+    /* @control: [@todo, @create]
+       @variable: {title, description, category, build_id, pipeline_stage}
+       @Sek: Create new task with RLHF suggestions
+       @Ch'en: Return created task with suggestions */
+
+    [Ch'a !title || !build_id]→[Wo {"error": "title and build_id required"}]→[Xul return]
+
+    /* Generate task ID */
+    [Sek "task_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9)]→[Ch'en task_id]
+
+    /* Create task object */
+    [Sek {
+      "id": task_id,
+      "title": title,
+      "description": description || "",
+      "category": category || "general",
+      "build_id": build_id,
+      "pipeline_stage": pipeline_stage || "parse_intent",
+      "status": "planned",
+      "created_at": Date.now(),
+      "started_at": null,
+      "completed_at": null,
+      "estimated_time": null,
+      "actual_time": null,
+      "effectiveness_rating": null
+    }]→[Ch'en task]
+
+    /* Store task */
+    [Yax "todo.tasks." + build_id]→[Ch'en existing_tasks]
+    [Sek existing_tasks || {}]→[Ch'en tasks_map]
+    [Sek tasks_map[task_id] = task]
+    [Yax "todo.tasks." + build_id = tasks_map]
+
+    /* Get RLHF suggestions for this task category */
+    [Yax "todo_system.suggestion_categories." + (category || "development")]→[Ch'en cat_config]
+    [Sek cat_config?.examples || []]→[Ch'en suggestions]
+
+    [Wo {
+      "ok": true,
+      "task": task,
+      "suggestions": suggestions.slice(0, 5),
+      "message": "Task created successfully"
+    }]→[Xul return]
+  [Xul]
+
+
+  /* TODO UPDATE TASK (C@@L BLOCK - Update Task) */
+  [Pop todo_update_task]
+    /* @control: [@todo, @update]
+       @variable: {task_id, build_id, updates}
+       @Sek: Update task fields
+       @Ch'en: Return updated task */
+
+    [Ch'a !task_id || !build_id]→[Wo {"error": "task_id and build_id required"}]→[Xul return]
+
+    /* Get task */
+    [Yax "todo.tasks." + build_id]→[Ch'en tasks_map]
+    [Ch'a !tasks_map || !tasks_map[task_id]]→[Wo {"error": "Task not found"}]→[Xul return]
+
+    [Sek tasks_map[task_id]]→[Ch'en task]
+
+    /* Apply updates */
+    [Ch'a updates.status]→[Sek task.status = updates.status]
+    [Ch'a updates.title]→[Sek task.title = updates.title]
+    [Ch'a updates.description]→[Sek task.description = updates.description]
+    [Ch'a updates.category]→[Sek task.category = updates.category]
+    [Ch'a updates.pipeline_stage]→[Sek task.pipeline_stage = updates.pipeline_stage]
+
+    /* Track status transitions */
+    [Ch'a updates.status === "in_progress" && !task.started_at]→[Sek task.started_at = Date.now()]
+    [Ch'a updates.status === "completed" && !task.completed_at]→{
+      [Sek task.completed_at = Date.now()]
+      [Ch'a task.started_at]→[Sek task.actual_time = task.completed_at - task.started_at]
+    }
+
+    /* Save updated task */
+    [Sek tasks_map[task_id] = task]
+    [Yax "todo.tasks." + build_id = tasks_map]
+
+    [Wo {
+      "ok": true,
+      "task": task,
+      "message": "Task updated successfully"
+    }]→[Xul return]
+  [Xul]
+
+
+  /* TODO DELETE TASK (C@@L BLOCK - Delete Task) */
+  [Pop todo_delete_task]
+    /* @control: [@todo, @delete]
+       @variable: {task_id, build_id}
+       @Sek: Delete task from build
+       @Ch'en: Return confirmation */
+
+    [Ch'a !task_id || !build_id]→[Wo {"error": "task_id and build_id required"}]→[Xul return]
+
+    [Yax "todo.tasks." + build_id]→[Ch'en tasks_map]
+    [Ch'a !tasks_map || !tasks_map[task_id]]→[Wo {"error": "Task not found"}]→[Xul return]
+
+    /* Delete task */
+    [Sek delete tasks_map[task_id]]
+    [Yax "todo.tasks." + build_id = tasks_map]
+
+    [Wo {
+      "ok": true,
+      "message": "Task deleted successfully",
+      "task_id": task_id
+    }]→[Xul return]
+  [Xul]
+
+
+  /* TODO LIST TASKS (C@@L BLOCK - List All Tasks for Build) */
+  [Pop todo_list_tasks]
+    /* @control: [@todo, @list]
+       @variable: {build_id, status_filter}
+       @Sek: List tasks with optional status filter
+       @Ch'en: Return task list */
+
+    [Ch'a !build_id]→[Wo {"error": "build_id required"}]→[Xul return]
+
+    [Yax "todo.tasks." + build_id]→[Ch'en tasks_map]
+    [Sek tasks_map || {}]→[Ch'en safe_tasks]
+
+    /* Convert to array */
+    [Sek Object.values(safe_tasks)]→[Ch'en tasks_array]
+
+    /* Apply status filter if provided */
+    [Ch'a status_filter]→{
+      [Sek tasks_array.filter(t => t.status === status_filter)]→[Ch'en tasks_array]
+    }
+
+    /* Sort by created_at (newest first) */
+    [Sek tasks_array.sort((a, b) => b.created_at - a.created_at)]→[Ch'en sorted_tasks]
+
+    /* Calculate stats */
+    [Sek sorted_tasks.filter(t => t.status === "completed").length]→[Ch'en completed_count]
+    [Sek sorted_tasks.filter(t => t.status === "in_progress").length]→[Ch'en in_progress_count]
+    [Sek sorted_tasks.filter(t => t.status === "planned").length]→[Ch'en planned_count]
+
+    [Wo {
+      "ok": true,
+      "build_id": build_id,
+      "tasks": sorted_tasks,
+      "stats": {
+        "total": sorted_tasks.length,
+        "completed": completed_count,
+        "in_progress": in_progress_count,
+        "planned": planned_count
+      }
+    }]→[Xul return]
+  [Xul]
+
+
+  /* TODO COMPLETE TASK (C@@L BLOCK - Mark Task Complete with RLHF) */
+  [Pop todo_complete_task]
+    /* @control: [@todo, @complete, @rlhf]
+       @variable: {task_id, build_id, effectiveness_rating}
+       @Sek: Complete task and record RLHF feedback
+       @Ch'en: Return completed task */
+
+    [Ch'a !task_id || !build_id]→[Wo {"error": "task_id and build_id required"}]→[Xul return]
+
+    [Yax "todo.tasks." + build_id]→[Ch'en tasks_map]
+    [Ch'a !tasks_map || !tasks_map[task_id]]→[Wo {"error": "Task not found"}]→[Xul return]
+
+    [Sek tasks_map[task_id]]→[Ch'en task]
+
+    /* Mark as completed */
+    [Sek task.status = "completed"]
+    [Sek task.completed_at = Date.now()]
+    [Ch'a task.started_at]→[Sek task.actual_time = task.completed_at - task.started_at]
+    [Ch'a effectiveness_rating]→[Sek task.effectiveness_rating = effectiveness_rating]
+
+    /* Save task */
+    [Sek tasks_map[task_id] = task]
+    [Yax "todo.tasks." + build_id = tasks_map]
+
+    /* Record RLHF feedback */
+    [Ch'a effectiveness_rating]→{
+      [Yax "todo.rlhf.feedback"]→[Ch'en feedback_data]
+      [Sek feedback_data || []]→[Ch'en feedback_array]
+      [Sek feedback_array.push({
+        "task_id": task_id,
+        "build_id": build_id,
+        "category": task.category,
+        "pipeline_stage": task.pipeline_stage,
+        "completion_time": task.actual_time,
+        "effectiveness_rating": effectiveness_rating,
+        "timestamp": Date.now()
+      })]
+      [Yax "todo.rlhf.feedback" = feedback_array]
+    }
+
+    [Wo {
+      "ok": true,
+      "task": task,
+      "message": "Task completed successfully",
+      "rlhf_recorded": !!effectiveness_rating
+    }]→[Xul return]
+  [Xul]
+
+
+  /* TODO GET SUGGESTIONS (C@@L BLOCK - RLHF-Based Task Suggestions) */
+  [Pop todo_get_suggestions]
+    /* @control: [@todo, @suggestions, @rlhf]
+       @variable: {build_id, category, pipeline_stage}
+       @Sek: Get AI-powered task suggestions based on RLHF
+       @Ch'en: Return suggested tasks */
+
+    [Ch'a !build_id]→[Wo {"error": "build_id required"}]→[Xul return]
+
+    /* Get existing tasks to avoid duplicates */
+    [Yax "todo.tasks." + build_id]→[Ch'en tasks_map]
+    [Sek Object.values(tasks_map || {}).map(t => t.title.toLowerCase())]→[Ch'en existing_titles]
+
+    /* Get category suggestions */
+    [Yax "todo_system.suggestion_categories." + (category || "development")]→[Ch'en cat_config]
+    [Sek cat_config?.examples || []]→[Ch'en category_suggestions]
+
+    /* Get pipeline stage suggestions */
+    [Ch'a pipeline_stage]→{
+      [Yax "todo_system.features.pipeline_integration.stages." + pipeline_stage]→[Ch'en stage_suggestions]
+    }
+    [Sek stage_suggestions || []]→[Ch'en pipeline_suggestions]
+
+    /* Combine and deduplicate */
+    [Sek [...category_suggestions, ...pipeline_suggestions]]→[Ch'en all_suggestions]
+    [Sek all_suggestions.filter(s => !existing_titles.includes(s.toLowerCase()))]→[Ch'en filtered_suggestions]
+
+    /* Get RLHF feedback to rank suggestions */
+    [Yax "todo.rlhf.feedback"]→[Ch'en feedback_data]
+    [Sek feedback_data || []]→[Ch'en feedback_array]
+
+    /* Calculate acceptance rate per category (simplified) */
+    [Sek feedback_array.length > 0 ?
+      feedback_array.reduce((sum, f) => sum + f.effectiveness_rating, 0) / feedback_array.length :
+      0.5]→[Ch'en avg_effectiveness]
+
+    [Wo {
+      "ok": true,
+      "build_id": build_id,
+      "category": category || "development",
+      "pipeline_stage": pipeline_stage,
+      "suggestions": filtered_suggestions.slice(0, 10),
+      "rlhf_stats": {
+        "total_feedback_samples": feedback_array.length,
+        "avg_effectiveness": avg_effectiveness,
+        "ready_for_training": feedback_array.length >= 50
+      }
+    }]→[Xul return]
+  [Xul]
+
+
+  /* TODO GENERATE FROM TEMPLATE (C@@L BLOCK - Generate Tasks from Template) */
+  [Pop todo_generate_from_template]
+    /* @control: [@todo, @template]
+       @variable: {build_id, template_name, app_type}
+       @Sek: Generate task list from template
+       @Ch'en: Return generated tasks */
+
+    [Ch'a !build_id || !template_name]→[Wo {"error": "build_id and template_name required"}]→[Xul return]
+
+    /* Get template-specific tasks based on app type */
+    [Sek {
+      "ecommerce": [
+        "Set up product catalog structure",
+        "Design shopping cart UI",
+        "Implement checkout flow",
+        "Add payment integration",
+        "Configure shipping options",
+        "Add product search functionality",
+        "Design product detail pages",
+        "Implement inventory tracking",
+        "Add customer reviews system",
+        "Configure tax calculations"
+      ],
+      "saas": [
+        "Design user dashboard",
+        "Implement authentication flow",
+        "Add subscription management",
+        "Create billing integration",
+        "Design settings page",
+        "Add team collaboration features",
+        "Implement API access",
+        "Add analytics dashboard",
+        "Create onboarding flow",
+        "Add email notifications"
+      ],
+      "blog": [
+        "Design post layout",
+        "Add markdown editor",
+        "Implement comment system",
+        "Add tag/category system",
+        "Create RSS feed",
+        "Design archive pages",
+        "Add search functionality",
+        "Implement social sharing",
+        "Add author profiles",
+        "Configure SEO metadata"
+      ],
+      "portfolio": [
+        "Design project showcase",
+        "Add image gallery",
+        "Create about page",
+        "Add contact form",
+        "Implement testimonials section",
+        "Design case studies",
+        "Add resume/CV section",
+        "Implement filtering by category",
+        "Add social media links",
+        "Configure Google Analytics"
+      ]
+    }]→[Ch'en templates]
+
+    [Sek templates[app_type] || templates["saas"]]→[Ch'en template_tasks]
+
+    /* Create tasks from template */
+    [Yax "todo.tasks." + build_id]→[Ch'en tasks_map]
+    [Sek tasks_map || {}]→[Ch'en safe_tasks]
+
+    [Sek template_tasks.map((title, index) => {
+      const task_id = "task_" + Date.now() + "_" + index;
+      const task = {
+        "id": task_id,
+        "title": title,
+        "description": "Generated from " + template_name + " template",
+        "category": "development",
+        "build_id": build_id,
+        "pipeline_stage": "customize_template",
+        "status": "planned",
+        "created_at": Date.now() + index,
+        "started_at": null,
+        "completed_at": null,
+        "from_template": true
+      };
+      safe_tasks[task_id] = task;
+      return task;
+    })]→[Ch'en created_tasks]
+
+    /* Save all tasks */
+    [Yax "todo.tasks." + build_id = safe_tasks]
+
+    [Wo {
+      "ok": true,
+      "build_id": build_id,
+      "template_name": template_name,
+      "app_type": app_type || "saas",
+      "tasks_created": created_tasks.length,
+      "tasks": created_tasks
+    }]→[Xul return]
+  [Xul]
+
+
+  /* TODO RECORD RLHF FEEDBACK (C@@L BLOCK - Record RLHF Feedback) */
+  [Pop todo_record_rlhf_feedback]
+    /* @control: [@todo, @rlhf, @feedback]
+       @variable: {task_id, build_id, suggestion_accepted, suggestion_relevance, task_helpfulness}
+       @Sek: Record RLHF feedback for training
+       @Ch'en: Return feedback confirmation */
+
+    [Ch'a !task_id || !build_id]→[Wo {"error": "task_id and build_id required"}]→[Xul return]
+
+    /* Get task */
+    [Yax "todo.tasks." + build_id]→[Ch'en tasks_map]
+    [Sek tasks_map?.[task_id]]→[Ch'en task]
+
+    /* Create feedback record */
+    [Sek {
+      "task_id": task_id,
+      "build_id": build_id,
+      "category": task?.category || "unknown",
+      "pipeline_stage": task?.pipeline_stage || "unknown",
+      "suggestion_accepted": suggestion_accepted || false,
+      "suggestion_relevance": suggestion_relevance || 0.5,
+      "task_helpfulness": task_helpfulness || 0.5,
+      "timestamp": Date.now()
+    }]→[Ch'en feedback_record]
+
+    /* Store feedback */
+    [Yax "todo.rlhf.feedback"]→[Ch'en feedback_data]
+    [Sek feedback_data || []]→[Ch'en feedback_array]
+    [Sek feedback_array.push(feedback_record)]
+    [Yax "todo.rlhf.feedback" = feedback_array]
+
+    /* Check if ready for training */
+    [Sek feedback_array.length >= 50]→[Ch'en ready_for_training]
+
+    [Wo {
+      "ok": true,
+      "feedback_recorded": true,
+      "total_samples": feedback_array.length,
+      "ready_for_training": ready_for_training,
+      "message": ready_for_training ?
+        "Sufficient samples for RLHF training" :
+        (50 - feedback_array.length) + " more samples needed"
+    }]→[Xul return]
   [Xul]
 
 ⟁ Xul ⟁
