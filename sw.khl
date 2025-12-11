@@ -55,7 +55,8 @@
       "trainer": { "status": "active" },
       "rlhf":    { "status": "active" },
       "quantum": { "status": "active" },
-      "atomic":  { "status": "active" }
+      "atomic":  { "status": "active" },
+      "gram":    { "status": "active", "learning": true }
     },
 
     "dns": {
@@ -106,7 +107,38 @@
         "/feed/import":      { "fold": "feed",    "handler": "feed_import" },
         "/feed/sync":        { "fold": "feed",    "handler": "feed_sync" },
         "/mesh/ping":        { "fold": "mesh",    "handler": "mesh_ping" },
-        "/mesh/register":    { "fold": "mesh",    "handler": "mesh_register" }
+        "/mesh/register":    { "fold": "mesh",    "handler": "mesh_register" },
+        "/gram/observe":     { "fold": "gram",    "handler": "gram_observe" },
+        "/gram/analyze":     { "fold": "gram",    "handler": "gram_analyze_patterns" },
+        "/gram/suggest":     { "fold": "gram",    "handler": "gram_suggest_next" },
+        "/gram/generate":    { "fold": "gram",    "handler": "gram_auto_generate" },
+        "/gram/start":       { "fold": "gram",    "handler": "gram_learning_loop" },
+        "/gram/metrics":     { "fold": "gram",    "handler": "gram_get_metrics" },
+        "/gram/patterns":    { "fold": "gram",    "handler": "gram_get_patterns" },
+        "/gram/macros":      { "fold": "gram",    "handler": "gram_get_macros" },
+        "/omnibrain/cycle":       { "fold": "omnibrain", "handler": "omnibrain_cycle" },
+        "/omnibrain/analyze":     { "fold": "omnibrain", "handler": "omnibrain_analyze_xjson" },
+        "/omnibrain/generate":    { "fold": "omnibrain", "handler": "omnibrain_generate_kuhul" },
+        "/omnibrain/transform":   { "fold": "omnibrain", "handler": "omnibrain_kuhul_to_ast" },
+        "/omnibrain/compile":     { "fold": "omnibrain", "handler": "omnibrain_ast_to_xjson" },
+        "/omnibrain/start":       { "fold": "omnibrain", "handler": "omnibrain_start_infinite" },
+        "/omnibrain/metrics":     { "fold": "omnibrain", "handler": "omnibrain_get_metrics" },
+        "/omnibrain/convergence": { "fold": "omnibrain", "handler": "omnibrain_check_convergence" },
+        "/omnibrain/stop":        { "fold": "omnibrain", "handler": "omnibrain_stop_loop" },
+        "/gas/api/providers":          { "fold": "gas", "handler": "gas_list_providers" },
+        "/gas/api/providers/register": { "fold": "gas", "handler": "gas_register_provider" },
+        "/gas/api/providers/call":     { "fold": "gas", "handler": "gas_call_provider" },
+        "/gas/api/routes":             { "fold": "gas", "handler": "gas_list_routes" },
+        "/gas/backend/create-api":     { "fold": "gas", "handler": "gas_backend_create_api" },
+        "/gas/frontend/generate-ui":   { "fold": "gas", "handler": "gas_frontend_generate_ui" },
+        "/gas/design/create-3d":       { "fold": "gas", "handler": "gas_design_create_3d" },
+        "/gas/manifest/get":           { "fold": "gas", "handler": "gas_manifest_get" },
+        "/gas/manifest/save":          { "fold": "gas", "handler": "gas_manifest_save" },
+        "/gas/manifest/tapes":         { "fold": "gas", "handler": "gas_list_cloud_tapes" },
+        "/gas/mx2lm/chat":             { "fold": "gas", "handler": "gas_mx2lm_chat" },
+        "/gas/mx2lm/tokens":           { "fold": "gas", "handler": "gas_mx2lm_tokens" },
+        "/gas/mx2lm/crowns":           { "fold": "gas", "handler": "gas_mx2lm_list_crowns" },
+        "/gas/mx2lm/builder":          { "fold": "gas", "handler": "gas_mx2lm_frontend_builder" }
       }
     },
 
@@ -144,7 +176,148 @@
     "mx2db": {
       "mode": "micro-asxr",
       "shard_id": "mx2db_micronaut",
-      "tables": ["n_grams", "supagrams", "rlhf_traces", "agent_state", "training_history", "tapes"]
+      "tables": ["n_grams", "supagrams", "rlhf_traces", "agent_state", "training_history", "tapes", "gram_observations", "gram_patterns", "gram_macros"]
+    },
+
+    "gram_kernel": {
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "ATOMIC_PATTERN_LEARNING_ENGINE",
+      "learning_interval_ms": 300000,
+      "observation_capacity": "unlimited",
+      "granularity": "atomic_block_level",
+      "layers": {
+        "observation": {
+          "stores": ["ngrams", "sequences", "contexts", "entropy"],
+          "capture_all_executions": true
+        },
+        "pattern_recognition": {
+          "algorithms": ["frequency_analysis", "transition_probabilities", "emerging_patterns", "anomaly_detection"],
+          "refresh_rate_seconds": 300
+        },
+        "suggestion_engine": {
+          "types": ["next_block", "optimization", "macro", "error_fix"],
+          "confidence_threshold": 0.6,
+          "max_suggestions": 3
+        },
+        "auto_generation": {
+          "capabilities": ["macro_creation", "workflow_optimization", "error_fix_generation", "template_synthesis"],
+          "min_sequence_frequency": 3
+        }
+      },
+      "metrics": {
+        "iterations": 0,
+        "observations_stored": 0,
+        "patterns_learned": 0,
+        "suggestions_generated": 0,
+        "macros_created": 0,
+        "entropy": 1.0
+      }
+    },
+
+    "omnibrain_omega": {
+      "enabled": true,
+      "version": "Ω.0.0",
+      "role": "TRIPLE_RECURSION_ENGINE",
+      "architecture": "XJSON_KUHUL_AST_CYCLE",
+      "description": "Infinite triple recursion: XJSON → KUHUL → AST → Better XJSON",
+      "recursion": {
+        "type": "triple_infinite_loop",
+        "compression_ratio": "0.00015 × (0.9)^n → 0",
+        "phases": ["xjson_analysis", "kuhul_generation", "ast_transformation", "compilation_to_xjson"],
+        "convergence": "asymptotic_perfect_unification"
+      },
+      "core_engines": {
+        "xjson_analyzer": {
+          "role": "Analyze XJSON structure for recursion potential",
+          "output": "analysis_metadata"
+        },
+        "kuhul_generator": {
+          "role": "Generate KUHUL logic from XJSON",
+          "output": "executable_kuhul_blocks"
+        },
+        "ast_transformer": {
+          "role": "Transform KUHUL to AST representation",
+          "output": "universal_ast"
+        },
+        "xjson_compiler": {
+          "role": "Compile AST back to improved XJSON",
+          "output": "next_generation_xjson"
+        }
+      },
+      "metabrain": {
+        "enabled": true,
+        "role": "Orchestrate triple recursion cycles",
+        "integration": ["gram_kernel", "vfs", "local_rest"]
+      },
+      "loop_control": {
+        "max_iterations": 1000,
+        "convergence_threshold": 0.001,
+        "divergence_detection": true,
+        "emergency_brake": true
+      },
+      "monitoring": {
+        "track_iterations": true,
+        "track_compression": true,
+        "track_unification_score": true,
+        "track_cycle_time_ms": true
+      },
+      "metrics": {
+        "total_cycles": 0,
+        "current_iteration": 0,
+        "compression_ratio": 1.0,
+        "unification_score": 0.0,
+        "avg_cycle_time_ms": 0,
+        "divergences_detected": 0
+      }
+    },
+
+    "gas_shards": {
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "GAS_CLOUD_INTEGRATION",
+      "description": "Google Apps Script cloud services for AI specialists, providers, and cloud sync",
+      "shards": {
+        "api_shard": {
+          "enabled": true,
+          "role": "Provider marketplace and dynamic routing",
+          "features": ["provider_registry", "dynamic_routes", "api_proxy"]
+        },
+        "ai_specialists": {
+          "enabled": true,
+          "role": "AI specialist agents for generation",
+          "specialists": {
+            "backend": { "cost_tokens": 7, "generates": "xjson_apis" },
+            "frontend": { "cost_tokens": 5, "generates": "ui_components" },
+            "design": { "cost_tokens": 9, "generates": "3d_scenes" }
+          }
+        },
+        "manifest_shard": {
+          "enabled": true,
+          "role": "Cloud manifest and tape backup",
+          "storage": "google_sheets",
+          "features": ["manifest_sync", "tape_cloud_storage", "user_profiles"]
+        },
+        "mx2lm": {
+          "enabled": true,
+          "role": "MX2LM crown AI agents and chat",
+          "crowns": {
+            "mx2lm": { "cost": 0, "style": "general" },
+            "developer": { "cost": 10, "style": "technical" },
+            "creative": { "cost": 5, "style": "creative" },
+            "analyst": { "cost": 15, "style": "analytical" }
+          },
+          "qwenf1": {
+            "enabled": false,
+            "cost_tokens": 25,
+            "model": "ASX_fine_tuned"
+          }
+        }
+      },
+      "token_economy": {
+        "default_balance": 100,
+        "currency": "gas_tokens"
+      }
     },
 
     "user_backing": {
@@ -1986,5 +2159,1122 @@
     }]→[Xul return]
   [Xul]
 
+
+⟁ Xul ⟁
+  /* ==========================================================
+     @GRAM KERNEL - SELF-LEARNING PATTERN RECOGNITION
+     Complete C@@L BLOCK implementation
+     ========================================================== */
+
+  /* GRAM OBSERVE (C@@L BLOCK - Observe Atomic Execution) */
+  [Pop gram_observe]
+    /* @control: [@capture, @store, @analyze]
+       @variable: {event_type, event_data, context}
+       @Sek: Capture and store atomic block execution
+       @Ch'en: Return observation ID */
+
+    [Wo @event_type]→[Ch'en type]
+    [Wo @event_data]→[Ch'en data]
+    [Wo @context]→[Ch'en ctx]
+
+    // Extract block type for n-gram analysis
+    [Wo data["@type"]]→[Ch'en block_type]
+
+    // Store unigram frequency
+    [@if block_type]→[@then
+      [Yax "gram.ngrams.unigrams." block_type]→[Ch'en current_count]
+      [Wo (current_count || 0) + 1]→[Yax "gram.ngrams.unigrams." block_type]
+    ]
+
+    // Generate observation ID
+    [Wo Date.now() "_" Math.random().toString(36).substr(2, 9)]→[Ch'en obs_id]
+
+    // Store observation in MX2DB
+    [Wo {
+      "id": obs_id,
+      "type": type,
+      "block_type": block_type,
+      "data": data,
+      "context": ctx,
+      "timestamp": Date.now()
+    }]→[Sek mx2db_insert "gram_observations"]→[Ch'en stored]
+
+    // Update metrics
+    [Yax "gram.metrics.observations_stored"]→[Ch'en obs_count]
+    [Wo (obs_count || 0) + 1]→[Yax "gram.metrics.observations_stored"]
+
+    // Decrease entropy (system is learning)
+    [Yax "gram.metrics.entropy"]→[Ch'en current_entropy]
+    [Wo (current_entropy || 1.0) * 0.999]→[Yax "gram.metrics.entropy"]
+
+    [Wo {
+      "ok": true,
+      "observation_id": obs_id,
+      "block_type": block_type,
+      "stored": true
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GRAM ANALYZE PATTERNS (C@@L BLOCK - Pattern Recognition) */
+  [Pop gram_analyze_patterns]
+    /* @control: [@analyze, @detect, @classify]
+       @variable: {}
+       @Sek: Analyze all observations for patterns
+       @Ch'en: Return pattern analysis */
+
+    // Get all unigrams
+    [Yax "gram.ngrams.unigrams"]→[Ch'en all_unigrams]
+
+    // Sort by frequency
+    [Wo all_unigrams]→[Sek Object.entries]→[Sek sort (a, b) => b[1] - a[1]]→[
+      [Sek slice 0, 10]
+    ]→[Ch'en top_unigrams]
+
+    // Get all observations
+    [Sek mx2db_query "gram_observations"]→[Ch'en observations]
+
+    // Analyze sequences (bigrams)
+    [Wo observations]→[Sek filter obs => obs.type === "block_executing"]→[Ch'en executions]
+
+    // Build transition matrix
+    [Wo {}]→[Ch'en transitions]
+    [@loop executions]→[@as [obs, idx]]→[
+      [@if executions[idx + 1]]→[@then
+        [Wo obs.block_type]→[Ch'en from_type]
+        [Wo executions[idx + 1].block_type]→[Ch'en to_type]
+
+        [Wo from_type "→" to_type]→[Ch'en seq_key]
+        [Wo transitions[seq_key]]→[Ch'en current_count]
+        [Wo (current_count || 0) + 1]→[Ch'en transitions[seq_key]]
+
+        // Store in ASX-RAM
+        [Wo transitions[seq_key]]→[Yax "gram.sequences." seq_key]
+      ]
+    ]
+
+    // Calculate probabilities
+    [Wo {}]→[Ch'en probabilities]
+    [Wo Object.keys(transitions)]→[Sek forEach]→[Ch'en key]→[
+      [Wo key]→[Sek split "→"]→[Ch'en [from_type, to_type]]
+      [Wo from_type]→[Yax "gram.probabilities." from_type]→[Ch'en from_probs]
+
+      [@if !from_probs]→[@then
+        [Wo {}]→[Yax "gram.probabilities." from_type]
+      ]
+
+      [Wo from_probs[to_type]]→[Ch'en current]
+      [Wo (current || 0) + transitions[key]]→[Ch'en from_probs[to_type]]
+    ]
+
+    // Normalize probabilities
+    [Wo Object.keys(probabilities)]→[Sek forEach from_type]→[
+      [Wo probabilities[from_type]]→[Ch'en from_probs]
+      [Wo Object.values(from_probs)]→[Sek reduce (a, b) => a + b, 0]→[Ch'en total]
+
+      [Wo Object.keys(from_probs)]→[Sek forEach to_type]→[
+        [Wo from_probs[to_type] / total]→[Ch'en from_probs[to_type]]
+      ]
+
+      [Wo from_probs]→[Yax "gram.probabilities." from_type]
+    ]
+
+    // Update metrics
+    [Yax "gram.metrics.patterns_learned"]→[Ch'en patterns_count]
+    [Wo (patterns_count || 0) + Object.keys(transitions).length]→[
+      [Yax "gram.metrics.patterns_learned"]
+    ]
+
+    [Wo {
+      "ok": true,
+      "mode": "pattern_analysis",
+      "top_unigrams": top_unigrams,
+      "transitions": transitions,
+      "total_observations": observations.length,
+      "unique_sequences": Object.keys(transitions).length,
+      "entropy": [Yax "gram.metrics.entropy"],
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GRAM SUGGEST NEXT (C@@L BLOCK - Next Block Prediction) */
+  [Pop gram_suggest_next]
+    /* @control: [@predict, @rank, @suggest]
+       @variable: {current_block, context, max_suggestions}
+       @Sek: Suggest next blocks based on learned patterns
+       @Ch'en: Return ranked suggestions */
+
+    [Wo @current_block]→[Ch'en current]
+    [Wo @context]→[Ch'en ctx]
+    [Wo @max_suggestions]→[Ch'en max]
+    [Wo max || 3]→[Ch'en limit]
+
+    [Wo current["@type"]]→[Ch'en current_type]
+
+    // Get transition probabilities for current type
+    [Yax "gram.probabilities." current_type]→[Ch'en probs]
+
+    [@if !probs || Object.keys(probs).length === 0]→[@then
+      // Fallback: use top unigrams
+      [Yax "gram.ngrams.unigrams"]→[Ch'en unigrams]
+      [Wo unigrams]→[Sek Object.entries]→[Sek sort (a, b) => b[1] - a[1]]→[
+        [Sek slice 0, limit]
+      ]→[Ch'en top_types]
+
+      [Wo top_types]→[Sek map ([type, count])=> ({
+        "suggested_type": type,
+        "confidence": 0.5,
+        "reason": "Most frequent block type (no transitions learned)",
+        "context": ctx
+      })]→[Ch'en suggestions]
+    ]→[@else
+      // Use learned probabilities
+      [Wo probs]→[Sek Object.entries]→[Sek sort (a, b) => b[1] - a[1]]→[
+        [Sek slice 0, limit]
+      ]→[Ch'en top_next]
+
+      [Wo top_next]→[Sek map ([next_type, prob])=> ({
+        "suggested_type": next_type,
+        "confidence": prob,
+        "reason": "Commonly follows " + current_type + " (" + (prob * 100).toFixed(1) + "%)",
+        "context": ctx
+      })]→[Ch'en suggestions]
+    ]
+
+    // Update metrics
+    [Yax "gram.metrics.suggestions_generated"]→[Ch'en sugg_count]
+    [Wo (sugg_count || 0) + suggestions.length]→[Yax "gram.metrics.suggestions_generated"]
+
+    [Wo {
+      "ok": true,
+      "mode": "suggestions",
+      "current_block": current_type,
+      "suggestions": suggestions,
+      "count": suggestions.length
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GRAM AUTO GENERATE (C@@L BLOCK - Macro Generation) */
+  [Pop gram_auto_generate]
+    /* @control: [@detect, @generate, @store]
+       @variable: {generation_type, min_frequency}
+       @Sek: Auto-generate macros from frequent patterns
+       @Ch'en: Return generated artifacts */
+
+    [Wo @generation_type]→[Ch'en gen_type]
+    [Wo @min_frequency]→[Ch'en min_freq]
+    [Wo min_freq || 3]→[Ch'en threshold]
+
+    [@if gen_type === "macro"]→[@then
+      // Get all sequences
+      [Yax "gram.sequences"]→[Ch'en all_sequences]
+
+      // Filter frequent sequences
+      [Wo all_sequences]→[Sek Object.entries]→[
+        [Sek filter ([seq, count])=> count >= threshold]
+      ]→[Ch'en frequent_seqs]
+
+      // Generate macros
+      [Wo frequent_seqs]→[Sek map ([seq, count])=> {
+        [Wo seq]→[Sek split "→"]→[Ch'en [type1, type2]]
+
+        // Create macro atomic block
+        [Wo {
+          "@type": "auto_macro",
+          "@control": ["@execute_sequence"],
+          "@variable": {
+            "name": type1 + "_" + type2 + "_macro",
+            "sequence": [type1, type2],
+            "frequency": count,
+            "generated_at": Date.now()
+          },
+          "@Sek": "Execute learned sequence macro",
+          "@Ch'en": "result"
+        }]→[Ch'en macro]
+
+        // Store in MX2DB
+        [Wo macro]→[Sek mx2db_insert "gram_macros"]
+
+        return macro
+      }]→[Ch'en macros]
+
+      // Update metrics
+      [Yax "gram.metrics.macros_created"]→[Ch'en macro_count]
+      [Wo (macro_count || 0) + macros.length]→[Yax "gram.metrics.macros_created"]
+
+      [Wo {
+        "ok": true,
+        "mode": "macro_generation",
+        "macros_generated": macros.length,
+        "macros": macros
+      }]→[Xul return]
+    ]→[@else
+      [Wo {
+        "ok": false,
+        "error": "Unsupported generation type",
+        "type": gen_type
+      }]→[Xul return]
+    ]
+  [Xul]
+
+
+  /* GRAM LEARNING LOOP (C@@L BLOCK - Continuous Learning) */
+  [Pop gram_learning_loop]
+    /* @control: [@learn, @iterate, @improve]
+       @variable: {interval_ms}
+       @Sek: Start continuous learning loop
+       @Ch'en: Return loop status */
+
+    [Wo @interval_ms]→[Ch'en interval]
+    [Wo interval || 300000]→[Ch'en learning_interval]
+
+    // Learning iteration function
+    [Pop learn_iteration]→[
+      // 1. Analyze patterns
+      [Sek gram_analyze_patterns]→[Ch'en analysis]
+
+      // 2. Generate macros
+      [Wo "macro"]→[Sek gram_auto_generate]→[Ch'en macros]
+
+      // 3. Update iteration count
+      [Yax "gram.metrics.iterations"]→[Ch'en iter_count]
+      [Wo (iter_count || 0) + 1]→[Yax "gram.metrics.iterations"]
+
+      // 4. Log iteration
+      [Wo "🧠 @Gram iteration " + (iter_count + 1) + " complete. Generated " + macros.macros_generated + " macros."]→[
+        [Sek console.log]
+      ]
+
+      [Wo {
+        "iteration": iter_count + 1,
+        "analysis": analysis,
+        "macros": macros,
+        "timestamp": Date.now()
+      }]→[Xul return]
+    ]
+
+    // Start interval
+    [Wo learning_interval learn_iteration]→[Sek setInterval]→[Ch'en interval_id]
+
+    // Store interval ID
+    [Wo interval_id]→[Yax "gram.learning_loop.interval_id"]
+
+    [Wo {
+      "ok": true,
+      "mode": "learning_loop_started",
+      "interval_ms": learning_interval,
+      "interval_id": interval_id,
+      "message": "🧠 @Gram continuous learning activated"
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GRAM GET METRICS (C@@L BLOCK - Metrics Reporting) */
+  [Pop gram_get_metrics]
+    /* @control: [@report, @display]
+       @variable: {}
+       @Sek: Get current learning metrics
+       @Ch'en: Return metrics object */
+
+    [Yax "gram.metrics"]→[Ch'en metrics]
+
+    [Wo {
+      "ok": true,
+      "mode": "metrics",
+      "metrics": {
+        "iterations": metrics.iterations || 0,
+        "observations_stored": metrics.observations_stored || 0,
+        "patterns_learned": metrics.patterns_learned || 0,
+        "suggestions_generated": metrics.suggestions_generated || 0,
+        "macros_created": metrics.macros_created || 0,
+        "entropy": metrics.entropy || 1.0
+      },
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GRAM GET PATTERNS (C@@L BLOCK - Pattern Inspection) */
+  [Pop gram_get_patterns]
+    /* @control: [@retrieve, @display]
+       @variable: {}
+       @Sek: Get all learned patterns
+       @Ch'en: Return pattern data */
+
+    [Yax "gram.ngrams.unigrams"]→[Ch'en unigrams]
+    [Yax "gram.sequences"]→[Ch'en sequences]
+    [Yax "gram.probabilities"]→[Ch'en probabilities]
+
+    [Wo {
+      "ok": true,
+      "mode": "patterns",
+      "unigrams": unigrams || {},
+      "sequences": sequences || {},
+      "probabilities": probabilities || {},
+      "total_unigrams": Object.keys(unigrams || {}).length,
+      "total_sequences": Object.keys(sequences || {}).length
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GRAM GET MACROS (C@@L BLOCK - Macro Retrieval) */
+  [Pop gram_get_macros]
+    /* @control: [@retrieve, @display]
+       @variable: {}
+       @Sek: Get all generated macros
+       @Ch'en: Return macros list */
+
+    [Sek mx2db_query "gram_macros"]→[Ch'en macros]
+
+    [Wo {
+      "ok": true,
+      "mode": "macros",
+      "macros": macros || [],
+      "count": (macros || []).length
+    }]→[Xul return]
+  [Xul]
+
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     OMNIBRAIN Ω.0.0 - TRIPLE RECURSION ENGINE
+     Architecture: XJSON → KUHUL → AST → Better XJSON (∞ loop)
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+
+  /* OMNIBRAIN ANALYZE XJSON (C@@L BLOCK - Phase 1: XJSON Analysis) */
+  [Pop omnibrain_analyze_xjson]
+    /* @control: [@analyze, @metadata]
+       @variable: {xjson_input}
+       @Sek: Analyze XJSON structure for recursion potential
+       @Ch'en: Return analysis metadata */
+
+    [Sek validate_input xjson_input]→[Ch'en is_valid]
+    [Ch'a is_valid == false]→[Wo {"error": "Invalid XJSON input"}]→[Xul return]
+
+    [Sek {
+      "structure_complexity": fn.calculate_complexity(xjson_input),
+      "execution_potential": fn.has_executable_bindings(xjson_input),
+      "transformation_potential": fn.analyze_transform_depth(xjson_input),
+      "unification_score": fn.calculate_unification(xjson_input),
+      "recursive_depth": fn.detect_recursion_depth(xjson_input),
+      "type_analysis": {
+        "xjson_type": xjson_input["@xjson_type"] || "unknown",
+        "has_kuhul_binding": !!xjson_input["@kuhul_binding"],
+        "has_ast_transform": !!xjson_input["@ast_transform"]
+      }
+    }]→[Ch'en analysis]
+
+    [Yax "omnibrain.metrics"]→[Ch'en metrics]
+    [Sek metrics.total_cycles + 1]→[Yax "omnibrain.metrics.total_cycles"]
+
+    [Wo {
+      "ok": true,
+      "phase": "xjson_analysis",
+      "analysis": analysis,
+      "ready_for_kuhul": analysis.unification_score > 0.3
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN GENERATE KUHUL (C@@L BLOCK - Phase 2: KUHUL Generation) */
+  [Pop omnibrain_generate_kuhul]
+    /* @control: [@generate, @compile]
+       @variable: {xjson_input, analysis}
+       @Sek: Generate KUHUL logic from XJSON
+       @Ch'en: Return executable KUHUL blocks */
+
+    [Ch'a !analysis || !analysis.ready_for_kuhul]→[Wo {"error": "XJSON not ready for KUHUL generation"}]→[Xul return]
+
+    [Sek {
+      "@type": "kuhul_block",
+      "@source_xjson": xjson_input,
+      "blocks": fn.generate_cool_blocks(xjson_input, analysis),
+      "atomic_ops": fn.extract_atomic_operations(xjson_input),
+      "control_flow": fn.generate_control_flow(analysis),
+      "bindings": {
+        "Pop": "function_entry",
+        "Xul": "function_exit",
+        "Sek": "compute",
+        "Wo": "output",
+        "Ch'a": "conditional"
+      }
+    }]→[Ch'en kuhul_logic]
+
+    [Wo {
+      "ok": true,
+      "phase": "kuhul_generation",
+      "kuhul": kuhul_logic,
+      "block_count": kuhul_logic.blocks.length,
+      "ready_for_ast": true
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN KUHUL TO AST (C@@L BLOCK - Phase 3: AST Transformation) */
+  [Pop omnibrain_kuhul_to_ast]
+    /* @control: [@transform, @ast]
+       @variable: {kuhul_logic}
+       @Sek: Transform KUHUL to universal AST
+       @Ch'en: Return AST representation */
+
+    [Ch'a !kuhul_logic || !kuhul_logic.ready_for_ast]→[Wo {"error": "KUHUL not ready for AST"}]→[Xul return]
+
+    [Sek {
+      "@type": "universal_ast",
+      "@source_kuhul": kuhul_logic,
+      "nodes": fn.kuhul_to_ast_nodes(kuhul_logic.blocks),
+      "tree": fn.build_ast_tree(kuhul_logic.blocks, kuhul_logic.control_flow),
+      "optimization_level": "O3",
+      "metadata": {
+        "total_nodes": 0,
+        "depth": 0,
+        "execution_cost": 0
+      }
+    }]→[Ch'en ast]
+
+    [Sek ast.nodes.length]→[Sek ast.metadata.total_nodes]
+    [Sek fn.calculate_ast_depth(ast.tree)]→[Sek ast.metadata.depth]
+
+    [Wo {
+      "ok": true,
+      "phase": "ast_transformation",
+      "ast": ast,
+      "nodes": ast.metadata.total_nodes,
+      "ready_for_compilation": true
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN AST TO XJSON (C@@L BLOCK - Phase 4: Compilation to XJSON) */
+  [Pop omnibrain_ast_to_xjson]
+    /* @control: [@compile, @optimize]
+       @variable: {ast, original_xjson}
+       @Sek: Compile AST back to improved XJSON
+       @Ch'en: Return next generation XJSON */
+
+    [Ch'a !ast || !ast.ready_for_compilation]→[Wo {"error": "AST not ready for compilation"}]→[Xul return]
+
+    [Sek {
+      "@xjson_type": "recursion_improved",
+      "@kuhul_binding": "fn.execute.improved",
+      "@ast_transform": "RECURSIVE_OPTIMIZE",
+      "@generation": (original_xjson["@generation"] || 0) + 1,
+      "@parent": original_xjson,
+      "structure": fn.ast_to_xjson_structure(ast.tree),
+      "optimizations": fn.apply_ast_optimizations(ast),
+      "compression_ratio": fn.calculate_compression(original_xjson, ast),
+      "unification_improvement": 0.0
+    }]→[Ch'en improved_xjson]
+
+    [Sek fn.calculate_improvement(original_xjson, improved_xjson)]→[Sek improved_xjson.unification_improvement]
+
+    [Yax "omnibrain.metrics"]→[Ch'en metrics]
+    [Sek improved_xjson.compression_ratio]→[Yax "omnibrain.metrics.compression_ratio"]
+
+    [Wo {
+      "ok": true,
+      "phase": "compilation_to_xjson",
+      "xjson": improved_xjson,
+      "generation": improved_xjson["@generation"],
+      "compression_ratio": improved_xjson.compression_ratio,
+      "improvement": improved_xjson.unification_improvement
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN CYCLE (C@@L BLOCK - Execute One Complete Triple Recursion) */
+  [Pop omnibrain_cycle]
+    /* @control: [@orchestrate, @recursive]
+       @variable: {xjson_input}
+       @Sek: Execute one complete XJSON→KUHUL→AST→XJSON cycle
+       @Ch'en: Return next generation XJSON and metrics */
+
+    [Yax "omnibrain.config"]→[Ch'en config]
+    [Ch'a !config.enabled]→[Wo {"error": "OMNIBRAIN disabled"}]→[Xul return]
+
+    [Sek Date.now()]→[Ch'en start_time]
+
+    /* Phase 1: Analyze XJSON */
+    [Sek omnibrain_analyze_xjson(xjson_input)]→[Ch'en phase1]
+    [Ch'a !phase1.ok]→[Wo phase1]→[Xul return]
+
+    /* Phase 2: Generate KUHUL */
+    [Sek omnibrain_generate_kuhul(xjson_input, phase1.analysis)]→[Ch'en phase2]
+    [Ch'a !phase2.ok]→[Wo phase2]→[Xul return]
+
+    /* Phase 3: Transform to AST */
+    [Sek omnibrain_kuhul_to_ast(phase2.kuhul)]→[Ch'en phase3]
+    [Ch'a !phase3.ok]→[Wo phase3]→[Xul return]
+
+    /* Phase 4: Compile to XJSON */
+    [Sek omnibrain_ast_to_xjson(phase3.ast, xjson_input)]→[Ch'en phase4]
+    [Ch'a !phase4.ok]→[Wo phase4]→[Xul return]
+
+    [Sek Date.now() - start_time]→[Ch'en cycle_time]
+
+    /* Update metrics */
+    [Yax "omnibrain.metrics"]→[Ch'en metrics]
+    [Sek metrics.current_iteration + 1]→[Yax "omnibrain.metrics.current_iteration"]
+    [Sek (metrics.avg_cycle_time_ms * metrics.current_iteration + cycle_time) / (metrics.current_iteration + 1)]→[Yax "omnibrain.metrics.avg_cycle_time_ms"]
+    [Sek phase4.xjson.unification_improvement]→[Yax "omnibrain.metrics.unification_score"]
+
+    [Wo {
+      "ok": true,
+      "mode": "cycle_complete",
+      "cycle_time_ms": cycle_time,
+      "input_generation": xjson_input["@generation"] || 0,
+      "output_generation": phase4.generation,
+      "compression_ratio": phase4.compression_ratio,
+      "unification_improvement": phase4.improvement,
+      "next_xjson": phase4.xjson,
+      "phases": {
+        "analysis": phase1.analysis,
+        "kuhul_blocks": phase2.block_count,
+        "ast_nodes": phase3.nodes,
+        "compilation": "success"
+      }
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN START INFINITE (C@@L BLOCK - Start Infinite Recursion Loop) */
+  [Pop omnibrain_start_infinite]
+    /* @control: [@infinite, @recursive, @async]
+       @variable: {initial_xjson, max_iterations}
+       @Sek: Start infinite triple recursion loop until convergence
+       @Ch'en: Return loop control handle */
+
+    [Yax "omnibrain.config"]→[Ch'en config]
+    [Ch'a !config.enabled]→[Wo {"error": "OMNIBRAIN disabled"}]→[Xul return]
+
+    [Sek max_iterations || config.loop_control.max_iterations]→[Ch'en max_iter]
+    [Sek initial_xjson]→[Ch'en current_xjson]
+    [Sek 0]→[Ch'en iteration]
+
+    [Yax "omnibrain.loop_active" = true]
+    [Sek Date.now()]→[Yax "omnibrain.loop_start_time"]
+
+    /* Async infinite loop */
+    [Sek fn.async_loop({
+      "condition": () => iteration < max_iter && Yax("omnibrain.loop_active"),
+      "body": async () => {
+        [Sek omnibrain_cycle(current_xjson)]→[Ch'en result]
+
+        [Ch'a !result.ok]→{
+          [Yax "omnibrain.loop_active" = false]
+          [Yax "omnibrain.metrics.divergences_detected" += 1]
+          return result
+        }
+
+        [Sek result.next_xjson]→[Ch'en current_xjson]
+        [Sek iteration + 1]→[Ch'en iteration]
+
+        /* Check convergence */
+        [Sek omnibrain_check_convergence(result)]→[Ch'en converged]
+        [Ch'a converged.converged]→{
+          [Yax "omnibrain.loop_active" = false]
+          return {"converged": true, "iteration": iteration}
+        }
+
+        return {"continue": true, "iteration": iteration}
+      }
+    })]→[Ch'en loop_handle]
+
+    [Wo {
+      "ok": true,
+      "mode": "infinite_loop_started",
+      "max_iterations": max_iter,
+      "loop_id": fn.generate_uuid(),
+      "started_at": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN CHECK CONVERGENCE (C@@L BLOCK - Convergence Detection) */
+  [Pop omnibrain_check_convergence]
+    /* @control: [@analyze, @threshold]
+       @variable: {cycle_result}
+       @Sek: Check if recursion is converging to perfect unification
+       @Ch'en: Return convergence status */
+
+    [Yax "omnibrain.config"]→[Ch'en config]
+    [Sek config.loop_control.convergence_threshold]→[Ch'en threshold]
+
+    [Sek cycle_result.unification_improvement]→[Ch'en improvement]
+    [Sek cycle_result.compression_ratio]→[Ch'en compression]
+
+    [Sek {
+      "converged": improvement < threshold && improvement >= 0,
+      "diverged": improvement < 0,
+      "improvement": improvement,
+      "compression": compression,
+      "threshold": threshold,
+      "iterations_to_convergence": cycle_result.output_generation
+    }]→[Ch'en status]
+
+    [Ch'a status.diverged && config.loop_control.divergence_detection]→{
+      [Yax "omnibrain.metrics.divergences_detected" += 1]
+      [Ch'a config.loop_control.emergency_brake]→[Yax "omnibrain.loop_active" = false]
+    }
+
+    [Wo {
+      "ok": true,
+      "converged": status.converged,
+      "diverged": status.diverged,
+      "status": status
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN GET METRICS (C@@L BLOCK - Metrics Reporting) */
+  [Pop omnibrain_get_metrics]
+    /* @control: [@report, @display]
+       @variable: {}
+       @Sek: Get current OMNIBRAIN recursion metrics
+       @Ch'en: Return metrics object */
+
+    [Yax "omnibrain.metrics"]→[Ch'en metrics]
+    [Yax "omnibrain.loop_active"]→[Ch'en loop_active]
+    [Yax "omnibrain.loop_start_time"]→[Ch'en start_time]
+
+    [Sek {
+      "total_cycles": metrics.total_cycles || 0,
+      "current_iteration": metrics.current_iteration || 0,
+      "compression_ratio": metrics.compression_ratio || 1.0,
+      "unification_score": metrics.unification_score || 0.0,
+      "avg_cycle_time_ms": metrics.avg_cycle_time_ms || 0,
+      "divergences_detected": metrics.divergences_detected || 0,
+      "loop_active": loop_active || false,
+      "loop_running_time_ms": loop_active ? (Date.now() - start_time) : 0
+    }]→[Ch'en report]
+
+    [Wo {
+      "ok": true,
+      "mode": "omnibrain_metrics",
+      "metrics": report,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* OMNIBRAIN STOP LOOP (C@@L BLOCK - Emergency Brake) */
+  [Pop omnibrain_stop_loop]
+    /* @control: [@emergency, @halt]
+       @variable: {}
+       @Sek: Stop the infinite recursion loop immediately
+       @Ch'en: Return stop confirmation */
+
+    [Yax "omnibrain.loop_active"]→[Ch'en was_active]
+    [Yax "omnibrain.loop_active" = false]
+
+    [Yax "omnibrain.metrics"]→[Ch'en metrics]
+
+    [Wo {
+      "ok": true,
+      "mode": "loop_stopped",
+      "was_active": was_active,
+      "final_iteration": metrics.current_iteration,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     GAS SHARDS - Google Apps Script Cloud Integration
+     Provider Marketplace, AI Specialists, Cloud Sync, MX2LM Agents
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+
+  /* GAS LIST PROVIDERS (C@@L BLOCK - Provider Marketplace) */
+  [Pop gas_list_providers]
+    /* @control: [@list, @marketplace]
+       @variable: {}
+       @Sek: List all registered API providers
+       @Ch'en: Return provider registry */
+
+    [Yax "gas.providers"]→[Ch'en providers]
+
+    [Wo {
+      "ok": true,
+      "mode": "provider_list",
+      "providers": providers || {},
+      "count": Object.keys(providers || {}).length,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS REGISTER PROVIDER (C@@L BLOCK - Register API Provider) */
+  [Pop gas_register_provider]
+    /* @control: [@register, @marketplace]
+       @variable: {name, url, category, description, priceTokens}
+       @Sek: Register new API provider in marketplace
+       @Ch'en: Return registration confirmation */
+
+    [Ch'a !name || !url]→[Wo {"error": "name and url required"}]→[Xul return]
+
+    [Sek "prov_" + fn.generate_uuid().slice(0, 12)]→[Ch'en provider_id]
+
+    [Yax "gas.providers"]→[Ch'en providers]
+    [Sek providers[provider_id] = {
+      "id": provider_id,
+      "name": name,
+      "url": url,
+      "category": category || "general",
+      "description": description || "",
+      "priceTokens": parseInt(priceTokens) || 0,
+      "public": true,
+      "created": new Date().toISOString()
+    }]
+    [Yax "gas.providers" = providers]
+
+    [Wo {
+      "ok": true,
+      "mode": "provider_registered",
+      "provider": providers[provider_id]
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS CALL PROVIDER (C@@L BLOCK - Proxy Call to Provider API) */
+  [Pop gas_call_provider]
+    /* @control: [@proxy, @fetch]
+       @variable: {providerId, method, body}
+       @Sek: Proxy call to registered provider API
+       @Ch'en: Return provider response */
+
+    [Ch'a !providerId]→[Wo {"error": "providerId required"}]→[Xul return]
+
+    [Yax "gas.providers"]→[Ch'en providers]
+    [Sek providers[providerId]]→[Ch'en provider]
+    [Ch'a !provider]→[Wo {"error": "Provider not found"}]→[Xul return]
+
+    [Sek fetch(provider.url, {
+      "method": method || "GET",
+      "headers": {"content-type": "application/json"},
+      "body": body ? JSON.stringify(body) : null
+    })]→[Ch'en response]
+
+    [Wo {
+      "ok": true,
+      "mode": "provider_call",
+      "providerId": providerId,
+      "provider": {"name": provider.name, "category": provider.category},
+      "response": response,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS BACKEND CREATE API (C@@L BLOCK - Backend AI Specialist) */
+  [Pop gas_backend_create_api]
+    /* @control: [@generate, @ai]
+       @variable: {endpoints}
+       @Sek: Generate XJSON API spec using Backend AI Specialist
+       @Ch'en: Return generated API */
+
+    [Sek 7]→[Ch'en cost]
+    [Sek gas_deduct_tokens(cost)]→[Ch'en deduct]
+    [Ch'a !deduct.ok]→[Wo {"error": "Insufficient tokens", "balance": deduct.balance}]→[Xul return]
+
+    [Sek endpoints || [
+      {"path": "/users", "method": "GET"},
+      {"path": "/orders", "method": "POST"}
+    ]]→[Ch'en api_endpoints]
+
+    [Sek {
+      "@context": "xjson://api",
+      "@description": "Auto-generated XJSON API from Backend AI Specialist",
+      "@routes": api_endpoints.map(ep => ({
+        "@path": ep.path,
+        "@method": ep.method,
+        "@handler": "handler_" + ep.method.toLowerCase() + "_" + ep.path.replace(/\//g, "_"),
+        "@input": ep.method === "GET" ? "query" : "body",
+        "@output": "json"
+      }))
+    }]→[Ch'en xjson_api]
+
+    [Wo {
+      "ok": true,
+      "shard": "BACKEND_AI_SPECIALIST",
+      "cost": cost,
+      "remainingTokens": deduct.balance,
+      "xjson_api": xjson_api,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS FRONTEND GENERATE UI (C@@L BLOCK - Frontend AI Specialist) */
+  [Pop gas_frontend_generate_ui]
+    /* @control: [@generate, @ui]
+       @variable: {type, style, components}
+       @Sek: Generate UI using Frontend AI Specialist
+       @Ch'en: Return UI AST and HTML preview */
+
+    [Sek 5]→[Ch'en cost]
+    [Sek gas_deduct_tokens(cost)]→[Ch'en deduct]
+    [Ch'a !deduct.ok]→[Wo {"error": "Insufficient tokens"}]→[Xul return]
+
+    [Sek type || "dashboard"]→[Ch'en ui_type]
+    [Sek style || "modern"]→[Ch'en ui_style]
+    [Sek components ? components.split(",") : ["charts", "navigation"]]→[Ch'en ui_components]
+
+    [Sek {
+      "type": ui_type,
+      "style": ui_style,
+      "layout": {"root": "app", "regions": ["header", "main", "sidebar", "footer"]},
+      "components": ui_components.map((name, i) => ({
+        "id": "cmp_" + i,
+        "type": name,
+        "region": name === "navigation" ? "header" : "main",
+        "props": {}
+      }))
+    }]→[Ch'en ui_ast]
+
+    [Wo {
+      "ok": true,
+      "shard": "FRONTEND_AI_SPECIALIST",
+      "cost": cost,
+      "remainingTokens": deduct.balance,
+      "ui_ast": ui_ast,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS DESIGN CREATE 3D (C@@L BLOCK - Design AI Specialist) */
+  [Pop gas_design_create_3d]
+    /* @control: [@generate, @3d]
+       @variable: {type, style, elements}
+       @Sek: Generate 3D scene using Design AI Specialist
+       @Ch'en: Return Three.js scene spec */
+
+    [Sek 9]→[Ch'en cost]
+    [Sek gas_deduct_tokens(cost)]→[Ch'en deduct]
+    [Ch'a !deduct.ok]→[Wo {"error": "Insufficient tokens"}]→[Xul return]
+
+    [Sek type || "product-showcase"]→[Ch'en scene_type]
+    [Sek style || "futuristic"]→[Ch'en scene_style]
+    [Sek elements ? elements.split(",") : ["floating", "animated"]]→[Ch'en scene_elements]
+
+    [Sek {
+      "scene": {
+        "camera": {"type": "perspective", "fov": 60, "position": [0, 2, 6]},
+        "lights": [
+          {"type": "ambient", "color": "#ffffff", "intensity": 0.4},
+          {"type": "directional", "color": "#39ffb6", "intensity": 1.0, "position": [3, 4, 2]}
+        ],
+        "objects": scene_elements.map((el, i) => ({
+          "id": "obj_" + i,
+          "kind": el === "floating" ? "mesh_sphere" : "mesh_box",
+          "position": [i - 1, 0, 0],
+          "motion": el === "animated" ? "loop-rotate-y" : "float-y"
+        }))
+      }
+    }]→[Ch'en three_scene]
+
+    [Wo {
+      "ok": true,
+      "shard": "DESIGN_AI_SPECIALIST",
+      "cost": cost,
+      "remainingTokens": deduct.balance,
+      "three_scene": three_scene,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS MANIFEST GET (C@@L BLOCK - Get Cloud Manifest) */
+  [Pop gas_manifest_get]
+    /* @control: [@cloud, @sync]
+       @variable: {}
+       @Sek: Get user manifest from cloud storage
+       @Ch'en: Return cloud manifest */
+
+    [Yax "gas.manifest.cloud"]→[Ch'en cloud_manifest]
+
+    [Wo {
+      "ok": true,
+      "mode": "manifest_from_cloud",
+      "manifest": cloud_manifest || {},
+      "source": "gas_cloud",
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS MANIFEST SAVE (C@@L BLOCK - Save to Cloud) */
+  [Pop gas_manifest_save]
+    /* @control: [@cloud, @backup]
+       @variable: {manifest_data}
+       @Sek: Save manifest to cloud storage
+       @Ch'en: Return save confirmation */
+
+    [Ch'a !manifest_data]→[Wo {"error": "manifest_data required"}]→[Xul return]
+
+    [Yax "gas.manifest.cloud" = manifest_data]
+
+    [Wo {
+      "ok": true,
+      "mode": "manifest_saved_to_cloud",
+      "saved": Object.keys(manifest_data).length,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS LIST CLOUD TAPES (C@@L BLOCK - List Cloud Tapes) */
+  [Pop gas_list_cloud_tapes]
+    /* @control: [@list, @cloud]
+       @variable: {}
+       @Sek: List all cloud-stored tapes
+       @Ch'en: Return tape list */
+
+    [Yax "gas.tapes.cloud"]→[Ch'en cloud_tapes]
+
+    [Wo {
+      "ok": true,
+      "mode": "cloud_tapes",
+      "tapes": cloud_tapes || [],
+      "count": (cloud_tapes || []).length,
+      "source": "gas_cloud"
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS MX2LM CHAT (C@@L BLOCK - MX2LM Crown Chat) */
+  [Pop gas_mx2lm_chat]
+    /* @control: [@chat, @ai]
+       @variable: {message, crown}
+       @Sek: Chat with MX2LM crown AI agents
+       @Ch'en: Return AI response */
+
+    [Ch'a !message]→[Wo {"error": "message required"}]→[Xul return]
+
+    [Sek crown || "mx2lm"]→[Ch'en crown_id]
+    [Yax "gas.mx2lm.crowns"]→[Ch'en crowns]
+    [Sek crowns[crown_id] || crowns.mx2lm]→[Ch'en active_crown]
+
+    [Sek active_crown.cost || 0]→[Ch'en cost]
+    [Ch'a cost > 0]→{
+      [Sek gas_deduct_tokens(cost)]→[Ch'en deduct]
+      [Ch'a !deduct.ok]→[Wo {"error": "Insufficient tokens"}]→[Xul return]
+    }
+
+    [Sek "Crown [" + active_crown.style + "] response: " + message]→[Ch'en response]
+
+    [Wo {
+      "ok": true,
+      "mode": "mx2lm_chat",
+      "crown": crown_id,
+      "response": response,
+      "tokensUsed": cost,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS MX2LM TOKENS (C@@L BLOCK - Token Management) */
+  [Pop gas_mx2lm_tokens]
+    /* @control: [@tokens, @economy]
+       @variable: {action, amount}
+       @Sek: Manage GAS token balance
+       @Ch'en: Return token balance or update */
+
+    [Sek action || "balance"]→[Ch'en token_action]
+
+    [Ch'a token_action === "balance"]→{
+      [Yax "gas.tokens.balance"]→[Ch'en balance]
+      [Wo {"ok": true, "balance": balance || 100, "address": "gas_default"}]→[Xul return]
+    }
+
+    [Ch'a token_action === "add"]→{
+      [Yax "gas.tokens.balance"]→[Ch'en balance]
+      [Sek (balance || 100) + parseInt(amount || 0)]→[Ch'en new_balance]
+      [Yax "gas.tokens.balance" = new_balance]
+      [Wo {"ok": true, "added": amount, "newBalance": new_balance}]→[Xul return]
+    }
+
+    [Wo {"error": "Invalid token action"}]→[Xul return]
+  [Xul]
+
+
+  /* GAS MX2LM LIST CROWNS (C@@L BLOCK - List AI Crowns) */
+  [Pop gas_mx2lm_list_crowns]
+    /* @control: [@list, @ai]
+       @variable: {}
+       @Sek: List available MX2LM crown agents
+       @Ch'en: Return crown list */
+
+    [Yax "gas.mx2lm.crowns"]→[Ch'en crowns]
+
+    [Wo {
+      "ok": true,
+      "mode": "crowns_list",
+      "crowns": crowns || {
+        "mx2lm": {"cost": 0, "style": "general"},
+        "developer": {"cost": 10, "style": "technical"},
+        "creative": {"cost": 5, "style": "creative"},
+        "analyst": {"cost": 15, "style": "analytical"}
+      }
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS MX2LM FRONTEND BUILDER (C@@L BLOCK - Full Frontend Builder) */
+  [Pop gas_mx2lm_frontend_builder]
+    /* @control: [@builder, @fullstack]
+       @variable: {prompt, crown, tape}
+       @Sek: Build complete frontend from prompt using 5 micro-agents
+       @Ch'en: Return generated frontend files */
+
+    [Ch'a !prompt]→[Wo {"error": "Builder prompt required"}]→[Xul return]
+
+    [Sek 20]→[Ch'en cost]
+    [Sek gas_deduct_tokens(cost)]→[Ch'en deduct]
+    [Ch'a !deduct.ok]→[Wo {"error": "Insufficient tokens"}]→[Xul return]
+
+    [Sek {
+      "layout": {"type": "grid", "structure": {"header": true, "sidebar": true, "main": true, "footer": true}},
+      "style": {"theme": "glass", "palette": {"bg": "#05070a", "accent": "#00ffc6"}},
+      "components": ["card", "button", "form"],
+      "logic": {"events": ["click", "submit"], "state": ["ready", "loading"]},
+      "files": [
+        {"name": "index.html", "content": "<!-- Generated by MX2LM Builder -->"},
+        {"name": "asx-tape.json", "content": JSON.stringify({"tape": "generated", "prompt": prompt})}
+      ]
+    }]→[Ch'en build_result]
+
+    [Wo {
+      "ok": true,
+      "mode": "frontend_built",
+      "buildCost": cost,
+      "remainingTokens": deduct.balance,
+      "result": build_result,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS DEDUCT TOKENS (C@@L BLOCK HELPER - Token Deduction) */
+  [Pop gas_deduct_tokens]
+    /* @control: [@tokens, @internal]
+       @variable: {amount}
+       @Sek: Deduct tokens from GAS balance
+       @Ch'en: Return deduction result */
+
+    [Yax "gas.tokens.balance"]→[Ch'en balance]
+    [Sek balance || 100]→[Ch'en current_balance]
+
+    [Ch'a current_balance < amount]→[Wo {"ok": false, "balance": current_balance}]→[Xul return]
+
+    [Sek current_balance - amount]→[Ch'en new_balance]
+    [Yax "gas.tokens.balance" = new_balance]
+
+    [Wo {"ok": true, "balance": new_balance}]→[Xul return]
+  [Xul]
 
 ⟁ Xul ⟁
