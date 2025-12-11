@@ -124,7 +124,21 @@
         "/omnibrain/start":       { "fold": "omnibrain", "handler": "omnibrain_start_infinite" },
         "/omnibrain/metrics":     { "fold": "omnibrain", "handler": "omnibrain_get_metrics" },
         "/omnibrain/convergence": { "fold": "omnibrain", "handler": "omnibrain_check_convergence" },
-        "/omnibrain/stop":        { "fold": "omnibrain", "handler": "omnibrain_stop_loop" }
+        "/omnibrain/stop":        { "fold": "omnibrain", "handler": "omnibrain_stop_loop" },
+        "/gas/api/providers":          { "fold": "gas", "handler": "gas_list_providers" },
+        "/gas/api/providers/register": { "fold": "gas", "handler": "gas_register_provider" },
+        "/gas/api/providers/call":     { "fold": "gas", "handler": "gas_call_provider" },
+        "/gas/api/routes":             { "fold": "gas", "handler": "gas_list_routes" },
+        "/gas/backend/create-api":     { "fold": "gas", "handler": "gas_backend_create_api" },
+        "/gas/frontend/generate-ui":   { "fold": "gas", "handler": "gas_frontend_generate_ui" },
+        "/gas/design/create-3d":       { "fold": "gas", "handler": "gas_design_create_3d" },
+        "/gas/manifest/get":           { "fold": "gas", "handler": "gas_manifest_get" },
+        "/gas/manifest/save":          { "fold": "gas", "handler": "gas_manifest_save" },
+        "/gas/manifest/tapes":         { "fold": "gas", "handler": "gas_list_cloud_tapes" },
+        "/gas/mx2lm/chat":             { "fold": "gas", "handler": "gas_mx2lm_chat" },
+        "/gas/mx2lm/tokens":           { "fold": "gas", "handler": "gas_mx2lm_tokens" },
+        "/gas/mx2lm/crowns":           { "fold": "gas", "handler": "gas_mx2lm_list_crowns" },
+        "/gas/mx2lm/builder":          { "fold": "gas", "handler": "gas_mx2lm_frontend_builder" }
       }
     },
 
@@ -255,6 +269,54 @@
         "unification_score": 0.0,
         "avg_cycle_time_ms": 0,
         "divergences_detected": 0
+      }
+    },
+
+    "gas_shards": {
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "GAS_CLOUD_INTEGRATION",
+      "description": "Google Apps Script cloud services for AI specialists, providers, and cloud sync",
+      "shards": {
+        "api_shard": {
+          "enabled": true,
+          "role": "Provider marketplace and dynamic routing",
+          "features": ["provider_registry", "dynamic_routes", "api_proxy"]
+        },
+        "ai_specialists": {
+          "enabled": true,
+          "role": "AI specialist agents for generation",
+          "specialists": {
+            "backend": { "cost_tokens": 7, "generates": "xjson_apis" },
+            "frontend": { "cost_tokens": 5, "generates": "ui_components" },
+            "design": { "cost_tokens": 9, "generates": "3d_scenes" }
+          }
+        },
+        "manifest_shard": {
+          "enabled": true,
+          "role": "Cloud manifest and tape backup",
+          "storage": "google_sheets",
+          "features": ["manifest_sync", "tape_cloud_storage", "user_profiles"]
+        },
+        "mx2lm": {
+          "enabled": true,
+          "role": "MX2LM crown AI agents and chat",
+          "crowns": {
+            "mx2lm": { "cost": 0, "style": "general" },
+            "developer": { "cost": 10, "style": "technical" },
+            "creative": { "cost": 5, "style": "creative" },
+            "analyst": { "cost": 15, "style": "analytical" }
+          },
+          "qwenf1": {
+            "enabled": false,
+            "cost_tokens": 25,
+            "model": "ASX_fine_tuned"
+          }
+        }
+      },
+      "token_economy": {
+        "default_balance": 100,
+        "currency": "gas_tokens"
       }
     },
 
@@ -2816,6 +2878,403 @@
       "final_iteration": metrics.current_iteration,
       "timestamp": Date.now()
     }]→[Xul return]
+  [Xul]
+
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     GAS SHARDS - Google Apps Script Cloud Integration
+     Provider Marketplace, AI Specialists, Cloud Sync, MX2LM Agents
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+
+  /* GAS LIST PROVIDERS (C@@L BLOCK - Provider Marketplace) */
+  [Pop gas_list_providers]
+    /* @control: [@list, @marketplace]
+       @variable: {}
+       @Sek: List all registered API providers
+       @Ch'en: Return provider registry */
+
+    [Yax "gas.providers"]→[Ch'en providers]
+
+    [Wo {
+      "ok": true,
+      "mode": "provider_list",
+      "providers": providers || {},
+      "count": Object.keys(providers || {}).length,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS REGISTER PROVIDER (C@@L BLOCK - Register API Provider) */
+  [Pop gas_register_provider]
+    /* @control: [@register, @marketplace]
+       @variable: {name, url, category, description, priceTokens}
+       @Sek: Register new API provider in marketplace
+       @Ch'en: Return registration confirmation */
+
+    [Ch'a !name || !url]→[Wo {"error": "name and url required"}]→[Xul return]
+
+    [Sek "prov_" + fn.generate_uuid().slice(0, 12)]→[Ch'en provider_id]
+
+    [Yax "gas.providers"]→[Ch'en providers]
+    [Sek providers[provider_id] = {
+      "id": provider_id,
+      "name": name,
+      "url": url,
+      "category": category || "general",
+      "description": description || "",
+      "priceTokens": parseInt(priceTokens) || 0,
+      "public": true,
+      "created": new Date().toISOString()
+    }]
+    [Yax "gas.providers" = providers]
+
+    [Wo {
+      "ok": true,
+      "mode": "provider_registered",
+      "provider": providers[provider_id]
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS CALL PROVIDER (C@@L BLOCK - Proxy Call to Provider API) */
+  [Pop gas_call_provider]
+    /* @control: [@proxy, @fetch]
+       @variable: {providerId, method, body}
+       @Sek: Proxy call to registered provider API
+       @Ch'en: Return provider response */
+
+    [Ch'a !providerId]→[Wo {"error": "providerId required"}]→[Xul return]
+
+    [Yax "gas.providers"]→[Ch'en providers]
+    [Sek providers[providerId]]→[Ch'en provider]
+    [Ch'a !provider]→[Wo {"error": "Provider not found"}]→[Xul return]
+
+    [Sek fetch(provider.url, {
+      "method": method || "GET",
+      "headers": {"content-type": "application/json"},
+      "body": body ? JSON.stringify(body) : null
+    })]→[Ch'en response]
+
+    [Wo {
+      "ok": true,
+      "mode": "provider_call",
+      "providerId": providerId,
+      "provider": {"name": provider.name, "category": provider.category},
+      "response": response,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS BACKEND CREATE API (C@@L BLOCK - Backend AI Specialist) */
+  [Pop gas_backend_create_api]
+    /* @control: [@generate, @ai]
+       @variable: {endpoints}
+       @Sek: Generate XJSON API spec using Backend AI Specialist
+       @Ch'en: Return generated API */
+
+    [Sek 7]→[Ch'en cost]
+    [Sek gas_deduct_tokens(cost)]→[Ch'en deduct]
+    [Ch'a !deduct.ok]→[Wo {"error": "Insufficient tokens", "balance": deduct.balance}]→[Xul return]
+
+    [Sek endpoints || [
+      {"path": "/users", "method": "GET"},
+      {"path": "/orders", "method": "POST"}
+    ]]→[Ch'en api_endpoints]
+
+    [Sek {
+      "@context": "xjson://api",
+      "@description": "Auto-generated XJSON API from Backend AI Specialist",
+      "@routes": api_endpoints.map(ep => ({
+        "@path": ep.path,
+        "@method": ep.method,
+        "@handler": "handler_" + ep.method.toLowerCase() + "_" + ep.path.replace(/\//g, "_"),
+        "@input": ep.method === "GET" ? "query" : "body",
+        "@output": "json"
+      }))
+    }]→[Ch'en xjson_api]
+
+    [Wo {
+      "ok": true,
+      "shard": "BACKEND_AI_SPECIALIST",
+      "cost": cost,
+      "remainingTokens": deduct.balance,
+      "xjson_api": xjson_api,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS FRONTEND GENERATE UI (C@@L BLOCK - Frontend AI Specialist) */
+  [Pop gas_frontend_generate_ui]
+    /* @control: [@generate, @ui]
+       @variable: {type, style, components}
+       @Sek: Generate UI using Frontend AI Specialist
+       @Ch'en: Return UI AST and HTML preview */
+
+    [Sek 5]→[Ch'en cost]
+    [Sek gas_deduct_tokens(cost)]→[Ch'en deduct]
+    [Ch'a !deduct.ok]→[Wo {"error": "Insufficient tokens"}]→[Xul return]
+
+    [Sek type || "dashboard"]→[Ch'en ui_type]
+    [Sek style || "modern"]→[Ch'en ui_style]
+    [Sek components ? components.split(",") : ["charts", "navigation"]]→[Ch'en ui_components]
+
+    [Sek {
+      "type": ui_type,
+      "style": ui_style,
+      "layout": {"root": "app", "regions": ["header", "main", "sidebar", "footer"]},
+      "components": ui_components.map((name, i) => ({
+        "id": "cmp_" + i,
+        "type": name,
+        "region": name === "navigation" ? "header" : "main",
+        "props": {}
+      }))
+    }]→[Ch'en ui_ast]
+
+    [Wo {
+      "ok": true,
+      "shard": "FRONTEND_AI_SPECIALIST",
+      "cost": cost,
+      "remainingTokens": deduct.balance,
+      "ui_ast": ui_ast,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS DESIGN CREATE 3D (C@@L BLOCK - Design AI Specialist) */
+  [Pop gas_design_create_3d]
+    /* @control: [@generate, @3d]
+       @variable: {type, style, elements}
+       @Sek: Generate 3D scene using Design AI Specialist
+       @Ch'en: Return Three.js scene spec */
+
+    [Sek 9]→[Ch'en cost]
+    [Sek gas_deduct_tokens(cost)]→[Ch'en deduct]
+    [Ch'a !deduct.ok]→[Wo {"error": "Insufficient tokens"}]→[Xul return]
+
+    [Sek type || "product-showcase"]→[Ch'en scene_type]
+    [Sek style || "futuristic"]→[Ch'en scene_style]
+    [Sek elements ? elements.split(",") : ["floating", "animated"]]→[Ch'en scene_elements]
+
+    [Sek {
+      "scene": {
+        "camera": {"type": "perspective", "fov": 60, "position": [0, 2, 6]},
+        "lights": [
+          {"type": "ambient", "color": "#ffffff", "intensity": 0.4},
+          {"type": "directional", "color": "#39ffb6", "intensity": 1.0, "position": [3, 4, 2]}
+        ],
+        "objects": scene_elements.map((el, i) => ({
+          "id": "obj_" + i,
+          "kind": el === "floating" ? "mesh_sphere" : "mesh_box",
+          "position": [i - 1, 0, 0],
+          "motion": el === "animated" ? "loop-rotate-y" : "float-y"
+        }))
+      }
+    }]→[Ch'en three_scene]
+
+    [Wo {
+      "ok": true,
+      "shard": "DESIGN_AI_SPECIALIST",
+      "cost": cost,
+      "remainingTokens": deduct.balance,
+      "three_scene": three_scene,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS MANIFEST GET (C@@L BLOCK - Get Cloud Manifest) */
+  [Pop gas_manifest_get]
+    /* @control: [@cloud, @sync]
+       @variable: {}
+       @Sek: Get user manifest from cloud storage
+       @Ch'en: Return cloud manifest */
+
+    [Yax "gas.manifest.cloud"]→[Ch'en cloud_manifest]
+
+    [Wo {
+      "ok": true,
+      "mode": "manifest_from_cloud",
+      "manifest": cloud_manifest || {},
+      "source": "gas_cloud",
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS MANIFEST SAVE (C@@L BLOCK - Save to Cloud) */
+  [Pop gas_manifest_save]
+    /* @control: [@cloud, @backup]
+       @variable: {manifest_data}
+       @Sek: Save manifest to cloud storage
+       @Ch'en: Return save confirmation */
+
+    [Ch'a !manifest_data]→[Wo {"error": "manifest_data required"}]→[Xul return]
+
+    [Yax "gas.manifest.cloud" = manifest_data]
+
+    [Wo {
+      "ok": true,
+      "mode": "manifest_saved_to_cloud",
+      "saved": Object.keys(manifest_data).length,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS LIST CLOUD TAPES (C@@L BLOCK - List Cloud Tapes) */
+  [Pop gas_list_cloud_tapes]
+    /* @control: [@list, @cloud]
+       @variable: {}
+       @Sek: List all cloud-stored tapes
+       @Ch'en: Return tape list */
+
+    [Yax "gas.tapes.cloud"]→[Ch'en cloud_tapes]
+
+    [Wo {
+      "ok": true,
+      "mode": "cloud_tapes",
+      "tapes": cloud_tapes || [],
+      "count": (cloud_tapes || []).length,
+      "source": "gas_cloud"
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS MX2LM CHAT (C@@L BLOCK - MX2LM Crown Chat) */
+  [Pop gas_mx2lm_chat]
+    /* @control: [@chat, @ai]
+       @variable: {message, crown}
+       @Sek: Chat with MX2LM crown AI agents
+       @Ch'en: Return AI response */
+
+    [Ch'a !message]→[Wo {"error": "message required"}]→[Xul return]
+
+    [Sek crown || "mx2lm"]→[Ch'en crown_id]
+    [Yax "gas.mx2lm.crowns"]→[Ch'en crowns]
+    [Sek crowns[crown_id] || crowns.mx2lm]→[Ch'en active_crown]
+
+    [Sek active_crown.cost || 0]→[Ch'en cost]
+    [Ch'a cost > 0]→{
+      [Sek gas_deduct_tokens(cost)]→[Ch'en deduct]
+      [Ch'a !deduct.ok]→[Wo {"error": "Insufficient tokens"}]→[Xul return]
+    }
+
+    [Sek "Crown [" + active_crown.style + "] response: " + message]→[Ch'en response]
+
+    [Wo {
+      "ok": true,
+      "mode": "mx2lm_chat",
+      "crown": crown_id,
+      "response": response,
+      "tokensUsed": cost,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS MX2LM TOKENS (C@@L BLOCK - Token Management) */
+  [Pop gas_mx2lm_tokens]
+    /* @control: [@tokens, @economy]
+       @variable: {action, amount}
+       @Sek: Manage GAS token balance
+       @Ch'en: Return token balance or update */
+
+    [Sek action || "balance"]→[Ch'en token_action]
+
+    [Ch'a token_action === "balance"]→{
+      [Yax "gas.tokens.balance"]→[Ch'en balance]
+      [Wo {"ok": true, "balance": balance || 100, "address": "gas_default"}]→[Xul return]
+    }
+
+    [Ch'a token_action === "add"]→{
+      [Yax "gas.tokens.balance"]→[Ch'en balance]
+      [Sek (balance || 100) + parseInt(amount || 0)]→[Ch'en new_balance]
+      [Yax "gas.tokens.balance" = new_balance]
+      [Wo {"ok": true, "added": amount, "newBalance": new_balance}]→[Xul return]
+    }
+
+    [Wo {"error": "Invalid token action"}]→[Xul return]
+  [Xul]
+
+
+  /* GAS MX2LM LIST CROWNS (C@@L BLOCK - List AI Crowns) */
+  [Pop gas_mx2lm_list_crowns]
+    /* @control: [@list, @ai]
+       @variable: {}
+       @Sek: List available MX2LM crown agents
+       @Ch'en: Return crown list */
+
+    [Yax "gas.mx2lm.crowns"]→[Ch'en crowns]
+
+    [Wo {
+      "ok": true,
+      "mode": "crowns_list",
+      "crowns": crowns || {
+        "mx2lm": {"cost": 0, "style": "general"},
+        "developer": {"cost": 10, "style": "technical"},
+        "creative": {"cost": 5, "style": "creative"},
+        "analyst": {"cost": 15, "style": "analytical"}
+      }
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS MX2LM FRONTEND BUILDER (C@@L BLOCK - Full Frontend Builder) */
+  [Pop gas_mx2lm_frontend_builder]
+    /* @control: [@builder, @fullstack]
+       @variable: {prompt, crown, tape}
+       @Sek: Build complete frontend from prompt using 5 micro-agents
+       @Ch'en: Return generated frontend files */
+
+    [Ch'a !prompt]→[Wo {"error": "Builder prompt required"}]→[Xul return]
+
+    [Sek 20]→[Ch'en cost]
+    [Sek gas_deduct_tokens(cost)]→[Ch'en deduct]
+    [Ch'a !deduct.ok]→[Wo {"error": "Insufficient tokens"}]→[Xul return]
+
+    [Sek {
+      "layout": {"type": "grid", "structure": {"header": true, "sidebar": true, "main": true, "footer": true}},
+      "style": {"theme": "glass", "palette": {"bg": "#05070a", "accent": "#00ffc6"}},
+      "components": ["card", "button", "form"],
+      "logic": {"events": ["click", "submit"], "state": ["ready", "loading"]},
+      "files": [
+        {"name": "index.html", "content": "<!-- Generated by MX2LM Builder -->"},
+        {"name": "asx-tape.json", "content": JSON.stringify({"tape": "generated", "prompt": prompt})}
+      ]
+    }]→[Ch'en build_result]
+
+    [Wo {
+      "ok": true,
+      "mode": "frontend_built",
+      "buildCost": cost,
+      "remainingTokens": deduct.balance,
+      "result": build_result,
+      "timestamp": Date.now()
+    }]→[Xul return]
+  [Xul]
+
+
+  /* GAS DEDUCT TOKENS (C@@L BLOCK HELPER - Token Deduction) */
+  [Pop gas_deduct_tokens]
+    /* @control: [@tokens, @internal]
+       @variable: {amount}
+       @Sek: Deduct tokens from GAS balance
+       @Ch'en: Return deduction result */
+
+    [Yax "gas.tokens.balance"]→[Ch'en balance]
+    [Sek balance || 100]→[Ch'en current_balance]
+
+    [Ch'a current_balance < amount]→[Wo {"ok": false, "balance": current_balance}]→[Xul return]
+
+    [Sek current_balance - amount]→[Ch'en new_balance]
+    [Yax "gas.tokens.balance" = new_balance]
+
+    [Wo {"ok": true, "balance": new_balance}]→[Xul return]
   [Xul]
 
 ⟁ Xul ⟁

@@ -19,11 +19,12 @@
 6. [Feed & Import APIs](#feed--import-apis)
 7. [@Gram Learning APIs](#gram-learning-apis)
 8. [OMNIBRAIN Ω.0.0 - Triple Recursion APIs](#omnibrain-ω00---triple-recursion-apis)
-9. [Mesh & Coordination APIs](#mesh--coordination-apis)
-10. [Runtime & Execution APIs](#runtime--execution-apis)
-11. [Tape Management APIs](#tape-management-apis)
-12. [ASX-RAM APIs](#asx-ram-apis)
-13. [SCXQ2 Compression APIs](#scxq2-compression-apis)
+9. [GAS Shards - Cloud Integration](#gas-shards---cloud-integration)
+10. [Mesh & Coordination APIs](#mesh--coordination-apis)
+11. [Runtime & Execution APIs](#runtime--execution-apis)
+12. [Tape Management APIs](#tape-management-apis)
+13. [ASX-RAM APIs](#asx-ram-apis)
+14. [SCXQ2 Compression APIs](#scxq2-compression-apis)
 
 ---
 
@@ -796,6 +797,50 @@ curl -X POST http://localhost:8080/omnibrain/stop \
 
 ---
 
+## ☁️ GAS Shards - Cloud Integration
+
+**GAS (Google Apps Script) Shards** provide cloud services for AI specialists, provider marketplace, and cloud sync. Token-based economy with default 100 gas_tokens.
+
+### Provider Marketplace
+- **GET `/gas/api/providers`** - List registered providers (guest/trainer/admin)
+- **POST `/gas/api/providers/register`** - Register new provider (admin) - `{name, url, category, priceTokens}`
+- **POST `/gas/api/providers/call`** - Proxy call to provider (trainer/admin) - `{providerId, method, body}`
+- **GET `/gas/api/routes`** - List dynamic routes (guest/trainer/admin)
+
+### AI Specialists
+- **POST `/gas/backend/create-api`** - Generate XJSON API (admin, 7 tokens) - `{endpoints: [{path, method}]}`
+- **POST `/gas/frontend/generate-ui`** - Generate UI (admin, 5 tokens) - `{type, style, components}`
+- **POST `/gas/design/create-3d`** - Generate 3D scene (admin, 9 tokens) - `{type, style, elements}`
+
+### Cloud Manifest & Sync
+- **GET `/gas/manifest/get`** - Get cloud manifest (guest/trainer/admin)
+- **POST `/gas/manifest/save`** - Save to cloud (admin) - `{manifest_data}`
+- **GET `/gas/manifest/tapes`** - List cloud tapes (guest/trainer/admin)
+
+### MX2LM Crown Agents
+- **POST `/gas/mx2lm/chat`** - Chat with crown AI (guest/trainer/admin) - `{message, crown}`
+  - Crowns: `mx2lm` (0 tokens), `developer` (10), `creative` (5), `analyst` (15)
+- **GET `/gas/mx2lm/tokens`** - Get token balance (guest/trainer/admin) - `?action=balance`
+- **POST `/gas/mx2lm/tokens`** - Add tokens (admin) - `{action: "add", amount}`
+- **GET `/gas/mx2lm/crowns`** - List available crowns (guest/trainer/admin)
+- **POST `/gas/mx2lm/builder`** - Full frontend builder (admin, 20 tokens) - `{prompt, crown, tape}`
+
+**Example:**
+```bash
+# Chat with developer crown
+curl -X POST http://localhost:8080/gas/mx2lm/chat \
+  -H "content-type: application/json" \
+  -H "x-api-key: dev-admin-key" \
+  -d '{"message": "Explain XJSON", "crown": "developer"}'
+
+# Generate frontend UI
+curl -X POST http://localhost:8080/gas/frontend/generate-ui \
+  -H "x-api-key: dev-admin-key" \
+  -d '{"type": "dashboard", "style": "modern", "components": "charts,navigation"}'
+```
+
+---
+
 ## 🌐 Mesh & Coordination APIs
 
 ### GET `/mesh/ping`
@@ -1065,6 +1110,7 @@ curl -H "x-api-key: dev-trainer-key" \
 | **local_rest** | 4 | Mixed | RLHF forum |
 | **gram** | 8 | Mixed | Self-learning |
 | **omnibrain** | 9 | Mixed | Triple recursion |
+| **gas** | 14 | Mixed | Cloud integration |
 | **mesh** | 4 | Mixed | Network coordination |
 | **runtime** | 4 | Public | Execution engine |
 | **tapes** | 3 | Public | Tape management |
@@ -1072,7 +1118,7 @@ curl -H "x-api-key: dev-trainer-key" \
 | **trainer** | 2 | Public | Training jobs |
 | **ai** | 1 | Public | AI modules |
 
-**Total:** 54 REST endpoints across 12 folds
+**Total:** 68 REST endpoints across 13 folds
 
 ---
 
