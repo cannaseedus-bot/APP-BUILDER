@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ASX SCXQ2 ATOMIC INDEX — Local Runtime</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    /* ============================================================
+       ASX ATOMIC CSS SYSTEM
+       ============================================================ */
+    
+    :root {
+      /* Core brand colors */
+      --asx-bg: #020617;
+      --asx-bg-alt: #050b1c;
+      --asx-bg-panel: #020b12;
+      --asx-bg-panel-alt: #040815;
+      --asx-bg-terminal: #01040a;
+
+      --asx-border: rgba(148, 163, 184, 0.5);
+      --asx-border-strong: rgba(148, 163, 184, 0.85);
+      --asx-border-glow: rgba(56, 189, 248, 0.9);
+
+      --asx-primary: #22f2b3;
+      --asx-primary-soft: rgba(34, 242, 179, 0.12);
+      --asx-secondary: #38bdf8;
+      --asx-secondary-soft: rgba(56, 189, 248, 0.12);
+      --asx-accent: #a855f7;
+      --asx-danger: #fb7185;
+      --asx-warning: #facc15;
+      --asx-success: #4ade80;
+      --asx-hazard: #fbbf24;
+
+      --asx-text: #e5f2ff;
+      --asx-text-soft: #9ca3af;
+      --asx-text-faint: #6b7280;
+      --asx-text-strong: #f9fafb;
+      --asx-text-warning: #facc15;
+
+      --asx-radius-sm: 0.375rem;
+      --asx-radius-md: 0.75rem;
+      --asx-radius-lg: 1.25rem;
+      --asx-radius-pill: 999px;
+
+      --asx-shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.85);
+      --asx-shadow-hard: 0 0 40px rgba(34, 197, 235, 0.35);
+      --asx-shadow-glow: 0 0 0 1px rgba(8, 47, 73, 0.9), 0 0 60px rgba(34, 197, 235, 0.3);
+
+      --asx-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      --asx-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+
+      --asx-gap-xs: 0.25rem;
+      --asx-gap-sm: 0.5rem;
+      --asx-gap-md: 0.75rem;
+      --asx-gap-lg: 1rem;
+      --asx-gap-xl: 1.5rem;
+      --asx-gap-2xl: 2rem;
+
+      --asx-transition-fast: 120ms ease-out;
+      --asx-transition: 200ms ease-out;
+      --asx-transition-slow: 320ms ease-out;
+
+      --asx-max-width: 1120px;
+    }
+
+    /* Base layout + typography */
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top, #020617 0, #020617 40%, #020617 60%, #000 100%);
+      color: var(--asx-text);
+      font-family: var(--asx-font-sans);
+      line-height: 1.55;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    /* ASX Atomic Utility Classes */
+    
+    /* Layout */
+    .asx-flex { display: flex; }
+    .asx-flex-col { display: flex; flex-direction: column; }
+    .asx-flex-row { display: flex; flex-direction: row; }
+    .asx-center { align-items: center; justify-content: center; }
+    .asx-align-center { align-items: center; }
+    .asx-justify-center { justify-content: center; }
+    .asx-justify-between { justify-content: space-between; }
+    .asx-wrap { flex-wrap: wrap; }
+    .asx-grid { display: grid; }
+    
+    /* Spacing */
+    .asx-gap-xs { gap: var(--asx-gap-xs); }
+    .asx-gap-sm { gap: var(--asx-gap-sm); }
+    .asx-gap-md { gap: var(--asx-gap-md); }
+    .asx-gap-lg { gap: var(--asx-gap-lg); }
+    .asx-gap-xl { gap: var(--asx-gap-xl); }
+    .asx-gap-2xl { gap: var(--asx-gap-2xl); }
+    
+    .asx-p-xs { padding: 0.375rem; }
+    .asx-p-sm { padding: 0.6rem; }
+    .asx-p-md { padding: 0.9rem; }
+    .asx-p-lg { padding: 1.25rem; }
+    .asx-p-xl { padding: 1.75rem; }
+    
+    .asx-px-md { padding-left: 0.9rem; padding-right: 0.9rem; }
+    .asx-py-sm { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .asx-py-md { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .asx-py-lg { padding-top: 1rem; padding-bottom: 1rem; }
+    
+    .asx-mt-xs { margin-top: 0.25rem; }
+    .asx-mt-sm { margin-top: 0.5rem; }
+    .asx-mt-md { margin-top: 0.75rem; }
+    .asx-mt-lg { margin-top: 1.25rem; }
+    .asx-mt-xl { margin-top: 1.75rem; }
+    .asx-mb-sm { margin-bottom: 0.5rem; }
+    .asx-mb-md { margin-bottom: 0.75rem; }
+    .asx-mb-lg { margin-bottom: 1.25rem; }
+    
+    /* Sizing */
+    .asx-w-full { width: 100%; }
+    .asx-w-half { width: 50%; }
+    .asx-w-auto { width: auto; }
+    .asx-h-full { height: 100%; }
+    
+    /* Typography */
+    .asx-text-xs { font-size: 0.75rem; }
+    .asx-text-sm { font-size: 0.875rem; }
+    .asx-text-md { font-size: 1rem; }
+    .asx-text-lg { font-size: 1.15rem; }
+    .asx-text-xl { font-size: 1.35rem; }
+    .asx-text-2xl { font-size: 1.7rem; }
+    .asx-text-3xl { font-size: 2.1rem; }
+    
+    .asx-text-soft { color: var(--asx-text-soft); }
+    .asx-text-faint { color: var(--asx-text-faint); }
+    .asx-text-strong { color: var(--asx-text-strong); }
+    .asx-text-primary { color: var(--asx-primary); }
+    .asx-text-secondary { color: var(--asx-secondary); }
+    .asx-text-accent { color: var(--asx-accent); }
+    .asx-text-warning { color: var(--asx-text-warning); }
+    .asx-text-hazard { color: var(--asx-hazard); }
+    
+    .asx-mono { font-family: var(--asx-font-mono); letter-spacing: 0.02em; }
+    .asx-uppercase { text-transform: uppercase; letter-spacing: 0.12em; }
+    .asx-bold { font-weight: 600; }
+    .asx-semibold { font-weight: 550; }
+    
+    /* Backgrounds & Borders */
+    .asx-bg { background: var(--asx-bg-panel); }
+    .asx-bg-alt { background: var(--asx-bg-panel-alt); }
+    .asx-bg-soft { background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.3)); }
+    .asx-bg-primary-soft { background: radial-gradient(circle at top left, var(--asx-primary-soft), transparent); }
+    .asx-bg-secondary-soft { background: radial-gradient(circle at bottom right, var(--asx-secondary-soft), transparent); }
+    
+    .asx-border { border: 1px solid var(--asx-border); }
+    .asx-border-strong { border: 1px solid var(--asx-border-strong); }
+    .asx-border-glow { border: 1px solid var(--asx-border-glow); box-shadow: var(--asx-shadow-glow); }
+    
+    .asx-rounded-sm { border-radius: var(--asx-radius-sm); }
+    .asx-rounded-md { border-radius: var(--asx-radius-md); }
+    .asx-rounded-lg { border-radius: var(--asx-radius-lg); }
+    .asx-rounded-pill { border-radius: var(--asx-radius-pill); }
+    
+    .asx-shadow-soft { box-shadow: var(--asx-shadow-soft); }
+    .asx-shadow-hard { box-shadow: var(--asx-shadow-hard); }
+    
+    /* Grid */
+    .asx-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .asx-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .asx-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .asx-grid-auto-fit { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    
+    /* ============================================================
+       ASX COMPONENTS
+       ============================================================ */
+    
+    /* Shell */
+    .asx-shell {
+      width: 100%;
+      max-width: var(--asx-max-width);
+      background: radial-gradient(circle at top left, rgba(34, 197, 235, 0.16) 0, transparent 45%),
+        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.16) 0, transparent 45%),
+        linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(3, 7, 18, 0.98));
+      border-radius: 1.5rem;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow: var(--asx-shadow-soft);
+      padding: 1.75rem 1.75rem 2.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .asx-shell::before {
+      content: "";
+      position: absolute;
+      inset: -60%;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(34, 197, 235, 0.06) 0, transparent 60%),
+        radial-gradient(circle at 90% 20%, rgba(16, 185, 129, 0.07) 0, transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .asx-shell-inner {
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Page Header */
+    .asx-page-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+      padding-bottom: 1.25rem;
+    }
+    
+    /* Badges */
+    .asx-badge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.15rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: radial-gradient(circle at top left, rgba(34, 197, 235, 0.12), transparent);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--asx-text-soft);
+    }
+    
+    .asx-badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #22f2b3, #22c55e);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+    }
+    
+    /* Tabs */
+    .asx-section-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .asx-tab {
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--asx-text-soft);
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.2));
+      cursor: default;
+    }
+    
+    .asx-tab-active {
+      border-color: rgba(34, 197, 235, 0.9);
+      color: var(--asx-primary);
+      box-shadow: 0 0 18px rgba(34, 197, 235, 0.4);
+      background: radial-gradient(circle at top, rgba(8, 47, 73, 0.9), rgba(15, 23, 42, 0.8));
+    }
+    
+    /* ASX Block - Canonical container */
+    .asx-block {
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.92));
+      border-radius: var(--asx-radius-lg);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      padding: 1.1rem 1.15rem 1.1rem;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .asx-block::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0 0, rgba(34, 197, 235, 0.14) 0, transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.12) 0, transparent 55%);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .asx-block-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .asx-block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .asx-block-title {
+      font-size: 0.92rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--asx-text-soft);
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .asx-block-title span {
+      font-size: 0.8em;
+    }
+
+    .asx-block-title-tag {
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--asx-text-soft);
+    }
+
+    .asx-block-body {
+      font-size: 0.9rem;
+      color: var(--asx-text-soft);
+    }
+    
+    /* Buttons */
+    .asx-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: var(--asx-radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: radial-gradient(circle at top left, rgba(34, 197, 235, 0.25), rgba(15, 23, 42, 0.8));
+      color: var(--asx-text-strong);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      cursor: pointer;
+      transition: transform var(--asx-transition-fast), box-shadow var(--asx-transition-fast),
+        border-color var(--asx-transition-fast), background var(--asx-transition-fast);
+      white-space: nowrap;
+    }
+
+    .asx-btn span {
+      font-size: 0.9em;
+    }
+
+    .asx-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 22px rgba(34, 197, 235, 0.4);
+      border-color: rgba(34, 197, 235, 0.9);
+      background: radial-gradient(circle at top left, rgba(34, 197, 235, 0.35), rgba(15, 23, 42, 0.9));
+    }
+
+    .asx-btn-ghost {
+      background: rgba(15, 23, 42, 0.2);
+      border-style: dashed;
+      border-color: rgba(148, 163, 184, 0.5);
+      color: var(--asx-text-soft);
+    }
+
+    .asx-btn-ghost:hover {
+      border-color: rgba(148, 163, 184, 0.9);
+      box-shadow: 0 0 16px rgba(148, 163, 184, 0.5);
+      color: var(--asx-text-strong);
+    }
+
+    .asx-btn-warning {
+      background: radial-gradient(circle at top left, rgba(250, 204, 21, 0.28), rgba(15, 23, 42, 0.9));
+      border-color: rgba(250, 204, 21, 0.9);
+      color: var(--asx-text-strong);
+    }
+    
+    .asx-btn-hazard {
+      background: radial-gradient(circle at top left, rgba(251, 191, 36, 0.28), rgba(15, 23, 42, 0.9));
+      border-color: rgba(251, 191, 36, 0.9);
+      color: var(--asx-hazard);
+    }
+    
+    .asx-btn-hazard:hover {
+      box-shadow: 0 0 22px rgba(251, 191, 36, 0.4);
+      border-color: rgba(251, 191, 36, 0.9);
+    }
+    
+    /* Pills */
+    .asx-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: var(--asx-radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.7);
+      font-size: 0.75rem;
+      color: var(--asx-text-soft);
+    }
+
+    .asx-pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--asx-primary);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+    }
+
+    .asx-pill-label {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.7rem;
+    }
+    
+    .asx-pill-accent {
+      border-color: rgba(34, 242, 179, 0.7);
+      background: rgba(34, 242, 179, 0.1);
+      color: var(--asx-primary);
+    }
+    
+    .asx-pill-hazard {
+      border-color: rgba(251, 191, 36, 0.85);
+      background: rgba(251, 191, 36, 0.14);
+      color: var(--asx-hazard);
+    }
+    
+    /* Code blocks */
+    pre {
+      margin: 0;
+    }
+
+    .asx-code {
+      background: var(--asx-bg-terminal);
+      border-radius: var(--asx-radius-md);
+      border: 1px solid rgba(15, 23, 42, 0.8);
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9);
+      padding: 0.85rem 0.9rem;
+      overflow-x: auto;
+      font-family: var(--asx-font-mono);
+      font-size: 0.8rem;
+      color: #d1fae5;
+      position: relative;
+    }
+
+    .asx-code::before {
+      content: "ASX BLOCK EXAMPLE";
+      position: absolute;
+      top: 0.4rem;
+      right: 0.8rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(148, 163, 184, 0.65);
+    }
+
+    .asx-code + .asx-code {
+      margin-top: 0.75rem;
+    }
+    
+    /* Terminal */
+    .asx-terminal {
+      background: radial-gradient(circle at top, #020617, #000);
+      border-radius: var(--asx-radius-lg);
+      border: 1px solid rgba(15, 23, 42, 1);
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 1);
+      padding: 0.75rem;
+      font-family: var(--asx-font-mono);
+      font-size: 0.8rem;
+      color: #a5b4fc;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .asx-terminal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.35rem;
+      font-size: 0.7rem;
+      color: var(--asx-text-soft);
+    }
+
+    .asx-terminal-dots {
+      display: flex;
+      gap: 0.18rem;
+    }
+
+    .asx-terminal-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #22f2b3, #22c55e);
+      opacity: 0.6;
+    }
+
+    .asx-terminal-body {
+      border-radius: var(--asx-radius-md);
+      padding: 0.6rem;
+      background: radial-gradient(circle at top, rgba(8, 47, 73, 0.65), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(15, 23, 42, 1);
+      color: #d1fae5;
+      max-height: 220px;
+      overflow: auto;
+    }
+
+    .asx-terminal-line {
+      white-space: pre-wrap;
+    }
+
+    .asx-terminal-line-prefix {
+      color: #22f2b3;
+    }
+    
+    /* Callouts */
+    .asx-callout {
+      border-radius: var(--asx-radius-md);
+      border: 1px solid rgba(34, 197, 235, 0.72);
+      background: radial-gradient(circle at top left, rgba(34, 197, 235, 0.15), rgba(15, 23, 42, 0.96));
+      padding: 0.8rem 0.9rem;
+      font-size: 0.85rem;
+      color: var(--asx-text-soft);
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+    }
+
+    .asx-callout-icon {
+      font-size: 0.9rem;
+      color: var(--asx-primary);
+      margin-top: 0.12rem;
+    }
+    
+    /* Tables */
+    .asx-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    .asx-table th,
+    .asx-table td {
+      border-bottom: 1px dashed rgba(148, 163, 184, 0.4);
+      padding: 0.35rem 0.1rem;
+      text-align: left;
+    }
+
+    .asx-table th {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--asx-text-soft);
+    }
+
+    .asx-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .asx-table td:first-child {
+      white-space: nowrap;
+      padding-right: 0.4rem;
+    }
+
+    .asx-table td:nth-child(2) {
+      color: var(--asx-text-soft);
+    }
+
+    .asx-table td:nth-child(3) {
+      color: var(--asx-text-faint);
+      font-size: 0.78rem;
+    }
+    
+    /* Hazard Strip */
+    .asx-strip-hazard {
+      border-radius: var(--asx-radius-sm);
+      padding: 4px 10px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 1px solid rgba(251,191,36,0.8);
+      background: linear-gradient(90deg, rgba(251,191,36,0.18), rgba(30,64,175,0.12));
+      color: var(--asx-hazard);
+    }
+    
+    /* Section Title */
+    .asx-section-title {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--asx-text-soft);
+      margin-bottom: 0.35rem;
+    }
+    
+    /* Divider */
+    .asx-divider {
+      border: none;
+      border-top: 1px dashed rgba(148, 163, 184, 0.45);
+      margin: 1.25rem 0 0.75rem;
+    }
+    
+    /* List */
+    .asx-list {
+      margin: 0.25rem 0 0.1rem;
+      padding-left: 1.2rem;
+      font-size: 0.86rem;
+      color: var(--asx-text-soft);
+    }
+
+    .asx-list li {
+      margin-bottom: 0.18rem;
+    }
+    
+    /* Keyword */
+    .asx-keyword {
+      font-family: var(--asx-font-mono);
+      font-size: 0.78rem;
+      padding: 0.05rem 0.35rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      color: #bfdbfe;
+    }
+    
+    /* Log lines */
+    .asx-log-line {
+      white-space: pre-wrap;
+      color: var(--asx-text-faint);
+    }
+
+    .asx-log-line.hazard { color: var(--asx-hazard); }
+    .asx-log-line.ok { color: var(--asx-primary); }
+    .asx-log-line.err { color: var(--asx-danger); }
+    
+    /* Cipher preview */
+    .asx-cipher-preview {
+      font-family: var(--asx-font-mono);
+      font-size: 11px;
+      color: var(--asx-text-faint);
+      word-break: break-all;
+    }
+    
+    /* Grid layout for the main content */
+    .asx-grid-layout {
+      display: grid;
+      gap: 1.5rem;
+    }
+    
+    @media (min-width: 992px) {
+      .asx-grid-layout {
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+        align-items: flex-start;
+      }
+    }
+    
+    /* Responsive variants */
+    @media (min-width: 768px) {
+      .asx-md-flex-row {
+        display: flex;
+        flex-direction: row;
+      }
+      .asx-md-flex-col {
+        display: flex;
+        flex-direction: column;
+      }
+      .asx-md-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .asx-md-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .asx-md-show {
+        display: block;
+      }
+      .asx-md-hidden {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="asx-shell">
+    <div class="asx-shell-inner">
+      <!-- HEADER: SCXQ2 HAZARD BANNER -->
+      <header class="asx-block asx-bg-primary-soft asx-border-glow asx-mb-lg">
+        <div class="asx-block-inner">
+          <div class="asx-flex asx-justify-between asx-align-center asx-gap-md asx-md-flex-row asx-flex-col">
+            <div class="asx-flex-col asx-gap-sm">
+              <div class="asx-strip-hazard asx-mb-sm">
+                ☣ SCXQ2 ATOMIC INDEX · LOCAL ONLY RUNTIME
+              </div>
+              <h1 class="asx-text-3xl asx-text-strong asx-uppercase">ASX · Atomic HTML · SCXQ2</h1>
+              <p class="asx-text-soft asx-text-md">
+                Single-file <span class="asx-mono">index.html</span> combining Atomic CSS, ASX Atomic Blocks,
+                a hazard-ciphered SCXQ2 layer, and a browser-local XJSON REST bridge.
+              </p>
+            </div>
+
+            <div class="asx-flex-col asx-align-center asx-gap-sm" style="min-width: 240px;">
+              <div class="asx-section-title">ATOMIC STACK</div>
+              <div class="asx-flex asx-gap-sm asx-wrap">
+                <div class="asx-pill asx-pill-accent">Atomic HTML</div>
+                <div class="asx-pill">Atomic CSS</div>
+                <div class="asx-pill">ASX Blocks</div>
+                <div class="asx-pill asx-pill-hazard">SCXQ2 Cipher</div>
+                <div class="asx-pill">XJSON REST</div>
+              </div>
+
+              <div class="asx-mt-md">
+                <button class="asx-btn asx-btn-hazard" id="btn-render-dash">
+                  ☣ Render SCXQ2 Dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="asx-divider"></div>
+
+          <div class="asx-flex asx-wrap asx-gap-md">
+            <div class="asx-pill asx-pill-accent">One static file</div>
+            <div class="asx-pill">Pure browser JS</div>
+            <div class="asx-pill">SCX-packed block packets</div>
+            <div class="asx-pill asx-pill-hazard">Hazard prefix cipher</div>
+            <div class="asx-pill">Targets your current host</div>
+          </div>
+        </div>
+      </header>
+
+      <div class="asx-grid-layout">
+        <!-- LEFT: CHEAT SHEET + BROWSER IP / DNS -->
+        <aside class="asx-flex-col asx-gap-lg">
+          <article class="asx-block">
+            <div class="asx-block-inner">
+              <div class="asx-section-title">1 · Mental Model</div>
+              <p class="asx-text-sm asx-text-soft asx-mb-sm">
+                SCXQ2 in this file:
+              </p>
+              <ul class="asx-list">
+                <li>Atomic HTML is the canvas.</li>
+                <li>ASX Blocks live behind a hazard cipher.</li>
+                <li>SCXQ2 IDs unlock full dashboards.</li>
+                <li>XJSON REST targets your current browser host.</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="asx-block">
+            <div class="asx-block-inner">
+              <div class="asx-section-title">2 · Browser Host / XJSON</div>
+              <p class="asx-text-sm asx-text-soft asx-mb-sm">
+                The runtime derives the target from your current browser location:
+              </p>
+
+              <div class="asx-flex asx-gap-sm asx-mt-md asx-md-flex-row asx-flex-col">
+                <div class="asx-flex-col asx-gap-xs" style="flex: 1;">
+                  <div class="asx-text-xs asx-text-soft asx-uppercase">Browser Host</div>
+                  <div id="host-value" class="asx-mono asx-text-sm">
+                    (pending...)
+                  </div>
+                </div>
+                <div class="asx-flex-col asx-gap-xs" style="flex: 1;">
+                  <div class="asx-text-xs asx-text-soft asx-uppercase">XJSON Target URL</div>
+                  <div id="xjson-url" class="asx-mono asx-text-sm">
+                    (click "Ping XJSON /ping")
+                  </div>
+                </div>
+              </div>
+
+              <div class="asx-mt-md">
+                <button class="asx-btn" id="btn-ping-xjson">Ping XJSON /ping</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="asx-block">
+            <div class="asx-block-inner">
+              <div class="asx-section-title">3 · Static DNS Table (Local)</div>
+              <p class="asx-text-sm asx-text-soft asx-mb-sm">
+                SCXQ2 uses a tiny in-memory "DNS" map:
+              </p>
+
+              <table class="asx-table asx-mt-sm">
+                <thead>
+                  <tr>
+                    <th>Host</th>
+                    <th>Address</th>
+                    <th>Note</th>
+                  </tr>
+                </thead>
+                <tbody id="dns-body">
+                  <!-- Filled by runtime from DNS map -->
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </aside>
+
+        <!-- RIGHT: RUNTIME + DEMO -->
+        <main class="asx-flex-col asx-gap-lg">
+          <!-- PANEL: RUNTIME CONTROLS -->
+          <section class="asx-block">
+            <div class="asx-block-inner">
+              <div class="asx-section-title">Section · Runtime Controls</div>
+              <p class="asx-text-sm asx-text-soft asx-mb-md">
+                Use these controls to exercise the SCXQ2 + ASX runtime:
+              </p>
+
+              <div class="asx-flex asx-wrap asx-gap-sm asx-mb-md">
+                <button class="asx-btn asx-btn-hazard" id="btn-render-dash-2">☣ Render Dashboard</button>
+                <button class="asx-btn asx-btn-hazard" id="btn-render-adv">☣ Hazard View</button>
+                <button class="asx-btn" id="btn-clear-ui">Clear UI</button>
+                <button class="asx-btn" id="btn-show-packets">Show Cipher Packets</button>
+              </div>
+
+              <div id="ui-root" class="asx-min-h-40"></div>
+            </div>
+          </section>
+
+          <!-- PANEL: LOG + SCX MINI-CIPHER DEMO -->
+          <section class="asx-block">
+            <div class="asx-block-inner">
+              <div class="asx-section-title">Section · Logs &amp; Cipher</div>
+              <p class="asx-text-sm asx-text-soft asx-mb-md">
+                Log feed from the runtime, plus a tiny SCX control-flow cipher demo
+                using the <span class="asx-mono">(?) / (∴) / (💬&gt;) / (⊕)</span> triplet.
+              </p>
+
+              <div id="log-panel" class="asx-terminal asx-mb-md">
+                <div class="asx-terminal-header">
+                  <div class="asx-terminal-dots">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <div class="asx-text-xs asx-text-soft">
+                    ASX • SCXQ2 RUNTIME LOG
+                  </div>
+                </div>
+                <div class="asx-terminal-body">
+                  <!-- Log lines will be inserted here -->
+                </div>
+              </div>
+
+              <div class="asx-divider"></div>
+
+              <div class="asx-section-title">SCX Mini-Cipher Demo</div>
+              <p class="asx-text-sm asx-text-soft asx-mb-md">
+                One line of SCX script, decoded using the simple map:
+              </p>
+
+              <div class="asx-code asx-mb-md">
+<pre><code>const CipherMap = {
+  "(?)": "if",
+  "(∴)": "then",
+  "(💬>)": "message",
+  "(⊕)": "increment"
+};
+
+const scxLine =
+  "(?) user.score ≥ 100 (∴) (💬>) 'Level up!' (⊕) user.score";</code></pre>
+              </div>
+
+              <div class="asx-cipher-preview asx-mb-md" id="cipher-preview"></div>
+
+              <div>
+                <button class="asx-btn" id="btn-run-cipher">Run SCX Line</button>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </main>
+
+  <!-- RUNTIME LAYER: SCXQ2 + ASX + XJSON -->
+  <script>
+    /* ============================================================
+       LOGGING
+       ============================================================ */
+    const Log = {
+      node: null,
+      ensure() {
+        if (!this.node) this.node = document.getElementById("log-panel").querySelector(".asx-terminal-body");
+      },
+      line(msg, cls) {
+        this.ensure();
+        const div = document.createElement("div");
+        div.className = "asx-terminal-line" + (cls ? " asx-log-line " + cls : "");
+        div.textContent = msg;
+        this.node.appendChild(div);
+        this.node.scrollTop = this.node.scrollHeight;
+      },
+      clear() {
+        this.ensure();
+        this.node.innerHTML = "";
+      }
+    };
+
+    /* ============================================================
+       SCXQ2 LAYER — HAZARD SIGN PREFIX
+       ============================================================ */
+
+    /**
+     * SCXQ2 hazard cipher.
+     * In this demo, packets are symbolic IDs with a ☣ prefix.
+     * The decoder expands them into compressed internal objects,
+     * then normalizes them into full ASX Blocks.
+     */
+    const SCXQ2 = {
+      HAZ: "☣SCX:",
+
+      PACKETS: {
+        DASH: "☣SCX:DASH",
+        ADV:  "☣SCX:ADV"
+      },
+
+      /**
+       * Decode a packet ID into a list of normalized ASX blocks.
+       * Only SCXQ2 IDs are visible at the call site.
+       */
+      decode(packetId) {
+        if (!packetId || typeof packetId !== "string") return [];
+
+        if (!packetId.startsWith(this.HAZ)) {
+          Log.line("SCXQ2: rejected non-hazard packet: " + packetId, "hazard");
+          return [];
+        }
+
+        let raw;
+        switch (packetId) {
+          case this.PACKETS.DASH:
+            raw = this._dash();
+            break;
+          case this.PACKETS.ADV:
+            raw = this._adv();
+            break;
+          default:
+            Log.line("SCXQ2: unknown packet: " + packetId, "hazard");
+            return [];
+        }
+
+        // Normalize from compact internal form to full ASX Block records.
+        return raw.map(this._normalize);
+      },
+
+      /* ------------ Internal compressed forms (short keys) ------------ */
+
+      _dash() {
+        // k: kind; c: component; p: props
+        return [
+          {
+            k: "b",
+            i: "scxq2:overview",
+            c: "Overview",
+            p: {
+              t: "SCXQ2 Atomic Index",
+              s: "Local ASX runtime — SCX-packed blocks + XJSON REST bridge.",
+              b: ["SCXQ2", "Atomic HTML", "XJSON", "Local-only"]
+            }
+          },
+          {
+            k: "b",
+            i: "scxq2:dns",
+            c: "DnsPanel",
+            p: {
+              r: [
+                { h: "xjson.local", a: "127.0.0.1", n: "XJSON CLI daemon" },
+                { h: "rig.local",   a: "127.0.0.1", n: "ASX-RIG main node" },
+                { h: "hive.local",  a: "127.0.0.1", n: "Multi-hive router shard" }
+              ]
+            }
+          },
+          {
+            k: "b",
+            i: "scxq2:rest",
+            c: "RestPanel",
+            p: {
+              pt: 7777,
+              bp: "/xjson",
+              e: ["/ping", "/status", "/blocks", "/train"]
+            }
+          }
+        ];
+      },
+
+      _adv() {
+        return [
+          {
+            k: "b",
+            i: "scxq2:metrics",
+            c: "MetricRow",
+            p: {
+              t: "Local Runtime Health",
+              m: [
+                { l: "Blocks Loaded", v: "3", s: "ok" },
+                { l: "DNS Records",   v: "3", s: "ok" },
+                { l: "Last REST Ping",v: "pending", s: "warn" }
+              ]
+            }
+          },
+          {
+            k: "b",
+            i: "scxq2:log",
+            c: "LogPanel",
+            p: {
+              ln: [
+                "SCXQ2 runtime online.",
+                "Atomic HTML / CSS shell mounted.",
+                "Waiting for XJSON /ping ..."
+              ]
+            }
+          }
+        ];
+      },
+
+      /* ------------ Normalization ------------ */
+
+      _normalize(raw) {
+        return {
+          type: "asx-block",
+          id: raw.i,
+          component: raw.c,
+          encrypted: true,
+          cipher: "SCXQ2-hazard",
+          props: (function (p) {
+            // Expand short keys into human-readable keys
+            const out = {};
+            if (p.t) out.title = p.t;
+            if (p.s) out.subtitle = p.s;
+            if (p.b) out.badges = p.b;
+
+            if (p.r) {
+              out.records = p.r.map(function (r) {
+                return {
+                  host: r.h,
+                  addr: r.a,
+                  note: r.n
+                };
+              });
+            }
+
+            if (typeof p.pt !== "undefined") out.port = p.pt;
+            if (p.bp) out.basePath = p.bp;
+            if (p.e) out.endpoints = p.e;
+
+            if (p.t && p.m) {
+              out.title = p.t;
+              out.metrics = p.m;
+            }
+
+            if (p.ln) out.lines = p.ln;
+
+            return out;
+          })(raw.p || {})
+        };
+      }
+    };
+
+    /* ============================================================
+       ASX BLOCK RUNTIME
+       ============================================================ */
+    const ASX = {
+      Components: {},
+
+      registerComponent(name, renderFn) {
+        this.Components[name] = renderFn;
+      },
+
+      renderBlock(block) {
+        const component = this.Components[block.component];
+        if (!component) {
+          return `
+            <div class="asx-p-sm asx-text-danger asx-mono asx-text-xs">
+              Unknown component: ${block.component}
+            </div>
+          `;
+        }
+        try {
+          return component(block.props || {}, block);
+        } catch (err) {
+          return `
+            <div class="asx-p-sm asx-text-danger asx-mono asx-text-xs">
+              Render error in ${block.component}: ${err.message}
+            </div>
+          `;
+        }
+      },
+
+      renderBlocks(blocks, containerId) {
+        const node = document.getElementById(containerId);
+        if (!node) return;
+        const html = blocks.map(b => this.renderBlock(b)).join("");
+        node.innerHTML = html;
+      },
+
+      renderPacket(packetId, containerId) {
+        const blocks = SCXQ2.decode(packetId);
+        Log.line("ASX: rendering " + blocks.length + " block(s) from " + packetId, "ok");
+        this.renderBlocks(blocks, containerId);
+      },
+
+      initComponents() {
+        this.registerComponent("Overview", (props) => `
+          <div class="asx-block">
+            <div class="asx-block-inner">
+              <div class="asx-section-title">SCXQ2 • ATOMIC INDEX</div>
+              <div class="asx-text-xl asx-text-strong asx-uppercase asx-mb-sm">
+                ${props.title || "Overview"}
+              </div>
+              <p class="asx-text-sm asx-text-soft asx-mb-md">${props.subtitle || ""}</p>
+              <div class="asx-flex asx-gap-sm asx-wrap">
+                ${(props.badges || []).map(b => `
+                  <div class="asx-pill">${b}</div>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+        `);
+
+        this.registerComponent("DnsPanel", (props) => `
+          <div class="asx-block asx-bg-alt">
+            <div class="asx-block-inner">
+              <div class="asx-section-title">Static DNS Map (Local)</div>
+              <p class="asx-text-sm asx-text-soft asx-mb-sm">SCXQ2 internal name → address table.</p>
+              <table class="asx-table asx-mt-sm">
+                <thead>
+                  <tr>
+                    <th>Host</th>
+                    <th>Address</th>
+                    <th>Note</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${(props.records || []).map(r => `
+                    <tr>
+                      <td class="asx-mono asx-text-primary">${r.host}</td>
+                      <td>${r.addr}</td>
+                      <td>${r.note}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `);
+
+        this.registerComponent("RestPanel", (props) => {
+          const host = window.location.hostname || "127.0.0.1";
+          const url  = `http://${host}:${props.port || 7777}${props.basePath || "/xjson"}`;
+          return `
+            <div class="asx-block">
+              <div class="asx-block-inner">
+                <div class="asx-section-title">XJSON Local REST Bridge</div>
+                <p class="asx-text-sm asx-text-soft asx-mb-sm">
+                  The runtime targets your browser host and a local XJSON daemon port.
+                </p>
+                <div class="asx-mono asx-text-sm asx-mt-sm">
+                  <div><strong>Host:</strong> ${host}</div>
+                  <div><strong>Base:</strong> ${url}</div>
+                </div>
+                <div class="asx-mt-sm">
+                  <div class="asx-text-xs asx-text-soft asx-uppercase">Endpoints</div>
+                  <div class="asx-flex asx-gap-sm asx-wrap asx-mt-xs">
+                    ${(props.endpoints || []).map(e => `
+                      <div class="asx-pill">${props.basePath || "/xjson"}${e}</div>
+                    `).join("")}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        this.registerComponent("MetricRow", (props) => `
+          <div class="asx-block asx-bg-alt">
+            <div class="asx-block-inner">
+              <div class="asx-section-title">${props.title || "Runtime Metrics"}</div>
+              <div class="asx-flex asx-wrap asx-gap-sm asx-mt-sm">
+                ${(props.metrics || []).map(m => `
+                  <div class="asx-block asx-p-sm" style="
+                    flex:1 1 120px;
+                    border-color: ${
+                      m.s === "ok"
+                        ? "rgba(34,197,94,0.7)"
+                        : m.s === "warn"
+                        ? "rgba(251,191,36,0.7)"
+                        : "rgba(248,113,113,0.7)"
+                    };
+                  ">
+                    <div class="asx-text-xs asx-text-soft asx-uppercase">${m.label || ""}</div>
+                    <div class="asx-text-lg asx-text-strong asx-mt-xs">
+                      ${m.value || ""}
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+        `);
+
+        this.registerComponent("LogPanel", (props) => `
+          <div class="asx-block asx-bg-alt">
+            <div class="asx-block-inner">
+              <div class="asx-section-title">Boot Log Snapshot</div>
+              <p class="asx-text-sm asx-text-soft asx-mb-sm">Initial SCXQ2 runtime messages.</p>
+              <div class="asx-mono asx-text-xs asx-mt-sm">
+                ${(props.lines || []).map(l => `
+                  <div class="asx-log-line">${l}</div>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+        `);
+      }
+    };
+
+    /* ============================================================
+       XJSON LOCAL REST + STATIC DNS
+       ============================================================ */
+    const DNS = {
+      records: {
+        "xjson.local": "127.0.0.1",
+        "rig.local":   "127.0.0.1",
+        "hive.local":  "127.0.0.1"
+      },
+      resolve(host) {
+        return this.records[host] || "127.0.0.1";
+      },
+      mountTable() {
+        const body = document.getElementById("dns-body");
+        if (!body) return;
+        body.innerHTML = "";
+        Object.keys(this.records).forEach((h) => {
+          const tr = document.createElement("tr");
+          const addr = this.records[h];
+          let note = "";
+          if (h === "xjson.local") note = "XJSON CLI daemon";
+          else if (h === "rig.local") note = "ASX-RIG main node";
+          else if (h === "hive.local") note = "Multi-hive router shard";
+          tr.innerHTML = `
+            <td class="asx-mono asx-text-primary">${h}</td>
+            <td>${addr}</td>
+            <td>${note}</td>
+          `;
+          body.appendChild(tr);
+        });
+      }
+    };
+
+    const XJSON = {
+      port: 7777,
+      basePath: "/xjson",
+      getHost() {
+        return window.location.hostname || "127.0.0.1";
+      },
+      url(endpoint) {
+        const host = this.getHost();
+        return `http://${host}:${this.port}${this.basePath}${endpoint}`;
+      },
+      async ping() {
+        const target = this.url("/ping");
+        document.getElementById("xjson-url").textContent = target;
+        Log.line("[XJSON] ping -> " + target, "ok");
+
+        try {
+          // no-cors so it doesn't throw in a typical static-file environment
+          await fetch(target, { method: "GET", mode: "no-cors" });
+          Log.line("[XJSON] /ping dispatched (no-cors, result opaque)", "ok");
+        } catch (err) {
+          Log.line("[XJSON] /ping failed: " + err.message, "err");
+        }
+      }
+    };
+
+    /* ============================================================
+       MINI SCX CONTROL-FLOW CIPHER DEMO
+       ============================================================ */
+    const CipherMap = {
+      "(?)":  "if",
+      "(∴)":  "then",
+      "(💬>)": "message",
+      "(⊕)":  "increment"
+    };
+
+    const CipherDemo = {
+      state: { user: { score: 95 } },
+
+      translate(scxLine) {
+        return scxLine
+          .replace(/\(\?\)/g, CipherMap["(?)"])
+          .replace(/\(∴\)/g, CipherMap["(∴)"])
+          .replace(/\(💬>\)/g, CipherMap["(💬>)"])
+          .replace(/\(⊕\)/g, CipherMap["(⊕)"]);
+      },
+
+      run() {
+        const line = "(?) user.score ≥ 100 (∴) (💬>) 'Level up!' (⊕) user.score";
+        const human = this.translate(line);
+        const previewNode = document.getElementById("cipher-preview");
+        previewNode.textContent =
+          "SCX:  " + line + "\n" +
+          "HUM:  " + human + "\n\n";
+
+        const score = this.state.user.score;
+        if (score >= 100) {
+          Log.line("SCX mini: Level up! (score " + score + ")", "ok");
+          this.state.user.score++;
+        } else {
+          Log.line("SCX mini: score=" + score + " → keep playing", "hazard");
+        }
+      }
+    };
+
+    /* ============================================================
+       BOOTSTRAP
+       ============================================================ */
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Host + DNS
+      const hostNode = document.getElementById("host-value");
+      if (hostNode) {
+        hostNode.textContent = window.location.hostname || "127.0.0.1";
+      }
+      DNS.mountTable();
+
+      // Init components
+      ASX.initComponents();
+
+      Log.clear();
+      Log.line("SCXQ2: hazard-cipher runtime online.", "hazard");
+      Log.line("ASX: Atomic HTML / CSS shell mounted.", "ok");
+      Log.line("XJSON: Ready. Click 'Ping XJSON /ping'.", "ok");
+
+      // Buttons
+      const $ = (id) => document.getElementById(id);
+
+      $("btn-render-dash").onclick =
+      $("btn-render-dash-2").onclick = () => {
+        ASX.renderPacket(SCXQ2.PACKETS.DASH, "ui-root");
+      };
+
+      $("btn-render-adv").onclick = () => {
+        ASX.renderPacket(SCXQ2.PACKETS.ADV, "ui-root");
+      };
+
+      $("btn-clear-ui").onclick = () => {
+        const root = document.getElementById("ui-root");
+        if (root) root.innerHTML = "";
+        Log.line("ASX: UI cleared.", "hazard");
+      };
+
+      $("btn-show-packets").onclick = () => {
+        Log.line("SCXQ2 packet IDs:", "hazard");
+        Log.line("  " + SCXQ2.PACKETS.DASH, "hazard");
+        Log.line("  " + SCXQ2.PACKETS.ADV, "hazard");
+      };
+
+      $("btn-ping-xjson").onclick = () => {
+        XJSON.ping();
+      };
+
+      $("btn-run-cipher").onclick = () => {
+        CipherDemo.run();
+      };
+    });
+  </script>
+</body>
+</html>
