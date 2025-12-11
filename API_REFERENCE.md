@@ -4,7 +4,7 @@
 
 > Last Updated: 2025-12-11
 > Version: Ω.∞.Ω
-> Total Endpoints: 85
+> Total Endpoints: 94
 > Authentication: Securolink v2 (local/remote modes)
 
 ---
@@ -22,11 +22,12 @@
 9. [GAS Shards - Cloud Integration](#gas-shards---cloud-integration)
 10. [MX2CX Builder Codex - AI Assistant & Research](#mx2cx-builder-codex---ai-assistant--research)
 11. [Todo System - RLHF Task Planning & Suggestions](#todo-system---rlhf-task-planning--suggestions)
-12. [Mesh & Coordination APIs](#mesh--coordination-apis)
-13. [Runtime & Execution APIs](#runtime--execution-apis)
-14. [Tape Management APIs](#tape-management-apis)
-15. [ASX-RAM APIs](#asx-ram-apis)
-16. [SCXQ2 Compression APIs](#scxq2-compression-apis)
+12. [Colab Nodes - K'UHUL Distributed Training](#colab-nodes---kuhul-distributed-training)
+13. [Mesh & Coordination APIs](#mesh--coordination-apis)
+14. [Runtime & Execution APIs](#runtime--execution-apis)
+15. [Tape Management APIs](#tape-management-apis)
+16. [ASX-RAM APIs](#asx-ram-apis)
+17. [SCXQ2 Compression APIs](#scxq2-compression-apis)
 
 ---
 
@@ -983,6 +984,153 @@ curl -X POST http://localhost:8080/todo/rlhf/record \
 
 ---
 
+## 🖥️ Colab Nodes - K'UHUL Distributed Training
+
+**Colab Nodes** turn free Google Colab instances into distributed K'UHUL training nodes - a $20K rig alternative. Uses Python polyglot (PI GOAT) integration for seamless browser-to-Colab communication with SVG weights, SCXQ2 compression, and QLoRA training support.
+
+### Node Management
+
+- **POST `/colab/nodes/register`** - Register Colab node (admin) - `{node_url, node_id, capabilities}`
+  - Registers Colab instance running colab_launcher.py
+  - Supports T4, A100, V100, P100, K80 GPUs
+  - Python polyglot bridge: kuhul_colab_integration.py
+
+- **GET `/colab/nodes/list`** - List all registered nodes (guest/trainer/admin) - `?status_filter=connected`
+  - Returns nodes with stats (total, connected, busy, idle)
+
+- **GET `/colab/nodes/status`** - Get node status (guest/trainer/admin) - `?node_id=xxx`
+  - Health check, uptime, current job
+
+- **POST `/colab/nodes/disconnect`** - Disconnect node (admin) - `{node_id}`
+  - Cannot disconnect if node has active job
+
+### Job Orchestration
+
+- **POST `/colab/jobs/submit`** - Submit training/processing job (admin) - `{job_type, config}`
+  - Job types: training, svg_processing, scxq2_compression
+  - Auto-queues if no nodes available
+  - Load balancing: round_robin
+
+- **GET `/colab/jobs/status`** - Get job status (guest/trainer/admin) - `?job_id=xxx`
+  - Real-time status via Python bridge
+  - Returns runtime, node_id, progress
+
+- **POST `/colab/jobs/cancel`** - Cancel running job (admin) - `{job_id}`
+  - Frees up node for new jobs
+
+- **GET `/colab/jobs/list`** - List all jobs (guest/trainer/admin) - `?status_filter=submitted&limit=10`
+  - Filter: submitted, completed, error, cancelled, queued
+  - Stats: active, completed, errors
+
+### System Statistics
+
+- **GET `/colab/stats`** - Get system statistics (guest/trainer/admin)
+  - Node stats: total, connected, idle
+  - Job stats: active, completed, queued
+  - GPU distribution by type
+  - Polyglot Python status
+
+**Capabilities:**
+- Training: QLoRA, LoRA, full finetune, DPO
+- Compression: SCXQ2, SVG weights, 8-bit/4-bit quantization
+- GPU Types: T4 (free), A100, V100, P100, K80
+- Max batch size: 4 (Colab optimized)
+- Python runtime: 3.10+
+
+**Example:**
+```bash
+# Register Colab node
+curl -X POST http://localhost:8080/colab/nodes/register \
+  -H "x-api-key: dev-admin-key" \
+  -H "content-type: application/json" \
+  -d '{
+    "node_url": "https://abc123.ngrok.io",
+    "node_id": "colab_gpu_t4_001",
+    "capabilities": {
+      "training": true,
+      "svg_processing": true,
+      "scxq2_compression": true,
+      "quantization": ["8bit", "4bit"],
+      "gpu_type": "T4",
+      "gpu_memory_gb": 15
+    }
+  }'
+
+# Submit training job
+curl -X POST http://localhost:8080/colab/jobs/submit \
+  -H "x-api-key: dev-admin-key" \
+  -H "content-type: application/json" \
+  -d '{
+    "job_type": "training",
+    "config": {
+      "model": {
+        "base_model": "unsloth/mistral-7b-v0.3-bnb-4bit"
+      },
+      "steps": 500,
+      "kuhul_config": {
+        "svg_weight_storage": true,
+        "quantization": 8,
+        "scxq2_compression": true,
+        "lora_rank": 16
+      },
+      "dataset_url": "https://example.com/dataset.jsonl"
+    }
+  }'
+
+# Check job status
+curl "http://localhost:8080/colab/jobs/status?job_id=job_20251211_123456_abc123"
+
+# Get system stats
+curl http://localhost:8080/colab/stats
+
+# List all nodes
+curl http://localhost:8080/colab/nodes/list
+
+# Submit SVG weight processing
+curl -X POST http://localhost:8080/colab/jobs/submit \
+  -H "x-api-key: dev-admin-key" \
+  -H "content-type: application/json" \
+  -d '{
+    "job_type": "svg_processing",
+    "config": {
+      "operation": "compress",
+      "weights": {...},
+      "config": {
+        "format": "scxq2",
+        "precision": 3
+      }
+    }
+  }'
+```
+
+**Python Polyglot Integration:**
+```javascript
+// Browser-side (runs in K'UHUL OS)
+const colab = new BrowserColabIntegrator();
+
+// Connect to Colab node
+await colab.connectToColab('https://abc123.ngrok.io');
+
+// Submit training job
+const job = await colab.submitTrainingJob(
+  { base_model: 'unsloth/mistral-7b-v0.3-bnb-4bit' },
+  500,
+  { svgWeights: true, quantization: 8, compression: true }
+);
+
+// Monitor progress
+colab.monitorJobProgress(job.job_id);
+```
+
+**Setup Colab Node:**
+1. Open Google Colab: https://colab.research.google.com/
+2. Upload `colab_launcher.py` and `kuhul_colab_integration.py`
+3. Run: `python colab_launcher.py`
+4. Connect via ngrok: `!ngrok http 5000`
+5. Register node URL in K'UHUL OS
+
+---
+
 ## 🌐 Mesh & Coordination APIs
 
 ### GET `/mesh/ping`
@@ -1255,6 +1403,7 @@ curl -H "x-api-key: dev-trainer-key" \
 | **gas** | 14 | Mixed | Cloud integration |
 | **builder** | 9 | Mixed | AI chat & research |
 | **todo** | 8 | Mixed | RLHF task planning |
+| **colab** | 9 | Mixed | Distributed training |
 | **mesh** | 4 | Mixed | Network coordination |
 | **runtime** | 4 | Public | Execution engine |
 | **tapes** | 3 | Public | Tape management |
@@ -1262,7 +1411,13 @@ curl -H "x-api-key: dev-trainer-key" \
 | **trainer** | 2 | Public | Training jobs |
 | **ai** | 1 | Public | AI modules |
 
-**Total:** 85 REST endpoints across 15 folds
+**Total:** 94 REST endpoints across 16 folds
+
+**Special Features:**
+- **Colab Nodes:** Python polyglot (PI GOAT) integration via kuhul_colab_integration.py
+- **Free GPU Training:** Turn Google Colab into $20K rig alternative
+- **SVG Weights:** Compress neural weights to SVG geometry with SCXQ2
+- **Distributed:** Queue jobs across multiple Colab instances with load balancing
 
 ---
 

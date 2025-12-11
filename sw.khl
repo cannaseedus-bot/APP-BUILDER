@@ -155,7 +155,16 @@
         "/todo/complete":              { "fold": "todo", "handler": "todo_complete_task" },
         "/todo/suggestions":           { "fold": "todo", "handler": "todo_get_suggestions" },
         "/todo/from-template":         { "fold": "todo", "handler": "todo_generate_from_template" },
-        "/todo/rlhf/record":           { "fold": "todo", "handler": "todo_record_rlhf_feedback" }
+        "/todo/rlhf/record":           { "fold": "todo", "handler": "todo_record_rlhf_feedback" },
+        "/colab/nodes/register":       { "fold": "colab", "handler": "colab_register_node" },
+        "/colab/nodes/list":           { "fold": "colab", "handler": "colab_list_nodes" },
+        "/colab/nodes/status":         { "fold": "colab", "handler": "colab_node_status" },
+        "/colab/nodes/disconnect":     { "fold": "colab", "handler": "colab_disconnect_node" },
+        "/colab/jobs/submit":          { "fold": "colab", "handler": "colab_submit_job" },
+        "/colab/jobs/status":          { "fold": "colab", "handler": "colab_job_status" },
+        "/colab/jobs/cancel":          { "fold": "colab", "handler": "colab_cancel_job" },
+        "/colab/jobs/list":            { "fold": "colab", "handler": "colab_list_jobs" },
+        "/colab/stats":                { "fold": "colab", "handler": "colab_get_stats" }
       }
     },
 
@@ -501,6 +510,84 @@
         "todo.tasks.<build_id>": { "ttl": 2592000000, "description": "Tasks for build (30 days)" },
         "todo.suggestions.<category>": { "ttl": 86400000, "description": "Cached suggestions (24h)" },
         "todo.rlhf.feedback": { "ttl": 604800000, "description": "RLHF feedback data (7 days)" }
+      }
+    },
+
+    "colab_nodes": {
+      "enabled": true,
+      "version": "1.0.0",
+      "role": "DISTRIBUTED_TRAINING_ORCHESTRATOR",
+      "description": "K'UHUL Colab node management - Free GPU alternative to $20K rigs",
+      "features": {
+        "node_registration": {
+          "enabled": true,
+          "role": "Register and manage Colab nodes",
+          "max_nodes": 10,
+          "auto_discovery": false,
+          "heartbeat_interval": 30000
+        },
+        "job_orchestration": {
+          "enabled": true,
+          "role": "Distribute training jobs across nodes",
+          "queue_size": 100,
+          "priority_scheduling": true,
+          "load_balancing": "round_robin"
+        },
+        "svg_weight_processing": {
+          "enabled": true,
+          "role": "SVG weight compression/decompression on Colab",
+          "scxq2_integration": true,
+          "compression_ratio": 3.0
+        },
+        "monitoring": {
+          "enabled": true,
+          "role": "Real-time node and job monitoring",
+          "track_gpu_utilization": true,
+          "auto_reconnect": true,
+          "timeout": 300000
+        }
+      },
+      "node_capabilities": {
+        "training": ["qlora", "full_finetune", "lora", "dpo"],
+        "compression": ["scxq2", "svg_weights", "quantization_8bit", "quantization_4bit"],
+        "gpu_types": ["T4", "A100", "V100", "P100", "K80"],
+        "max_batch_size": 4,
+        "supports_polyglot": true,
+        "python_runtime": "3.10+"
+      },
+      "job_types": {
+        "training": {
+          "description": "Model training with QLoRA/LoRA",
+          "estimated_time": "variable",
+          "requires_gpu": true,
+          "max_steps": 1000,
+          "checkpoint_interval": 100
+        },
+        "svg_processing": {
+          "description": "SVG weight compression/decompression",
+          "estimated_time": "fast",
+          "requires_gpu": false,
+          "formats": ["scxq2_svg", "raw_svg", "compressed"]
+        },
+        "scxq2_compression": {
+          "description": "SCXQ2 model/data compression",
+          "estimated_time": "medium",
+          "requires_gpu": false,
+          "compression_levels": [1, 2, 3]
+        }
+      },
+      "polyglot_integration": {
+        "enabled": true,
+        "python_bridge": "kuhul_colab_integration.py",
+        "launcher_script": "colab_launcher.py",
+        "runtime": "pi_goat_polyglot",
+        "python_modules": ["KUHULColabBridge", "KUHULColabNode"]
+      },
+      "asxram_keys": {
+        "colab.nodes.<node_id>": { "ttl": 3600000, "description": "Registered node metadata (1 hour)" },
+        "colab.jobs.<job_id>": { "ttl": 86400000, "description": "Job status and results (24 hours)" },
+        "colab.queue": { "ttl": 604800000, "description": "Job queue (7 days)" },
+        "colab.stats": { "ttl": 300000, "description": "System statistics (5 min)" }
       }
     },
 
@@ -4190,6 +4277,402 @@
       "message": ready_for_training ?
         "Sufficient samples for RLHF training" :
         (50 - feedback_array.length) + " more samples needed"
+    }]→[Xul return]
+  [Xul]
+
+
+  /* ========================================================================== */
+  /* COLAB NODES - K'UHUL DISTRIBUTED TRAINING ORCHESTRATION                   */
+  /* Free GPU Colab Alternative to $20K Training Rigs with Polyglot Python     */
+  /* ========================================================================== */
+
+  /* COLAB REGISTER NODE (C@@L BLOCK - Register Colab Node) */
+  [Pop colab_register_node]
+    /* @control: [@colab, @register, @polyglot]
+       @variable: {node_url, node_id, capabilities}
+       @Sek: Register new Colab node via Python polyglot bridge
+       @Ch'en: Return registration confirmation */
+
+    [Ch'a !node_url]→[Wo {"error": "node_url required"}]→[Xul return]
+
+    /* Generate node ID if not provided */
+    [Ch'a !node_id]→{
+      [Sek "colab_" + Date.now() + "_" + Math.random().toString(36).substr(2, 6)]→[Ch'en node_id]
+    }
+
+    /* Initialize Python bridge via polyglot */
+    [Sek fn.polyglot.python("kuhul_colab_integration", "KUHULColabBridge")]→[Ch'en bridge]
+
+    /* Register node via Python bridge */
+    [Sek bridge.connect_colab_node(node_url)]→[Ch'en registered_id]
+
+    /* Store node metadata in ASX-RAM */
+    [Sek {
+      "node_id": node_id,
+      "node_url": node_url,
+      "status": "connected",
+      "registered_at": Date.now(),
+      "capabilities": capabilities || {
+        "training": true,
+        "svg_processing": true,
+        "scxq2_compression": true,
+        "quantization": ["8bit", "4bit"]
+      },
+      "current_job": null,
+      "jobs_completed": 0
+    }]→[Ch'en node_data]
+
+    [Yax "colab.nodes." + node_id = node_data]
+
+    /* Update statistics */
+    [Yax "colab.stats"]→[Ch'en stats]
+    [Sek stats || {"total_nodes": 0, "active_jobs": 0, "completed_jobs": 0}]→[Ch'en current_stats]
+    [Sek current_stats.total_nodes = (current_stats.total_nodes || 0) + 1]
+    [Yax "colab.stats" = current_stats]
+
+    [Wo {
+      "ok": true,
+      "node_id": node_id,
+      "message": "Colab node registered successfully",
+      "capabilities": node_data.capabilities,
+      "python_bridge": "active"
+    }]→[Xul return]
+  [Xul]
+
+
+  /* COLAB LIST NODES (C@@L BLOCK - List All Registered Nodes) */
+  [Pop colab_list_nodes]
+    /* @control: [@colab, @list]
+       @variable: {status_filter}
+       @Sek: List all registered Colab nodes
+       @Ch'en: Return node list */
+
+    /* Get all node keys from ASX-RAM */
+    [Yax "colab.nodes.*"]→[Ch'en all_nodes]
+    [Sek all_nodes || {}]→[Ch'en nodes_map]
+
+    /* Convert to array and filter if requested */
+    [Sek Object.values(nodes_map)]→[Ch'en nodes_array]
+
+    [Ch'a status_filter]→{
+      [Sek nodes_array.filter(n => n.status === status_filter)]→[Ch'en nodes_array]
+    }
+
+    /* Calculate statistics */
+    [Sek nodes_array.filter(n => n.status === "connected").length]→[Ch'en connected_count]
+    [Sek nodes_array.filter(n => n.current_job !== null).length]→[Ch'en busy_count]
+
+    [Wo {
+      "ok": true,
+      "nodes": nodes_array,
+      "stats": {
+        "total": nodes_array.length,
+        "connected": connected_count,
+        "busy": busy_count,
+        "idle": connected_count - busy_count
+      }
+    }]→[Xul return]
+  [Xul]
+
+
+  /* COLAB NODE STATUS (C@@L BLOCK - Get Node Status) */
+  [Pop colab_node_status]
+    /* @control: [@colab, @status]
+       @variable: {node_id}
+       @Sek: Get detailed status of specific node
+       @Ch'en: Return node status */
+
+    [Ch'a !node_id]→[Wo {"error": "node_id required"}]→[Xul return]
+
+    [Yax "colab.nodes." + node_id]→[Ch'en node]
+    [Ch'a !node]→[Wo {"error": "Node not found"}]→[Xul return]
+
+    /* Check node health via Python bridge */
+    [Sek fn.polyglot.python("kuhul_colab_integration", "KUHULColabBridge")]→[Ch'en bridge]
+    [Sek bridge.check_node_health(node.node_url)]→[Ch'en health_check]
+
+    [Wo {
+      "ok": true,
+      "node": node,
+      "health": health_check || {"status": "unknown"},
+      "uptime": Date.now() - node.registered_at
+    }]→[Xul return]
+  [Xul]
+
+
+  /* COLAB DISCONNECT NODE (C@@L BLOCK - Disconnect Node) */
+  [Pop colab_disconnect_node]
+    /* @control: [@colab, @disconnect]
+       @variable: {node_id}
+       @Sek: Disconnect and remove Colab node
+       @Ch'en: Return confirmation */
+
+    [Ch'a !node_id]→[Wo {"error": "node_id required"}]→[Xul return]
+
+    [Yax "colab.nodes." + node_id]→[Ch'en node]
+    [Ch'a !node]→[Wo {"error": "Node not found"}]→[Xul return]
+
+    /* Check if node has active job */
+    [Ch'a node.current_job]→[Wo {"error": "Node has active job, cannot disconnect"}]→[Xul return]
+
+    /* Remove node from ASX-RAM */
+    [Yax "colab.nodes." + node_id = null]
+
+    /* Update statistics */
+    [Yax "colab.stats"]→[Ch'en stats]
+    [Sek stats.total_nodes = (stats.total_nodes || 1) - 1]
+    [Yax "colab.stats" = stats]
+
+    [Wo {
+      "ok": true,
+      "node_id": node_id,
+      "message": "Node disconnected successfully"
+    }]→[Xul return]
+  [Xul]
+
+
+  /* COLAB SUBMIT JOB (C@@L BLOCK - Submit Training/Processing Job) */
+  [Pop colab_submit_job]
+    /* @control: [@colab, @job, @polyglot]
+       @variable: {job_type, config}
+       @Sek: Submit job to available Colab node via Python bridge
+       @Ch'en: Return job submission result */
+
+    [Ch'a !job_type]→[Wo {"error": "job_type required (training, svg_processing, scxq2_compression)"}]→[Xul return]
+
+    /* Generate job ID */
+    [Sek "job_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9)]→[Ch'en job_id]
+
+    /* Find available node */
+    [Yax "colab.nodes.*"]→[Ch'en all_nodes]
+    [Sek Object.values(all_nodes || {}).find(n => n.status === "connected" && n.current_job === null)]→[Ch'en available_node]
+
+    [Ch'a !available_node]→{
+      /* Queue job if no nodes available */
+      [Yax "colab.queue"]→[Ch'en queue]
+      [Sek queue || []]→[Ch'en job_queue]
+      [Sek job_queue.push({"job_id": job_id, "job_type": job_type, "config": config, "queued_at": Date.now()})]
+      [Yax "colab.queue" = job_queue]
+      [Wo {"ok": true, "job_id": job_id, "status": "queued", "message": "No nodes available, job queued"}]→[Xul return]
+    }
+
+    /* Submit job via Python bridge */
+    [Sek fn.polyglot.python("kuhul_colab_integration", "KUHULColabBridge")]→[Ch'en bridge]
+
+    [Sek {
+      "job_id": job_id,
+      "job_type": job_type,
+      "config": config,
+      "node_id": available_node.node_id,
+      "submitted_at": Date.now(),
+      "status": "submitted"
+    }]→[Ch'en job_data]
+
+    [Sek bridge.submit_kuhul_job(job_type, config)]→[Ch'en submission_result]
+
+    /* Update node with current job */
+    [Sek available_node.current_job = job_id]
+    [Yax "colab.nodes." + available_node.node_id = available_node]
+
+    /* Store job data */
+    [Yax "colab.jobs." + job_id = job_data]
+
+    /* Update statistics */
+    [Yax "colab.stats"]→[Ch'en stats]
+    [Sek stats.active_jobs = (stats.active_jobs || 0) + 1]
+    [Yax "colab.stats" = stats]
+
+    [Wo {
+      "ok": true,
+      "job_id": job_id,
+      "status": "submitted",
+      "node_id": available_node.node_id,
+      "job_type": job_type,
+      "python_bridge_response": submission_result
+    }]→[Xul return]
+  [Xul]
+
+
+  /* COLAB JOB STATUS (C@@L BLOCK - Get Job Status) */
+  [Pop colab_job_status]
+    /* @control: [@colab, @job, @status]
+       @variable: {job_id}
+       @Sek: Get current status of job via Python bridge
+       @Ch'en: Return job status */
+
+    [Ch'a !job_id]→[Wo {"error": "job_id required"}]→[Xul return]
+
+    [Yax "colab.jobs." + job_id]→[Ch'en job]
+    [Ch'a !job]→[Wo {"error": "Job not found"}]→[Xul return]
+
+    /* Query status via Python bridge */
+    [Sek fn.polyglot.python("kuhul_colab_integration", "KUHULColabBridge")]→[Ch'en bridge]
+    [Sek bridge.get_job_status(job_id)]→[Ch'en status_update]
+
+    /* Update job data if status changed */
+    [Ch'a status_update.status === "completed" || status_update.status === "error"]→{
+      [Sek job.status = status_update.status]
+      [Sek job.completed_at = Date.now()]
+      [Yax "colab.jobs." + job_id = job]
+
+      /* Free up node */
+      [Yax "colab.nodes." + job.node_id]→[Ch'en node]
+      [Ch'a node]→{
+        [Sek node.current_job = null]
+        [Sek node.jobs_completed = (node.jobs_completed || 0) + 1]
+        [Yax "colab.nodes." + job.node_id = node]
+      }
+
+      /* Update statistics */
+      [Yax "colab.stats"]→[Ch'en stats]
+      [Sek stats.active_jobs = Math.max(0, (stats.active_jobs || 1) - 1)]
+      [Sek stats.completed_jobs = (stats.completed_jobs || 0) + 1]
+      [Yax "colab.stats" = stats]
+    }
+
+    [Wo {
+      "ok": true,
+      "job_id": job_id,
+      "job": job,
+      "current_status": status_update,
+      "runtime": job.completed_at ? job.completed_at - job.submitted_at : Date.now() - job.submitted_at
+    }]→[Xul return]
+  [Xul]
+
+
+  /* COLAB CANCEL JOB (C@@L BLOCK - Cancel Running Job) */
+  [Pop colab_cancel_job]
+    /* @control: [@colab, @job, @cancel]
+       @variable: {job_id}
+       @Sek: Cancel running job on Colab node
+       @Ch'en: Return cancellation confirmation */
+
+    [Ch'a !job_id]→[Wo {"error": "job_id required"}]→[Xul return]
+
+    [Yax "colab.jobs." + job_id]→[Ch'en job]
+    [Ch'a !job]→[Wo {"error": "Job not found"}]→[Xul return]
+
+    [Ch'a job.status === "completed"]→[Wo {"error": "Job already completed"}]→[Xul return]
+
+    /* Cancel via Python bridge */
+    [Sek fn.polyglot.python("kuhul_colab_integration", "KUHULColabBridge")]→[Ch'en bridge]
+    [Sek bridge.cancel_job(job_id)]→[Ch'en cancel_result]
+
+    /* Update job status */
+    [Sek job.status = "cancelled"]
+    [Sek job.cancelled_at = Date.now()]
+    [Yax "colab.jobs." + job_id = job]
+
+    /* Free up node */
+    [Yax "colab.nodes." + job.node_id]→[Ch'en node]
+    [Ch'a node]→{
+      [Sek node.current_job = null]
+      [Yax "colab.nodes." + job.node_id = node]
+    }
+
+    /* Update statistics */
+    [Yax "colab.stats"]→[Ch'en stats]
+    [Sek stats.active_jobs = Math.max(0, (stats.active_jobs || 1) - 1)]
+    [Yax "colab.stats" = stats]
+
+    [Wo {
+      "ok": true,
+      "job_id": job_id,
+      "message": "Job cancelled successfully",
+      "python_bridge_response": cancel_result
+    }]→[Xul return]
+  [Xul]
+
+
+  /* COLAB LIST JOBS (C@@L BLOCK - List All Jobs) */
+  [Pop colab_list_jobs]
+    /* @control: [@colab, @job, @list]
+       @variable: {status_filter, limit}
+       @Sek: List all jobs with optional status filter
+       @Ch'en: Return jobs list */
+
+    /* Get all jobs from ASX-RAM */
+    [Yax "colab.jobs.*"]→[Ch'en all_jobs]
+    [Sek all_jobs || {}]→[Ch'en jobs_map]
+
+    /* Convert to array */
+    [Sek Object.values(jobs_map)]→[Ch'en jobs_array]
+
+    /* Apply status filter if provided */
+    [Ch'a status_filter]→{
+      [Sek jobs_array.filter(j => j.status === status_filter)]→[Ch'en jobs_array]
+    }
+
+    /* Sort by submitted_at (newest first) */
+    [Sek jobs_array.sort((a, b) => b.submitted_at - a.submitted_at)]→[Ch'en sorted_jobs]
+
+    /* Apply limit if provided */
+    [Ch'a limit]→{
+      [Sek sorted_jobs.slice(0, parseInt(limit))]→[Ch'en sorted_jobs]
+    }
+
+    /* Calculate statistics */
+    [Sek sorted_jobs.filter(j => j.status === "submitted").length]→[Ch'en active_count]
+    [Sek sorted_jobs.filter(j => j.status === "completed").length]→[Ch'en completed_count]
+    [Sek sorted_jobs.filter(j => j.status === "error").length]→[Ch'en error_count]
+
+    [Wo {
+      "ok": true,
+      "jobs": sorted_jobs,
+      "stats": {
+        "total": sorted_jobs.length,
+        "active": active_count,
+        "completed": completed_count,
+        "errors": error_count
+      }
+    }]→[Xul return]
+  [Xul]
+
+
+  /* COLAB GET STATS (C@@L BLOCK - Get System Statistics) */
+  [Pop colab_get_stats]
+    /* @control: [@colab, @stats]
+       @variable: {}
+       @Sek: Get overall Colab system statistics
+       @Ch'en: Return system stats */
+
+    [Yax "colab.stats"]→[Ch'en stats]
+    [Sek stats || {"total_nodes": 0, "active_jobs": 0, "completed_jobs": 0}]→[Ch'en current_stats]
+
+    /* Get node stats */
+    [Yax "colab.nodes.*"]→[Ch'en all_nodes]
+    [Sek Object.values(all_nodes || {})]→[Ch'en nodes_array]
+    [Sek nodes_array.filter(n => n.status === "connected").length]→[Ch'en connected_nodes]
+
+    /* Get job queue */
+    [Yax "colab.queue"]→[Ch'en queue]
+    [Sek (queue || []).length]→[Ch'en queued_jobs]
+
+    /* Calculate GPU types distribution */
+    [Sek nodes_array.reduce((acc, n) => {
+      const gpu = n.capabilities?.gpu_type || "unknown";
+      acc[gpu] = (acc[gpu] || 0) + 1;
+      return acc;
+    }, {})]→[Ch'en gpu_distribution]
+
+    [Wo {
+      "ok": true,
+      "stats": {
+        "nodes": {
+          "total": current_stats.total_nodes,
+          "connected": connected_nodes,
+          "idle": connected_nodes - current_stats.active_jobs
+        },
+        "jobs": {
+          "active": current_stats.active_jobs,
+          "completed": current_stats.completed_jobs,
+          "queued": queued_jobs
+        },
+        "gpu_distribution": gpu_distribution,
+        "polyglot_python": "active",
+        "kuhul_protocol": "1.0"
+      },
+      "timestamp": Date.now()
     }]→[Xul return]
   [Xul]
 
