@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ASX Design Kit v2 — Ghost Shell Ready</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- 🔒 Pure inline CSS — drop-in ready as a tape or ghost-shell page -->
+  <style>
+    :root {
+      --asx-bg:        #020617;
+      --asx-bg-alt:    #050b1c;
+      --asx-primary:   #16f2aa;
+      --asx-secondary: #38bdf8;
+      --asx-accent:    #7c3aed;
+      --asx-danger:    #ef4444;
+      --asx-warning:   #f59e0b;
+      --asx-success:   #10b981;
+      --asx-text:      #e5f2ff;
+      --asx-muted:     #9ca3af;
+      --asx-glass:     rgba(255,255,255,0.06);
+
+      --asx-r-0: 0.375rem;
+      --asx-r-1: 0.75rem;
+      --asx-r-2: 1.25rem;
+      --asx-r-3: 999px;
+
+      --asx-sp-0: .25rem;
+      --asx-sp-1: .5rem;
+      --asx-sp-2: .75rem;
+      --asx-sp-3: 1rem;
+      --asx-sp-4: 1.5rem;
+      --asx-sp-5: 2rem;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #0b1220 0, #020617 55%, #000 100%);
+      color: var(--asx-text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Layout */
+    #asx-app {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      grid-template-rows: 56px minmax(0, 1fr);
+      grid-template-areas:
+        "topbar topbar"
+        "sidebar main";
+      height: 100vh;
+      gap: var(--asx-sp-2);
+      padding: var(--asx-sp-2);
+    }
+
+    .asx-topbar {
+      grid-area: topbar;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--asx-sp-2) var(--asx-sp-3);
+      background: linear-gradient(90deg, rgba(15,23,42,0.9), rgba(15,23,42,0.7));
+      border-radius: var(--asx-r-1);
+      border: 1px solid rgba(148,163,184,0.45);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+    }
+
+    .asx-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--asx-sp-2);
+    }
+
+    .asx-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: radial-gradient(circle at 30% 0, #a7f3d0 0, #16f2aa 40%, #0f766e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .85rem;
+      font-weight: 700;
+      color: #020617;
+      box-shadow: 0 0 0 1px rgba(15,23,42,0.8), 0 0 30px rgba(22,242,170,0.5);
+    }
+
+    .asx-title-main {
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .asx-title-sub {
+      font-size: .75rem;
+      color: var(--asx-muted);
+    }
+
+    .asx-top-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--asx-sp-2);
+    }
+
+    .asx-pill {
+      padding: .25rem .75rem;
+      border-radius: var(--asx-r-3);
+      border: 1px solid rgba(148,163,184,0.4);
+      font-size: .75rem;
+      color: var(--asx-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      background: rgba(15,23,42,0.8);
+    }
+
+    .asx-pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--asx-success);
+      box-shadow: 0 0 10px rgba(16,185,129,0.9);
+    }
+
+    .asx-btn {
+      border: none;
+      border-radius: var(--asx-r-3);
+      padding: .4rem .9rem;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: rgba(15,23,42,0.9);
+      color: var(--asx-text);
+      border: 1px solid rgba(148,163,184,0.5);
+      transition: all .18s ease-out;
+    }
+
+    .asx-btn-primary {
+      background: radial-gradient(circle at 0 0, #a7f3d0 0, var(--asx-primary) 45%, #059669 100%);
+      color: #020617;
+      border-color: rgba(45,212,191,0.9);
+      box-shadow: 0 0 24px rgba(34,197,167,0.6);
+    }
+
+    .asx-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.55);
+      border-color: rgba(148,163,184,0.9);
+    }
+
+    .asx-btn-primary:hover {
+      box-shadow: 0 0 32px rgba(34,197,167,0.9);
+    }
+
+    /* Sidebar */
+    .asx-sidebar {
+      grid-area: sidebar;
+      background: radial-gradient(circle at 0 0, rgba(56,189,248,0.12) 0, rgba(15,23,42,0.9) 40%, rgba(15,23,42,1) 100%);
+      border-radius: var(--asx-r-1);
+      border: 1px solid rgba(148,163,184,0.45);
+      padding: var(--asx-sp-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--asx-sp-3);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.6);
+      overflow: hidden;
+    }
+
+    .asx-side-heading {
+      font-size: .8rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--asx-muted);
+    }
+
+    .asx-nav {
+      display: flex;
+      flex-direction: column;
+      gap: .35rem;
+      margin-top: .5rem;
+      font-size: .85rem;
+    }
+
+    .asx-nav button {
+      all: unset;
+      cursor: pointer;
+      padding: .4rem .6rem;
+      border-radius: .4rem;
+      color: var(--asx-muted);
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      transition: all .15s ease-out;
+    }
+
+    .asx-nav button span {
+      font-size: .75rem;
+      opacity: .8;
+    }
+
+    .asx-nav button::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.8);
+    }
+
+    .asx-nav button.asx-nav-active {
+      background: radial-gradient(circle at 0 0, rgba(56,189,248,0.25), rgba(15,23,42,0.9));
+      color: var(--asx-text);
+      border: 1px solid rgba(148,163,184,0.9);
+    }
+
+    .asx-nav button.asx-nav-active::before {
+      background: var(--asx-primary);
+      border-color: rgba(22,242,170,0.9);
+      box-shadow: 0 0 14px rgba(22,242,170,0.9);
+    }
+
+    .asx-nav button:hover:not(.asx-nav-active) {
+      background: rgba(15,23,42,0.8);
+      color: #e5e7eb;
+    }
+
+    .asx-side-footer {
+      margin-top: auto;
+      font-size: .75rem;
+      color: var(--asx-muted);
+      border-top: 1px dashed rgba(148,163,184,0.4);
+      padding-top: .75rem;
+    }
+
+    /* Main content */
+    .asx-main {
+      grid-area: main;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: var(--asx-sp-2);
+    }
+
+    .asx-hero {
+      background: radial-gradient(circle at 10% 0, rgba(22,242,170,0.15) 0, rgba(15,23,42,0.95) 40%, rgba(15,23,42,1) 100%);
+      border-radius: var(--asx-r-1);
+      border: 1px solid rgba(148,163,184,0.45);
+      padding: var(--asx-sp-3);
+      display: flex;
+      justify-content: space-between;
+      gap: var(--asx-sp-3);
+      align-items: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    }
+
+    .asx-hero-main {
+      max-width: 60%;
+    }
+
+    .asx-hero-eyebrow {
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .13em;
+      color: var(--asx-secondary);
+      margin-bottom: .35rem;
+    }
+
+    .asx-hero-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: .4rem;
+    }
+
+    .asx-hero-sub {
+      font-size: .9rem;
+      color: var(--asx-muted);
+      max-width: 34rem;
+      margin-bottom: .6rem;
+    }
+
+    .asx-hero-actions {
+      display: flex;
+      gap: .6rem;
+      flex-wrap: wrap;
+    }
+
+    .asx-hero-right {
+      text-align: right;
+      font-size: .8rem;
+      color: var(--asx-muted);
+    }
+
+    .asx-hero-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      padding: .15rem .55rem;
+      border-radius: var(--asx-r-3);
+      border: 1px solid rgba(148,163,184,0.5);
+      margin-bottom: .45rem;
+      font-size: .75rem;
+      background: rgba(15,23,42,0.8);
+    }
+
+    .asx-hero-metrics {
+      font-size: .8rem;
+    }
+
+    /* Content grid: left = sections, right = live preview */
+    .asx-main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.1fr);
+      gap: var(--asx-sp-2);
+      height: 100%;
+      min-height: 0;
+    }
+
+    .asx-scroll-column {
+      background: rgba(15,23,42,0.95);
+      border-radius: var(--asx-r-1);
+      border: 1px solid rgba(148,163,184,0.35);
+      padding: var(--asx-sp-3);
+      overflow-y: auto;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+    }
+
+    .asx-section {
+      margin-bottom: var(--asx-sp-3);
+    }
+
+    .asx-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .asx-section-title {
+      font-size: .9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .16em;
+      color: var(--asx-muted);
+      margin-bottom: .5rem;
+    }
+
+    .asx-section-sub {
+      font-size: .8rem;
+      color: var(--asx-muted);
+      margin-bottom: .75rem;
+    }
+
+    .asx-tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin-bottom: .75rem;
+    }
+
+    .asx-tag {
+      font-size: .75rem;
+      padding: .16rem .45rem;
+      border-radius: var(--asx-r-3);
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(75,85,99,0.9);
+      color: var(--asx-muted);
+    }
+
+    /* Color palette */
+    .asx-palette {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: .6rem;
+    }
+
+    .asx-color-swatch {
+      border-radius: var(--asx-r-0);
+      border: 1px solid rgba(148,163,184,0.55);
+      overflow: hidden;
+      background: rgba(15,23,42,0.9);
+      font-size: .75rem;
+    }
+
+    .asx-color-top {
+      height: 36px;
+    }
+
+    .asx-color-body {
+      padding: .4rem .5rem .55rem;
+    }
+
+    .asx-color-name {
+      font-weight: 500;
+      margin-bottom: .1rem;
+    }
+
+    .asx-color-token {
+      color: var(--asx-muted);
+      font-size: .7rem;
+    }
+
+    /* Atomic utility list */
+    .asx-code-block {
+      background: #020617;
+      border-radius: var(--asx-r-0);
+      border: 1px solid rgba(30,64,175,0.8);
+      padding: .75rem;
+      font-family: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: .75rem;
+      white-space: pre;
+      overflow-x: auto;
+      color: #e5e7eb;
+    }
+
+    /* Cards, glyphs, etc. */
+    .asx-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: .8rem;
+    }
+
+    .asx-card {
+      border-radius: var(--asx-r-0);
+      border: 1px solid rgba(148,163,184,0.5);
+      background: radial-gradient(circle at 0 0, rgba(56,189,248,0.08), rgba(15,23,42,0.96));
+      padding: .7rem .8rem .8rem;
+      font-size: .8rem;
+    }
+
+    .asx-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: .4rem;
+    }
+
+    .asx-card-title {
+      font-size: .8rem;
+      font-weight: 600;
+    }
+
+    .asx-chip {
+      font-size: .7rem;
+      padding: .1rem .45rem;
+      border-radius: var(--asx-r-3);
+      border: 1px solid rgba(148,163,184,0.6);
+      color: var(--asx-muted);
+      background: rgba(15,23,42,0.95);
+    }
+
+    .asx-card-body {
+      font-size: .78rem;
+      color: var(--asx-muted);
+    }
+
+    .asx-glyph-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+    }
+
+    .asx-glyph {
+      min-width: 80px;
+      padding: .5rem .4rem;
+      border-radius: var(--asx-r-0);
+      background: rgba(15,23,42,0.95);
+      border: 1px solid rgba(148,163,184,0.5);
+      text-align: center;
+    }
+
+    .asx-glyph-symbol {
+      font-size: 1rem;
+      margin-bottom: .15rem;
+      color: var(--asx-primary);
+    }
+
+    .asx-glyph-label {
+      font-size: .7rem;
+      color: var(--asx-muted);
+    }
+
+    /* HUD preview column (right) */
+    .asx-preview-label {
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--asx-muted);
+      margin-bottom: .4rem;
+    }
+
+    .asx-hud {
+      border-radius: var(--asx-r-1);
+      border: 1px solid rgba(148,163,184,0.4);
+      background: radial-gradient(circle at 0 0, rgba(22,242,170,0.16), rgba(15,23,42,0.98));
+      padding: var(--asx-sp-2);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: .6rem;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .asx-hud-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .75rem;
+    }
+
+    .asx-hud-top span {
+      color: var(--asx-muted);
+    }
+
+    .asx-hud-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--asx-success);
+      box-shadow: 0 0 12px rgba(16,185,129,0.9);
+      margin-right: .25rem;
+    }
+
+    .asx-hud-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+      gap: .6rem;
+      min-height: 0;
+    }
+
+    .asx-hud-panel {
+      border-radius: .55rem;
+      border: 1px solid rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.96);
+      padding: .55rem .6rem;
+      font-size: .75rem;
+      overflow: hidden;
+    }
+
+    .asx-hud-panel-title {
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--asx-muted);
+      margin-bottom: .4rem;
+    }
+
+    .asx-hud-log {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: .72rem;
+      line-height: 1.5;
+      max-height: 130px;
+      overflow-y: auto;
+      color: #e5e7eb;
+    }
+
+    .asx-hud-log-line span {
+      color: var(--asx-primary);
+      margin-right: .3rem;
+    }
+
+    .asx-hud-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .75rem;
+      color: var(--asx-muted);
+    }
+
+    .asx-hud-tabs {
+      display: flex;
+      gap: .3rem;
+      flex-wrap: wrap;
+    }
+
+    .asx-hud-tab {
+      padding: .1rem .45rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.95);
+      font-size: .7rem;
+      color: var(--asx-muted);
+    }
+
+    .asx-hud-tab.active {
+      border-color: rgba(22,242,170,0.9);
+      color: var(--asx-text);
+      box-shadow: 0 0 14px rgba(22,242,170,0.9);
+    }
+
+    .asx-hud-badges {
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap;
+    }
+
+    .asx-badge {
+      padding: .12rem .4rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      font-size: .7rem;
+      color: var(--asx-muted);
+      background: rgba(15,23,42,0.98);
+    }
+
+    .asx-badge.green {
+      border-color: rgba(34,197,94,0.85);
+      color: #bbf7d0;
+    }
+
+    .asx-badge.blue {
+      border-color: rgba(56,189,248,0.85);
+      color: #bfdbfe;
+    }
+
+    .asx-badge.purple {
+      border-color: rgba(168,85,247,0.85);
+      color: #e9d5ff;
+    }
+
+    /* Mobile */
+    @media (max-width: 900px) {
+      #asx-app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto minmax(0, 1fr);
+        grid-template-areas:
+          "topbar"
+          "sidebar"
+          "main";
+      }
+      .asx-sidebar {
+        height: auto;
+        max-height: 220px;
+      }
+      .asx-main-grid {
+        grid-template-columns: 1fr;
+      }
+      .asx-hero-main {
+        max-width: 100%;
+      }
+      .asx-hero {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div id="asx-app">
+  <!-- TOP BAR -->
+  <header class="asx-topbar">
+    <div class="asx-brand">
+      <div class="asx-logo">ASX</div>
+      <div>
+        <div class="asx-title-main">Design Kit v2</div>
+        <div class="asx-title-sub">Atomic UI · K’uhul Library · KLH Backend HUD</div>
+      </div>
+    </div>
+    <div class="asx-top-actions">
+      <div class="asx-pill">
+        <span class="asx-pill-dot"></span>
+        <span>KLH backend: mesh online</span>
+      </div>
+      <button class="asx-btn" onclick="scrollToSection('tokens')">Tokens</button>
+      <button class="asx-btn" onclick="scrollToSection('kuhul')">K’uhul UI</button>
+      <button class="asx-btn asx-btn-primary" onclick="scrollToSection('hud')">
+        View HUD Template
+      </button>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="asx-sidebar">
+    <div>
+      <div class="asx-side-heading">Sections</div>
+      <nav class="asx-nav">
+        <button class="asx-nav-active" data-target="overview" onclick="setNav(this)">Overview <span>Design philosophy</span></button>
+        <button data-target="tokens" onclick="setNav(this)">Tokens & Colors <span>Palette & atomic rules</span></button>
+        <button data-target="utilities" onclick="setNav(this)">Atomic Utilities <span>Layout & spacing</span></button>
+        <button data-target="components" onclick="setNav(this)">Core Components <span>Cards · buttons · status</span></button>
+        <button data-target="kuhul" onclick="setNav(this)">K’uhul Library <span>Execution glyphs & blocks</span></button>
+        <button data-target="scx" onclick="setNav(this)">SCXQ2 Blocks <span>Cipher & payload UI</span></button>
+        <button data-target="dns-rest" onclick="setNav(this)">DNS & REST Mesh <span>Backend inspector</span></button>
+        <button data-target="tapes" onclick="setNav(this)">Tapes & Shards <span>KLH / shard layout</span></button>
+        <button data-target="hud" onclick="setNav(this)">HUD Template <span>Ghost shell preview</span></button>
+      </nav>
+    </div>
+
+    <div class="asx-side-footer">
+      This file can be dropped directly in as an ASX **ghost-shell** page or mounted as a
+      <strong>design-tape</strong> in your 3-file OS.  
+      All styles are inline and ASX-safe.
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="asx-main">
+    <!-- HERO -->
+    <section class="asx-hero" id="overview">
+      <div class="asx-hero-main">
+        <div class="asx-hero-eyebrow">ASX Universal UI Language</div>
+        <h1 class="asx-hero-title">ASX Design Kit v2 — Atomic, Mesh-Aware, K’uhul-Ready</h1>
+        <p class="asx-hero-sub">
+          This design kit defines the **visual grammar** of ASX OS: colors, atomic CSS,
+          cards, buttons, K’uhul glyphs, SCXQ2 blocks, DNS views, REST mesh consoles, and HUD layouts.
+          It is meant to live inside a **3-file OS** and boot as a <em>studio tape</em>.
+        </p>
+        <div class="asx-hero-actions">
+          <button class="asx-btn asx-btn-primary" onclick="scrollToSection('components')">
+            View Component Library
+          </button>
+          <button class="asx-btn" onclick="scrollToSection('kuhul')">
+            Open K’uhul Library
+          </button>
+          <button class="asx-btn" onclick="scrollToSection('dns-rest')">
+            Inspect Backend HUD
+          </button>
+        </div>
+      </div>
+      <div class="asx-hero-right">
+        <div class="asx-hero-chip">
+          <span>Rule of Three</span>
+          <span>index.html · sw.js · manifest.json</span>
+        </div>
+        <div class="asx-hero-metrics">
+          <div>KLH backend: <strong>KLH</strong> = mesh router + backend name</div>
+          <div>K’uhul: glyph engine for execution & UI blocks</div>
+          <div>SCXQ2: compression / cipher UI integration</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENT GRID -->
+    <section class="asx-main-grid">
+      <!-- LEFT COLUMN: SPEC -->
+      <div class="asx-scroll-column">
+        <!-- Tokens & colors -->
+        <section class="asx-section" id="tokens">
+          <div class="asx-section-title">01 · Tokens & Color System</div>
+          <p class="asx-section-sub">
+            These are the canonical CSS variables for ASX OS. They must be present in any
+            ASX ghost-shell or design-tape. All components in this page are wired to them.
+          </p>
+
+          <div class="asx-tag-row">
+            <span class="asx-tag">--asx-bg</span>
+            <span class="asx-tag">--asx-primary</span>
+            <span class="asx-tag">--asx-secondary</span>
+            <span class="asx-tag">--asx-text</span>
+            <span class="asx-tag">--asx-muted</span>
+            <span class="asx-tag">--asx-glass</span>
+          </div>
+
+          <div class="asx-palette">
+            <div class="asx-color-swatch">
+              <div class="asx-color-top" style="background:var(--asx-bg-alt);"></div>
+              <div class="asx-color-body">
+                <div class="asx-color-name">Background</div>
+                <div class="asx-color-token">--asx-bg / --asx-bg-alt</div>
+              </div>
+            </div>
+            <div class="asx-color-swatch">
+              <div class="asx-color-top" style="background:var(--asx-primary);"></div>
+              <div class="asx-color-body">
+                <div class="asx-color-name">Primary</div>
+                <div class="asx-color-token">--asx-primary</div>
+              </div>
+            </div>
+            <div class="asx-color-swatch">
+              <div class="asx-color-top" style="background:var(--asx-secondary);"></div>
+              <div class="asx-color-body">
+                <div class="asx-color-name">Secondary</div>
+                <div class="asx-color-token">--asx-secondary</div>
+              </div>
+            </div>
+            <div class="asx-color-swatch">
+              <div class="asx-color-top" style="background:var(--asx-accent);"></div>
+              <div class="asx-color-body">
+                <div class="asx-color-name">Accent</div>
+                <div class="asx-color-token">--asx-accent</div>
+              </div>
+            </div>
+            <div class="asx-color-swatch">
+              <div class="asx-color-top" style="background:var(--asx-danger);"></div>
+              <div class="asx-color-body">
+                <div class="asx-color-name">Danger</div>
+                <div class="asx-color-token">--asx-danger</div>
+              </div>
+            </div>
+            <div class="asx-color-swatch">
+              <div class="asx-color-top" style="background:var(--asx-success);"></div>
+              <div class="asx-color-body">
+                <div class="asx-color-name">Success</div>
+                <div class="asx-color-token">--asx-success</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Atomic utilities -->
+        <section class="asx-section" id="utilities">
+          <div class="asx-section-title">02 · Atomic Utilities</div>
+          <p class="asx-section-sub">
+            ASX uses a Tailwind-lite atomic layer. These classes can be wired to XJSON templates
+            or SCXQ2-rendered DOM trees. They are safe to embed in any tape.
+          </p>
+
+          <div class="asx-code-block">
+.asx-flex        { display:flex; }
+.asx-row         { flex-direction:row; }
+.asx-col         { flex-direction:column; }
+.asx-center      { align-items:center; justify-content:center; }
+
+.asx-grid        { display:grid; }
+.asx-gap-1       { gap:0.5rem; }
+.asx-gap-2       { gap:1rem; }
+
+.asx-pad-1       { padding:0.5rem; }
+.asx-pad-2       { padding:1rem; }
+.asx-pad-3       { padding:1.5rem; }
+
+.asx-card {
+  background: var(--asx-bg-alt);
+  border-radius: var(--asx-r-0);
+  border: 1px solid rgba(148,163,184,0.5);
+}
+
+.asx-btn {
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8rem;
+}
+
+.asx-scroll      { overflow-y:auto; }
+          </div>
+        </section>
+
+        <!-- Core components -->
+        <section class="asx-section" id="components">
+          <div class="asx-section-title">03 · Core Components</div>
+          <p class="asx-section-sub">
+            Cards, buttons, glyphs, and status indicators — the building blocks
+            that every ASX OS view should use.
+          </p>
+
+          <div class="asx-grid-2">
+            <div class="asx-card">
+              <div class="asx-card-header">
+                <div class="asx-card-title">ASX Panel</div>
+                <span class="asx-chip">.asx-card</span>
+              </div>
+              <div class="asx-card-body">
+                Generic glass-morphic container for system views, tape info, agent status,
+                or REST output. Stack these to build dashboards.
+              </div>
+            </div>
+            <div class="asx-card">
+              <div class="asx-card-header">
+                <div class="asx-card-title">Buttons</div>
+                <span class="asx-chip">.asx-btn*</span>
+              </div>
+              <div class="asx-card-body">
+                Use <strong>.asx-btn</strong> for neutral,
+                <strong>.asx-btn-primary</strong> for CTAs,
+                and ghost variants for low-priority actions.
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:.8rem;" class="asx-grid-2">
+            <div class="asx-card">
+              <div class="asx-card-header">
+                <div class="asx-card-title">Status Dots</div>
+                <span class="asx-chip">Kernel / Mesh / DNS</span>
+              </div>
+              <div class="asx-card-body">
+                Use small colored dots for live backend status:
+                green (ok), blue (mesh), amber (warning), red (down).  
+                These map directly to KLH + K’uhul + DNS health.
+              </div>
+            </div>
+            <div class="asx-card">
+              <div class="asx-card-header">
+                <div class="asx-card-title">Glyph Items</div>
+                <span class="asx-chip">K’uhul / SCXQ2</span>
+              </div>
+              <div class="asx-card-body">
+                Glyph cards visually encode operators:
+                <em>Pop, Wo, Sek, Ch’en, Xul, (?) , (∴), ⟁</em>.
+                These show up in execution and cipher diagrams.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- K'uhul library -->
+        <section class="asx-section" id="kuhul">
+          <div class="asx-section-title">04 · K’uhul Component Library</div>
+          <p class="asx-section-sub">
+            K’uhul is both the execution engine <em>and</em> a visual language.
+            These components represent the core operators and control blocks you’ll render
+            in training dashboards, tape debuggers, and OS cockpits.
+          </p>
+
+          <div class="asx-grid-2">
+            <div class="asx-card">
+              <div class="asx-card-header">
+                <div class="asx-card-title">Execution Primitives</div>
+                <span class="asx-chip">kuhul-op</span>
+              </div>
+              <div class="asx-card-body">
+                <div class="asx-glyph-list">
+                  <div class="asx-glyph">
+                    <div class="asx-glyph-symbol">Pop</div>
+                    <div class="asx-glyph-label">define / lift symbol</div>
+                  </div>
+                  <div class="asx-glyph">
+                    <div class="asx-glyph-symbol">Wo</div>
+                    <div class="asx-glyph-label">bind / assign</div>
+                  </div>
+                  <div class="asx-glyph">
+                    <div class="asx-glyph-symbol">Sek</div>
+                    <div class="asx-glyph-label">execute</div>
+                  </div>
+                  <div class="asx-glyph">
+                    <div class="asx-glyph-symbol">Ch'en</div>
+                    <div class="asx-glyph-label">store / persist</div>
+                  </div>
+                  <div class="asx-glyph">
+                    <div class="asx-glyph-symbol">Xul</div>
+                    <div class="asx-glyph-label">return / exit</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="asx-card">
+              <div class="asx-card-header">
+                <div class="asx-card-title">Control Blocks</div>
+                <span class="asx-chip">kuhul-block</span>
+              </div>
+              <div class="asx-card-body">
+                <ul style="list-style:none; padding-left:0; font-size:.78rem; color:var(--asx-muted);">
+                  <li><strong>&lt;kuhul-block type="seq"&gt;</strong> — sequential flow</li>
+                  <li><strong>&lt;kuhul-block type="par"&gt;</strong> — parallel execution</li>
+                  <li><strong>&lt;kuhul-block type="wait"&gt;</strong> — async wait / barrier</li>
+                  <li><strong>&lt;kuhul-block type="trap"&gt;</strong> — error / exception handler</li>
+                  <li><strong>&lt;kuhul-block type="loop"&gt;</strong> — repeated eval / training step</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:.8rem;" class="asx-grid-2">
+            <div class="asx-card">
+              <div class="asx-card-header">
+                <div class="asx-card-title">Memory & Tapes</div>
+                <span class="asx-chip">kuhul-ram / tape</span>
+              </div>
+              <div class="asx-card-body">
+                <ul style="list-style:none; padding-left:0; font-size:.78rem; color:var(--asx-muted);">
+                  <li><strong>&lt;kuhul-ram&gt;</strong> — visual RAM / register block</li>
+                  <li><strong>&lt;kuhul-stack&gt;</strong> — stack frames / call frames</li>
+                  <li><strong>&lt;kuhul-tape&gt;</strong> — currently loaded tape / bundle</li>
+                  <li><strong>&lt;kuhul-log&gt;</strong> — execution log viewer</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="asx-card">
+              <div class="asx-card-header">
+                <div class="asx-card-title">KUHUL-NPX v3 UI</div>
+                <span class="asx-chip">launcher</span>
+              </div>
+              <div class="asx-card-body">
+                <ul style="list-style:none; padding-left:0; font-size:.78rem; color:var(--asx-muted);">
+                  <li><strong>&lt;kuhul-launcher&gt;</strong> — KUHUL-NPX front panel</li>
+                  <li><strong>&lt;kuhul-shard-list&gt;</strong> — live shard + port table</li>
+                  <li><strong>&lt;kuhul-port-oracle&gt;</strong> — port auto-detection status</li>
+                  <li><strong>&lt;kuhul-dns-authority&gt;</strong> — DNS view bound to KLH</li>
+                  <li><strong>&lt;kuhul-rest-mesh&gt;</strong> — REST endpoints visual map</li>
+                  <li><strong>&lt;kuhul-kernel-trace&gt;</strong> — sw.js kernel trace view</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCXQ2 -->
+        <section class="asx-section" id="scx">
+          <div class="asx-section-title">05 · SCXQ2 Cipher Blocks</div>
+          <p class="asx-section-sub">
+            SCXQ2 is the compression / cipher layer. These components visually represent cipher bundles,
+            compressed payloads, and glyph maps.
+          </p>
+
+          <div class="asx-grid-2">
+            <div class="asx-card">
+              <div class="asx-card-header">
+                <div class="asx-card-title">SCX Blocks</div>
+                <span class="asx-chip">scx-block</span>
+              </div>
+              <div class="asx-card-body">
+                <ul style="list-style:none; padding-left:0; font-size:.78rem; color:var(--asx-muted);">
+                  <li><strong>&lt;scx-block&gt;</strong> — generic cipher panel</li>
+                  <li><strong>&lt;scx-bundle&gt;</strong> — grouped payload (multi-file)</li>
+                  <li><strong>&lt;scx-cipher&gt;</strong> — cipher metadata view</li>
+                  <li><strong>&lt;scx-payload&gt;</strong> — compressed content card</li>
+                  <li><strong>&lt;scx-glyph-map&gt;</strong> — symbol → meaning map</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="asx-card">
+              <div class="asx-card-header">
+                <div class="asx-card-title">SCX Control Glyphs</div>
+                <span class="asx-chip">if / then / block</span>
+              </div>
+              <div class="asx-card-body">
+                <div class="asx-glyph-list">
+                  <div class="asx-glyph">
+                    <div class="asx-glyph-symbol">(?)</div>
+                    <div class="asx-glyph-label">if</div>
+                  </div>
+                  <div class="asx-glyph">
+                    <div class="asx-glyph-symbol">(∴)</div>
+                    <div class="asx-glyph-label">then</div>
+                  </div>
+                  <div class="asx-glyph">
+                    <div class="asx-glyph-symbol">⟁</div>
+                    <div class="asx-glyph-label">block</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- DNS + REST -->
+        <section class="asx-section" id="dns-rest">
+          <div class="asx-section-title">06 · DNS Authority & REST Mesh Components</div>
+          <p class="asx-section-sub">
+            These describe how KLH exposes the mesh and DNS system visually.  
+            The UI must reflect the real backend: <strong>KLH</strong> is the backend name and router.
+          </p>
+
+          <div class="asx-grid-2">
+            <div class="asx-card">
+              <div class="asx-card-header">
+                <div class="asx-card-title">DNS Zones</div>
+                <span class="asx-chip">asx-dns-zone</span>
+              </div>
+              <div class="asx-card-body">
+                <ul style="list-style:none; padding-left:0; font-size:.78rem; color:var(--asx-muted);">
+                  <li>&lt;asx-dns-zone host="xjson.app" target="127.0.0.1"&gt;</li>
+                  <li>&lt;asx-dns-zone host="rig.xjson.app" target="localhost"&gt;</li>
+                  <li>&lt;asx-dns-zone host="hive.xjson.app" target="localhost"&gt;</li>
+                  <li>&lt;asx-dns-zone host="prime.xjson.app" target="localhost"&gt;</li>
+                  <li>&lt;asx-dns-view&gt; and &lt;asx-dns-trace&gt; for global views</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="asx-card">
+              <div class="asx-card-header">
+                <div class="asx-card-title">REST Mesh</div>
+                <span class="asx-chip">asx-rest-endpoint</span>
+              </div>
+              <div class="asx-card-body">
+                <ul style="list-style:none; padding-left:0; font-size:.78rem; color:var(--asx-muted);">
+                  <li>&lt;asx-rest-endpoint method="GET"  path="/hive/shards"&gt;</li>
+                  <li>&lt;asx-rest-endpoint method="POST" path="/xjson/compile"&gt;</li>
+                  <li>&lt;asx-rest-endpoint method="GET"  path="/prime/modules"&gt;</li>
+                  <li>&lt;asx-rest-console&gt;, &lt;asx-rest-log&gt; for live calls</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tapes & shards -->
+        <section class="asx-section" id="tapes">
+          <div class="asx-section-title">07 · Tapes & KLH Shards</div>
+          <p class="asx-section-sub">
+            KLH is the backend + shard network. These components reflect how ASX OS
+            presents tapes and shards in the cockpit.
+          </p>
+
+          <div class="asx-grid-2">
+            <div class="asx-card">
+              <div class="asx-card-header">
+                <div class="asx-card-title">Tapes</div>
+                <span class="asx-chip">asx-tape*</span>
+              </div>
+              <div class="asx-card-body">
+                <ul style="list-style:none; padding-left:0; font-size:.78rem; color:var(--asx-muted);">
+                  <li>&lt;asx-tape-list&gt; — scrollable tape inventory</li>
+                  <li>&lt;asx-tape-card&gt; — each tape as a card</li>
+                  <li>&lt;asx-tape-loader&gt; — select + mount tape</li>
+                  <li>&lt;asx-tape-runner&gt; — run / stop / inspect</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="asx-card">
+              <div class="asx-card-header">
+                <div class="asx-card-title">KLH Shards</div>
+                <span class="asx-chip">klh-shard</span>
+              </div>
+              <div class="asx-card-body">
+                <ul style="list-style:none; padding-left:0; font-size:.78rem; color:var(--asx-muted);">
+                  <li>&lt;klh-hive&gt; — global shard overview</li>
+                  <li>&lt;klh-shard name="users"&gt;    — user auth shard</li>
+                  <li>&lt;klh-shard name="prime-ui"&gt; — cockpit UI shard</li>
+                  <li>&lt;klh-shard name="trainer"&gt;  — TPU training shard</li>
+                  <li>&lt;klh-shard name="scxq2"&gt;    — cipher/compression shard</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT COLUMN: HUD PREVIEW -->
+      <div class="asx-scroll-column" id="hud">
+        <div class="asx-preview-label">HUD Preview · Ghost-Shell Layout</div>
+        <div class="asx-hud">
+          <div class="asx-hud-top">
+            <div>
+              <span class="asx-hud-status-dot"></span>
+              <span>ASX OS · KLH backend online</span>
+            </div>
+            <div class="asx-hud-badges">
+              <span class="asx-badge green">K’uhul Engine</span>
+              <span class="asx-badge blue">XJSON Mesh</span>
+              <span class="asx-badge purple">SCXQ2 Cipher</span>
+            </div>
+          </div>
+
+          <div class="asx-hud-main">
+            <div class="asx-hud-panel">
+              <div class="asx-hud-panel-title">K’uhul & SCX Glyphs</div>
+              <div class="asx-glyph-list" style="margin-bottom:.4rem;">
+                <div class="asx-glyph">
+                  <div class="asx-glyph-symbol">Pop</div>
+                  <div class="asx-glyph-label">function</div>
+                </div>
+                <div class="asx-glyph">
+                  <div class="asx-glyph-symbol">Wo</div>
+                  <div class="asx-glyph-label">assign</div>
+                </div>
+                <div class="asx-glyph">
+                  <div class="asx-glyph-symbol">Sek</div>
+                  <div class="asx-glyph-label">execute</div>
+                </div>
+                <div class="asx-glyph">
+                  <div class="asx-glyph-symbol">(?)</div>
+                  <div class="asx-glyph-label">if</div>
+                </div>
+                <div class="asx-glyph">
+                  <div class="asx-glyph-symbol">(∴)</div>
+                  <div class="asx-glyph-label">then</div>
+                </div>
+                <div class="asx-glyph">
+                  <div class="asx-glyph-symbol">⟁</div>
+                  <div class="asx-glyph-label">block</div>
+                </div>
+              </div>
+              <div style="font-size:.72rem; color:var(--asx-muted);">
+                This HUD column is where <strong>kuhul-op</strong> and <strong>scx-block</strong> metadata
+                are rendered by sw.js and XJSON templates.
+              </div>
+            </div>
+
+            <div class="asx-hud-panel">
+              <div class="asx-hud-panel-title">Kernel Log · REST Mesh Console</div>
+              <div class="asx-hud-log" id="hud-log">
+                <div class="asx-hud-log-line"><span>ASX&gt;</span> sw.js kernel booted · KLH mesh: active</div>
+                <div class="asx-hud-log-line"><span>ASX&gt;</span> DNS zones loaded: xjson.app, rig.xjson.app, hive.xjson.app</div>
+                <div class="asx-hud-log-line"><span>ASX&gt;</span> REST mesh online: /xjson/* /klh/* /hive/* /os/* /scxq2/*</div>
+                <div class="asx-hud-log-line"><span>ASX&gt;</span> KUHUL-NPX v3 → ports assigned from manifest.json</div>
+                <div class="asx-hud-log-line"><span>ASX&gt;</span> Ready for tape load & shard attach.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="asx-hud-bottom">
+            <div class="asx-hud-tabs">
+              <div class="asx-hud-tab active">Design Kit</div>
+              <div class="asx-hud-tab">K’uhul</div>
+              <div class="asx-hud-tab">SCXQ2</div>
+              <div class="asx-hud-tab">DNS</div>
+              <div class="asx-hud-tab">REST Mesh</div>
+              <div class="asx-hud-tab">Tapes</div>
+            </div>
+            <div>Ghost Shell · drop this into <strong>index.html</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Tiny helper JS for nav + scrolling (no external deps) -->
+<script>
+  function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function setNav(btn) {
+    const all = document.querySelectorAll('.asx-nav button');
+    all.forEach(b => b.classList.remove('asx-nav-active'));
+    btn.classList.add('asx-nav-active');
+
+    const target = btn.getAttribute('data-target');
+    if (!target) return;
+
+    const sectionEl = document.getElementById(target);
+    if (sectionEl) sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>

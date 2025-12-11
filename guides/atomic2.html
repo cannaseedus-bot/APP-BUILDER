@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <title>ASXR MICRONAUT PORTAL — BLACK CODEX</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- BLACK CODEX SHELL + MINIMAL ATOMIC HELPERS (FULL atomic.css LIVES AS /atomic.css IN REAL OS) -->
+  <style>
+    :root {
+      --bg: #020409;
+      --bg-alt: #050912;
+      --bg-panel: #050a14;
+      --bg-panel-alt: #060c18;
+      --bg-editor: #020308;
+
+      --border-soft: rgba(22, 242, 170, 0.20);
+      --border-strong: #16f2aa;
+      --border-hazard: #ffcc33;
+
+      --accent: #16f2aa;
+      --accent-soft: rgba(22, 242, 170, 0.12);
+      --accent-blue: #00eaff;
+      --accent-magenta: #ff4bff;
+      --accent-danger: #ff476f;
+
+      --fg: #e6f7ff;
+      --fg-soft: #7b8ca3;
+      --fg-dim: #4a5669;
+      --fg-hazard: #ffcc33;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 18px;
+
+      --pad-xs: 4px;
+      --pad-sm: 8px;
+      --pad-md: 12px;
+      --pad-lg: 18px;
+      --pad-xl: 24px;
+
+      --shadow-soft: 0 0 0 1px rgba(0,0,0,0.6), 0 18px 45px rgba(0,0,0,0.7);
+      --shadow-hard: 0 0 0 1px rgba(0,0,0,0.7), 0 24px 80px rgba(0,0,0,0.9);
+
+      --editor-font: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+      --grid-gap: 14px;
+
+      --atomic-entropy: 0.50;
+      --atomic-innovation: 0.60;
+      --atomic-stability: 0.80;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at top, #060915 0%, #010208 50%, #000000 100%);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    }
+
+    body {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .os-shell {
+      position: relative;
+      flex: 1;
+      max-width: 1400px;
+      max-height: 860px;
+      min-height: 640px;
+      border-radius: 18px;
+      background: radial-gradient(circle at top left, rgba(22, 242, 170, 0.22), transparent 60%),
+                  radial-gradient(circle at bottom right, rgba(0, 255, 255, 0.18), transparent 55%),
+                  linear-gradient(135deg, #020309, #040717 40%, #020309 100%);
+      box-shadow: var(--shadow-hard);
+      overflow: hidden;
+      border: 1px solid rgba(22, 242, 170, 0.3);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-bar {
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid rgba(22, 242, 170, 0.4);
+      background:
+        linear-gradient(90deg,
+          rgba(22, 242, 170, 0.18),
+          rgba(0, 234, 255, 0.08),
+          rgba(22, 242, 170, 0.18)
+        );
+      backdrop-filter: blur(16px);
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .top-bar-led {
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #16f2aa 35%, #00b58a 100%);
+      box-shadow: 0 0 14px rgba(22, 242, 170, 0.9);
+    }
+
+    .top-bar-title {
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--fg-soft);
+    }
+
+    .top-bar-badge {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 204, 51, 0.8);
+      color: var(--fg-hazard);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      background: rgba(255, 204, 51, 0.08);
+    }
+
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 11px;
+      color: var(--fg-soft);
+    }
+
+    .chip {
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 234, 255, 0.6);
+      background: radial-gradient(circle at top, rgba(0, 234, 255, 0.16), transparent);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chip span.dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #00eaff 40%, #006bff 100%);
+      box-shadow: 0 0 10px rgba(0, 234, 255, 0.9);
+    }
+
+    .os-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      gap: var(--grid-gap);
+      padding: 14px;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255,255,255,0.06), transparent 55%),
+        radial-gradient(circle at 90% 100%, rgba(0,0,0,0.8), transparent 60%);
+    }
+
+    .sidebar {
+      background: radial-gradient(circle at top, #050a16, #02040b 55%);
+      border-radius: 14px;
+      border: 1px solid rgba(22, 242, 170, 0.28);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.9), 0 18px 36px rgba(0,0,0,0.85);
+      padding: 10px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      opacity: 0.12;
+      background-image:
+        radial-gradient(circle at 0 0, rgba(22, 242, 170, 0.18) 0, transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(0, 234, 255, 0.16) 0, transparent 50%);
+      pointer-events: none;
+    }
+
+    .sidebar-section {
+      position: relative;
+      padding: 8px 8px;
+      border-radius: 10px;
+      background: linear-gradient(145deg, rgba(2,4,10,0.9), rgba(9,16,35,0.95));
+      border: 1px solid rgba(22, 242, 170, 0.20);
+    }
+
+    .sidebar-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--fg-soft);
+    }
+
+    .sidebar-tag {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(22, 242, 170, 0.6);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .sidebar-metric {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      margin: 3px 0;
+      color: var(--fg-dim);
+    }
+
+    .sidebar-metric span.value {
+      color: var(--accent-blue);
+    }
+
+    .sidebar-list {
+      margin-top: 4px;
+      padding-top: 4px;
+      border-top: 1px dashed rgba(22, 242, 170, 0.25);
+      font-size: 11px;
+      color: var(--fg-soft);
+    }
+
+    .sidebar-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .sidebar-pill {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 234, 255, 0.5);
+      color: var(--fg-soft);
+      background: rgba(0, 234, 255, 0.07);
+      white-space: nowrap;
+    }
+
+    .hazard-pill {
+      border-color: rgba(255, 204, 51, 0.8);
+      color: var(--fg-hazard);
+      background: rgba(255, 204, 51, 0.10);
+    }
+
+    .main {
+      display: grid;
+      grid-template-rows: minmax(0, 1.6fr) minmax(0, 1fr);
+      gap: var(--grid-gap);
+    }
+
+    .panel {
+      background: radial-gradient(circle at top left, rgba(22, 242, 170, 0.26), rgba(2,5,14,0.95) 50%);
+      border-radius: 14px;
+      border: 1px solid rgba(22, 242, 170, 0.28);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.9), 0 18px 36px rgba(0,0,0,0.9);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      border-bottom: 1px solid rgba(22, 242, 170, 0.35);
+      background:
+        linear-gradient(90deg,
+          rgba(2,3,10,0.9),
+          rgba(11,24,46,0.98),
+          rgba(2,3,10,0.9)
+        );
+    }
+
+    .panel-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      box-shadow: 0 0 12px rgba(22, 242, 170, 0.8);
+      background: radial-gradient(circle at 30% 30%, #ffffff, #16f2aa 35%, #00b58a 100%);
+    }
+
+    .panel-subtitle {
+      font-size: 10px;
+      text-transform: none;
+      letter-spacing: 0.04em;
+      color: var(--fg-soft);
+    }
+
+    .panel-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 10px;
+      padding: 8px 10px 10px;
+      background: radial-gradient(circle at top right, rgba(0, 234, 255, 0.22), rgba(1,2,6,0.96) 55%);
+    }
+
+    .editor-block {
+      background: var(--bg-editor);
+      border-radius: 10px;
+      border: 1px solid rgba(22, 242, 170, 0.35);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.75);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .editor-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 9px;
+      font-size: 10px;
+      color: var(--fg-soft);
+      border-bottom: 1px solid rgba(22, 242, 170, 0.22);
+      background: linear-gradient(90deg, #020308, #050917, #020308);
+    }
+
+    .editor-toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .editor-tab {
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(22, 242, 170, 0.6);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .editor-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--fg-dim);
+    }
+
+    .editor {
+      flex: 1;
+      width: 100%;
+      resize: none;
+      border: none;
+      outline: none;
+      padding: 10px 12px;
+      background: transparent;
+      color: var(--fg);
+      font-family: var(--editor-font);
+      font-size: 11px;
+      line-height: 1.5;
+      tab-size: 2;
+      overflow: auto;
+      white-space: pre;
+    }
+
+    .editor::-webkit-scrollbar,
+    .rest-scroll::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+
+    .rest-block {
+      background: radial-gradient(circle at top, #040716, #010208 55%);
+      border-radius: 10px;
+      border: 1px solid rgba(0, 234, 255, 0.32);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.75);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .rest-header {
+      padding: 4px 9px;
+      border-bottom: 1px solid rgba(0, 234, 255, 0.28);
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--fg-soft);
+      background: linear-gradient(90deg, #02030a, #031323, #02030a);
+    }
+
+    .rest-scroll {
+      flex: 1;
+      padding: 8px 10px;
+      font-family: var(--editor-font);
+      font-size: 10px;
+      color: var(--fg-soft);
+      overflow: auto;
+    }
+
+    .rest-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 0;
+      border-bottom: 1px dashed rgba(22, 242, 170, 0.18);
+    }
+
+    .rest-method {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(22, 242, 170, 0.6);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .rest-path {
+      color: var(--fg);
+    }
+
+    .rest-tag {
+      font-size: 9px;
+      padding: 2px 5px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 234, 255, 0.6);
+      color: var(--accent-blue);
+    }
+
+    .lower-panel {
+      background: radial-gradient(circle at bottom right, rgba(255, 75, 255, 0.24), rgba(2,4,10,0.96) 55%);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 75, 255, 0.35);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.9), 0 18px 36px rgba(0,0,0,0.9);
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 10px;
+      padding: 8px 10px 10px;
+    }
+
+    .status-block {
+      background: rgba(2,3,10,0.9);
+      border-radius: 10px;
+      border: 1px solid rgba(22, 242, 170, 0.26);
+      padding: 8px 10px;
+      font-size: 11px;
+      font-family: var(--editor-font);
+      color: var(--fg-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .status-label {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+      margin-bottom: 4px;
+    }
+
+    .status-line {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3px;
+    }
+
+    .status-key {
+      color: var(--fg-dim);
+    }
+
+    .status-val {
+      color: var(--accent-blue);
+    }
+
+    .log-block {
+      background: rgba(3,4,12,0.96);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 75, 255, 0.35);
+      padding: 8px 10px;
+      font-family: var(--editor-font);
+      font-size: 10px;
+      color: var(--fg-soft);
+      overflow: auto;
+      position: relative;
+    }
+
+    .log-entry {
+      margin-bottom: 2px;
+      white-space: pre;
+    }
+
+    .log-entry span.time {
+      color: rgba(255, 255, 255, 0.32);
+    }
+
+    .log-entry span.msg-ok {
+      color: var(--accent);
+    }
+
+    .log-entry span.msg-warn {
+      color: var(--fg-hazard);
+    }
+
+    .log-entry span.msg-err {
+      color: var(--accent-danger);
+    }
+
+    /* Minimal atomic attribute helpers (the real atomic.css is much larger and shared) */
+    [⟁flex] { display: flex; }
+    [⟁col] { flex-direction: column; }
+    [⟁row] { flex-direction: row; }
+    [⟁center] { align-items: center; justify-content: center; }
+    [⟁gap-xs] { gap: 4px; }
+    [⟁gap-sm] { gap: 8px; }
+    [⟁gap-md] { gap: 12px; }
+  </style>
+</head>
+
+<body>
+  <div class="os-shell" id="asxr-shell">
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <div class="top-bar-led"></div>
+        <div>
+          <div class="top-bar-title">ASXR · MICRONAUT · BLACK CODEX</div>
+          <div style="font-size:10px;color:var(--fg-dim);letter-spacing:0.12em;text-transform:uppercase;">
+            Virtual Tape · Local REST Mesh · XJSON OS
+          </div>
+        </div>
+        <span class="top-bar-badge">VIRTUAL FIRST · ROBOCOP</span>
+      </div>
+      <div class="top-bar-right">
+        <div class="chip">
+          <span class="dot"></span>
+          <span>LOCAL REST API</span>
+        </div>
+        <div class="chip">
+          <span class="dot"></span>
+          <span>XCFE ACTIVE</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="os-body">
+      <!-- LEFT: MICRONAUT / ATOMIC STATUS -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-section-header">
+            <div class="sidebar-title">Micronaut Node</div>
+            <span class="sidebar-tag">MX2 · LIVE</span>
+          </div>
+          <div class="sidebar-metric">
+            <span>Agent:</span>
+            <span class="value" id="metric-agent-id">mx2-micronaut-virtual</span>
+          </div>
+          <div class="sidebar-metric">
+            <span>Mode:</span>
+            <span class="value" id="metric-mode">ASXR_TAPE</span>
+          </div>
+          <div class="sidebar-metric">
+            <span>OS State:</span>
+            <span class="value" id="metric-os-state">BOOTING</span>
+          </div>
+          <div class="sidebar-badge-row">
+            <span class="sidebar-pill">XCFE · CONTROL</span>
+            <span class="sidebar-pill">K’UHUL · EXEC</span>
+            <span class="hazard-pill">AST · FIREWALL</span>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-header">
+            <div class="sidebar-title">Atomic Vectors</div>
+            <span class="sidebar-tag">ATOMIC_BLOCK</span>
+          </div>
+          <div class="sidebar-metric">
+            <span>Entropy:</span>
+            <span class="value" id="metric-entropy">0.50</span>
+          </div>
+          <div class="sidebar-metric">
+            <span>Innovation:</span>
+            <span class="value" id="metric-innovation">0.60</span>
+          </div>
+          <div class="sidebar-metric">
+            <span>Stability:</span>
+            <span class="value" id="metric-stability">0.80</span>
+          </div>
+          <div class="sidebar-list">
+            <div>ASX = XCFE = XJSON = KUHUL = AST</div>
+            <div>All blocks = ATOMIC_BLOCK</div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-header">
+            <div class="sidebar-title">REST Mesh</div>
+            <span class="sidebar-tag">LOCAL</span>
+          </div>
+          <div class="sidebar-list" id="sidebar-rest-summary">
+            /os/state · /os/metrics · /asxr/infer<br/>
+            /micronaut/lexicon · /tape/exec
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT: MAIN PANELS -->
+      <main class="main">
+        <!-- TOP: BLACK EDITOR + REST ROUTES -->
+        <section class="panel">
+          <header class="panel-header">
+            <div class="panel-header-left">
+              <div class="panel-dot"></div>
+              <span>BLACK EDITOR — XJSON OS</span>
+            </div>
+            <div class="panel-subtitle">
+              TAPE: asxr_micronaut_atomic_tape_v1 · SCRIPT: application/xjson
+            </div>
+          </header>
+          <div class="panel-body">
+            <!-- Editor -->
+            <div class="editor-block">
+              <div class="editor-toolbar">
+                <div class="editor-toolbar-left">
+                  <span class="editor-tab">os.xjson</span>
+                  <span style="font-size:10px;color:var(--fg-dim);">/virtual/atomic/os</span>
+                </div>
+                <div class="editor-toolbar-right">
+                  <span id="editor-lines">…</span>
+                  <span>LINES</span>
+                  <span style="opacity:0.35;">|</span>
+                  <span id="editor-bytes">…</span>
+                  <span>B</span>
+                </div>
+              </div>
+              <textarea id="os-editor" class="editor" spellcheck="false"></textarea>
+            </div>
+
+            <!-- REST Mesh routes -->
+            <div class="rest-block">
+              <div class="rest-header">
+                <div>LOCAL REST MESH · ROUTES</div>
+                <div id="rest-count">0 routes</div>
+              </div>
+              <div id="rest-list" class="rest-scroll">
+                <!-- Populated from XJSON -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BOTTOM: STATUS + LOG -->
+        <section class="lower-panel">
+          <div class="status-block">
+            <div class="status-label">OS · STATE VECTOR</div>
+            <div class="status-line">
+              <span class="status-key">quantum_state</span>
+              <span class="status-val" id="status-quantum">|@control⟩⊗|@variable⟩⊗|@Sek⟩⊗|@Ch'en⟩</span>
+            </div>
+            <div class="status-line">
+              <span class="status-key">micronaut_mode</span>
+              <span class="status-val" id="status-mode">VIRTUAL_ONLY</span>
+            </div>
+            <div class="status-line">
+              <span class="status-key">lexicon_tables</span>
+              <span class="status-val" id="status-lexicon">words / bigrams / trigrams</span>
+            </div>
+            <div class="status-line">
+              <span class="status-key">atomic_css</span>
+              <span class="status-val">atomic.css · v∞ · cached</span>
+            </div>
+            <div class="status-line">
+              <span class="status-key">rest_api</span>
+              <span class="status-val">IN-MEMORY · K’UHUL ROUTER</span>
+            </div>
+          </div>
+          <div class="log-block" id="log-block">
+            <div class="status-label">K’UHUL · EVENT LOG</div>
+            <div id="log-entries">
+              <div class="log-entry">
+                <span class="time">[BOOT]</span>
+                <span class="msg-ok"> mounted tape asxr_micronaut_atomic_tape_v1 into Black Codex shell</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- ===========================================================
+       XJSON OS — ASXR MICRONAUT VIRTUAL PORTAL (SINGLE FILE)
+       =========================================================== -->
+  <script type="application/xjson" id="os-xjson">
+  {
+    "@context": "xjson://asxr/micronaut/atomic_portal/v1",
+    "@n": "ASXR_MICRONAUT_ATOMIC_PORTAL",
+    "@d": "Single-file virtual ASXR tape with Micronaut brain, local REST mesh, XCFE + KUHUL + AST vectors controlling DOM and API.",
+    "@law": "ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK",
+    "@quantum_state": "|Ω⟩ = |@control⟩⊗|@variable⟩⊗|@Sek⟩⊗|@Ch'en⟩⊗|@loop⟩⊗|@return⟩⊗|@atomic⟩",
+
+    "os": {
+      "id": "asxr_micronaut_atomic_portal",
+      "mode": "VIRTUAL_SINGLE_FILE",
+      "shell": "BLACK_CODEX",
+      "atomic_css": {
+        "shared": true,
+        "path": "/atomic.css",
+        "package": "ATOMIC_CSS_v∞_TRIPLE_PACKAGE"
+      },
+      "micronaut": {
+        "agent_id": "mx2_micronaut_virtual",
+        "runtime": "ASXR_TAPE",
+        "brains": [
+          {
+            "id": "brain_asxr_control",
+            "role": "ASXR_ROUTER",
+            "vectors": ["@Pop", "@Wo", "@Sek", "@Xul", "@Ch'en"],
+            "routes": ["rest_mesh", "dom_engine", "lexicon", "atomic_monitor"]
+          },
+          {
+            "id": "brain_mx2_lexicon",
+            "role": "LEXICON_DB",
+            "tables": [
+              "lexicon_words",
+              "lexicon_bigrams",
+              "lexicon_trigrams",
+              "lexicon_stats"
+            ]
+          }
+        ]
+      }
+    },
+
+    "lexicon": {
+      "@shard": "MX2DB",
+      "@ram_tables": {
+        "words": "lexicon_words",
+        "bigrams": "lexicon_bigrams",
+        "trigrams": "lexicon_trigrams",
+        "stats": "lexicon_stats"
+      },
+      "schema": {
+        "lexicon_words": {
+          "token": "string",
+          "freq": "number",
+          "categories": "array<string>",
+          "last_seen": "int"
+        },
+        "lexicon_bigrams": {
+          "pair": "string",
+          "freq": "number",
+          "confidence": "number",
+          "semantic_link": "string"
+        },
+        "lexicon_trigrams": {
+          "chain": "string",
+          "freq": "number",
+          "reason_type": "string"
+        },
+        "lexicon_stats": {
+          "total_tokens": "number",
+          "unique_words": "number",
+          "entropy": "number",
+          "updated": "int"
+        }
+      },
+      "kuhul_pi": {
+        "lexicon_word_update": "[Pop lexicon_word_update]\n  [Wo @token]→[Ch'en T]\n  [Yax \"lexicon_words\"]→[Sek mx2db_get T]→[Ch'en prev]\n  [@if prev]\n    →[@then [Wo (+ prev.freq 1)]→[Ch'en f] [Sek mx2db_put {\"token\":T,\"freq\":f,\"last_seen\":[Sek now]} T]]\n    →[@else [Sek mx2db_put {\"token\":T,\"freq\":1,\"last_seen\":[Sek now]} T]]\n  [Xul return \"ok\"]\n[Xul]",
+        "lexicon_bigram_update": "[Pop lexicon_bigram_update] …",
+        "lexicon_trigram_update": "[Pop lexicon_trigram_update] …",
+        "lexicon_ingest_text": "[Pop lexicon_ingest_text] … [Xul]"
+      }
+    },
+
+    "atomic_xcfe": {
+      "@source": "OMNIBRAIN_Ω_ATOMIC_XCFE_COMPLETE",
+      "@projection": "referenced",
+      "layers": {
+        "@control": "@ATOMIC_FLOW_MATRIX",
+        "@variable": "@ATOMIC_STATE_MATRIX",
+        "@Sek": "@ATOMIC_EXECUTION_MATRIX",
+        "@Ch'en": "@ATOMIC_RENDER_MATRIX"
+      }
+    },
+
+    "rest_mesh": {
+      "@mode": "LOCAL_IN_MEMORY",
+      "@engine": "KUHUL_ROUTER",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/os/state",
+          "id": "rest_os_state",
+          "handler": "@Sek.os_state",
+          "description": "Return OS + Micronaut state vector"
+        },
+        {
+          "method": "GET",
+          "path": "/os/metrics",
+          "id": "rest_os_metrics",
+          "handler": "@Sek.os_metrics",
+          "description": "Return entropy / innovation / stability metrics"
+        },
+        {
+          "method": "POST",
+          "path": "/asxr/infer",
+          "id": "rest_asxr_infer",
+          "handler": "@Sek.asxr_infer",
+          "description": "ASXR virtual inference using Micronaut brain"
+        },
+        {
+          "method": "POST",
+          "path": "/micronaut/lexicon/ingest",
+          "id": "rest_lexicon_ingest",
+          "handler": "@Sek.lexicon_ingest",
+          "description": "Ingest text into MX2DB lexicon tables"
+        },
+        {
+          "method": "GET",
+          "path": "/micronaut/lexicon/stats",
+          "id": "rest_lexicon_stats",
+          "handler": "@Sek.lexicon_stats",
+          "description": "Return lexicon_stats table snapshot"
+        },
+        {
+          "method": "POST",
+          "path": "/tape/exec",
+          "id": "rest_tape_exec",
+          "handler": "@Sek.tape_exec",
+          "description": "Execute an ASXR tape command block"
+        }
+      ]
+    },
+
+    "dom_engine": {
+      "@mode": "KUHUL_DOM",
+      "@root": "#asxr-shell",
+      "@engine": "K'UHUL_DOM_ENGINE_v1",
+      "bindings": {
+        "status": {
+          "entropy": "#metric-entropy",
+          "innovation": "#metric-innovation",
+          "stability": "#metric-stability",
+          "agent_id": "#metric-agent-id",
+          "mode": "#metric-mode",
+          "os_state": "#metric-os-state",
+          "lexicon": "#status-lexicon",
+          "quantum_state": "#status-quantum"
+        },
+        "rest_summary": "#sidebar-rest-summary"
+      },
+      "xcfe_control": [
+        "@perception → dom.get",
+        "@representation → json.state",
+        "@reasoning → asxr.router",
+        "@decision → route.select",
+        "@action → dom.patch",
+        "@reflection → log.event"
+      ]
+    },
+
+    "monitoring": {
+      "metrics": {
+        "entropy": 0.50,
+        "innovation": 0.60,
+        "stability": 0.80,
+        "api_calls": 0
+      },
+      "log": [
+        "OS_BOOT → mounted tape asxr_micronaut_atomic_tape_v1",
+        "OS_LAW → ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK"
+      ]
+    }
+  }
+  </script>
+
+  <!-- ===========================================================
+       MINIMAL BRIDGE — XJSON → DOM (STILL “VIRTUAL FIRST”)
+       Real K’UHUL engine would replace this stub.
+       =========================================================== -->
+  <script>
+    (function () {
+      const xjsonEl = document.getElementById('os-xjson');
+      if (!xjsonEl) return;
+
+      let os;
+      try {
+        os = JSON.parse(xjsonEl.textContent);
+      } catch (e) {
+        console.error('XJSON parse error', e);
+        return;
+      }
+
+      const editor = document.getElementById('os-editor');
+      if (editor) {
+        const pretty = JSON.stringify(os, null, 2);
+        editor.value = pretty;
+
+        const lines = pretty.split('\n').length;
+        const bytes = new Blob([pretty]).size;
+        const linesEl = document.getElementById('editor-lines');
+        const bytesEl = document.getElementById('editor-bytes');
+        if (linesEl) linesEl.textContent = String(lines);
+        if (bytesEl) bytesEl.textContent = String(bytes);
+      }
+
+      // Bind metrics to DOM based on dom_engine.bindings
+      const bindings = os.dom_engine && os.dom_engine.bindings && os.dom_engine.bindings.status;
+      const metrics = os.monitoring && os.monitoring.metrics;
+
+      if (bindings && metrics) {
+        const entropyEl = document.querySelector(bindings.entropy);
+        const innovationEl = document.querySelector(bindings.innovation);
+        const stabilityEl = document.querySelector(bindings.stability);
+        if (entropyEl) entropyEl.textContent = metrics.entropy.toFixed(2);
+        if (innovationEl) innovationEl.textContent = metrics.innovation.toFixed(2);
+        if (stabilityEl) stabilityEl.textContent = metrics.stability.toFixed(2);
+
+        const root = document.documentElement;
+        root.style.setProperty('--atomic-entropy', metrics.entropy);
+        root.style.setProperty('--atomic-innovation', metrics.innovation);
+        root.style.setProperty('--atomic-stability', metrics.stability);
+      }
+
+      if (bindings) {
+        const agentEl = document.querySelector(bindings.agent_id);
+        const modeEl = document.querySelector(bindings.mode);
+        const osStateEl = document.querySelector(bindings.os_state);
+        const lexiconEl = document.querySelector(bindings.lexicon);
+        const quantumEl = document.querySelector(bindings.quantum_state);
+
+        if (agentEl) agentEl.textContent = os.os.micronaut.agent_id;
+        if (modeEl) modeEl.textContent = os.os.mode;
+        if (osStateEl) osStateEl.textContent = 'ACTIVE';
+        if (lexiconEl) lexiconEl.textContent = 'lexicon_words / lexicon_bigrams / lexicon_trigrams';
+        if (quantumEl) quantumEl.textContent = os["@quantum_state"] || bindings.quantum_state;
+      }
+
+      // REST routes → sidebar + rest panel
+      const routes = os.rest_mesh && os.rest_mesh.routes || [];
+      const restList = document.getElementById('rest-list');
+      const restCount = document.getElementById('rest-count');
+      const restSummaryEl = os.dom_engine && os.dom_engine.bindings && os.dom_engine.bindings.rest_summary
+        ? document.querySelector(os.dom_engine.bindings.rest_summary)
+        : null;
+
+      if (restCount) {
+        restCount.textContent = routes.length + ' routes';
+      }
+
+      if (restList) {
+        restList.innerHTML = '';
+        routes.forEach(route => {
+          const row = document.createElement('div');
+          row.className = 'rest-row';
+
+          const method = document.createElement('div');
+          method.className = 'rest-method';
+          method.textContent = route.method || 'GET';
+
+          const path = document.createElement('div');
+          path.className = 'rest-path';
+          path.textContent = route.path;
+
+          const tag = document.createElement('div');
+          tag.className = 'rest-tag';
+          tag.textContent = route.id || 'handler';
+
+          row.appendChild(method);
+          row.appendChild(path);
+          row.appendChild(tag);
+
+          restList.appendChild(row);
+        });
+      }
+
+      if (restSummaryEl) {
+        restSummaryEl.textContent = routes
+          .map(r => r.path)
+          .slice(0, 5)
+          .join(' · ');
+      }
+
+      // Log boot messages
+      const logEl = document.getElementById('log-entries');
+      if (logEl && os.monitoring && Array.isArray(os.monitoring.log)) {
+        os.monitoring.log.forEach(msg => {
+          const div = document.createElement('div');
+          div.className = 'log-entry';
+          const timeSpan = document.createElement('span');
+          timeSpan.className = 'time';
+          timeSpan.textContent = '[OS]';
+          const msgSpan = document.createElement('span');
+          msgSpan.className = 'msg-ok';
+          msgSpan.textContent = ' ' + msg;
+          div.appendChild(timeSpan);
+          div.appendChild(msgSpan);
+          logEl.appendChild(div);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

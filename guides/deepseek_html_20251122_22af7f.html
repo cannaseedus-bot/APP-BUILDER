@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUIX HUD Chat Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .panel {
+            background: rgba(30, 30, 46, 0.7);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 25%;
+        }
+
+        .editor {
+            width: 45%;
+        }
+
+        .chat {
+            width: 30%;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            color: #e0e0e0;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary {
+            background: rgba(88, 101, 242, 0.8);
+        }
+
+        .btn-primary:hover {
+            background: rgba(88, 101, 242, 1);
+        }
+
+        /* Chat History Styles */
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .history-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .history-item.active {
+            background: rgba(88, 101, 242, 0.2);
+            border-left: 3px solid rgba(88, 101, 242, 0.8);
+        }
+
+        .history-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+
+        .history-preview {
+            font-size: 0.85rem;
+            color: #a0a0a0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Code Editor Styles */
+        .editor-container {
+            flex: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #1e1e2e;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .editor-header {
+            background: rgba(40, 40, 60, 0.8);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .editor-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .editor-tab {
+            padding: 5px 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .editor-tab.active {
+            background: rgba(88, 101, 242, 0.3);
+        }
+
+        .code-area {
+            height: calc(100% - 50px);
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #f8f8f2;
+            overflow: auto;
+            background: #1e1e2e;
+        }
+
+        .code-line {
+            margin-bottom: 2px;
+        }
+
+        .code-comment {
+            color: #6272a4;
+        }
+
+        .code-keyword {
+            color: #ff79c6;
+        }
+
+        .code-function {
+            color: #50fa7b;
+        }
+
+        .code-string {
+            color: #f1fa8c;
+        }
+
+        .code-operator {
+            color: #ff79c6;
+        }
+
+        /* Chat Styles */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            max-width: 85%;
+        }
+
+        .message.user {
+            background: rgba(88, 101, 242, 0.2);
+            margin-left: auto;
+            border-bottom-right-radius: 2px;
+        }
+
+        .message.ai {
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom-left-radius: 2px;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+        }
+
+        .message-sender {
+            font-weight: 600;
+        }
+
+        .message-time {
+            color: #a0a0a0;
+        }
+
+        .message-content {
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input textarea {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px;
+            color: #e0e0e0;
+            resize: none;
+            font-size: 0.95rem;
+        }
+
+        .chat-input textarea:focus {
+            outline: none;
+            border-color: rgba(88, 101, 242, 0.5);
+        }
+
+        .send-btn {
+            background: rgba(88, 101, 242, 0.8);
+            border: none;
+            border-radius: 10px;
+            width: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            background: rgba(88, 101, 242, 1);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Sidebar - Chat History -->
+        <div class="panel sidebar">
+            <div class="panel-header">
+                <div class="panel-title">Chat History</div>
+                <div class="panel-actions">
+                    <button class="btn">Search</button>
+                    <button class="btn btn-primary">New Chat</button>
+                </div>
+            </div>
+            <div class="chat-history">
+                <div class="history-item active">
+                    <div class="history-title">Code Optimization</div>
+                    <div class="history-preview">How can I optimize this sorting algorithm?</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-title">React Components</div>
+                    <div class="history-preview">Best practices for reusable React components</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-title">Database Schema</div>
+                    <div class="history-preview">Designing a scalable database schema for e-commerce</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-title">API Security</div>
+                    <div class="history-preview">Implementing JWT authentication in REST APIs</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-title">CSS Grid Layout</div>
+                    <div class="history-preview">Creating responsive layouts with CSS Grid</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-title">Docker Deployment</div>
+                    <div class="history-preview">Containerizing a Node.js application with Docker</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-title">Machine Learning</div>
+                    <div class="history-preview">Comparing different ML algorithms for classification</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Panel - Code Editor -->
+        <div class="panel editor">
+            <div class="panel-header">
+                <div class="panel-title">Code Editor</div>
+                <div class="panel-actions">
+                    <button class="btn">Save</button>
+                    <button class="btn">Run</button>
+                    <button class="btn btn-primary">Share</button>
+                </div>
+            </div>
+            <div class="editor-container">
+                <div class="editor-header">
+                    <div class="editor-tabs">
+                        <div class="editor-tab active">script.js</div>
+                        <div class="editor-tab">styles.css</div>
+                        <div class="editor-tab">index.html</div>
+                    </div>
+                    <div class="editor-actions">
+                        <button class="btn">Settings</button>
+                    </div>
+                </div>
+                <div class="code-area">
+                    <div class="code-line"><span class="code-comment">// Optimized bubble sort algorithm</span></div>
+                    <div class="code-line"><span class="code-keyword">function</span> <span class="code-function">bubbleSort</span>(arr) {</div>
+                    <div class="code-line">&nbsp;&nbsp;<span class="code-keyword">let</span> n = arr.length;</div>
+                    <div class="code-line">&nbsp;&nbsp;<span class="code-keyword">let</span> swapped;</div>
+                    <div class="code-line">&nbsp;&nbsp;<span class="code-keyword">do</span> {</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;swapped = <span class="code-keyword">false</span>;</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = 0; i < n - 1; i++) {</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">if</span> (arr[i] > arr[i + 1]) {</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// Swap elements</span></div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">let</span> temp = arr[i];</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arr[i] = arr[i + 1];</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arr[i + 1] = temp;</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;swapped = <span class="code-keyword">true</span>;</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;n--;</div>
+                    <div class="code-line">&nbsp;&nbsp;} <span class="code-keyword">while</span> (swapped);</div>
+                    <div class="code-line">&nbsp;&nbsp;<span class="code-keyword">return</span> arr;</div>
+                    <div class="code-line">}</div>
+                    <div class="code-line"></div>
+                    <div class="code-line"><span class="code-comment">// Example usage</span></div>
+                    <div class="code-line"><span class="code-keyword">const</span> numbers = [64, 34, 25, 12, 22, 11, 90];</div>
+                    <div class="code-line"><span class="code-keyword">const</span> sortedNumbers = <span class="code-function">bubbleSort</span>(numbers);</div>
+                    <div class="code-line">console.<span class="code-function">log</span>(<span class="code-string">"Sorted array:"</span>, sortedNumbers);</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - AI Agent Chat -->
+        <div class="panel chat">
+            <div class="panel-header">
+                <div class="panel-title">AI Assistant</div>
+                <div class="panel-actions">
+                    <button class="btn">Clear</button>
+                    <button class="btn btn-primary">Settings</button>
+                </div>
+            </div>
+            <div class="chat-messages">
+                <div class="message ai">
+                    <div class="message-header">
+                        <div class="message-sender">CodeAssistant AI</div>
+                        <div class="message-time">10:24 AM</div>
+                    </div>
+                    <div class="message-content">
+                        Hello! I've reviewed your bubble sort implementation. I notice you're using a do-while loop with a flag to track swaps, which is a good optimization over the basic version.
+                    </div>
+                </div>
+                <div class="message user">
+                    <div class="message-header">
+                        <div class="message-sender">You</div>
+                        <div class="message-time">10:25 AM</div>
+                    </div>
+                    <div class="message-content">
+                        Thanks! Is there any way to make it even more efficient?
+                    </div>
+                </div>
+                <div class="message ai">
+                    <div class="message-header">
+                        <div class="message-sender">CodeAssistant AI</div>
+                        <div class="message-time">10:26 AM</div>
+                    </div>
+                    <div class="message-content">
+                        Yes, you could track the position of the last swap to avoid comparing already sorted elements in subsequent passes. This reduces the number of comparisons needed.
+                    </div>
+                </div>
+                <div class="message user">
+                    <div class="message-header">
+                        <div class="message-sender">You</div>
+                        <div class="message-time">10:27 AM</div>
+                    </div>
+                    <div class="message-content">
+                        Can you show me how to implement that optimization?
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <textarea placeholder="Type your message here..." rows="3"></textarea>
+                <button class="send-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple functionality for demonstration
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chat history item selection
+            const historyItems = document.querySelectorAll('.history-item');
+            historyItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    historyItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Editor tab selection
+            const editorTabs = document.querySelectorAll('.editor-tab');
+            editorTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    editorTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Send message functionality
+            const sendBtn = document.querySelector('.send-btn');
+            const chatInput = document.querySelector('.chat-input textarea');
+            
+            sendBtn.addEventListener('click', function() {
+                const message = chatInput.value.trim();
+                if (message) {
+                    addMessage(message, 'user');
+                    chatInput.value = '';
+                    
+                    // Simulate AI response after a delay
+                    setTimeout(() => {
+                        addMessage("I'll help you optimize that code further. Let me prepare a revised version.", 'ai');
+                    }, 1000);
+                }
+            });
+
+            // Allow sending message with Enter key (but allow Shift+Enter for new line)
+            chatInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendBtn.click();
+                }
+            });
+
+            function addMessage(content, sender) {
+                const messagesContainer = document.querySelector('.chat-messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', sender);
+                
+                const now = new Date();
+                const timeString = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+                
+                messageDiv.innerHTML = `
+                    <div class="message-header">
+                        <div class="message-sender">${sender === 'user' ? 'You' : 'CodeAssistant AI'}</div>
+                        <div class="message-time">${timeString}</div>
+                    </div>
+                    <div class="message-content">${content}</div>
+                `;
+                
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        });
+    </script>
+</body>
+</html>

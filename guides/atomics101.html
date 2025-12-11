@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <title>ASXR MESH PORTAL — P2P TUNNEL</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #020409;
+      --bg-alt: #050912;
+      --bg-panel: #050a14;
+      --border-soft: rgba(22, 242, 170, 0.20);
+      --accent: #16f2aa;
+      --accent-blue: #00eaff;
+      --accent-magenta: #ff4bff;
+      --accent-danger: #ff476f;
+      --fg: #e6f7ff;
+      --fg-soft: #7b8ca3;
+      --fg-dim: #4a5669;
+      --shadow-hard: 0 0 0 1px rgba(0,0,0,0.7), 0 24px 80px rgba(0,0,0,0.9);
+      --editor-font: "JetBrains Mono", "Fira Code", monospace;
+      --grid-gap: 14px;
+      
+      /* Tunnel State Colors */
+      --tunnel-offline: #4b5568;
+      --tunnel-handshake: #f59e0b;
+      --tunnel-active: #16f2aa;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: var(--fg); font-family: system-ui, sans-serif; }
+    body { display: flex; align-items: center; justify-content: center; padding: 18px; background: radial-gradient(circle at top, #060915 0%, #000 100%); }
+
+    .os-shell {
+      position: relative; flex: 1; max-width: 1400px; height: 90vh;
+      border-radius: 18px; border: 1px solid rgba(22, 242, 170, 0.3);
+      background: linear-gradient(135deg, #020309, #040717);
+      box-shadow: var(--shadow-hard); display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    /* --- TOP BAR --- */
+    .top-bar {
+      height: 46px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
+      border-bottom: 1px solid rgba(22, 242, 170, 0.4);
+      background: rgba(2, 3, 10, 0.8); backdrop-filter: blur(10px);
+    }
+    .top-bar-title { font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+    .top-bar-badge { font-size: 10px; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--accent-blue); color: var(--accent-blue); background: rgba(0, 234, 255, 0.1); }
+
+    /* --- LAYOUT --- */
+    .os-body { flex: 1; display: grid; grid-template-columns: 300px 1fr; gap: var(--grid-gap); padding: 14px; }
+    
+    /* --- SIDEBAR (TUNNEL CONFIG) --- */
+    .sidebar { display: flex; flex-direction: column; gap: 12px; }
+    .sidebar-panel {
+      padding: 12px; background: rgba(5, 10, 20, 0.9); border-radius: 12px;
+      border: 1px solid rgba(22, 242, 170, 0.2); position: relative; overflow: hidden;
+    }
+    .sidebar-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--fg-soft); margin-bottom: 8px; display: flex; justify-content: space-between; }
+    
+    /* Tunnel Inputs */
+    .tunnel-form { display: flex; flex-direction: column; gap: 8px; }
+    .input-group { display: flex; flex-direction: column; gap: 4px; }
+    .input-label { font-size: 10px; color: var(--fg-dim); text-transform: uppercase; }
+    .input-field {
+      background: #020305; border: 1px solid rgba(148, 163, 184, 0.3); color: var(--accent);
+      padding: 6px 8px; border-radius: 6px; font-family: var(--editor-font); font-size: 11px;
+    }
+    .input-field:focus { outline: none; border-color: var(--accent); }
+    
+    .btn-connect {
+      margin-top: 4px; padding: 8px; background: var(--accent); color: #000; font-weight: 700;
+      border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; font-size: 11px;
+      transition: all 0.2s;
+    }
+    .btn-connect:hover { box-shadow: 0 0 15px var(--accent); }
+    .btn-auto { background: rgba(0, 234, 255, 0.1); color: var(--accent-blue); border: 1px solid var(--accent-blue); margin-top: 4px; }
+
+    /* Connection Visualizer */
+    .tunnel-vis { height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 10px; margin-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); }
+    .node-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--fg-dim); transition: 0.3s; }
+    .tunnel-line { flex: 1; height: 2px; background: #222; margin: 0 10px; position: relative; overflow: hidden; }
+    .tunnel-packet {
+      position: absolute; width: 20%; height: 100%; background: var(--accent);
+      left: -20%; opacity: 0; transition: none;
+    }
+    .tunnel-active .node-dot { background: var(--tunnel-active); box-shadow: 0 0 10px var(--tunnel-active); }
+    .tunnel-active .tunnel-packet { animation: packet-flow 1.5s infinite linear; opacity: 1; }
+    
+    @keyframes packet-flow { 0% { left: -20%; } 100% { left: 100%; } }
+
+    /* --- MAIN AREA --- */
+    .main { display: flex; flex-direction: column; gap: 14px; }
+    
+    .editor-panel {
+      flex: 1; background: #020305; border-radius: 12px; border: 1px solid rgba(22, 242, 170, 0.15);
+      display: flex; flex-direction: column; overflow: hidden; position: relative;
+    }
+    .editor-tabs {
+      background: #050811; padding: 0 12px; height: 36px; display: flex; align-items: center; gap: 2px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .tab {
+      padding: 6px 12px; font-size: 11px; color: var(--fg-dim); cursor: pointer; border-top: 2px solid transparent;
+      font-family: var(--editor-font);
+    }
+    .tab.active { color: var(--fg); background: #020305; border-top-color: var(--accent); }
+    
+    .code-editor {
+      flex: 1; padding: 12px; color: var(--fg); font-family: var(--editor-font); font-size: 12px;
+      line-height: 1.5; border: none; background: transparent; resize: none; outline: none;
+    }
+
+    /* --- LOGS --- */
+    .log-panel {
+      height: 140px; background: #010203; border-radius: 12px; border: 1px solid rgba(255, 75, 255, 0.2);
+      padding: 10px; font-family: var(--editor-font); font-size: 11px; overflow-y: auto;
+    }
+    .log-entry { margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 2px; }
+    .log-time { color: var(--fg-dim); margin-right: 8px; }
+    .log-msg { color: var(--fg-soft); }
+    .log-success { color: var(--accent); }
+    .log-warn { color: var(--accent-blue); }
+
+    /* Minimal Helper Classes */
+    [⟁flex] { display: flex; }
+    [⟁col] { flex-direction: column; }
+    [⟁center] { align-items: center; justify-content: center; }
+  </style>
+</head>
+<body>
+
+<div class="os-shell">
+  <header class="top-bar">
+    <div style="display:flex; gap:10px; align-items:center;">
+      <div style="width:10px; height:10px; background:var(--accent); border-radius:50%; box-shadow:0 0 10px var(--accent);"></div>
+      <div class="top-bar-title">ASXR MESH TUNNEL V1.5</div>
+    </div>
+    <div class="top-bar-badge">CLOUDFLARE MINUS CLOUDFLARE</div>
+  </header>
+
+  <div class="os-body">
+    <aside class="sidebar">
+      <div class="sidebar-panel">
+        <div class="sidebar-title">
+          <span>My Mesh Identity</span>
+          <span style="color:var(--accent-magenta)">● ONLINE</span>
+        </div>
+        <div style="font-size:10px; color:var(--fg-dim); margin-bottom:4px;">NODE ID</div>
+        <div style="font-family:var(--editor-font); font-size:11px; color:var(--fg);">mx2-node-sigma-9</div>
+        <div style="font-size:10px; color:var(--fg-dim); margin-top:8px; margin-bottom:4px;">PUBLIC KEY</div>
+        <div style="font-family:var(--editor-font); font-size:10px; color:var(--fg-soft); overflow:hidden; text-overflow:ellipsis;">0x7a9...f42b</div>
+      </div>
+
+      <div class="sidebar-panel">
+        <div class="sidebar-title">
+          <span>Tunnel Settings</span>
+          <span style="color:var(--accent-blue)">P2P</span>
+        </div>
+        
+        <div class="tunnel-form">
+          <div class="input-group">
+            <label class="input-label">Target Rig IP</label>
+            <input type="text" class="input-field" id="tunnel-ip" value="AUTO_DETECT" />
+          </div>
+          <div class="input-group">
+            <label class="input-label">Direct Port (NAT)</label>
+            <input type="text" class="input-field" id="tunnel-port" value="68799" />
+          </div>
+          <div class="input-group">
+            <label class="input-label">Auth Token (Optional)</label>
+            <input type="password" class="input-field" id="tunnel-auth" value="••••••••" />
+          </div>
+
+          <button class="btn-connect" onclick="toggleTunnel()">Initiate Tunnel</button>
+          <button class="btn-connect btn-auto" onclick="autoDiscover()">⚡ Auto-Fetch Config</button>
+        </div>
+
+        <div class="tunnel-vis" id="tunnel-visualizer">
+          <div class="node-dot" title="You (Browser)"></div>
+          <div class="tunnel-line"><div class="tunnel-packet"></div></div>
+          <div class="node-dot" title="Rig (Target)"></div>
+        </div>
+        <div style="text-align:center; font-size:10px; color:var(--fg-dim); margin-top:4px;" id="tunnel-status-text">DISCONNECTED</div>
+      </div>
+
+      <div class="sidebar-panel">
+        <div class="sidebar-metric" style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
+          <span style="color:var(--fg-dim)">Latency</span>
+          <span style="color:var(--accent)" id="stat-latency">-- ms</span>
+        </div>
+        <div class="sidebar-metric" style="display:flex; justify-content:space-between; font-size:11px;">
+          <span style="color:var(--fg-dim)">Throughput</span>
+          <span style="color:var(--accent-blue)" id="stat-speed">0 KB/s</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="editor-panel">
+        <div class="editor-tabs">
+          <div class="tab active">tunnel_config.xjson</div>
+          <div class="tab">atomic.css</div>
+          <div class="tab">kuhul_route.khl</div>
+        </div>
+        <textarea class="code-editor" id="xjson-editor" spellcheck="false"></textarea>
+      </div>
+
+      <div class="log-panel" id="log-container">
+        <div class="log-entry">
+          <span class="log-time">[SYS]</span>
+          <span class="log-msg">K'uhul Mesh Kernel loaded.</span>
+        </div>
+        <div class="log-entry">
+          <span class="log-time">[NET]</span>
+          <span class="log-msg">Waiting for tunnel configuration...</span>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script type="application/xjson" id="os-xjson">
+{
+  "@context": "xjson://asxr/mesh_tunnel/v1",
+  "@law": "ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK",
+  
+  "mesh_dns": {
+    "@mode": "P2P_TUNNEL",
+    "@status": "ENDPOINT_SAVED",
+    "@my_node": {
+      "id": "mx2-node-sigma-9",
+      "public_key": "0x7a9c...f42b",
+      "role": "CLIENT_PEER"
+    },
+    "@tunnel_target": {
+      "ip": "204.194.237.36",
+      "port": "68799",
+      "identity": "rig-alpha-core",
+      "nat_type": "STRICT",
+      "auth_method": "TOKEN"
+    },
+    "@peers": [
+      { "id": "user_x", "route": "146.112.132.79:54321", "ping": 45 },
+      { "id": "user_y", "route": "2620:0:cc8::36:8080", "ping": 12 }
+    ]
+  },
+
+  "kuhul_routes": {
+    "connect": "[Pop tunnel_open] [Wo target_ip] [Sek handshake] [Ch'en stream]",
+    "discover": "[Pop mesh_scan] [Sek dht_lookup] [Ch'en peer_list]"
+  }
+}
+</script>
+
+<script>
+  // --- CONFIGURATION ---
+  // The LIVE endpoint for your Google Apps Script Web App
+  // NOTE: This URL must be kept secret and should ideally be loaded dynamically by the sw.khl
+  const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwTjG00eeLduQAqEBRsSuvqyX6AGBmzl9dlczVfm6UJa8-tMRthDN4YqYR9gPt1lEs/exec';
+  const ICE_SERVERS = [{ urls: 'stun:stun.l.google.com:19302' }]; // Public STUN server for NAT traversal
+
+  // Load XJSON OS State
+  const xjsonRaw = document.getElementById('os-xjson').textContent;
+  const osState = JSON.parse(xjsonRaw);
+  document.getElementById('xjson-editor').value = JSON.stringify(osState, null, 2);
+
+  // --- LOGGING SYSTEM ---
+  function log(msg, type='info', source='[NET]') {
+    const box = document.getElementById('log-container');
+    const div = document.createElement('div');
+    div.className = 'log-entry';
+    const time = new Date().toLocaleTimeString().split(' ')[0];
+    let colorClass = 'log-msg';
+    if(type==='success') colorClass = 'log-success';
+    if(type==='warn') colorClass = 'log-warn';
+    if(type==='error') colorClass = 'log-danger';
+    
+    div.innerHTML = `<span class="log-time">${source}</span><span class="${colorClass}">${msg}</span>`;
+    box.prepend(div);
+  }
+
+  // --- K'UHUL MESH TUNNEL LOGIC ---
+  let tunnelActive = false;
+  let intervalId = null;
+  let peerConnection = null;
+  let dataChannel = null;
+
+  // STEP 1: Registers the current tunnel config with the GAS Shard
+  async function registerTunnel(ip, port) {
+    const payload = {
+      rig_id: osState.mesh_dns['@my_node'].id,
+      endpoint: `${ip}:${port}`,
+      nat_type: document.getElementById('tunnel-ip').value === 'AUTO_DETECT' ? 'UNKNOWN' : 'MANUAL'
+    };
+    
+    const gasUrl = `${GAS_ENDPOINT}?action=registerTunnel`;
+    log(`[K'UHUL] Sending rig identity to GAS Shard for persistence...`, 'warn', '[GAS]');
+    
+    try {
+      const response = await fetch(gasUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        log(`[K'UHUL] Tunnel endpoint saved successfully to user properties.`, 'success', '[GAS]');
+      } else {
+        const error = await response.json();
+        log(`[ERROR] GAS Shard Error: ${error.message || response.statusText}`, 'error', '[GAS]');
+      }
+    } catch (e) {
+      log(`[ERROR] Network error: Could not reach GAS Shard.`, 'error', '[GAS]');
+    }
+  }
+  
+  // STEP 2: GAS SHARD SIGNALING
+  // This simulates sending the WebRTC Offer/Candidate through the GAS Shard to the Rig
+  async function signalToGas(type, payload) {
+    const gasUrl = `${GAS_ENDPOINT}?action=signalMessage`; // NOTE: Needs implementing on GAS side
+    
+    const signalPayload = {
+        rig_id: osState.mesh_dns['@my_node'].id,
+        signal_type: type,
+        data: payload
+    };
+    
+    try {
+        const response = await fetch(gasUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(signalPayload)
+        });
+        
+        if (!response.ok) {
+            log(`[ERROR] GAS Signaling Error: ${response.statusText}`, 'error', '[GAS]');
+        }
+
+        // FAKE: Simulate the Rig immediately sending an 'Answer' back
+        if (type === 'offer') {
+            log(`[P2P] Rig received Offer. Awaiting Answer...`, 'warn', '[P2P]');
+            setTimeout(async () => {
+                log(`[P2P] Received simulated SDP Answer from Rig.`, 'success', '[P2P]');
+                // In a real app, this would be fetched from GAS by the client
+                const answer = { type: "answer", sdp: "v=0..." }; // Dummy Answer
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+                log(`[ICE] Remote Description set. Waiting for NAT Traversal (ICE completion)...`, 'success', '[ICE]');
+            }, 3000);
+        }
+
+    } catch (e) {
+        log(`[ERROR] Signaling Network Error: ${e.message}`, 'error', '[GAS]');
+    }
+  }
+
+
+  // STEP 3: WEB RTC HANDSHAKE CORE
+  async function createOfferAndSignal(targetIp) {
+      // 1. Create the Peer Connection
+      peerConnection = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+
+      // 2. Set up the Data Channel (for K'uhul traffic)
+      dataChannel = peerConnection.createDataChannel("kuhul-mesh-channel");
+      
+      dataChannel.onopen = () => {
+          // This is the real success event!
+          handleTunnelSuccess(targetIp);
+      };
+
+      dataChannel.onmessage = (event) => {
+          // K'UHUL packet traffic received
+          log(`[MESH] Traffic received: ${event.data.substring(0, 30)}...`, 'info', '[MESH]');
+      };
+      
+      dataChannel.onclose = () => {
+        log(`[P2P] Data Channel closed.`, 'warn', '[P2P]');
+        // Trigger a visual disconnect if it wasn't manual
+        if (tunnelActive) { toggleTunnel(); } 
+      }
+
+      // 3. Handle ICE Candidates (NAT Traversal)
+      peerConnection.onicecandidate = async (event) => {
+          if (event.candidate) {
+              log(`[ICE] Sending ICE Candidate via GAS Shard...`, 'warn', '[ICE]');
+              await signalToGas('candidate', event.candidate.toJSON());
+          }
+      };
+
+      // 4. Create the Offer (Initial Handshake)
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+
+      // 5. Send the Offer to the remote Rig using GAS Shard
+      log(`[P2P] Sending SDP Offer to Rig (${targetIp}) via GAS Shard...`, 'warn', '[P2P]');
+      await signalToGas('offer', peerConnection.localDescription);
+  }
+
+  // STEP 4: Success Handler (UI Update)
+  function handleTunnelSuccess(ip) {
+      const btn = document.querySelector('.btn-connect');
+      const vis = document.getElementById('tunnel-visualizer');
+      const statusText = document.getElementById('tunnel-status-text');
+      
+      log(`[P2P] Data Channel OPEN. P2P Tunnel operational.`, 'success', '[P2P]');
+
+      tunnelActive = true;
+      vis.classList.add('tunnel-active');
+      btn.innerText = "Disconnect Tunnel";
+      btn.style.background = "var(--accent-danger)";
+      statusText.innerText = `DIRECT LINK ESTABLISHED • ${ip}`;
+      statusText.style.color = "var(--accent)";
+
+      // Start simulated traffic stats
+      intervalId = setInterval(() => {
+          document.getElementById('stat-latency').innerText = Math.floor(Math.random() * 20 + 10) + " ms";
+          document.getElementById('stat-speed').innerText = Math.floor(Math.random() * 500 + 100) + " KB/s";
+      }, 1000);
+  }
+
+
+  // STEP 5: Controls the connection flow
+  function connectTunnel(ip, port) {
+    log(`[K'UHUL] Initiating WebRTC connection to ${ip}:${port}...`, 'warn', '[P2P]');
+    document.querySelector('.btn-connect').innerText = "Connecting...";
+    
+    // START THE WEB RTC HANDSHAKE
+    createOfferAndSignal(ip);
+  }
+
+  // STEP 6: Public facing button function
+  function toggleTunnel() {
+    const ip = document.getElementById('tunnel-ip').value;
+    const port = document.getElementById('tunnel-port').value;
+    
+    if (ip === "AUTO_DETECT") {
+        log(`[ERROR] Cannot initiate tunnel. Run Auto-Fetch first.`, 'error');
+        return;
+    }
+
+    if (!tunnelActive) {
+      registerTunnel(ip, port); // Save config first
+      connectTunnel(ip, port); // Then attempt connection
+    } else {
+      // STOP TUNNEL
+      log("[P2P] Terminating P2P link and cleaning up WebRTC...", 'warn');
+      if (dataChannel) dataChannel.close();
+      if (peerConnection) peerConnection.close();
+      peerConnection = null;
+      dataChannel = null;
+
+      tunnelActive = false;
+      document.getElementById('tunnel-visualizer').classList.remove('tunnel-active');
+      document.querySelector('.btn-connect').innerText = "Initiate Tunnel";
+      document.querySelector('.btn-connect').style.background = "var(--accent)";
+      document.getElementById('tunnel-status-text').innerText = "DISCONNECTED";
+      document.getElementById('tunnel-status-text').style.color = "var(--fg-dim)";
+      clearInterval(intervalId);
+      document.getElementById('stat-speed').innerText = "0 KB/s";
+    }
+  }
+
+  // STEP 7: Fetches the last saved endpoint from the GAS Shard
+  async function autoDiscover() {
+    log("[K'UHUL] Broadcasting discovery packet on Mesh DHT...", 'warn');
+    const gasUrl = `${GAS_ENDPOINT}?action=getTunnelEndpoint`;
+    
+    log(`[K'UHUL] Requesting last saved endpoint from GAS Shard...`, 'warn', '[GAS]');
+
+    try {
+      const response = await fetch(gasUrl);
+
+      if (response.ok) {
+        const payload = await response.json();
+        
+        // Payload is a JSON string of the saved payload
+        const savedConfig = JSON.parse(payload); 
+
+        const [savedIp, savedPort] = savedConfig.endpoint.split(':');
+        
+        document.getElementById('tunnel-ip').value = savedIp;
+        document.getElementById('tunnel-port').value = savedPort;
+        
+        log(`[P2P] Peer Found: Rig Alpha (${savedConfig.rig_id}) at ${savedConfig.endpoint}`, 'success');
+        log("[K'UHUL] Config updated from Mesh persistence.", 'success');
+        
+      } else if (response.status === 404) {
+        log(`[GAS] No previously saved tunnel config found.`, 'error', '[GAS]');
+      } else {
+        log(`[ERROR] GAS Shard Error: ${response.statusText}`, 'error', '[GAS]');
+      }
+      
+    } catch (e) {
+      log(`[ERROR] Network error: Could not reach GAS Shard. Is the Web App deployed?`, 'error', '[GAS]');
+    }
+  }
+</script>
+</body>
+</html>
