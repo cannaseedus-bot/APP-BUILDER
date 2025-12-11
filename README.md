@@ -21,7 +21,7 @@
 
 Alright, forging the FULL STACK DIAGRAM right now 🔥
 
-Below is something you can *directly paste to Claude* as “this is the ASX Full Stack layout.”
+Below is something you can *directly paste to Claude* as “this is the ASX Full Stack layout.” and he can help you build your own version of our fulle stack!
 
 ---
 
