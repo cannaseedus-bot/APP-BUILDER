@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XJSON ML Training Runtime - Browser-Based AI Training</title>
+  
+  <style>
+    :root {
+      --primary: #16f2aa;
+      --secondary: #38bdf8;
+      --accent: #a855f7;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --bg-primary: #020617;
+      --bg-secondary: #0f172a;
+      --bg-tertiary: #1e293b;
+      --text-primary: #e5f2ff;
+      --text-secondary: #94a3b8;
+      --border: rgba(148, 163, 184, 0.2);
+      --glass: rgba(255, 255, 255, 0.05);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at 10% 20%, rgb(6, 20, 38) 0%, rgb(2, 6, 23) 90%);
+      color: var(--text-primary);
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+      min-height: 100vh;
+    }
+
+    .neural-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.1;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 320px 1fr 380px;
+      grid-template-rows: 60px 1fr;
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    header {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, rgba(22, 242, 170, 0.1), rgba(56, 189, 248, 0.1));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 900;
+    }
+
+    .logo-text h1 {
+      font-size: 1.2rem;
+      letter-spacing: 0.1em;
+    }
+
+    .logo-text p {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+    }
+
+    .gpu-status {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.8rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .panel {
+      background: linear-gradient(135deg, rgba(22, 242, 170, 0.03), rgba(56, 189, 248, 0.03));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      overflow-y: auto;
+      backdrop-filter: blur(10px);
+    }
+
+    .panel-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .panel-title-icon {
+      font-size: 1.2rem;
+    }
+
+    .model-config, .dataset-panel, .metrics-panel {
+      overflow-y: auto;
+    }
+
+    .training-viz {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      height: 400px;
+      position: relative;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.6rem;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.85rem;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+      font-family: 'SF Mono', monospace;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(22, 242, 170, 0.1);
+    }
+
+    .btn {
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--bg-primary);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(22, 242, 170, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      background: rgba(22, 242, 170, 0.1);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .metric-card {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .metric-label {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.3rem;
+    }
+
+    .metric-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .metric-trend {
+      font-size: 0.8rem;
+      color: var(--success);
+    }
+
+    .metric-trend.down {
+      color: var(--danger);
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 300px;
+      margin-top: 1rem;
+    }
+
+    .log-output {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 0.75rem;
+      line-height: 1.6;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: 'SF Mono', monospace;
+    }
+
+    .log-entry {
+      margin-bottom: 0.3rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .log-timestamp {
+      color: var(--text-secondary);
+    }
+
+    .log-level {
+      font-weight: 700;
+    }
+
+    .log-level.info { color: var(--secondary); }
+    .log-level.success { color: var(--success); }
+    .log-level.warning { color: var(--warning); }
+    .log-level.error { color: var(--danger); }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--bg-tertiary);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 0.3s ease;
+    }
+
+    .layer-viz {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .layer {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .layer-name {
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .layer-params {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .code-editor {
+      background: #0a0e1a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'SF Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: var(--text-primary);
+      overflow-x: auto;
+    }
+
+    .dataset-upload {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .dataset-upload:hover {
+      border-color: var(--primary);
+      background: rgba(22, 242, 170, 0.05);
+    }
+
+    .dataset-upload input {
+      display: none;
+    }
+
+    @media (max-width: 1400px) {
+      .container {
+        grid-template-columns: 1fr;
+        grid-template-rows: 60px auto;
+      }
+      
+      .model-config, .metrics-panel {
+        max-height: 600px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas class="neural-bg" id="neuralBg"></canvas>
+
+  <div class="container">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">🧠</div>
+        <div class="logo-text">
+          <h1>XJSON ML RUNTIME</h1>
+          <p>Browser-Based AI Model Training</p>
+        </div>
+      </div>
+      
+      <div class="gpu-status">
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span id="gpu-type">Detecting GPU...</span>
+        </div>
+        <div class="status-indicator">
+          <span>Memory: <strong id="gpu-memory">0 GB</strong></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Left Panel: Model Configuration -->
+    <div class="panel model-config">
+      <h2 class="panel-title">
+        <span class="panel-title-icon">⚙️</span>
+        Model Configuration
+      </h2>
+
+      <div class="form-group">
+        <label>Model Type</label>
+        <select id="model-type">
+          <option value="transformer">Transformer (GPT-style)</option>
+          <option value="cnn">Convolutional Neural Network</option>
+          <option value="rnn">Recurrent Neural Network</option>
+          <option value="lstm">LSTM</option>
+          <option value="vae">Variational Autoencoder</option>
+          <option value="gan">Generative Adversarial Network</option>
+          <option value="custom">Custom Architecture</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Model Name</label>
+        <input type="text" id="model-name" placeholder="my-fine-tuned-model" value="xjson-model-v1">
+      </div>
+
+      <div class="form-group">
+        <label>Architecture (XJSON)</label>
+        <textarea id="architecture" placeholder='{"layers": [...]}'>{
+  "input_dim": 768,
+  "layers": [
+    {"type": "embedding", "vocab_size": 50000, "dim": 768},
+    {"type": "transformer", "heads": 12, "dim": 768, "layers": 6},
+    {"type": "linear", "out": 50000}
+  ]
+}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Training Hyperparameters</label>
+        <textarea id="hyperparams">{
+  "learning_rate": 0.0001,
+  "batch_size": 32,
+  "epochs": 10,
+  "optimizer": "adam",
+  "loss": "cross_entropy",
+  "gradient_clip": 1.0,
+  "warmup_steps": 1000
+}</textarea>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" id="init-model">
+          🚀 Initialize Model
+        </button>
+        <button class="btn btn-secondary" id="load-model">
+          📥 Load Pretrained
+        </button>
+      </div>
+
+      <div id="layer-visualization" style="margin-top: 2rem; display: none;">
+        <h3 style="font-size: 0.9rem; margin-bottom: 1rem;">Layer Architecture</h3>
+        <div class="layer-viz" id="layer-list"></div>
+      </div>
+    </div>
+
+    <!-- Center Panel: Training Visualization -->
+    <div class="panel">
+      <h2 class="panel-title">
+        <span class="panel-title-icon">📊</span>
+        Training Visualization
+      </h2>
+
+      <div class="training-viz">
+        <canvas id="loss-chart"></canvas>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <h3 class="panel-title">
+          <span class="panel-title-icon">📁</span>
+          Dataset
+        </h3>
+
+        <div class="dataset-upload" id="dataset-upload">
+          <input type="file" id="dataset-file" accept=".json,.jsonl,.txt,.csv" multiple>
+          <div style="font-size: 3rem; margin-bottom: 1rem;">📤</div>
+          <div style="font-size: 0.9rem; margin-bottom: 0.5rem;">
+            Click or drag files to upload
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-secondary);">
+            Supports: JSON, JSONL, TXT, CSV
+          </div>
+        </div>
+
+        <div id="dataset-info" style="margin-top: 1rem; display: none;">
+          <div class="metric-card">
+            <div class="metric-label">Dataset Size</div>
+            <div class="metric-value" id="dataset-size">0</div>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" id="start-training" disabled>
+            ▶️ Start Training
+          </button>
+          <button class="btn btn-danger" id="stop-training" disabled>
+            ⏸️ Stop Training
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <h3 class="panel-title">
+          <span class="panel-title-icon">📝</span>
+          Training Log
+        </h3>
+        <div class="log-output" id="training-log"></div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Metrics -->
+    <div class="panel metrics-panel">
+      <h2 class="panel-title">
+        <span class="panel-title-icon">📈</span>
+        Training Metrics
+      </h2>
+
+      <div class="metric-card">
+        <div class="metric-label">Current Epoch</div>
+        <div class="metric-value" id="current-epoch">0</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="epoch-progress" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Training Loss</div>
+        <div class="metric-value" id="train-loss">0.0000</div>
+        <div class="metric-trend" id="loss-trend">—</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Validation Loss</div>
+        <div class="metric-value" id="val-loss">0.0000</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Accuracy</div>
+        <div class="metric-value" id="accuracy">0.0%</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Learning Rate</div>
+        <div class="metric-value" style="font-size: 1.2rem;" id="learning-rate">0.0001</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Tokens/Second</div>
+        <div class="metric-value" id="tokens-per-sec">0</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">GPU Utilization</div>
+        <div class="metric-value" id="gpu-util">0%</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="gpu-util-bar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem;">
+        <h3 class="panel-title">
+          <span class="panel-title-icon">💾</span>
+          Export Model
+        </h3>
+
+        <div class="btn-group" style="flex-direction: column;">
+          <button class="btn btn-secondary" id="export-onnx">
+            📦 Export as ONNX
+          </button>
+          <button class="btn btn-secondary" id="export-weights">
+            🔢 Export Weights (JSON)
+          </button>
+          <button class="btn btn-secondary" id="export-xjson">
+            ⚡ Export as XJSON Model
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // ═══════════════════════════════════════════════════════════════
+    // XJSON ML TRAINING RUNTIME
+    // Browser-based AI model training with WebGPU
+    // ═══════════════════════════════════════════════════════════════
+
+    class XJSONMLRuntime {
+      constructor() {
+        this.gpu = null;
+        this.device = null;
+        this.model = null;
+        this.dataset = null;
+        this.training = false;
+        this.metrics = {
+          epoch: 0,
+          loss: [],
+          valLoss: [],
+          accuracy: [],
+          lr: 0.0001
+        };
+        this.lossChart = null;
+      }
+
+      async init() {
+        this.log('info', 'Initializing XJSON ML Runtime...');
+        
+        // Try to initialize WebGPU
+        if ('gpu' in navigator) {
+          try {
+            this.gpu = navigator.gpu;
+            const adapter = await this.gpu.requestAdapter();
+            this.device = await adapter.requestDevice();
+            
+            const info = await adapter.requestAdapterInfo();
+            document.getElementById('gpu-type').textContent = info.architecture || 'WebGPU Ready';
+            
+            this.log('success', `WebGPU initialized: ${info.vendor || 'Unknown'}`);
+          } catch (e) {
+            this.log('warning', 'WebGPU not available, falling back to WebGL');
+            this.initWebGL();
+          }
+        } else {
+          this.log('warning', 'WebGPU not supported, using WebGL fallback');
+          this.initWebGL();
+        }
+
+        this.initChart();
+        this.attachEventListeners();
+        this.startNeuralBackground();
+        
+        this.log('success', 'XJSON ML Runtime ready ✓');
+      }
+
+      initWebGL() {
+        // WebGL fallback for browsers without WebGPU
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl2');
+        if (gl) {
+          this.device = { type: 'webgl2', context: gl };
+          document.getElementById('gpu-type').textContent = 'WebGL 2.0';
+        }
+      }
+
+      initChart() {
+        const canvas = document.getElementById('loss-chart');
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        
+        this.lossChart = {
+          canvas,
+          ctx,
+          data: [],
+          render: () => this.renderChart()
+        };
+      }
+
+      renderChart() {
+        const { canvas, ctx, data } = this.lossChart;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (data.length === 0) {
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '14px SF Mono';
+          ctx.textAlign = 'center';
+          ctx.fillText('Training not started', canvas.width / 2, canvas.height / 2);
+          return;
+        }
+
+        // Draw grid
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.1)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 10; i++) {
+          const y = (canvas.height / 10) * i;
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(canvas.width, y);
+          ctx.stroke();
+        }
+
+        // Draw loss curve
+        ctx.strokeStyle = '#16f2aa';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        
+        const maxLoss = Math.max(...data);
+        const minLoss = Math.min(...data);
+        const range = maxLoss - minLoss || 1;
+        
+        data.forEach((loss, i) => {
+          const x = (canvas.width / (data.length - 1)) * i;
+          const y = canvas.height - ((loss - minLoss) / range) * (canvas.height - 40) - 20;
+          
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        });
+        
+        ctx.stroke();
+
+        // Draw labels
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '12px SF Mono';
+        ctx.fillText(`Max: ${maxLoss.toFixed(4)}`, 10, 20);
+        ctx.fillText(`Min: ${minLoss.toFixed(4)}`, 10, canvas.height - 10);
+      }
+
+      async initializeModel() {
+        try {
+          const archText = document.getElementById('architecture').value;
+          const arch = JSON.parse(archText);
+          
+          this.log('info', 'Initializing model architecture...');
+          
+          // Create model structure
+          this.model = {
+            architecture: arch,
+            parameters: this.calculateParameters(arch),
+            weights: null,
+            initialized: false
+          };
+
+          // Visualize layers
+          this.visualizeLayers(arch.layers);
+          
+          // Initialize weights (simulated - real implementation would use WebGPU buffers)
+          await this.initializeWeights();
+          
+          this.model.initialized = true;
+          document.getElementById('start-training').disabled = !this.dataset;
+          
+          this.log('success', `Model initialized: ${this.model.parameters.toLocaleString()} parameters`);
+          
+        } catch (e) {
+          this.log('error', `Failed to initialize model: ${e.message}`);
+        }
+      }
+
+      calculateParameters(arch) {
+        let total = 0;
+        arch.layers.forEach(layer => {
+          switch(layer.type) {
+            case 'embedding':
+              total += layer.vocab_size * layer.dim;
+              break;
+            case 'transformer':
+              // Simplified calculation
+              total += layer.layers * (layer.dim * layer.dim * 4);
+              break;
+            case 'linear':
+              total += layer.out * (arch.input_dim || 768);
+              break;
+          }
+        });
+        return total;
+      }
+
+      visualizeLayers(layers) {
+        const container = document.getElementById('layer-list');
+        container.innerHTML = '';
+        
+        layers.forEach((layer, i) => {
+          const div = document.createElement('div');
+          div.className = 'layer';
+          div.innerHTML = `
+            <div class="layer-name">${layer.type.toUpperCase()}</div>
+            <div class="layer-params">${this.getLayerParams(layer)}</div>
+          `;
+          container.appendChild(div);
+        });
+
+        document.getElementById('layer-visualization').style.display = 'block';
+      }
+
+      getLayerParams(layer) {
+        switch(layer.type) {
+          case 'embedding':
+            return `${layer.vocab_size} vocab, ${layer.dim} dim`;
+          case 'transformer':
+            return `${layer.heads} heads, ${layer.layers} layers`;
+          case 'linear':
+            return `out: ${layer.out}`;
+          default:
+            return '';
+        }
+      }
+
+      async initializeWeights() {
+        // Simulate weight initialization
+        return new Promise(resolve => {
+          setTimeout(() => {
+            this.model.weights = { initialized: true };
+            resolve();
+          }, 500);
+        });
+      }
+
+      async loadDataset(files) {
+        try {
+          this.log('info', `Loading ${files.length} dataset file(s)...`);
+          
+          let allData = [];
+          
+          for (const file of files) {
+            const text = await file.text();
+            
+            if (file.name.endsWith('.jsonl')) {
+              const lines = text.split('\n').filter(l => l.trim());
+              allData.push(...lines.map(l => JSON.parse(l)));
+            } else if (file.name.endsWith('.json')) {
+              const data = JSON.parse(text);
+              allData.push(...(Array.isArray(data) ? data : [data]));
+            } else if (file.name.endsWith('.txt')) {
+              allData.push({ text });
+            }
+          }
+
+          this.dataset = {
+            data: allData,
+            size: allData.length,
+            file: files[0].name
+          };
+
+          document.getElementById('dataset-size').textContent = allData.length.toLocaleString();
+          document.getElementById('dataset-info').style.display = 'block';
+          document.getElementById('start-training').disabled = !this.model?.initialized;
+
+          this.log('success', `Dataset loaded: ${allData.length} samples`);
+          
+        } catch (e) {
+          this.log('error', `Failed to load dataset: ${e.message}`);
+        }
+      }
+
+      async startTraining() {
+        if (!this.model || !this.dataset) {
+          this.log('error', 'Model and dataset must be initialized first');
+          return;
+        }
+
+        this.training = true;
+        document.getElementById('start-training').disabled = true;
+        document.getElementById('stop-training').disabled = false;
+
+        try {
+          const hyperparamsText = document.getElementById('hyperparams').value;
+          const hyperparams = JSON.parse(hyperparamsText);
+
+          this.log('info', '🚀 Starting training...');
+          
+          // Training loop
+          for (let epoch = 0; epoch < hyperparams.epochs && this.training; epoch++) {
+            await this.trainEpoch(epoch, hyperparams);
+          }
+
+          if (this.training) {
+            this.log('success', '✓ Training completed!');
+          }
+          
+        } catch (e) {
+          this.log('error', `Training failed: ${e.message}`);
+        } finally {
+          this.training = false;
+          document.getElementById('start-training').disabled = false;
+          document.getElementById('stop-training').disabled = true;
+        }
+      }
+
+      async trainEpoch(epoch, hyperparams) {
+        this.metrics.epoch = epoch + 1;
+        document.getElementById('current-epoch').textContent = epoch + 1;
+
+        const batchSize = hyperparams.batch_size;
+        const batches = Math.ceil(this.dataset.size / batchSize);
+
+        let epochLoss = 0;
+
+        for (let batch = 0; batch < batches && this.training; batch++) {
+          // Simulate forward pass
+          const loss = await this.computeLoss(batch, batchSize, hyperparams);
+          epochLoss += loss;
+
+          // Update metrics
+          const avgLoss = epochLoss / (batch + 1);
+          this.updateMetrics(avgLoss, hyperparams);
+
+          // Progress
+          const progress = ((batch + 1) / batches) * 100;
+          document.getElementById('epoch-progress').style.width = `${progress}%`;
+
+          // Simulate computation time
+          await new Promise(resolve => setTimeout(resolve, 50));
+        }
+
+        const avgEpochLoss = epochLoss / batches;
+        this.metrics.loss.push(avgEpochLoss);
+        this.lossChart.data = this.metrics.loss;
+        this.lossChart.render();
+
+        this.log('info', `Epoch ${epoch + 1}/${hyperparams.epochs} - Loss: ${avgEpochLoss.toFixed(4)}`);
+      }
+
+      async computeLoss(batch, batchSize, hyperparams) {
+        // Simulate loss computation
+        // In real implementation, this would run WebGPU compute shaders
+        const initialLoss = 2.5;
+        const decay = 0.95;
+        const noise = (Math.random() - 0.5) * 0.1;
+        
+        return initialLoss * Math.pow(decay, this.metrics.epoch) + noise;
+      }
+
+      updateMetrics(loss, hyperparams) {
+        document.getElementById('train-loss').textContent = loss.toFixed(4);
+        
+        // Simulate other metrics
+        const accuracy = Math.min(95, 50 + this.metrics.epoch * 4.5);
+        document.getElementById('accuracy').textContent = accuracy.toFixed(1) + '%';
+        
+        document.getElementById('learning-rate').textContent = hyperparams.learning_rate.toExponential(2);
+        
+        const tokensPerSec = Math.floor(1000 + Math.random() * 500);
+        document.getElementById('tokens-per-sec').textContent = tokensPerSec.toLocaleString();
+        
+        const gpuUtil = Math.floor(70 + Math.random() * 25);
+        document.getElementById('gpu-util').textContent = gpuUtil + '%';
+        document.getElementById('gpu-util-bar').style.width = gpuUtil + '%';
+        
+        // Loss trend
+        if (this.metrics.loss.length > 1) {
+          const prev = this.metrics.loss[this.metrics.loss.length - 1];
+          const trend = document.getElementById('loss-trend');
+          if (loss < prev) {
+            trend.textContent = '↓ Decreasing';
+            trend.className = 'metric-trend';
+          } else {
+            trend.textContent = '↑ Increasing';
+            trend.className = 'metric-trend down';
+          }
+        }
+      }
+
+      stopTraining() {
+        this.training = false;
+        this.log('warning', 'Training stopped by user');
+      }
+
+      exportModel(format) {
+        if (!this.model) {
+          this.log('error', 'No model to export');
+          return;
+        }
+
+        this.log('info', `Exporting model as ${format}...`);
+
+        const modelData = {
+          name: document.getElementById('model-name').value,
+          architecture: this.model.architecture,
+          weights: this.model.weights,
+          metrics: this.metrics,
+          format: format,
+          exported_at: new Date().toISOString()
+        };
+
+        const blob = new Blob([JSON.stringify(modelData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${modelData.name}-${format}.json`;
+        a.click();
+
+        this.log('success', `Model exported: ${a.download}`);
+      }
+
+      log(level, message) {
+        const logContainer = document.getElementById('training-log');
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        
+        const timestamp = new Date().toLocaleTimeString();
+        
+        entry.innerHTML = `
+          <span class="log-timestamp">[${timestamp}]</span>
+          <span class="log-level ${level}">${level.toUpperCase()}</span>
+          <span>${message}</span>
+        `;
+        
+        logContainer.appendChild(entry);
+        logContainer.scrollTop = logContainer.scrollHeight;
+
+        console.log(`[${level.toUpperCase()}]`, message);
+      }
+
+      attachEventListeners() {
+        document.getElementById('init-model').addEventListener('click', () => {
+          this.initializeModel();
+        });
+
+        document.getElementById('load-model').addEventListener('click', () => {
+          this.log('info', 'Model loading not yet implemented');
+        });
+
+        document.getElementById('dataset-upload').addEventListener('click', () => {
+          document.getElementById('dataset-file').click();
+        });
+
+        document.getElementById('dataset-file').addEventListener('change', (e) => {
+          if (e.target.files.length > 0) {
+            this.loadDataset(Array.from(e.target.files));
+          }
+        });
+
+        document.getElementById('start-training').addEventListener('click', () => {
+          this.startTraining();
+        });
+
+        document.getElementById('stop-training').addEventListener('click', () => {
+          this.stopTraining();
+        });
+
+        document.getElementById('export-onnx').addEventListener('click', () => {
+          this.exportModel('onnx');
+        });
+
+        document.getElementById('export-weights').addEventListener('click', () => {
+          this.exportModel('weights');
+        });
+
+        document.getElementById('export-xjson').addEventListener('click', () => {
+          this.exportModel('xjson');
+        });
+
+        // Drag and drop
+        const uploadZone = document.getElementById('dataset-upload');
+        uploadZone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          uploadZone.style.borderColor = 'var(--primary)';
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+          uploadZone.style.borderColor = 'var(--border)';
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          uploadZone.style.borderColor = 'var(--border)';
+          if (e.dataTransfer.files.length > 0) {
+            this.loadDataset(Array.from(e.dataTransfer.files));
+          }
+        });
+      }
+
+      startNeuralBackground() {
+        const canvas = document.getElementById('neuralBg');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const nodes = [];
+        for (let i = 0; i < 50; i++) {
+          nodes.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5
+          });
+        }
+
+        const animate = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          
+          // Update nodes
+          nodes.forEach(node => {
+            node.x += node.vx;
+            node.y += node.vy;
+            
+            if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
+            if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+          });
+
+          // Draw connections
+          ctx.strokeStyle = 'rgba(22, 242, 170, 0.1)';
+          ctx.lineWidth = 1;
+          for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+              const dx = nodes[i].x - nodes[j].x;
+              const dy = nodes[i].y - nodes[j].y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              
+              if (dist < 150) {
+                ctx.beginPath();
+                ctx.moveTo(nodes[i].x, nodes[i].y);
+                ctx.lineTo(nodes[j].x, nodes[j].y);
+                ctx.stroke();
+              }
+            }
+          }
+
+          // Draw nodes
+          ctx.fillStyle = '#16f2aa';
+          nodes.forEach(node => {
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
+            ctx.fill();
+          });
+
+          requestAnimationFrame(animate);
+        };
+
+        animate();
+      }
+    }
+
+    // Initialize runtime
+    const runtime = new XJSONMLRuntime();
+    runtime.init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MX2LM.APP • K'UHUL Runtime</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #0f0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .terminal {
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .prompt {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .prompt-text {
+            color: #0ff;
+            margin-right: 10px;
+        }
+        
+        .command-input {
+            background: transparent;
+            border: none;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            width: 70%;
+            outline: none;
+        }
+        
+        .cursor {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        .output {
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .command {
+            color: #0ff;
+        }
+        
+        .success {
+            color: #0f0;
+        }
+        
+        .error {
+            color: #f00;
+        }
+        
+        .warning {
+            color: #ff0;
+        }
+        
+        .info {
+            color: #0af;
+        }
+        
+        .boot-screen {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .boot-screen pre {
+            color: #0f0;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            margin: 10px;
+        }
+        
+        .btn:hover {
+            background: #0f0;
+            color: #000;
+        }
+        
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #111;
+            padding: 10px;
+            border-top: 1px solid #0f0;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal" id="terminal">
+        <div class="boot-screen">
+            <pre>
+███████╗██╗  ██╗███████╗ ██████╗██╗   ██╗████████╗███████╗
+██╔════╝██║  ██║██╔════╝██╔════╝██║   ██║╚══██╔══╝██╔════╝
+███████╗███████║█████╗  ██║     ██║   ██║   ██║   █████╗  
+╚════██║██╔══██║██╔══╝  ██║     ██║   ██║   ██║   ██╔══╝  
+███████║██║  ██║███████╗╚██████╗╚██████╔╝   ██║   ███████╗
+╚══════╝╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═════╝    ╚═╝   ╚══════╝
+            </pre>
+            <h2>MX2LM.APP K'UHUL RUNTIME</h2>
+            <p>Bootloader v2.0 • MX2LM Cluster OS</p>
+            <button class="btn" onclick="bootSystem()">🚀 BOOT SYSTEM</button>
+            <button class="btn" onclick="openTerminal()">💻 OPEN TERMINAL</button>
+        </div>
+    </div>
+    
+    <div class="status-bar">
+        <div id="status">Status: READY</div>
+        <div id="uptime">Uptime: 0s</div>
+    </div>
+
+    <script>
+        let bootSequence = [
+            "Initializing kernel...",
+            "Loading manifest.json...",
+            "Starting DNS authority...",
+            "Initializing REST mesh...",
+            "Booting Trinity runtime...",
+            "Starting MeshChain...",
+            "Initializing Cluster...",
+            "Loading Legion fusion...",
+            "Starting K'UHUL π engine...",
+            "Launching DOM engine...",
+            "Initializing Basher terminal...",
+            "Auto-booting cockpit panels..."
+        ];
+        
+        let uptime = 0;
+        
+        function bootSystem() {
+            document.querySelector('.boot-screen').style.display = 'none';
+            
+            const terminal = document.getElementById('terminal');
+            terminal.innerHTML = '';
+            
+            printOutput("🚀 Starting K'UHUL boot sequence...", "info");
+            
+            bootSequence.forEach((step, index) => {
+                setTimeout(() => {
+                    printOutput(`[${index + 1}/${bootSequence.length}] ${step}`, "info");
+                    
+                    if (index === bootSequence.length - 1) {
+                        setTimeout(() => {
+                            printOutput("✅ K'UHUL BOOTLOADER OPERATIONAL", "success");
+                            printOutput("🌐 System ready at https://mx2lm.app", "info");
+                            printOutput("⚡ Type 'help' for commands", "warning");
+                            
+                            // Show prompt
+                            showPrompt();
+                            updateStatus("RUNNING");
+                        }, 1000);
+                    }
+                }, index * 800);
+            });
+            
+            // Start uptime counter
+            setInterval(() => {
+                uptime++;
+                document.getElementById('uptime').textContent = `Uptime: ${uptime}s`;
+            }, 1000);
+        }
+        
+        function openTerminal() {
+            document.querySelector('.boot-screen').style.display = 'none';
+            showPrompt();
+            updateStatus("TERMINAL");
+        }
+        
+        function showPrompt() {
+            const terminal = document.getElementById('terminal');
+            
+            const promptDiv = document.createElement('div');
+            promptDiv.className = 'prompt';
+            promptDiv.innerHTML = `
+                <span class="prompt-text">C:\\MX2LM\\K'UHUL&gt;</span>
+                <input type="text" class="command-input" id="cmd-input" autofocus>
+                <span class="cursor">█</span>
+            `;
+            
+            terminal.appendChild(promptDiv);
+            
+            const input = document.getElementById('cmd-input');
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    executeCommand(input.value);
+                    input.value = '';
+                    
+                    // Add new prompt
+                    setTimeout(showPrompt, 100);
+                }
+            });
+            
+            input.focus();
+        }
+        
+        function executeCommand(cmd) {
+            if (!cmd.trim()) return;
+            
+            printOutput(`C:\\MX2LM\\K'UHUL&gt; ${cmd}`, "command");
+            
+            const commands = {
+                'help': () => {
+                    printOutput("Available commands:", "info");
+                    printOutput("  boot      - Boot K'UHUL system", "info");
+                    printOutput("  health    - Check system health", "info");
+                    printOutput("  manifest  - Show system manifest", "info");
+                    printOutput("  dns       - Query DNS zones", "info");
+                    printOutput("  mesh      - Access MeshChain", "info");
+                    printOutput("  cluster   - Cluster operations", "info");
+                    printOutput("  legion    - AI consensus", "info");
+                    printOutput("  clear     - Clear terminal", "info");
+                    printOutput("  exit      - Return to boot screen", "info");
+                },
+                'health': async () => {
+                    try {
+                        const response = await fetch('/health');
+                        const data = await response.json();
+                        printOutput(JSON.stringify(data, null, 2), "info");
+                    } catch (error) {
+                        printOutput("Health check failed: " + error.message, "error");
+                    }
+                },
+                'clear': () => {
+                    document.getElementById('terminal').innerHTML = '';
+                },
+                'boot': () => {
+                    bootSystem();
+                },
+                'exit': () => {
+                    document.getElementById('terminal').innerHTML = `
+                        <div class="boot-screen">
+                            <pre>
+███████╗██╗  ██╗███████╗ ██████╗██╗   ██╗████████╗███████╗
+██╔════╝██║  ██║██╔════╝██╔════╝██║   ██║╚══██╔══╝██╔════╝
+███████╗███████║█████╗  ██║     ██║   ██║   ██║   █████╗  
+╚════██║██╔══██║██╔══╝  ██║     ██║   ██║   ██║   ██╔══╝  
+███████║██║  ██║███████╗╚██████╗╚██████╔╝   ██║   ███████╗
+╚══════╝╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═════╝    ╚═╝   ╚══════╝
+                            </pre>
+                            <h2>MX2LM.APP K'UHUL RUNTIME</h2>
+                            <p>Bootloader v2.0 • MX2LM Cluster OS</p>
+                            <button class="btn" onclick="bootSystem()">🚀 BOOT SYSTEM</button>
+                            <button class="btn" onclick="openTerminal()">💻 OPEN TERMINAL</button>
+                        </div>
+                    `;
+                    updateStatus("READY");
+                }
+            };
+            
+            const cmdLower = cmd.toLowerCase().trim();
+            if (commands[cmdLower]) {
+                commands[cmdLower]();
+            } else if (cmdLower.startsWith('curl ')) {
+                if (cmdLower.includes('run/start')) {
+                    printOutput("Executing K'UHUL boot sequence...", "info");
+                    bootSystem();
+                } else {
+                    printOutput("curl: Command not supported in K'UHUL runtime", "error");
+                }
+            } else {
+                printOutput(`Command '${cmd}' not found. Type 'help' for commands.`, "error");
+            }
+        }
+        
+        function printOutput(text, type) {
+            const terminal = document.getElementById('terminal');
+            const output = document.createElement('div');
+            output.className = `output ${type}`;
+            output.textContent = text;
+            terminal.appendChild(output);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+        
+        function updateStatus(status) {
+            document.getElementById('status').textContent = `Status: ${status}`;
+        }
+        
+        // Auto-boot after 10 seconds
+        setTimeout(() => {
+            if (document.querySelector('.boot-screen')) {
+                bootSystem();
+            }
+        }, 10000);
+    </script>
+</body>
+</html>
