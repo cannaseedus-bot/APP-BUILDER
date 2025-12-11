@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K'UHUL OS - SVG Component Library</title>
+    <style>
+        :root {
+            /* K'UHUL SVG Design System */
+            --kuhul-primary: #16f2aa;
+            --kuhul-secondary: #00e0ff;
+            --kuhul-accent: #9966ff;
+            --kuhul-warning: #ffaa00;
+            --kuhul-danger: #ff0066;
+            --kuhul-bg: #0a0a1a;
+            --kuhul-panel: #070b12;
+            --kuhul-text: #e9f5ff;
+            --kuhul-muted: #7b8a9a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--kuhul-bg);
+            color: var(--kuhul-text);
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid rgba(22, 242, 170, 0.3);
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--kuhul-primary);
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--kuhul-secondary);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .component-card {
+            background: var(--kuhul-panel);
+            border: 1px solid rgba(22, 242, 170, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .component-card:hover {
+            border-color: var(--kuhul-primary);
+            box-shadow: 0 0 20px rgba(22, 242, 170, 0.2);
+        }
+
+        .component-title {
+            color: var(--kuhul-primary);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .component-demo {
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .component-code {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 0.8rem;
+            overflow-x: auto;
+        }
+
+        .demo-area {
+            background: var(--kuhul-panel);
+            border: 1px solid rgba(22, 242, 170, 0.3);
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 40px;
+            min-height: 400px;
+        }
+
+        .demo-title {
+            color: var(--kuhul-accent);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: rgba(22, 242, 170, 0.1);
+            border: 1px solid var(--kuhul-primary);
+            color: var(--kuhul-text);
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(22, 242, 170, 0.2);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>K'UHUL OS SVG COMPONENT LIBRARY</h1>
+            <div class="subtitle">Complete Vector Graphics Foundation</div>
+        </header>
+
+        <!-- K'UHUL SVG COMPONENT LIBRARY -->
+        <svg id="kuhul-svg-library" style="display: none;">
+            <defs>
+                <!-- ===== CORE COMPONENTS ===== -->
+                
+                <!-- Agent Nodes -->
+                <g id="kuhul-agent-base" class="kuhul-agent">
+                    <circle r="8" fill="var(--agent-color)" stroke="var(--kuhul-primary)" stroke-width="2"/>
+                    <circle r="4" fill="white" opacity="0.3"/>
+                </g>
+
+                <g id="kuhul-agent-queen">
+                    <use href="#kuhul-agent-base" style="--agent-color: #ffaa00"/>
+                    <circle r="3" fill="gold" opacity="0.8">
+                        <animate attributeName="r" values="3;4;3" dur="1.5s" repeatCount="indefinite"/>
+                    </circle>
+                </g>
+
+                <g id="kuhul-agent-coder">
+                    <use href="#kuhul-agent-base" style="--agent-color: #0099ff"/>
+                    <text x="-3" y="3" font-size="6" fill="white" font-weight="bold">{ }</text>
+                </g>
+
+                <g id="kuhul-agent-analyst">
+                    <use href="#kuhul-agent-base" style="--agent-color: #9966ff"/>
+                    <path d="M-4,-2 L4,-2 L4,2 L-4,2 Z" fill="none" stroke="white" stroke-width="1"/>
+                    <line x1="-2" y1="-2" x2="2" y2="2" stroke="white" stroke-width="1"/>
+                </g>
+
+                <!-- Connection Lines -->
+                <g id="kuhul-connection">
+                    <path class="connection-line" d="M0,0 L100,0" stroke="var(--kuhul-primary)" stroke-width="2" 
+                          stroke-dasharray="4 2" fill="none"/>
+                </g>
+
+                <g id="kuhul-connection-data">
+                    <path class="connection-line" d="M0,0 L100,0" stroke="var(--kuhul-accent)" stroke-width="3" 
+                          stroke-dasharray="8 4" fill="none"/>
+                </g>
+
+                <!-- UI Components -->
+                <g id="kuhul-button">
+                    <rect width="120" height="40" rx="8" fill="var(--kuhul-primary)" opacity="0.8"/>
+                    <rect width="118" height="38" rx="7" fill="none" stroke="var(--kuhul-primary)" stroke-width="1"/>
+                    <text x="60" y="23" text-anchor="middle" fill="var(--kuhul-bg)" font-family="monospace" font-size="12">BUTTON</text>
+                </g>
+
+                <g id="kuhul-panel">
+                    <rect width="300" height="200" rx="12" fill="var(--kuhul-panel)" stroke="var(--kuhul-primary)" stroke-width="1"/>
+                    <rect x="10" y="10" width="280" height="30" rx="6" fill="var(--kuhul-primary)" opacity="0.3"/>
+                    <text x="20" y="28" fill="var(--kuhul-text)" font-family="monospace" font-size="12" font-weight="bold">PANEL TITLE</text>
+                </g>
+
+                <!-- Progress Indicators -->
+                <g id="kuhul-progress-bar">
+                    <rect width="200" height="12" rx="6" fill="var(--kuhul-bg)" stroke="var(--kuhul-muted)" stroke-width="1"/>
+                    <rect class="progress-fill" width="0" height="10" rx="5" fill="var(--kuhul-primary)" x="1" y="1">
+                        <animate attributeName="width" from="0" to="198" dur="2s" fill="freeze"/>
+                    </rect>
+                </g>
+
+                <g id="kuhul-progress-ring">
+                    <circle r="20" fill="none" stroke="var(--kuhul-bg)" stroke-width="4"/>
+                    <circle class="progress-ring" r="20" fill="none" stroke="var(--kuhul-primary)" stroke-width="4" 
+                            stroke-dasharray="126" stroke-dashoffset="126" transform="rotate(-90)">
+                        <animate attributeName="stroke-dashoffset" from="126" to="0" dur="2s" fill="freeze"/>
+                    </circle>
+                </g>
+
+                <!-- Data Visualization -->
+                <g id="kuhul-chart-bar">
+                    <rect class="bar" width="30" height="0" fill="var(--kuhul-primary)">
+                        <animate attributeName="height" from="0" to="80" dur="1s" fill="freeze"/>
+                    </rect>
+                </g>
+
+                <g id="kuhul-chart-line">
+                    <path class="line-path" d="M0,50 L50,30 L100,70 L150,20" fill="none" stroke="var(--kuhul-accent)" stroke-width="3">
+                        <animate attributeName="d" dur="2s" fill="freeze" 
+                                values="M0,50 L50,50 L100,50 L150,50; M0,50 L50,30 L100,70 L150,20"/>
+                    </path>
+                </g>
+
+                <!-- Training Visualizations -->
+                <g id="kuhul-training-loss">
+                    <path class="loss-curve" d="M0,100 L100,80 L200,60 L300,40" fill="none" stroke="var(--kuhul-danger)" stroke-width="2"/>
+                    <circle r="3" fill="var(--kuhul-danger)">
+                        <animateMotion dur="4s" repeatCount="indefinite">
+                            <mpath href="#loss-path"/>
+                        </animateMotion>
+                    </circle>
+                </g>
+
+                <g id="kuhul-model-architecture">
+                    <rect width="80" height="40" rx="5" fill="var(--kuhul-panel)" stroke="var(--kuhul-primary)" stroke-width="1"/>
+                    <text x="40" y="23" text-anchor="middle" fill="var(--kuhul-primary)" font-family="monospace" font-size="8">LAYER</text>
+                </g>
+
+                <!-- Icons -->
+                <g id="kuhul-icon-play">
+                    <path d="M0,0 L20,10 L0,20 Z" fill="var(--kuhul-primary)"/>
+                </g>
+
+                <g id="kuhul-icon-pause">
+                    <rect x="0" y="0" width="6" height="20" fill="var(--kuhul-primary)"/>
+                    <rect x="14" y="0" width="6" height="20" fill="var(--kuhul-primary)"/>
+                </g>
+
+                <g id="kuhul-icon-settings">
+                    <circle r="10" fill="none" stroke="var(--kuhul-primary)" stroke-width="2"/>
+                    <path d="M10,0 L10,6 M0,10 L6,10 M14,10 L20,10 M10,14 L10,20" stroke="var(--kuhul-primary)" stroke-width="2"/>
+                    <circle r="2" fill="var(--kuhul-primary)"/>
+                </g>
+
+                <!-- Animations -->
+                <g id="kuhul-pulse-ring">
+                    <circle r="10" fill="none" stroke="var(--kuhul-primary)" stroke-width="2" opacity="0">
+                        <animate attributeName="r" from="10" to="20" dur="1.5s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" from="1" to="0" dur="1.5s" repeatCount="indefinite"/>
+                    </circle>
+                </g>
+
+                <!-- Gradients -->
+                <linearGradient id="kuhul-gradient-primary" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="var(--kuhul-primary)"/>
+                    <stop offset="100%" stop-color="var(--kuhul-secondary)"/>
+                </linearGradient>
+
+                <radialGradient id="kuhul-glow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="var(--kuhul-primary)" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="var(--kuhul-primary)" stop-opacity="0"/>
+                </radialGradient>
+
+            </defs>
+        </svg>
+
+        <!-- COMPONENT SHOWCASE -->
+        <div class="components-grid">
+            <!-- Agent Components -->
+            <div class="component-card">
+                <h3 class="component-title">Agent Nodes</h3>
+                <div class="component-demo">
+                    <svg width="200" height="80">
+                        <use href="#kuhul-agent-queen" x="40" y="40"/>
+                        <use href="#kuhul-agent-coder" x="80" y="40"/>
+                        <use href="#kuhul-agent-analyst" x="120" y="40"/>
+                    </svg>
+                </div>
+                <div class="component-code">
+                    &lt;use href="#kuhul-agent-queen" x="40" y="40"/&gt;
+                </div>
+            </div>
+
+            <!-- Connection Components -->
+            <div class="component-card">
+                <h3 class="component-title">Connection Lines</h3>
+                <div class="component-demo">
+                    <svg width="200" height="60">
+                        <use href="#kuhul-connection" x="0" y="20"/>
+                        <use href="#kuhul-connection-data" x="0" y="40"/>
+                    </svg>
+                </div>
+                <div class="component-code">
+                    &lt;use href="#kuhul-connection" x="0" y="20"/&gt;
+                </div>
+            </div>
+
+            <!-- UI Components -->
+            <div class="component-card">
+                <h3 class="component-title">UI Elements</h3>
+                <div class="component-demo">
+                    <svg width="200" height="100">
+                        <use href="#kuhul-button" x="40" y="10"/>
+                        <use href="#kuhul-panel" x="0" y="60" transform="scale(0.3)"/>
+                    </svg>
+                </div>
+                <div class="component-code">
+                    &lt;use href="#kuhul-button" x="40" y="10"/&gt;
+                </div>
+            </div>
+
+            <!-- Progress Indicators -->
+            <div class="component-card">
+                <h3 class="component-title">Progress Indicators</h3>
+                <div class="component-demo">
+                    <svg width="200" height="80">
+                        <use href="#kuhul-progress-bar" x="0" y="20"/>
+                        <use href="#kuhul-progress-ring" x="150" y="40"/>
+                    </svg>
+                </div>
+                <div class="component-code">
+                    &lt;use href="#kuhul-progress-bar" x="0" y="20"/&gt;
+                </div>
+            </div>
+
+            <!-- Data Visualization -->
+            <div class="component-card">
+                <h3 class="component-title">Charts & Graphs</h3>
+                <div class="component-demo">
+                    <svg width="200" height="80">
+                        <use href="#kuhul-chart-bar" x="30" y="10"/>
+                        <use href="#kuhul-chart-line" x="50" y="0" transform="scale(0.5)"/>
+                    </svg>
+                </div>
+                <div class="component-code">
+                    &lt;use href="#kuhul-chart-bar" x="30" y="10"/&gt;
+                </div>
+            </div>
+
+            <!-- Icons -->
+            <div class="component-card">
+                <h3 class="component-title">Icons</h3>
+                <div class="component-demo">
+                    <svg width="200" height="60">
+                        <use href="#kuhul-icon-play" x="40" y="20"/>
+                        <use href="#kuhul-icon-pause" x="80" y="20"/>
+                        <use href="#kuhul-icon-settings" x="120" y="20"/>
+                    </svg>
+                </div>
+                <div class="component-code">
+                    &lt;use href="#kuhul-icon-play" x="40" y="20"/&gt;
+                </div>
+            </div>
+        </div>
+
+        <!-- INTERACTIVE DEMO AREA -->
+        <div class="demo-area">
+            <h2 class="demo-title">K'UHUL SVG RUNTIME DEMO</h2>
+            
+            <div class="controls">
+                <button class="control-btn" onclick="startHive()">START HIVE</button>
+                <button class="control-btn" onclick="simulateTraining()">SIMULATE TRAINING</button>
+                <button class="control-btn" onclick="showDataFlow()">DATA FLOW</button>
+                <button class="control-btn" onclick="resetDemo()">RESET</button>
+            </div>
+
+            <svg id="kuhul-demo-runtime" width="100%" height="300" viewBox="0 0 800 300">
+                <!-- Demo content will be injected here -->
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        // K'UHUL SVG RUNTIME ENGINE
+        class KuhulSvgRuntime {
+            constructor() {
+                this.canvas = document.getElementById('kuhul-demo-runtime');
+                this.agents = new Map();
+                this.connections = new Map();
+                this.animationId = null;
+            }
+
+            createAgent(id, type, x, y) {
+                const agent = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+                agent.setAttribute('href', `#kuhul-agent-${type}`);
+                agent.setAttribute('x', x);
+                agent.setAttribute('y', y);
+                agent.setAttribute('data-agent-id', id);
+                agent.classList.add('kuhul-agent');
+                
+                this.canvas.appendChild(agent);
+                this.agents.set(id, agent);
+                return agent;
+            }
+
+            createConnection(fromId, toId, type = 'connection') {
+                const fromAgent = this.agents.get(fromId);
+                const toAgent = this.agents.get(toId);
+                
+                if (!fromAgent || !toAgent) return;
+
+                const fromX = parseFloat(fromAgent.getAttribute('x'));
+                const fromY = parseFloat(fromAgent.getAttribute('y'));
+                const toX = parseFloat(toAgent.getAttribute('x'));
+                const toY = parseFloat(toAgent.getAttribute('y'));
+
+                const connection = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+                connection.setAttribute('href', `#kuhul-${type}`);
+                connection.setAttribute('x', fromX);
+                connection.setAttribute('y', fromY);
+                connection.setAttribute('transform', `rotate(${this.calculateAngle(fromX, fromY, toX, toY)} ${fromX} ${fromY}) scale(${this.calculateDistance(fromX, fromY, toX, toY) / 100})`);
+
+                this.canvas.appendChild(connection);
+                this.connections.set(`${fromId}-${toId}`, connection);
+            }
+
+            calculateAngle(x1, y1, x2, y2) {
+                return Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+            }
+
+            calculateDistance(x1, y1, x2, y2) {
+                return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            }
+
+            animateDataFlow(fromId, toId) {
+                const fromAgent = this.agents.get(fromId);
+                const toAgent = this.agents.get(toId);
+                
+                if (!fromAgent || !toAgent) return;
+
+                const fromX = parseFloat(fromAgent.getAttribute('x'));
+                const fromY = parseFloat(fromAgent.getAttribute('y'));
+                const toX = parseFloat(toAgent.getAttribute('x'));
+                const toY = parseFloat(toAgent.getAttribute('y'));
+
+                const dataParticle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                dataParticle.setAttribute('r', '3');
+                dataParticle.setAttribute('fill', '#9966ff');
+                dataParticle.setAttribute('cx', fromX);
+                dataParticle.setAttribute('cy', fromY);
+
+                const animateX = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+                animateX.setAttribute('attributeName', 'cx');
+                animateX.setAttribute('from', fromX);
+                animateX.setAttribute('to', toX);
+                animateX.setAttribute('dur', '1s');
+                animateX.setAttribute('fill', 'freeze');
+
+                const animateY = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+                animateY.setAttribute('attributeName', 'cy');
+                animateY.setAttribute('from', fromY);
+                animateY.setAttribute('to', toY);
+                animateY.setAttribute('dur', '1s');
+                animateY.setAttribute('fill', 'freeze');
+
+                dataParticle.appendChild(animateX);
+                dataParticle.appendChild(animateY);
+                this.canvas.appendChild(dataParticle);
+
+                setTimeout(() => dataParticle.remove(), 1000);
+            }
+
+            clear() {
+                this.canvas.innerHTML = '';
+                this.agents.clear();
+                this.connections.clear();
+            }
+        }
+
+        // Initialize runtime
+        const kuhulRuntime = new KuhulSvgRuntime();
+
+        // Demo Functions
+        function startHive() {
+            kuhulRuntime.clear();
+            
+            // Create agents
+            kuhulRuntime.createAgent('queen', 'queen', 400, 150);
+            kuhulRuntime.createAgent('coder', 'coder', 300, 100);
+            kuhulRuntime.createAgent('analyst', 'analyst', 500, 100);
+            kuhulRuntime.createAgent('creative', 'creative', 300, 200);
+            kuhulRuntime.createAgent('memory', 'memory', 500, 200);
+
+            // Create connections
+            kuhulRuntime.createConnection('queen', 'coder');
+            kuhulRuntime.createConnection('queen', 'analyst');
+            kuhulRuntime.createConnection('queen', 'creative');
+            kuhulRuntime.createConnection('queen', 'memory');
+        }
+
+        function simulateTraining() {
+            // Add training visualization
+            const trainingViz = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            trainingViz.setAttribute('href', '#kuhul-training-loss');
+            trainingViz.setAttribute('x', '50');
+            trainingViz.setAttribute('y', '50');
+            kuhulRuntime.canvas.appendChild(trainingViz);
+
+            // Add progress indicator
+            const progress = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            progress.setAttribute('href', '#kuhul-progress-ring');
+            progress.setAttribute('x', '700');
+            progress.setAttribute('y', '50');
+            kuhulRuntime.canvas.appendChild(progress);
+        }
+
+        function showDataFlow() {
+            const agents = ['coder', 'analyst', 'creative', 'memory'];
+            
+            setInterval(() => {
+                const from = agents[Math.floor(Math.random() * agents.length)];
+                const to = agents[Math.floor(Math.random() * agents.length)];
+                
+                if (from !== to) {
+                    kuhulRuntime.animateDataFlow(from, to);
+                }
+            }, 800);
+        }
+
+        function resetDemo() {
+            kuhulRuntime.clear();
+        }
+
+        // Initialize demo
+        document.addEventListener('DOMContentLoaded', startHive);
+    </script>
+</body>
+</html>

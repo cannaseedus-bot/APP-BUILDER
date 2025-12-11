@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MX2LM OS — LEGION TRINITY CLUSTER</title>
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- =========================================================
+       BLOCK 1 — TOKENS & RESET
+       ========================================================= -->
+  <style>
+    :root {
+      /* Colors */
+      --bg-primary: #020617;
+      --bg-secondary: #050b1c;
+      --bg-tertiary: #0a0f14;
+      --bg-surface: #101820;
+
+      --text-primary: #e6fffa;
+      --text-secondary: #7dd3fc;
+      --text-muted: #5d8ba3;
+
+      --emerald: #16f2aa;
+      --emerald-soft: rgba(22, 242, 170, 0.13);
+      --emerald-strong: rgba(22, 242, 170, 0.22);
+      --cyan: #22d3ee;
+      --cyan-soft: rgba(34, 211, 238, 0.16);
+
+      --accent-warning: #ffd166;
+      --accent-danger: #ff3366;
+      --accent-success: #00d9a6;
+
+      /* Spacing */
+      --sp-xs: 4px;
+      --sp-sm: 8px;
+      --sp-md: 16px;
+      --sp-lg: 24px;
+      --sp-xl: 32px;
+      --sp-2xl: 48px;
+
+      /* Radius */
+      --rad-sm: 8px;
+      --rad-md: 12px;
+      --rad-lg: 16px;
+      --rad-xl: 20px;
+      --rad-2xl: 24px;
+      --rad-pill: 999px;
+
+      /* Typography */
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", sans-serif;
+      --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+      --size-xs: 11px;
+      --size-sm: 13px;
+      --size-md: 14px;
+      --size-lg: 16px;
+      --size-xl: 20px;
+      --size-2xl: 24px;
+
+      /* Shadows */
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 40px rgba(22, 242, 170, 0.25);
+
+      /* Transitions */
+      --trans-fast: 0.15s ease;
+      --trans-normal: 0.3s ease;
+      --trans-slow: 0.5s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+      background:
+        radial-gradient(circle at 5% 0%, rgba(34, 211, 238, 0.12) 0, transparent 55%),
+        radial-gradient(circle at 95% 100%, rgba(16, 185, 129, 0.12) 0, transparent 55%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1) 0, #020617 60%);
+      color-scheme: dark;
+      overflow: hidden;
+    }
+  </style>
+
+  <!-- =========================================================
+       BLOCK 2 — BASE & ATOMIC COMPONENTS
+       ========================================================= -->
+  <style>
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    h1 { font-size: var(--size-2xl); }
+    h2 { font-size: var(--size-xl); }
+    h3 { font-size: var(--size-lg); }
+
+    p {
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    a {
+      color: var(--emerald);
+      text-decoration: none;
+      transition: color var(--trans-fast), text-decoration var(--trans-fast);
+    }
+
+    a:hover {
+      color: var(--cyan);
+      text-decoration: underline;
+    }
+
+    input, textarea, select {
+      font-family: inherit;
+      font-size: inherit;
+      color: var(--text-primary);
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      border-radius: var(--rad-md);
+      padding: var(--sp-sm) var(--sp-md);
+      transition: border-color var(--trans-fast), box-shadow var(--trans-fast), background var(--trans-fast);
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--emerald);
+      box-shadow: 0 0 16px rgba(22, 242, 170, 0.3);
+      background: rgba(15, 23, 42, 0.98);
+    }
+
+    /* Buttons */
+    .asx-btn {
+      border-radius: var(--rad-pill);
+      padding: 7px 14px;
+      font-size: var(--size-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.88));
+      color: var(--text-primary);
+      transition: transform var(--trans-fast), box-shadow var(--trans-fast), background var(--trans-fast);
+      outline: none;
+      white-space: nowrap;
+    }
+
+    .asx-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.92));
+    }
+
+    .asx-btn-primary {
+      background:
+        radial-gradient(circle at 0 0, rgba(45, 212, 191, 0.24), transparent 55%),
+        linear-gradient(140deg, rgba(15, 23, 42, 0.98), rgba(16, 185, 129, 0.25));
+      border-color: rgba(45, 212, 191, 0.9);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .asx-btn-primary:hover {
+      box-shadow: 0 0 32px rgba(22, 242, 170, 0.5);
+    }
+
+    .chip {
+      border-radius: var(--rad-pill);
+      padding: 5px 10px;
+      font-size: var(--size-xs);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.8));
+      color: var(--text-primary);
+    }
+
+    .chip-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent-success);
+      box-shadow: 0 0 12px rgba(0, 217, 166, 0.7);
+    }
+
+    .panel {
+      border-radius: var(--rad-xl);
+      padding: var(--sp-md);
+      background:
+        radial-gradient(circle at 0 0, rgba(34, 211, 238, 0.22), transparent 55%),
+        linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.88));
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(22px);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .card {
+      border-radius: var(--rad-lg);
+      padding: var(--sp-md);
+      background:
+        radial-gradient(circle at 0 0, rgba(34, 211, 238, 0.18), transparent 55%),
+        linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(22px);
+      transition: transform var(--trans-normal), box-shadow var(--trans-normal);
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg), var(--shadow-glow);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: var(--rad-pill);
+      font-size: var(--size-xs);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--text-secondary);
+    }
+
+    .badge {
+      padding: 3px 10px;
+      border-radius: var(--rad-pill);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      font-size: var(--size-xs);
+      color: var(--text-secondary);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .section-title {
+      font-size: var(--size-md);
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--sp-sm);
+      margin-bottom: var(--sp-sm);
+    }
+
+    .section-subtitle {
+      font-size: var(--size-xs);
+      color: var(--text-muted);
+      margin-bottom: var(--sp-sm);
+    }
+
+    .pill-tabs {
+      display: inline-flex;
+      padding: 3px;
+      border-radius: var(--rad-pill);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      gap: 3px;
+    }
+
+    .pill-tab {
+      border-radius: var(--rad-pill);
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: var(--size-xs);
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: background var(--trans-fast), color var(--trans-fast);
+    }
+
+    .pill-tab.active {
+      background: rgba(15, 23, 42, 0.98);
+      color: var(--text-primary);
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.6);
+    }
+  </style>
+
+  <!-- =========================================================
+       BLOCK 3 — LAYOUTS (GHOST SHELL + PANELS + DOCK)
+       ========================================================= -->
+  <style>
+    #glyph-rain {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    #ghost-root {
+      position: relative;
+      z-index: 1;
+      height: 100vh;
+      padding: var(--sp-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-md);
+    }
+
+    .ghost-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 0 0, rgba(34, 211, 238, 0.28), transparent 55%),
+        linear-gradient(120deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.86));
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      box-shadow:
+        0 18px 45px rgba(15, 23, 42, 0.95),
+        0 0 32px rgba(22, 242, 170, 0.25);
+      backdrop-filter: blur(20px);
+      flex-shrink: 0;
+    }
+
+    .ghost-header-left {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+    }
+
+    .ghost-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 0 0, rgba(45, 212, 191, 0.28), transparent 55%),
+        linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(45, 212, 191, 0.8);
+      font-size: 18px;
+    }
+
+    .ghost-header-title {
+      display: flex;
+      flex-direction: column;
+      font-size: var(--size-xs);
+    }
+
+    .ghost-header-title strong {
+      font-size: var(--size-sm);
+    }
+
+    .ghost-header-right {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .ghost-main {
+      display: grid;
+      grid-template-columns: minmax(260px, 320px) minmax(380px, 1.1fr) minmax(320px, 0.9fr);
+      gap: var(--sp-md);
+      flex: 1;
+      min-height: 0;
+    }
+
+    .studio-panel {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-sm);
+    }
+
+    .studio-tabs {
+      display: flex;
+      border-radius: var(--rad-pill);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 2px;
+      gap: 3px;
+    }
+
+    .studio-tab {
+      border-radius: var(--rad-pill);
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: var(--size-xs);
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: background var(--trans-fast), color var(--trans-fast);
+    }
+
+    .studio-tab.active {
+      background: rgba(15, 23, 42, 0.98);
+      color: var(--text-primary);
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.6);
+    }
+
+    .editor-shell {
+      flex: 1;
+      border-radius: var(--rad-lg);
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      background: rgba(15, 23, 42, 0.98);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .editor-header {
+      padding: 6px 10px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.9);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: var(--size-xs);
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    .editor-body {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: var(--size-xs);
+      line-height: 1.5;
+      color: rgba(226, 232, 240, 0.9);
+      background: linear-gradient(145deg, #020617, #020617);
+    }
+
+    .editor-footer {
+      padding: 6px 9px;
+      border-top: 1px solid rgba(30, 64, 175, 0.6);
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--size-xs);
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    .console-panel {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-md);
+      overflow: hidden;
+    }
+
+    .console-scroll {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-md);
+      overflow-y: auto;
+    }
+
+    .widget-dock {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-sm);
+      align-items: stretch;
+    }
+
+    .widget {
+      flex: 1 1 260px;
+      min-width: 0;
+      border-radius: var(--rad-lg);
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      background:
+        radial-gradient(circle at 0 0, rgba(34, 211, 238, 0.18), transparent 55%),
+        linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
+      box-shadow: var(--shadow-sm);
+      padding: var(--sp-sm) var(--sp-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .widget-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--sp-sm);
+      margin-bottom: var(--sp-xs);
+      font-size: var(--size-sm);
+    }
+
+    .widget-subtitle {
+      font-size: var(--size-xs);
+      color: var(--text-muted);
+      margin-bottom: var(--sp-sm);
+    }
+
+    .widget-footer {
+      margin-top: var(--sp-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: var(--size-xs);
+      color: var(--text-muted);
+    }
+
+    .glyph-wrap {
+      margin: var(--sp-sm) 0;
+      width: 100%;
+      max-width: 210px;
+      aspect-ratio: 1 / 1;
+      border-radius: 26px;
+      border: 1px solid rgba(15, 23, 42, 0.9);
+      box-shadow:
+        0 0 18px rgba(22, 163, 74, 0.45),
+        0 0 40px rgba(45, 212, 191, 0.3);
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform var(--trans-fast), box-shadow var(--trans-fast), border-color var(--trans-fast);
+    }
+
+    .glyph-wrap:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 24px rgba(22, 163, 74, 0.6),
+        0 0 52px rgba(45, 212, 191, 0.36);
+      border-color: rgba(45, 212, 191, 0.8);
+    }
+
+    .glyph {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .gallery-panel {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-md);
+    }
+
+    .gallery-header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-xs);
+      margin-bottom: var(--sp-xs);
+    }
+
+    .gallery-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-xs);
+      align-items: center;
+      margin-top: var(--sp-xs);
+    }
+
+    .gallery-search {
+      width: 100%;
+      margin-top: var(--sp-xs);
+    }
+
+    .gallery-list {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-sm);
+    }
+
+    .tape-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+      gap: var(--sp-sm);
+      align-items: start;
+    }
+
+    .tape-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: var(--size-xs);
+      color: var(--text-muted);
+    }
+
+    .tape-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--sp-xs);
+      flex-wrap: wrap;
+      margin-top: var(--sp-xs);
+    }
+
+    .tape-pill {
+      font-size: var(--size-xs);
+      padding: 2px 8px;
+      border-radius: var(--rad-pill);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--text-secondary);
+    }
+
+    .chat-stream {
+      flex: 1;
+      margin-top: var(--sp-sm);
+      border-radius: var(--rad-lg);
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: var(--size-xs);
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.92));
+    }
+
+    .chat-msg {
+      padding: 7px 9px;
+      border-radius: var(--rad-md);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+    }
+
+    .chat-msg.user {
+      align-self: flex-end;
+      background: rgba(16, 185, 129, 0.09);
+      border-color: rgba(16, 185, 129, 0.8);
+    }
+
+    .chat-msg.assistant {
+      align-self: flex-start;
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .chat-input-row {
+      margin-top: var(--sp-sm);
+      display: flex;
+      gap: var(--sp-xs);
+    }
+
+    .chat-input-row input {
+      flex: 1;
+      border-radius: var(--rad-lg);
+    }
+
+    @media (max-width: 1100px) {
+      .ghost-main {
+        grid-template-columns: minmax(260px, 320px) minmax(380px, 1.15fr);
+        grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-areas:
+          "studio console"
+          "gallery console";
+      }
+      .studio-panel { grid-area: studio; }
+      .console-panel { grid-area: console; }
+      .gallery-panel { grid-area: gallery; }
+    }
+
+    @media (max-width: 768px) {
+      .ghost-main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+      }
+      .panel {
+        min-height: auto;
+      }
+    }
+  </style>
+
+  <!-- =========================================================
+       BLOCK 4 — UTILITIES & GLYPH RAIN
+       ========================================================= -->
+  <style>
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .flex-row { flex-direction: row; }
+    .flex-center { justify-content: center; align-items: center; }
+    .flex-between { justify-content: space-between; align-items: center; }
+    .flex-wrap { flex-wrap: wrap; }
+    .gap-xs { gap: var(--sp-xs); }
+    .gap-sm { gap: var(--sp-sm); }
+    .gap-md { gap: var(--sp-md); }
+    .gap-lg { gap: var(--sp-lg); }
+    .mt-xs { margin-top: var(--sp-xs); }
+    .mt-sm { margin-top: var(--sp-sm); }
+    .mt-md { margin-top: var(--sp-md); }
+    .mt-lg { margin-top: var(--sp-lg); }
+    .text-xs { font-size: var(--size-xs); }
+    .text-sm { font-size: var(--size-sm); }
+    .text-md { font-size: var(--size-md); }
+    .text-lg { font-size: var(--size-lg); }
+    .text-muted { color: var(--text-muted); }
+    .text-secondary { color: var(--text-secondary); }
+    .overflow-y-auto { overflow-y: auto; }
+    .hidden { display: none !important; }
+
+    .gradient-title {
+      background: linear-gradient(135deg, var(--text-primary), var(--emerald));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <!-- Calm glyph rain behind everything -->
+  <canvas id="glyph-rain"></canvas>
+
+  <div id="ghost-root" data-os="mx2lm_legion_trinity">
+    <!-- HEADER -->
+    <header class="ghost-header">
+      <div class="ghost-header-left">
+        <div class="ghost-logo">⟁</div>
+        <div class="ghost-header-title">
+          <strong>MX2LM OS — LEGION TRINITY</strong>
+          <span class="text-xs text-muted">ASX · XJSON · K’uhul · KLH · SCXQ2</span>
+        </div>
+      </div>
+      <div class="ghost-header-right">
+        <div class="chip">
+          <div class="chip-dot"></div>
+          <span>Kernel Online</span>
+        </div>
+        <div class="chip">
+          <span class="text-xs">Widget Dock</span>
+          <span class="text-xs text-muted">Universal</span>
+        </div>
+        <button class="asx-btn asx-btn-primary" id="btnBootPrime">⚡ Boot PRIME Tape</button>
+      </div>
+    </header>
+
+    <!-- MAIN GRID -->
+    <main class="ghost-main">
+      <!-- LEFT: STUDIO -->
+      <section class="panel studio-panel" id="studio-panel">
+        <div class="flex-between">
+          <div>
+            <div class="section-title">
+              <span>Studio</span>
+              <span class="tag">Three-file OS</span>
+            </div>
+            <div class="section-subtitle">
+              index.html · manifest.json · sw.js · Brain/Tape wiring
+            </div>
+          </div>
+          <div class="chip">
+            <div class="chip-dot"></div>
+            <span>Live edit</span>
+          </div>
+        </div>
+
+        <div class="studio-tabs mt-sm" id="studio-tabs">
+          <button class="studio-tab active" data-target="index-html">index.html</button>
+          <button class="studio-tab" data-target="manifest-json">manifest.json</button>
+          <button class="studio-tab" data-target="sw-js">sw.js</button>
+          <button class="studio-tab" data-target="tape-studio">Tape Studio</button>
+        </div>
+
+        <div class="editor-shell mt-sm">
+          <div class="editor-header">
+            <span id="editor-filename">index.html</span>
+            <div class="flex gap-xs">
+              <span style="width:7px;height:7px;border-radius:999px;background:#f87171;"></span>
+              <span style="width:7px;height:7px;border-radius:999px;background:#facc15;"></span>
+              <span style="width:7px;height:7px;border-radius:999px;background:#4ade80;"></span>
+            </div>
+          </div>
+          <pre id="editor-body" class="editor-body">&lt;!-- MX2LM OS Shell --&gt;
+&lt;div id="ghost-root" data-os="mx2lm_legion_trinity"&gt;
+  &lt;!-- K'UHUL renders content here --&gt;
+&lt;/div&gt;</pre>
+          <div class="editor-footer">
+            <span>Active tape: system_boot_hud_v1</span>
+            <span>UTF-8 · 1:1</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CENTER: CONSOLE + WIDGET DOCK (SECUROLINK) + CHAT -->
+      <section class="panel console-panel" id="console-panel">
+        <div class="section-title">
+          <span class="gradient-title">Console</span>
+          <span class="text-xs text-muted">Brain Builder · Runtime · Logs</span>
+        </div>
+
+        <div class="console-scroll">
+          <!-- WIDGET DOCK -->
+          <div>
+            <div class="section-title">
+              <span>Widget Dock</span>
+              <span class="text-xs text-muted">Universal tools · lives across tapes</span>
+            </div>
+
+            <div class="widget-dock mt-xs">
+              <!-- SECUROLINK WIDGET -->
+              <div class="widget" id="securolink-widget">
+                <div class="widget-title-row">
+                  <div class="flex gap-xs" style="align-items:center;">
+                    <span>SECUROLINK</span>
+                    <span class="badge">Vault Edition v2</span>
+                  </div>
+                  <span class="text-xs text-muted">api.asxtoken.com</span>
+                </div>
+                <div class="widget-subtitle">
+                  Glyph-based login and keyring. Issue and revoke API vault links; bookmark the URL as your universal key.
+                </div>
+
+                <div class="flex gap-md flex-wrap mt-xs" style="align-items:flex-start;">
+                  <div>
+                    <div class="glyph-wrap" id="glyph" title="Click to issue SECUROLINK">
+                      <svg class="glyph" viewBox="0 0 128 128" aria-hidden="true">
+                        <defs>
+                          <radialGradient id="gGlow" cx="50%" cy="0%" r="85%">
+                            <stop offset="0%" stop-color="#22c55e" />
+                            <stop offset="60%" stop-color="#14b8a6" />
+                            <stop offset="100%" stop-color="#0f172a" />
+                          </radialGradient>
+                        </defs>
+                        <rect x="10" y="10" width="108" height="108" rx="28" fill="url(#gGlow)" />
+                        <circle cx="64" cy="64" r="34" fill="none" stroke="#0f172a" stroke-width="5" />
+                        <circle cx="64" cy="64" r="22" fill="none" stroke="#ecfeff"
+                                stroke-width="2" stroke-dasharray="6 5" />
+                        <path d="M48 64 L60 76 L82 50"
+                              stroke="#ecfeff"
+                              stroke-width="6"
+                              fill="none"
+                              stroke-linecap="round"
+                              stroke-linejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div style="flex:1;min-width:0;">
+                    <div class="flex flex-col gap-xs">
+                      <label for="userId" class="text-xs text-muted">User / Wallet ID</label>
+                      <input id="userId"
+                             placeholder="you@example.com or wallet address"
+                             autocomplete="off" />
+                    </div>
+
+                    <div class="flex gap-xs mt-sm">
+                      <button type="button" class="asx-btn asx-btn-primary" id="btnIssue">
+                        <span>Generate SECUROLINK</span>
+                      </button>
+                      <button type="button" class="asx-btn" id="btnRevokeAll">
+                        <span>Revoke All Links</span>
+                      </button>
+                    </div>
+
+                    <div class="section-subtitle mt-xs" style="max-width:320px;">
+                      After issuing, bookmark the generated SECUROLINK URL in your browser.
+                      Clicking it logs you into the Vault instantly across MX2LM surfaces.
+                    </div>
+                    <div class="text-xs mt-xs" id="loginStatus">
+                      Status: <span>waiting for user</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="widget-footer">
+                  <span class="text-xs text-muted">Widget Dock rule: anything universal lives here.</span>
+                  <span class="text-xs text-muted">Securolink · RLHF · Metrics · Tokens</span>
+                </div>
+              </div>
+
+              <!-- PLACEHOLDER FOR FUTURE UNIVERSAL WIDGETS -->
+              <div class="widget">
+                <div class="widget-title-row">
+                  <span>Universal Slot</span>
+                  <span class="badge">Empty</span>
+                </div>
+                <div class="widget-subtitle">
+                  Drop any future universal widget here (trainer status, Supabase explorer,
+                  Tyson-Chomsky engine, Gemini DB, etc.).
+                </div>
+                <div class="text-xs text-muted">
+                  Implemented as ATOMIC block; wired to tapes via manifest.asx_os.widgets.*.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CHAT / INFERENCE -->
+          <div>
+            <div class="section-title mt-md">
+              <span>Inference</span>
+              <div class="pill-tabs" id="model-tabs">
+                <button class="pill-tab active" data-model="openai">MX2LM PRIME</button>
+                <button class="pill-tab" data-model="qwen">QWEN-ASX</button>
+                <button class="pill-tab" data-model="local">Local Ollama</button>
+              </div>
+            </div>
+            <div class="section-subtitle">
+              Talk to the kernel brain. Ask it to edit manifest, create brains, or forge tapes.
+            </div>
+
+            <div class="chat-stream" id="chat-stream">
+              <div class="chat-msg assistant">
+                <strong>MX2LM OS ONLINE</strong><br />
+                Studio is ready. Select a file, pick a model, and describe the brain/tape you
+                want to build or refine.
+              </div>
+            </div>
+
+            <div class="chat-input-row">
+              <input id="chat-input" type="text" placeholder="Tell MX2LM what to do..." />
+              <button class="asx-btn asx-btn-primary" id="send-chat">Send</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: POCKET BOOK TAPE GALLERY ENGINE -->
+      <section class="panel gallery-panel" id="gallery-panel">
+        <div class="gallery-header">
+          <div class="section-title">
+            <span>Pocket Book v1</span>
+            <span class="tag">Tape Gallery Engine</span>
+          </div>
+          <div class="section-subtitle">
+            Local gallery for apps · games · brains · tapes. Later wired to Supabase + GAS + RLHF.
+          </div>
+
+          <div class="gallery-filters">
+            <div class="pill-tabs" id="gallery-scope">
+              <button class="pill-tab active" data-scope="mine">My Tapes</button>
+              <button class="pill-tab" data-scope="shared">Shared</button>
+              <button class="pill-tab" data-scope="market">Market</button>
+            </div>
+            <select id="gallery-type" class="text-xs" style="padding:4px 8px;border-radius:999px;border:1px solid rgba(148,163,184,0.5);background:rgba(15,23,42,0.9);color:var(--text-secondary);">
+              <option value="">All types</option>
+              <option value="app">Apps</option>
+              <option value="game">Games</option>
+              <option value="brain">Brains</option>
+              <option value="world">Worlds</option>
+            </select>
+            <select id="gallery-sort" class="text-xs" style="padding:4px 8px;border-radius:999px;border:1px solid rgba(148,163,184,0.5);background:rgba(15,23,42,0.9);color:var(--text-secondary);">
+              <option value="recent">Recently updated</option>
+              <option value="popular">Most used</option>
+              <option value="alpha">A → Z</option>
+            </select>
+            <button class="asx-btn asx-btn-primary" id="btnNewTape">✚ New Tape</button>
+          </div>
+
+          <div class="gallery-search">
+            <input id="gallery-search-input" type="text" placeholder="Search tapes by name, tag, or description…" />
+          </div>
+        </div>
+
+        <div class="gallery-list" id="gallery-list">
+          <!-- Sample tape rows; in real runtime these come from manifest + Supabase -->
+          <div class="card">
+            <div class="tape-row">
+              <div>
+                <div class="flex gap-xs" style="align-items:center;">
+                  <span class="text-sm">DOOM World Ω</span>
+                  <span class="tape-pill">game</span>
+                  <span class="tape-pill">shared</span>
+                </div>
+                <div class="text-xs text-muted mt-xs">
+                  Arena tape for ASX-DOOM. Hooks into Trinity runtime; pushes RLHF events to cloud.
+                </div>
+                <div class="flex gap-xs mt-xs" style="flex-wrap:wrap;">
+                  <span class="tag">fps</span>
+                  <span class="tag">arena</span>
+                  <span class="tag">rlhf</span>
+                </div>
+              </div>
+              <div class="tape-meta">
+                <span>Updated: 2h ago</span>
+                <span>Owner: you</span>
+                <span>Plays: 1.2K · Rating: 4.8</span>
+                <div class="tape-actions">
+                  <button class="asx-btn" data-action="load-tape" data-tape="doom_world_omega">Load</button>
+                  <button class="asx-btn" data-action="preview-tape" data-tape="doom_world_omega">Preview</button>
+                  <button class="asx-btn" data-action="share-tape" data-tape="doom_world_omega">Toggle Shared</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="tape-row">
+              <div>
+                <div class="flex gap-xs" style="align-items:center;">
+                  <span class="text-sm">Brain: SVG-3D Vision Trainer</span>
+                  <span class="tape-pill">brain</span>
+                  <span class="tape-pill">mine</span>
+                </div>
+                <div class="text-xs text-muted mt-xs">
+                  K’uhul π SVG-3D loss & trainer loop. Treats every SVG brain as a glyph map and stores it as SCXQ2 tape.
+                </div>
+                <div class="flex gap-xs mt-xs" style="flex-wrap:wrap;">
+                  <span class="tag">trainer</span>
+                  <span class="tag">kuhul-pi</span>
+                  <span class="tag">svg-3d</span>
+                </div>
+              </div>
+              <div class="tape-meta">
+                <span>Updated: today</span>
+                <span>Owner: you</span>
+                <span>Uses: 87 · RLHF: 312 votes</span>
+                <div class="tape-actions">
+                  <button class="asx-btn" data-action="load-tape" data-tape="brain_svg3d_trainer">Load</button>
+                  <button class="asx-btn" data-action="export-tape" data-tape="brain_svg3d_trainer">Export</button>
+                  <button class="asx-btn" data-action="mark-market" data-tape="brain_svg3d_trainer">Mark Market</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="tape-row">
+              <div>
+                <div class="flex gap-xs" style="align-items:center;">
+                  <span class="text-sm">Pocket Book Template</span>
+                  <span class="tape-pill">app</span>
+                  <span class="tape-pill">shared</span>
+                </div>
+                <div class="text-xs text-muted mt-xs">
+                  Forum-style tape gallery. This tape is the blueprint for user galleries, shared galleries, and market listing views.
+                </div>
+                <div class="flex gap-xs mt-xs" style="flex-wrap:wrap;">
+                  <span class="tag">gallery</span>
+                  <span class="tag">market</span>
+                  <span class="tag">template</span>
+                </div>
+              </div>
+              <div class="tape-meta">
+                <span>Updated: 1d ago</span>
+                <span>Owner: system</span>
+                <span>Forks: 43 · Stars: 128</span>
+                <div class="tape-actions">
+                  <button class="asx-btn" data-action="clone-tape" data-tape="pocket_book_template">Clone</button>
+                  <button class="asx-btn" data-action="load-tape" data-tape="pocket_book_template">Open</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- SERVICE WORKER REGISTRATION -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(reg => {
+        console.log('[MX2LM] Service worker registered', reg.scope);
+      }).catch(err => {
+        console.error('[MX2LM] SW registration failed', err);
+      });
+    }
+  </script>
+
+  <!-- IPC + UI WIRING + SECUROLINK + POCKET BOOK + GLYPH RAIN -->
+  <script>
+    // =========================================================
+    // IPC: connect ghost shell to sw.js
+    // =========================================================
+    let swPort = null;
+    let activeModel = 'openai';
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', event => {
+        const { type, data } = event.data || {};
+        if (type === 'PORT_INIT') {
+          swPort = event.ports[0];
+          swPort.onmessage = handleSWMessage;
+          console.log('[MX2LM] IPC Port established');
+          sendToSW({ type: 'BOOT_OS' });
+        } else if (type === 'SW_READY') {
+          navigator.serviceWorker.controller?.postMessage({ type: 'INIT_PORT' });
+        }
+      });
+
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'INIT_PORT' });
+      }
+    }
+
+    function sendToSW(message) {
+      if (swPort) {
+        swPort.postMessage(message);
+      }
+    }
+
+    function handleSWMessage(event) {
+      const { type, data } = event.data || {};
+      if (type === 'RENDER_UI') {
+        // In this ghost shell version, we already render base UI;
+        // sw.js can later send AST-derived fragments if needed.
+        console.log('[MX2LM] RENDER_UI payload received', data);
+      } else if (type === 'EDITOR_UPDATE') {
+        const body = document.getElementById('editor-body');
+        const filename = document.getElementById('editor-filename');
+        if (body && data && typeof data.content === 'string') {
+          body.textContent = data.content;
+        }
+        if (filename && data && data.filename) {
+          filename.textContent = data.filename;
+        }
+      } else if (type === 'CHAT_RESPONSE') {
+        if (data && data.text) {
+          appendChatMessage('assistant', data.text);
+        }
+      } else if (type === 'LOG') {
+        console.log('[MX2LM LOG]', data);
+      }
+    }
+
+    // =========================================================
+    // Studio tab handling
+    // =========================================================
+    const studioTabs = document.querySelectorAll('.studio-tab');
+    studioTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        studioTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const target = tab.getAttribute('data-target');
+        document.getElementById('editor-filename').textContent = target;
+        sendToSW({ type: 'LOAD_FILE', file: target });
+      });
+    });
+
+    // =========================================================
+    // Chat / inference
+    // =========================================================
+    const chatStream = document.getElementById('chat-stream');
+    const chatInput = document.getElementById('chat-input');
+    const chatSend = document.getElementById('send-chat');
+
+    function appendChatMessage(role, text) {
+      if (!chatStream) return;
+      const div = document.createElement('div');
+      div.className = 'chat-msg ' + role;
+      div.textContent = text;
+      chatStream.appendChild(div);
+      chatStream.scrollTop = chatStream.scrollHeight;
+    }
+
+    if (chatSend && chatInput) {
+      chatSend.addEventListener('click', () => {
+        const text = chatInput.value.trim();
+        if (!text) return;
+        appendChatMessage('user', text);
+        sendToSW({ type: 'CHAT_MESSAGE', text, model: activeModel });
+        chatInput.value = '';
+      });
+
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          chatSend.click();
+        }
+      });
+    }
+
+    const modelTabs = document.querySelectorAll('#model-tabs .pill-tab');
+    modelTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        modelTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        activeModel = tab.getAttribute('data-model');
+      });
+    });
+
+    document.getElementById('btnBootPrime')?.addEventListener('click', () => {
+      sendToSW({ type: 'ACTION', action: 'boot_prime' });
+    });
+
+    // =========================================================
+    // SECUROLINK widget behavior (front-end only)
+    // =========================================================
+    const glyph = document.getElementById('glyph');
+    const userIdInput = document.getElementById('userId');
+    const btnIssue = document.getElementById('btnIssue');
+    const btnRevokeAll = document.getElementById('btnRevokeAll');
+    const loginStatus = document.getElementById('loginStatus')?.querySelector('span');
+
+    function setStatus(text) {
+      if (loginStatus) loginStatus.textContent = text;
+    }
+
+    function getBaseVaultUrl() {
+      // Canonical base; server side routes resolve the actual key
+      return 'https://api.asxtoken.com/?action=securolinkVault';
+    }
+
+    function issueSecurolink() {
+      const id = (userIdInput?.value || '').trim();
+      if (!id) {
+        setStatus('enter user or wallet id first');
+        return;
+      }
+      // In the real system, this calls api.php; here we just form canonical URL
+      const url = getBaseVaultUrl() + '&user=' + encodeURIComponent(id);
+      setStatus('issued — bookmark your SECUROLINK');
+      console.log('[SECUROLINK] Issued', url);
+      // Optionally open in new tab:
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    function revokeAllLinks() {
+      setStatus('revoking all links via api.asxtoken.com…');
+      // Hook to backend: api.asxtoken.com/api.php?route=securolink.revoke_all
+      // For now just log:
+      console.log('[SECUROLINK] Revoke all requested');
+    }
+
+    glyph?.addEventListener('click', issueSecurolink);
+    btnIssue?.addEventListener('click', issueSecurolink);
+    btnRevokeAll?.addEventListener('click', revokeAllLinks);
+
+    // =========================================================
+    // Pocket Book gallery: basic filtering & search (local demo)
+    // =========================================================
+    const galleryScopeTabs = document.querySelectorAll('#gallery-scope .pill-tab');
+    const galleryType = document.getElementById('gallery-type');
+    const gallerySort = document.getElementById('gallery-sort');
+    const gallerySearchInput = document.getElementById('gallery-search-input');
+    const galleryList = document.getElementById('gallery-list');
+
+    let galleryScope = 'mine';
+
+    function filterGallery() {
+      if (!galleryList) return;
+      const query = (gallerySearchInput?.value || '').toLowerCase();
+      const typeFilter = galleryType?.value || '';
+      const cards = galleryList.querySelectorAll('.card');
+
+      cards.forEach(card => {
+        let text = card.textContent.toLowerCase();
+        let ok = true;
+
+        // type filter (based on small labels)
+        if (typeFilter) {
+          const hasType = card.querySelector('.tape-pill')?.textContent === typeFilter;
+          if (!hasType) ok = false;
+        }
+
+        // scope filter (mine/shared/market; demo uses simple substring)
+        if (galleryScope === 'mine' && !text.includes('owner: you')) ok = false;
+        if (galleryScope === 'shared' && !text.includes('shared')) ok = false;
+        if (galleryScope === 'market' && !text.includes('market')) ok = false;
+
+        // search
+        if (query && !text.includes(query)) ok = false;
+
+        card.style.display = ok ? '' : 'none';
+      });
+    }
+
+    galleryScopeTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        galleryScopeTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        galleryScope = tab.getAttribute('data-scope');
+        filterGallery();
+      });
+    });
+
+    galleryType?.addEventListener('change', filterGallery);
+    gallerySort?.addEventListener('change', filterGallery);
+    gallerySearchInput?.addEventListener('input', filterGallery);
+
+    document.getElementById('btnNewTape')?.addEventListener('click', () => {
+      appendChatMessage('assistant',
+        'New tape wizard will live here. For now, describe the tape in chat and the kernel will draft a manifest.tapes entry.');
+    });
+
+    // =========================================================
+    // Calm glyph rain background
+    // =========================================================
+    (function initGlyphRain() {
+      const canvas = document.getElementById('glyph-rain');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const glyphs = '⟁ΩλπΣΞΦΨ✶✺✦✧＊01';
+      let width, height, columns, drops;
+
+      function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        columns = Math.floor(width / 16);
+        drops = Array.from({ length: columns }, () => Math.random() * height);
+      }
+
+      function draw() {
+        if (!ctx) return;
+        ctx.fillStyle = 'rgba(2, 6, 23, 0.16)';
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.fillStyle = 'rgba(34, 211, 238, 0.75)';
+        ctx.font = '14px "JetBrains Mono", monospace';
+
+        for (let i = 0; i < drops.length; i++) {
+          const text = glyphs[Math.floor(Math.random() * glyphs.length)];
+          const x = i * 16;
+          const y = drops[i] * 16;
+          ctx.fillText(text, x, y);
+
+          if (y > height && Math.random() > 0.975) {
+            drops[i] = 0;
+          } else {
+            drops[i] += 0.5 + Math.random() * 0.5;
+          }
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', resize);
+      resize();
+      requestAnimationFrame(draw);
+    })();
+  </script>
+</body>
+</html>

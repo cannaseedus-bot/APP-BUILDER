@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ASX BLACK CODEX — Lexicon Semantic Vectors</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #020409;
+      --bg-alt: #050912;
+      --panel: #050a14;
+      --panel-soft: #070d1c;
+      --border: #16f2aa;
+      --border-soft: rgba(22,242,170,0.3);
+      --accent: #00ffd0;
+      --accent-soft: rgba(0,255,208,0.12);
+      --hazard: #ffdd55;
+      --hazard-soft: rgba(255,221,85,0.16);
+      --fg: #e6f7ff;
+      --muted: #6f8ca3;
+      --danger: #ff4b81;
+      --code-bg: #050713;
+      --shadow-soft: 0 0 0 1px rgba(0,0,0,0.6), 0 18px 45px rgba(0,0,0,0.85);
+      --radius-xl: 18px;
+      --radius-lg: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #07101f 0, #020409 48%, #000 100%);
+      color: var(--fg);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 1320px;
+      display: grid;
+      grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .panel {
+      background: linear-gradient(145deg, var(--panel) 0, var(--panel-soft) 100%);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 0 0, rgba(0,255,208,0.14) 0, transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(22,242,170,0.12) 0, transparent 60%);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .left {
+      padding: 20px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      isolation: isolate;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(0,255,208,0.16), rgba(22,242,170,0.02));
+      border: 1px solid var(--border-soft);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 12px rgba(0,255,208,0.9);
+    }
+
+    h1 {
+      margin: 2px 0 4px;
+      font-size: 20px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--fg);
+    }
+
+    .subtitle {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .chip {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: radial-gradient(circle at top, rgba(255,255,255,0.04), transparent);
+      color: var(--muted);
+    }
+
+    .chip.hazard {
+      border-color: var(--hazard-soft);
+      background: linear-gradient(120deg, rgba(255,221,85,0.14), rgba(255,221,85,0.02));
+      color: var(--hazard);
+    }
+
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .card {
+      margin-top: 8px;
+      padding: 10px 11px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255,255,255,0.06);
+      background: radial-gradient(circle at top left, rgba(0,255,208,0.12), transparent 60%),
+                  radial-gradient(circle at bottom right, rgba(22,242,170,0.10), transparent 70%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .card p {
+      margin: 2px 0;
+      font-size: 12px;
+      color: var(--fg);
+    }
+
+    .card ul {
+      margin: 6px 0;
+      padding-left: 16px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .pill {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--muted);
+    }
+
+    .pill.hazard {
+      border-color: var(--hazard-soft);
+      color: var(--hazard);
+    }
+
+    .right {
+      padding: 18px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      isolation: isolate;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .tab {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--muted);
+      background: rgba(0,0,0,0.55);
+      cursor: default;
+    }
+
+    .tab.active {
+      border-color: var(--hazard);
+      background: linear-gradient(120deg, rgba(255,221,85,0.18), rgba(255,221,85,0.02));
+      color: var(--hazard);
+      box-shadow: 0 0 14px rgba(255,221,85,0.35);
+    }
+
+    .code-block {
+      background: var(--code-bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 10px 11px;
+      font-family: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo,
+        Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      color: #e0f2ff;
+      position: relative;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.7);
+      overflow: auto;
+      max-height: 260px;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--hazard);
+      box-shadow: 0 0 10px rgba(255,221,85,0.7);
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 11px;
+    }
+
+    .legend-item {
+      padding: 6px 7px;
+      border-radius: 10px;
+      border: 1px dashed rgba(255,255,255,0.12);
+      background: radial-gradient(circle at top, rgba(255,255,255,0.04), transparent 70%);
+      color: var(--muted);
+    }
+
+    .legend-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      margin-bottom: 3px;
+    }
+
+    .metric-bar {
+      position: relative;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .metric-bar span {
+      position: absolute;
+      inset: 0;
+      width: 64%;
+      background: linear-gradient(90deg, var(--accent), var(--hazard));
+      box-shadow: 0 0 12px rgba(0,255,208,0.35);
+    }
+
+    @media (max-width: 960px) {
+      .shell {
+        grid-template-columns: minmax(0,1fr);
+      }
+      body {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <!-- LEFT: Overview + System -->
+    <aside class="panel left">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        <span>ASX BLACK CODEX</span>
+      </div>
+      <h1>LEXICON SEMANTIC VECTORS</h1>
+      <div class="subtitle">
+        XJSON ⊗ KUHUL ⊗ XCFE ⊗ ATOMIC
+      </div>
+
+      <div class="chip-row">
+        <div class="chip hazard">Embedding-less Embeddings</div>
+        <div class="chip">@grams → vectors</div>
+        <div class="chip">@bigrams / @trigrams</div>
+        <div class="chip">SCXQ2-friendly</div>
+      </div>
+
+      <div class="section-label">System Role</div>
+      <div class="card">
+        <div class="card-title">Lexicon Semantic Shard</div>
+        <p>
+          The lexicon becomes a <strong>symbolic embedding space</strong> where each
+          token is anchored by its context features instead of neural weights.
+        </p>
+        <ul>
+          <li><strong>lexicon_coocc</strong> → context counts</li>
+          <li><strong>lexicon_semantic</strong> → normalized vectors</li>
+          <li><strong>meta_prompt_synthesize_semantic</strong> → LLM-grade prompts</li>
+        </ul>
+        <div class="pill-row">
+          <span class="pill hazard">No tensors</span>
+          <span class="pill">Pure XJSON</span>
+          <span class="pill">@control / @variable</span>
+        </div>
+      </div>
+
+      <div class="section-label">Pipelines</div>
+      <div class="card">
+        <div class="card-title">Execution Flow</div>
+        <p>
+          <strong>DATA → n-grams → co-occ → vectors → prompts → inference</strong>
+        </p>
+        <ul>
+          <li>Ingest with <code>lexicon_semantic_ingest_text</code></li>
+          <li>Rebuild vectors with <code>lexicon_semantic_rebuild_all</code></li>
+          <li>Query neighbors with <code>lexicon_semantic_neighbors</code></li>
+          <li>Feed prompts into MX2LM / Trinity / ASXR</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- RIGHT: K'UHUL CODE + LEGEND -->
+    <main class="panel right">
+      <div class="tabs">
+        <div class="tab active">K’UHUL PI · CORE</div>
+        <div class="tab">CO-OCC MATRIX</div>
+        <div class="tab">PROMPT SYNTH</div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span>lexicon_semantic_ingest_text · kuhul</span>
+          <span class="status-dot"></span>
+        </div>
+        <pre><code>[Pop lexicon_semantic_ingest_text]
+  [Wo @text]→[Sek tokenize_words]→[Ch'en words]
+  [Wo 4]→[Ch'en window]
+
+  [Sek each_index words:
+    [Gw i tok]
+    [Sek lexicon_word_update tok]
+    [Sek context_window words i window]→[Ch'en ctx]
+    [Sek lexicon_coocc_update tok ctx]
+  ]
+
+  [Xul return {
+    "@type":"lexicon_semantic_ingested",
+    "tokens":[Sek length words],
+    "window":window
+  }]
+[Xul]
+
+[Pop lexicon_semantic_rebuild_all]
+  [Yax "lexicon_coocc"]→[Sek mx2db_get_all]→[Ch'en all]
+  [Wo {}]→[Ch'en sem]
+
+  [Sek each_record all:
+    [Gw rec]
+    [Sek lexicon_semantic_from_coocc rec]→[Ch'en vec]
+    [Sek map_set sem rec.token vec]
+  ]
+
+  [Yax "lexicon_semantic"]→[Wo sem]→[Sek mx2db_put]
+
+  [Xul return {
+    "@type":"lexicon_semantic_rebuilt",
+    "tokens":[Sek length all]
+  }]
+[Xul]
+
+[Pop meta_prompt_synthesize_semantic]
+  [Yax "prompt_blocks"]→[Sek mx2db_get]→[Ch'en P]
+  [Yax "reasoning_patterns"]→[Sek mx2db_get]→[Ch'en R]
+  [Yax "lexicon_semantic"]→[Sek mx2db_get]→[Ch'en S]
+
+  [Wo [Sek select_semantic_anchors S 12]]→[Ch'en anchors]
+
+  [Wo {
+    "task":"@infer",
+    "attributes":[Sek top_k P 20],
+    "relations":[Sek top_k P 15 phrase],
+    "reasoning":[Sek top_k R 10],
+    "semantic_anchors":anchors,
+    "@control":["@coherent","@semantic_dense","@chain_reasoning"],
+    "@variable":{"@entropy":0.37,"@innovation":0.44}
+  }]→[Ch'en final]
+
+  [Xul return final]
+[Xul]</code></pre>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-label">@grams → vectors</div>
+          <div>
+            Unigrams, bigrams, trigrams feed co-occurrence counts. XCFE treats them as
+            <strong>@variable</strong> state for semantic flow.
+          </div>
+          <div class="metric-bar"><span></span></div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-label">Semantic Anchors</div>
+          <div>
+            Top-scoring features in <code>lexicon_semantic</code> become anchors that
+            bias prompts toward stable, domain-correct meanings.
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-label">Prompt Gravity</div>
+          <div>
+            Similar tokens share features, so prompts “fall” into consistent frames
+            without neural embeddings – pure KUHUL PI gravity.
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

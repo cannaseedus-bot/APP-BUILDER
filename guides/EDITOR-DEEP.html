@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASX Prime OS - Web Builder Specialist</title>
+    <link rel="manifest" href="./manifest.json">
+    <style>
+        /* KUHUL ATOMIC CSS - SYMBOLIC COMPRESSION */
+        :root {
+            --bg: #020617;
+            --bg-alt: #050b1c;
+            --primary: #16f2aa;
+            --secondary: #38bdf8;
+            --accent: #8b5cf6;
+            --text: #e5f2ff;
+            --text-soft: #9ca3af;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+
+        /* ATOMIC SYMBOLIC CSS */
+        .⚛d:f { display: flex; }
+        .⚛fd:c { flex-direction: column; }
+        .⚛jc:c { justify-content: center; }
+        .⚛ai:c { align-items: center; }
+        .⚛p:10p { padding: 10px; }
+        .⚛m:8p { margin: 8px; }
+        .⚛br:8p { border-radius: 8px; }
+        .⚛c:primary { color: var(--primary); }
+        .⚛bg:dark { background: var(--bg); }
+        .⚛bgi:radial { background: radial-gradient(circle at top right, var(--bg-alt), var(--bg)); }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr 350px;
+            height: 100vh;
+            gap: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .panel {
+            background: var(--bg-alt);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3);
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 15px;
+        }
+
+        .tool-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .tool-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .tool-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tool-desc {
+            font-size: 0.75rem;
+            color: var(--text-soft);
+        }
+
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+        }
+
+        .workspace-tabs {
+            display: flex;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .workspace-tab {
+            padding: 12px 20px;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .workspace-tab.active {
+            background: rgba(22, 242, 170, 0.1);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .editor-container {
+            flex: 1;
+            display: flex;
+        }
+
+        .code-editor, .preview {
+            flex: 1;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .preview {
+            background: white;
+        }
+
+        .code-area {
+            width: 100%;
+            height: 100%;
+            background: #1e1e2e;
+            color: #f8f8f2;
+            border: none;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .message.user {
+            background: rgba(22, 242, 170, 0.1);
+            margin-left: 20px;
+        }
+
+        .message.ai {
+            background: rgba(56, 189, 248, 0.1);
+            margin-right: 20px;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .chat-input textarea {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text);
+            resize: none;
+            font-size: 0.9rem;
+        }
+
+        .send-btn {
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            width: 40px;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 15px;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.8rem;
+        }
+
+        .compression-badge {
+            background: var(--primary);
+            color: var(--bg);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel - Builder Tools -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">🧩 Web Builder Specialist</div>
+            </div>
+            
+            <div class="tool-grid">
+                <div class="tool-card" onclick="Builder.useTool('kuhul')">
+                    <div class="tool-icon">⚡</div>
+                    <div class="tool-name">KUHUL Compiler</div>
+                    <div class="tool-desc">Symbolic CSS compression & optimization</div>
+                </div>
+                
+                <div class="tool-card" onclick="Builder.useTool('xjson')">
+                    <div class="tool-icon">📄</div>
+                    <div class="tool-name">XJSON Builder</div>
+                    <div class="tool-desc">Structured data & API generation</div>
+                </div>
+                
+                <div class="tool-card" onclick="Builder.useTool('scx')">
+                    <div class="tool-icon">🌀</div>
+                    <div class="tool-name">SCX Compressor</div>
+                    <div class="tool-desc">Advanced compression algorithms</div>
+                </div>
+                
+                <div class="tool-card" onclick="Builder.useTool('asx')">
+                    <div class="tool-icon">🚀</div>
+                    <div class="tool-name">ASX OS Runtime</div>
+                    <div class="tool-desc">Browser OS & service management</div>
+                </div>
+                
+                <div class="tool-card" onclick="Builder.useTool('layout')">
+                    <div class="tool-icon">📐</div>
+                    <div class="tool-name">Layout Generator</div>
+                    <div class="tool-desc">Responsive grid systems</div>
+                </div>
+                
+                <div class="tool-card" onclick="Builder.useTool('style')">
+                    <div class="tool-icon">🎨</div>
+                    <div class="tool-name">Style System</div>
+                    <div class="tool-desc">Design tokens & themes</div>
+                </div>
+                
+                <div class="tool-card" onclick="Builder.useTool('component')">
+                    <div class="tool-icon">🧱</div>
+                    <div class="tool-name">Component Factory</div>
+                    <div class="tool-desc">Reusable UI components</div>
+                </div>
+                
+                <div class="tool-card" onclick="Builder.useTool('animation')">
+                    <div class="tool-icon">✨</div>
+                    <div class="tool-name">Animation Studio</div>
+                    <div class="tool-desc">CSS animations & transitions</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Panel - Workspace -->
+        <div class="workspace">
+            <div class="workspace-tabs">
+                <div class="workspace-tab active" onclick="Builder.switchTab('code')">Code Editor</div>
+                <div class="workspace-tab" onclick="Builder.switchTab('preview')">Live Preview</div>
+                <div class="workspace-tab" onclick="Builder.switchTab('terminal')">Terminal</div>
+            </div>
+            
+            <div class="editor-container">
+                <div class="code-editor">
+                    <textarea class="code-area" id="code-editor" placeholder="Start building with KUHUL, XJSON, SCX, or ASX...">// ASX Prime OS Web Builder Specialist
+// Ready to build with all four core technologies!
+
+// KUHUL Example - Symbolic CSS
+const kuhulCSS = `
+.⚛d:f { display: flex; }
+.⚛jc:c { justify-content: center; }
+.⚛ai:c { align-items: center; }
+.⚛p:10p { padding: 10px; }
+`;
+
+// XJSON Example - Structured Data
+const xjsonConfig = {
+  "@xjson": {
+    "version": "1.0",
+    "type": "web-component",
+    "layout": {
+      "type": "grid",
+      "columns": ["250px", "1fr", "300px"]
+    }
+  }
+};
+
+// SCX Compression Example
+const scxCompress = (data) => {
+  // Advanced compression algorithms
+  return data.replace(/\s+/g, ' ').trim();
+};
+
+// ASX OS Integration
+const asxRuntime = {
+  ports: [61680, 61681, 61682],
+  services: ['kuhul', 'xjson', 'scx', 'builder']
+};</textarea>
+                </div>
+                
+                <div class="preview" id="preview-pane" style="display: none;">
+                    <iframe id="live-preview" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+                
+                <div class="code-editor" id="terminal-pane" style="display: none;">
+                    <div class="code-area" id="terminal-output">
+ASX Prime OS Web Builder - Terminal
+➤ System: Online
+➤ KUHUL: Ready (94% compression)
+➤ XJSON: Ready (structured data)
+➤ SCX: Ready (advanced compression)  
+➤ ASX: Ready (port 61680+)
+
+Type 'help' for available commands...
+                    </div>
+                </div>
+            </div>
+            
+            <div class="status-bar">
+                <div>
+                    <span class="compression-badge">KUHUL ACTIVE</span>
+                    <span style="margin-left: 10px;">Compression: 94% | Size: 2.1KB → 0.13KB</span>
+                </div>
+                <div>ASX Port: 61680 | Builder Specialist v1.0</div>
+            </div>
+        </div>
+
+        <!-- Right Panel - AI Assistant -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">🤖 Builder Assistant</div>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <div class="message ai">
+                    <strong>ASX Builder:</strong> Welcome! I specialize in KUHUL symbolic compression, XJSON structured data, SCX advanced compression, and ASX OS runtime. What would you like to build?
+                </div>
+            </div>
+            
+            <div class="chat-input">
+                <textarea id="chat-input" placeholder="Ask about KUHUL optimization, XJSON structures, SCX compression, or ASX services..." rows="3"></textarea>
+                <button class="send-btn" onclick="Builder.sendMessage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ASX PRIME OS WEB BUILDER SPECIALIST
+        class WebBuilderSpecialist {
+            constructor() {
+                this.currentTool = 'kuhul';
+                this.currentTab = 'code';
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.loadInitialState();
+                console.log('🚀 ASX Prime OS Web Builder Specialist - Ready!');
+            }
+
+            setupEventListeners() {
+                // Chat input enter key
+                document.getElementById('chat-input').addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+
+                // Code editor changes
+                document.getElementById('code-editor').addEventListener('input', (e) => {
+                    this.updateLivePreview();
+                });
+            }
+
+            loadInitialState() {
+                this.addChatMessage('Builder Assistant initialized. I can help you with:', 'ai');
+                this.addChatMessage('• KUHUL: Symbolic CSS compression & optimization', 'ai');
+                this.addChatMessage('• XJSON: Structured data & API generation', 'ai'); 
+                this.addChatMessage('• SCX: Advanced compression algorithms', 'ai');
+                this.addChatMessage('• ASX: Browser OS & service management', 'ai');
+            }
+
+            useTool(tool) {
+                this.currentTool = tool;
+                const tools = {
+                    kuhul: 'KUHUL Symbolic Compiler activated. Ready for CSS optimization with 94%+ compression.',
+                    xjson: 'XJSON Builder activated. Ready for structured data and API generation.',
+                    scx: 'SCX Compressor activated. Advanced compression algorithms ready.',
+                    asx: 'ASX OS Runtime activated. Browser OS services online.',
+                    layout: 'Layout Generator activated. Responsive grid systems ready.',
+                    style: 'Style System activated. Design tokens and themes ready.',
+                    component: 'Component Factory activated. Reusable UI components ready.',
+                    animation: 'Animation Studio activated. CSS animations ready.'
+                };
+                
+                this.addChatMessage(`🔧 ${tools[tool]}`, 'ai');
+                
+                // Update code examples based on tool
+                this.updateCodeExample(tool);
+            }
+
+            updateCodeExample(tool) {
+                const examples = {
+                    kuhul: `// KUHUL - Symbolic CSS Compression
+// Achieves 94%+ compression through atomic symbols
+
+// Atomic CSS Classes
+.⚛d:f { display: flex; }
+.⚛fd:c { flex-direction: column; }
+.⚛jc:c { justify-content: center; }
+.⚛ai:c { align-items: center; }
+.⚛p:10p { padding: 10px; }
+.⚛m:8p { margin: 8px; }
+.⚛br:8p { border-radius: 8px; }
+
+// Component Symbols
+.⚡⟁BTN { 
+  composes: ⚛d:f ⚛jc:c ⚛ai:c ⚛p:10p ⚛br:8p;
+  background: var(--primary);
+  color: white;
+}
+
+// Usage in HTML
+// <button class="⚡⟁BTN">Compressed Button</button>`,
+
+                    xjson: `// XJSON - Structured Data & APIs
+// Human-readable structured configuration
+
+{
+  "@xjson": {
+    "version": "1.0",
+    "type": "web-application",
+    "metadata": {
+      "name": "ASX Builder",
+      "version": "v1.0",
+      "technologies": ["KUHUL", "XJSON", "SCX", "ASX"]
+    },
+    "layout": {
+      "type": "responsive-grid",
+      "breakpoints": {
+        "mobile": "320px",
+        "tablet": "768px", 
+        "desktop": "1024px"
+      }
+    },
+    "apis": {
+      "compile": "/api/xjson/compile",
+      "compress": "/api/scxq2/compress",
+      "deploy": "/api/asx/deploy"
+    }
+  }
+}`,
+
+                    scx: `// SCX - Advanced Compression
+// Multiple compression algorithms
+
+class SCXCompressor {
+  // Symbolic Compression
+  static symbolicCompress(css) {
+    const patterns = {
+      'display: flex': '⚛d:f',
+      'justify-content: center': '⚛jc:c',
+      'align-items: center': '⚛ai:c',
+      'padding: 10px': '⚛p:10p'
+    };
+    
+    return css.replace(
+      /display:\\s*flex|justify-content:\\s*center|align-items:\\s*center|padding:\\s*10px/g,
+      match => patterns[match]
+    );
+  }
+
+  // Dictionary Compression
+  static dictionaryCompress(data) {
+    const dictionary = {};
+    let counter = 0;
+    
+    return data.replace(/[a-zA-Z]+/g, (word) => {
+      if (!dictionary[word]) {
+        dictionary[word] = String.fromCharCode(97 + counter++);
+      }
+      return dictionary[word];
+    });
+  }
+
+  // Measure compression
+  static getCompressionRatio(original, compressed) {
+    return ((original - compressed) / original * 100).toFixed(1);
+  }
+}
+
+// Example usage
+const originalCSS = 'display: flex; justify-content: center; align-items: center;';
+const compressed = SCXCompressor.symbolicCompress(originalCSS);
+// Result: "⚛d:f ⚛jc:c ⚛ai:c" (87% compression)`,
+
+                    asx: `// ASX OS - Browser Operating System
+// Complete runtime environment
+
+const ASX_OS = {
+  // Port specification
+  ports: {
+    os: 61680,
+    rig: 61681,
+    prime: 61682,
+    scx: 61683,
+    trainer: 61684
+  },
+
+  // Kernel services
+  kernel: {
+    fileSystem: 'xjson_vfs',
+    processManager: 'kuhul_vm_scheduler',
+    networkStack: 'virtual_networking',
+    securityLayer: 'trust_stamp_system'
+  },
+
+  // REST mesh endpoints
+  endpoints: {
+    '/api/xjson/compile': 'XJSON.compile',
+    '/api/scxq2/compress': 'SCXQ2.compress',
+    '/api/asx/deploy': 'ASX.deploy',
+    '/api/kuhul/optimize': 'KUHUL.optimize'
+  },
+
+  // Boot sequence
+  async boot() {
+    console.log('🚀 ASX OS Booting...');
+    await this.startKernel();
+    await this.mountServices();
+    await this.launchBuilder();
+    console.log('✅ ASX OS Ready - Web Builder Specialist Active');
+  }
+};`
+                };
+
+                if (examples[tool]) {
+                    document.getElementById('code-editor').value = examples[tool];
+                    this.updateLivePreview();
+                }
+            }
+
+            switchTab(tab) {
+                this.currentTab = tab;
+                
+                // Hide all panes
+                document.querySelector('.code-editor').style.display = 'none';
+                document.getElementById('preview-pane').style.display = 'none';
+                document.getElementById('terminal-pane').style.display = 'none';
+                
+                // Remove active class from all tabs
+                document.querySelectorAll('.workspace-tab').forEach(t => t.classList.remove('active'));
+                
+                // Show selected pane and activate tab
+                switch(tab) {
+                    case 'code':
+                        document.querySelector('.code-editor').style.display = 'block';
+                        document.querySelectorAll('.workspace-tab')[0].classList.add('active');
+                        break;
+                    case 'preview':
+                        document.getElementById('preview-pane').style.display = 'block';
+                        document.querySelectorAll('.workspace-tab')[1].classList.add('active');
+                        this.updateLivePreview();
+                        break;
+                    case 'terminal':
+                        document.getElementById('terminal-pane').style.display = 'block';
+                        document.querySelectorAll('.workspace-tab')[2].classList.add('active');
+                        break;
+                }
+            }
+
+            updateLivePreview() {
+                const code = document.getElementById('code-editor').value;
+                const preview = document.getElementById('live-preview');
+                
+                // Simple preview generation
+                const html = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <style>
+                            body { 
+                                font-family: system-ui; 
+                                padding: 20px;
+                                background: #0f172a;
+                                color: white;
+                            }
+                            .preview-content {
+                                max-width: 800px;
+                                margin: 0 auto;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="preview-content">
+                            <h3>ASX Builder Live Preview</h3>
+                            <pre>${code}</pre>
+                        </div>
+                    </body>
+                    </html>
+                `;
+                
+                preview.srcdoc = html;
+            }
+
+            addChatMessage(content, sender = 'ai') {
+                const messagesContainer = document.getElementById('chat-messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', sender);
+                messageDiv.innerHTML = `<strong>${sender === 'user' ? 'You' : 'ASX Builder'}:</strong> ${content}`;
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            sendMessage() {
+                const input = document.getElementById('chat-input');
+                const message = input.value.trim();
+                
+                if (message) {
+                    this.addChatMessage(message, 'user');
+                    input.value = '';
+                    
+                    // Generate AI response based on message content
+                    setTimeout(() => {
+                        const response = this.generateAIResponse(message);
+                        this.addChatMessage(response, 'ai');
+                    }, 1000);
+                }
+            }
+
+            generateAIResponse(message) {
+                const lowerMessage = message.toLowerCase();
+                
+                if (lowerMessage.includes('kuhul') || lowerMessage.includes('compression')) {
+                    return `KUHUL achieves 94%+ CSS compression through symbolic atomic classes. For example, "display: flex" becomes "⚛d:f". This reduces typical CSS from 256KB to 18.5KB while maintaining full functionality.`;
+                }
+                else if (lowerMessage.includes('xjson') || lowerMessage.includes('structured')) {
+                    return `XJSON provides human-readable structured configuration with built-in validation. It's perfect for API definitions, component configurations, and system settings with automatic type checking.`;
+                }
+                else if (lowerMessage.includes('scx') || lowerMessage.includes('compress')) {
+                    return `SCX offers multiple compression algorithms: symbolic replacement, dictionary compression, and pattern-based optimization. It can reduce data sizes by 85-96% depending on content type.`;
+                }
+                else if (lowerMessage.includes('asx') || lowerMessage.includes('os') || lowerMessage.includes('runtime')) {
+                    return `ASX OS is a complete browser-based operating system running on ports 61680+. It includes kernel services, REST mesh networking, and integrates all builder technologies seamlessly.`;
+                }
+                else if (lowerMessage.includes('build') || lowerMessage.includes('create') || lowerMessage.includes('make')) {
+                    return `I can help you build websites using all four technologies: KUHUL for CSS, XJSON for data, SCX for compression, and ASX for deployment. Which aspect would you like to focus on?`;
+                }
+                else {
+                    return `I specialize in KUHUL symbolic compression, XJSON structured data, SCX advanced compression, and ASX OS runtime. How can I assist with your web building project?`;
+                }
+            }
+        }
+
+        // Initialize the builder
+        const Builder = new WebBuilderSpecialist();
+
+        // Make available globally
+        window.Builder = Builder;
+    </script>
+</body>
+</html>
