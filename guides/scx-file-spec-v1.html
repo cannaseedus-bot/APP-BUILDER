@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>XJSON v1 Specification + OS Manual — PRIME Atomic Edition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- ===========================
+       PRIME ATOMIC SCX CSS
+       =========================== -->
+  <style>
+    :root {
+      --bg: #020308;
+      --panel: #070b12;
+      --border: #16f2aa;
+      --accent: #00ffff;
+      --accent-soft: rgba(0,255,255,0.25);
+      --text: #e8fff6;
+      --muted: #7e8a92;
+      --mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; width: 100%; }
+
+    /* Layout atoms */
+    [scx~="⟁BODY"] {
+      background: radial-gradient(circle at top, #08101e, #020308 60%);
+      color: var(--text);
+      font-family: var(--sans);
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+    [scx~="⟁ROOT"] {
+      max-width: 1180px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 960px) {
+      [scx~="⟁ROOT"] {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Panels / cards */
+    [scx~="⟁PANEL"] {
+      background: var(--panel);
+      border-radius: 10px;
+      border: 1px solid rgba(22,242,170,0.35);
+      padding: 14px 16px;
+      box-shadow: 0 0 26px rgba(0,0,0,0.7);
+      position: relative;
+      overflow: hidden;
+    }
+    [scx~="⟁PANEL"]::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: .5;
+    }
+    [scx~="⟁SCROLL"] { max-height: calc(100vh - 32px); overflow-y: auto; }
+
+    /* Typography atoms */
+    [scx~="⟁H1"] { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+    [scx~="⟁H2"] { font-size: 18px; font-weight: 600; margin: 18px 0 6px; }
+    [scx~="⟁H3"] { font-size: 15px; font-weight: 600; margin: 14px 0 4px; }
+    [scx~="⟁SUB"] { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+    [scx~="⟁P"]  { font-size: 13px; line-height: 1.6; margin: 6px 0; color: var(--text); }
+    [scx~="⟁MUTED"] { color: var(--muted); }
+    [scx~="⟁CAPTION"] { font-size: 11px; color: var(--muted); }
+
+    /* Flex/grid atoms */
+    [scx~="⟁F"] { display: flex; }
+    [scx~="⟁Frow"] { flex-direction: row; }
+    [scx~="⟁Fcol"] { flex-direction: column; }
+    [scx~="⟁Fbetween"] { justify-content: space-between; }
+    [scx~="⟁Acenter"] { align-items: center; }
+    [scx~="⟁GSM"] { gap: 6px; }
+    [scx~="⟁GMD"] { gap: 10px; }
+
+    /* Spacing */
+    [scx~="⟁MBXS"] { margin-bottom: 4px; }
+    [scx~="⟁MBSM"] { margin-bottom: 8px; }
+    [scx~="⟁MBMD"] { margin-bottom: 14px; }
+    [scx~="⟁MTMD"] { margin-top: 14px; }
+
+    /* Code / pre */
+    [scx~="⟁CODE"] {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: #020408;
+      border-radius: 8px;
+      border: 1px solid rgba(0,255,255,0.2);
+      padding: 8px 10px;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 6px 0 10px;
+      color: #d5f5ff;
+    }
+    [scx~="⟁INLINE"] {
+      font-family: var(--mono);
+      font-size: 11px;
+      background: #02050a;
+      border-radius: 4px;
+      padding: 1px 4px;
+      border: 1px solid rgba(0,255,255,0.2);
+    }
+
+    /* TOC */
+    .toc-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 8px 0 0;
+      font-size: 12px;
+    }
+    .toc-list li { margin: 4px 0; }
+    .toc-list a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .toc-list a:hover { text-decoration: underline; }
+
+    /* Badge / tag */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      font-size: 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.65);
+      text-transform: uppercase;
+      letter-spacing: .16em;
+    }
+
+    /* Table */
+    table[scx~="⟁TABLE"] {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin: 6px 0 12px;
+    }
+    table[scx~="⟁TABLE"] th,
+    table[scx~="⟁TABLE"] td {
+      padding: 6px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    table[scx~="⟁TABLE"] th {
+      text-align: left;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Callouts */
+    [scx~="⟁CALLOUT"] {
+      border-radius: 8px;
+      border: 1px solid rgba(0,255,255,0.4);
+      background: radial-gradient(circle at top left, rgba(0,255,255,0.12), transparent 60%);
+      padding: 8px 10px;
+      font-size: 12px;
+      margin: 8px 0 12px;
+    }
+  </style>
+</head>
+
+<body scx="⟁BODY">
+<div scx="⟁ROOT">
+
+  <!-- SIDEBAR / TOC -->
+  <aside scx="⟁PANEL">
+    <div scx="⟁SUB ⟁MBXS">XJSON v1 · SPEC & OS MANUAL</div>
+    <div scx="⟁H1">XJSON — The Universal AST-JSON Language</div>
+    <div scx="⟁P ⟁MUTED ⟁MBMD">
+      A structural, language-agnostic format for UI, logic, state, agents, compression, and OS runtime.
+    </div>
+
+    <div class="badge ⟁MBSM">
+      <span>PRIME</span><span>ATOMIC</span><span>SCX</span>
+    </div>
+
+    <div scx="⟁H3 ⟁MBXS">Contents</div>
+    <ul class="toc-list">
+      <li><a href="#sec-0">0. Overview & Goals</a></li>
+      <li><a href="#sec-1">1. Data Model</a></li>
+      <li><a href="#sec-2">2. Core Node Types</a></li>
+      <li><a href="#sec-3">3. SCX Atomic Blocks & Page Blocks</a></li>
+      <li><a href="#sec-4">4. CSS / Style Schema</a></li>
+      <li><a href="#sec-5">5. Logic & Event Model</a></li>
+      <li><a href="#sec-6">6. State, Flash-RAM, and Snapshots</a></li>
+      <li><a href="#sec-7">7. Routing, Components, and Layout</a></li>
+      <li><a href="#sec-8">8. Agents & MX2 Family</a></li>
+      <li><a href="#sec-9">9. Tapes, Holotapes, and OS Integration</a></li>
+      <li><a href="#sec-10">10. Code→AST→XJSON Transformations</a></li>
+      <li><a href="#sec-11">11. Security, Trust, and Validation</a></li>
+      <li><a href="#sec-12">12. Block Recipes & CDN-fed Block Packs</a></li>
+      <li><a href="#sec-13">13. Reference Grammar (v1)</a></li>
+    </ul>
+
+    <div scx="⟁MTMD ⟁CAPTION">
+      This manual is itself a demonstration of XJSON concepts rendered as plain HTML
+      using PRIME Atomic CSS and SCX-style block naming.
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main scx="⟁PANEL ⟁SCROLL">
+
+    <!-- 0. OVERVIEW -->
+    <section id="sec-0">
+      <div scx="⟁H2">0. Overview & Design Goals</div>
+      <p scx="⟁P">
+        XJSON is a universal, AST-shaped JSON language designed to encode
+        <span scx="⟁INLINE">HTML</span>,
+        <span scx="⟁INLINE">CSS</span>,
+        <span scx="⟁INLINE">JavaScript</span>,
+        <span scx="⟁INLINE">Python</span>,
+        <span scx="⟁INLINE">PHP</span>,
+        and higher-level OS concepts (tapes, agents, state, routing) into a single,
+        compressible, language-neutral format.
+      </p>
+      <p scx="⟁P">
+        Instead of shipping raw code plus templates plus styles plus configuration,
+        XJSON ships a single, structured representation that:
+      </p>
+      <ul scx="⟁P">
+        <li>Can be interpreted by <strong>MX2PHP / MX2PY / MX2JS</strong>.</li>
+        <li>Can be compressed by <strong>SCX</strong> and expanded at runtime.</li>
+        <li>Can describe a full OS HUD, including PRIME cockpit, Basher terminal, and agent grid.</li>
+        <li>Can be snapshotted and restored via <strong>Flash-RAM</strong>.</li>
+      </ul>
+
+      <div scx="⟁CALLOUT">
+        Think of XJSON as the <strong>“HTML+CSS+JS+Config+Agents+State”</strong> of your OS,
+        but expressed as one, unified AST that any runtime can read.
+        Blocks are your superpower: a whole page can be controlled via a single symbol.
+      </div>
+    </section>
+
+    <!-- 1. DATA MODEL -->
+    <section id="sec-1">
+      <div scx="⟁H2">1. Data Model</div>
+      <p scx="⟁P">
+        At its core, an XJSON document is a tree of nodes. Each node has:
+      </p>
+      <pre scx="⟁CODE">
+{
+  "type": "element|style|logic|component|route|state|agent|tape|flashram",
+  "id": "optional-unique-id",
+  "meta": { "optional": "metadata" },
+  "props": { /* type-specific properties */ },
+  "children": [ /* nested nodes (for hierarchical types) */ ]
+}
+      </pre>
+
+      <p scx="⟁P">
+        A typical <span scx="⟁INLINE">tape.xjson</span> serving as a full app or OS cockpit
+        contains a top-level bundle of these node types.
+      </p>
+
+      <pre scx="⟁CODE">
+{
+  "xjson": "1.0",
+  "meta": {
+    "id": "prime-os",
+    "label": "ASX PRIME OS — GUIX HUD",
+    "version": "1.0.0"
+  },
+  "nodes": [
+    { "type": "tape",   ... },
+    { "type": "route",  ... },
+    { "type": "state",  ... },
+    { "type": "agent",  ... },
+    { "type": "style",  ... },
+    { "type": "logic",  ... },
+    { "type": "element", ... }
+  ]
+}
+      </pre>
+    </section>
+
+    <!-- 2. CORE NODE TYPES -->
+    <section id="sec-2">
+      <div scx="⟁H2">2. Core Node Types</div>
+
+      <div scx="⟁H3">2.1 Element Nodes (HTML)</div>
+      <p scx="⟁P">
+        Element nodes express structural HTML. They also support SCX-based block attributes
+        to compress layout and styling decisions.
+      </p>
+      <pre scx="⟁CODE">
+{
+  "type": "element",
+  "tag": "div",
+  "props": {
+    "id": "prime-header",
+    "scx": "⟁F ⟁Fbetween ⟁Acenter ⟁MBSM"
+  },
+  "children": [
+    { "type": "text", "value": "ASX PRIME OS — XJSON Manual" }
+  ]
+}
+      </pre>
+
+      <div scx="⟁H3">2.2 Style Nodes (CSS)</div>
+      <p scx="⟁P">
+        Style nodes define atomic SCX tokens and direct CSS selectors. Runtimes can either
+        generate CSS text or keep it in data form for further transformation.
+      </p>
+      <pre scx="⟁CODE">
+{
+  "type": "style",
+  "id": "core.scx",
+  "tokens": {
+    "⟁F": { "display": "flex" },
+    "⟁Fcol": { "flex-direction": "column" },
+    "⟁PANEL": {
+      "background": "var(--panel)",
+      "border-radius": "10px",
+      "border": "1px solid rgba(22,242,170,0.35)",
+      "padding": "14px 16px"
+    }
+  },
+  "raw": [
+    "body[scx~='⟁BODY']{background:#020308;color:#e8fff6;font-family:system-ui,sans-serif;}"
+  ]
+}
+      </pre>
+
+      <div scx="⟁H3">2.3 Logic Nodes</div>
+      <p scx="⟁P">
+        Logic nodes are AST-safe behavior descriptions. They can store JavaScript, Python,
+        PHP, or SCX-logic instructions and are invoked by events or agent pipelines.
+      </p>
+      <pre scx="⟁CODE">
+{
+  "type": "logic",
+  "id": "prime.incrementScore",
+  "lang": "js",
+  "trigger": {
+    "event": "click",
+    "selector": "#btnStateInc"
+  },
+  "actions": [
+    { "kind": "state.increment", "path": "user.score", "value": 5 },
+    { "kind": "render.stateView" }
+  ]
+}
+      </pre>
+    </section>
+
+    <!-- 3. SCX BLOCKS & PAGE BLOCKS -->
+    <section id="sec-3">
+      <div scx="⟁H2">3. SCX Atomic Blocks & Whole-Page Blocks</div>
+
+      <p scx="⟁P">
+        SCX is the symbolic compression layer. It lets you describe entire structures
+        — from a single button to a full page frame — using short codes.
+      </p>
+
+      <div scx="⟁H3">3.1 Basic Block Vocabulary</div>
+
+      <table scx="⟁TABLE">
+        <thead>
+        <tr><th>Block</th><th>HTML / Responsibility</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><span scx="⟁INLINE">⟁HTML</span></td><td>Root <code>&lt;html&gt;</code> container</td></tr>
+        <tr><td><span scx="⟁INLINE">⟁HEAD</span></td><td><code>&lt;head&gt;</code> meta, title, links</td></tr>
+        <tr><td><span scx="⟁INLINE">⟁BODY</span></td><td>Top-level <code>&lt;body&gt;</code> frame</td></tr>
+        <tr><td><span scx="⟁INLINE">⟁HEADER</span></td><td>Page header region (brand, nav)</td></tr>
+        <tr><td><span scx="⟁INLINE">⟁MAIN</span></td><td>Main content layout grid</td></tr>
+        <tr><td><span scx="⟁INLINE">⟁FOOTER</span></td><td>Footer / status bar area</td></tr>
+        <tr><td><span scx="⟁INLINE">⟁CARD</span></td><td>Generic panel/card wrapper</td></tr>
+        <tr><td><span scx="⟁INLINE">⟁BTN</span></td><td>Action button template</td></tr>
+        <tr><td><span scx="⟁INLINE">⟁FORM</span></td><td>Structured form layout</td></tr>
+        <tr><td><span scx="⟁INLINE">⟁TABLE</span></td><td>Table styling block</td></tr>
+        </tbody>
+      </table>
+
+      <div scx="⟁H3">3.2 Defining Page Blocks (SCX → HTML)</div>
+      <p scx="⟁P">
+        You can define a whole-page layout using SCX blocks, then reuse this “super block” for any app.
+      </p>
+
+      <pre scx="⟁CODE">
+{
+  "type": "style",
+  "id": "page.blocks",
+  "tokens": {
+    "⟁HTML": { "height": "100%", "width": "100%" },
+    "⟁BODY": {
+      "min-height": "100vh",
+      "margin": "0",
+      "background": "radial-gradient(circle at top, #08101e, #020308 55%)",
+      "color": "var(--text)",
+      "font-family": "system-ui,sans-serif"
+    },
+    "⟁HEADER": {
+      "display": "flex",
+      "justify-content": "space-between",
+      "align-items": "center",
+      "padding": "10px 16px",
+      "border-bottom": "1px solid rgba(22,242,170,0.35)"
+    },
+    "⟁MAIN": {
+      "display": "grid",
+      "grid-template-columns": "260px 1fr",
+      "gap": "12px",
+      "padding": "12px 16px"
+    },
+    "⟁FOOTER": {
+      "padding": "8px 16px",
+      "border-top": "1px solid rgba(22,242,170,0.35)",
+      "font-size": "11px",
+      "color": "var(--muted)"
+    }
+  }
+}
+      </pre>
+
+      <div scx="⟁H3">3.3 Using Blocks to Render a Whole Page</div>
+      <p scx="⟁P">
+        A full page can be described in XJSON using only blocks — you choose the symbols; the runtime expands them.
+      </p>
+
+      <pre scx="⟁CODE">
+{
+  "type": "element",
+  "tag": "html",
+  "props": { "scx": "⟁HTML" },
+  "children": [
+    {
+      "type": "element",
+      "tag": "head",
+      "props": { "scx": "⟁HEAD" },
+      "children": [
+        { "type": "element", "tag": "title",
+          "children": [ { "type": "text", "value": "XJSON Page using SCX Blocks" } ]
+        }
+      ]
+    },
+    {
+      "type": "element",
+      "tag": "body",
+      "props": { "scx": "⟁BODY" },
+      "children": [
+        {
+          "type": "element",
+          "tag": "header",
+          "props": { "scx": "⟁HEADER" },
+          "children": [
+            { "type": "element", "tag": "div",
+              "children": [ { "type": "text", "value": "ASX PRIME · XJSON" } ] },
+            { "type": "element", "tag": "nav",
+              "children": [ { "type": "text", "value": "Docs · API · Spec" } ] }
+          ]
+        },
+        {
+          "type": "element",
+          "tag": "main",
+          "props": { "scx": "⟁MAIN" },
+          "children": [
+            {
+              "type": "element",
+              "tag": "aside",
+              "props": { "scx": "⟁CARD" },
+              "children": [
+                { "type": "text", "value": "Sidebar / TOC" }
+              ]
+            },
+            {
+              "type": "element",
+              "tag": "section",
+              "props": { "scx": "⟁CARD" },
+              "children": [
+                { "type": "text", "value": "Main content panel" }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tag": "footer",
+          "props": { "scx": "⟁FOOTER" },
+          "children": [
+            { "type": "text", "value": "XJSON v1 · SCX Blocks · PRIME Atomic CSS" }
+          ]
+        }
+      ]
+    }
+  ]
+}
+      </pre>
+
+      <div scx="⟁H3">3.4 Blocks as Superpowers</div>
+      <p scx="⟁P">
+        By defining <em>normal</em> HTML primitives (<code>&lt;html&gt;</code>,
+        <code>&lt;body&gt;</code>, <code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>,
+        <code>&lt;footer&gt;</code>, <code>&lt;div&gt;</code>, <code>&lt;ul&gt;</code>,
+        <code>&lt;form&gt;</code>, etc.) as SCX blocks, you can:
+      </p>
+      <ul scx="⟁P">
+        <li>Switch entire themes by swapping one SCX token pack.</li>
+        <li>Apply responsive behavior through block-level media rules.</li>
+        <li>Ship a “page skeleton” CDN and feed project-specific variables via XJSON.</li>
+      </ul>
+    </section>
+
+    <!-- 4. CSS / STYLE SCHEMA -->
+    <section id="sec-4">
+      <div scx="⟁H2">4. Style Schema (CSS via XJSON)</div>
+      <p scx="⟁P">
+        XJSON style nodes can be:
+      </p>
+      <ul scx="⟁P">
+        <li><strong>Token-based</strong> (SCX atoms).</li>
+        <li><strong>Raw CSS fragments</strong> for direct insertion.</li>
+        <li><strong>Block packs</strong> loaded from CDNs.</li>
+      </ul>
+
+      <pre scx="⟁CODE">
+{
+  "type": "style",
+  "id": "prime.atomic",
+  "tokens": {
+    "⟁BTN": {
+      "border-radius": "999px",
+      "border": "1px solid rgba(22,242,170,0.4)",
+      "padding": "4px 10px",
+      "background": "linear-gradient(135deg, rgba(0,0,0,0.75), rgba(0,40,30,0.95))",
+      "color": "var(--text)"
+    },
+    "⟁BTNpri": {
+      "background": "linear-gradient(135deg,#16f2aa,#00ffff)",
+      "color": "#000",
+      "border-color": "#00ffff"
+    }
+  }
+}
+      </pre>
+    </section>
+
+    <!-- 5. LOGIC & EVENT MODEL -->
+    <section id="sec-5">
+      <div scx="⟁H2">5. Logic & Event Model</div>
+      <p scx="⟁P">
+        Logic nodes map events to actions (state mutations, agent calls, navigation).
+      </p>
+      <pre scx="⟁CODE">
+{
+  "type": "logic",
+  "id": "basher.run",
+  "lang": "js",
+  "trigger": {
+    "event": "submit",
+    "selector": "#termForm"
+  },
+  "actions": [
+    { "kind": "basher.parseCommand", "field": "#termInput" },
+    { "kind": "agent.dispatch", "agent": "mx2cline" }
+  ]
+}
+      </pre>
+    </section>
+
+    <!-- 6. STATE & FLASH-RAM -->
+    <section id="sec-6">
+      <div scx="⟁H2">6. State, Flash-RAM, and Snapshots</div>
+      <p scx="⟁P">
+        State nodes declare the canonical shape of tape or OS state.
+      </p>
+      <pre scx="⟁CODE">
+{
+  "type": "state",
+  "id": "prime.state",
+  "value": {
+    "user": { "score": 100, "name": "Ranger" },
+    "system": { "theme": "dark", "activeTape": "prime-docs" }
+  }
+}
+      </pre>
+
+      <p scx="⟁P">
+        Flash-RAM nodes store full snapshots for instant boot/restore:
+      </p>
+      <pre scx="⟁CODE">
+{
+  "type": "flashram",
+  "id": "prime.snapshot.001",
+  "snapshot": {
+    "user.score": 145,
+    "system.theme": "grid",
+    "system.activeTape": "risk-battlemode"
+  }
+}
+      </pre>
+    </section>
+
+    <!-- 7. ROUTING & COMPONENTS -->
+    <section id="sec-7">
+      <div scx="⟁H2">7. Routing, Components, and Layout</div>
+
+      <div scx="⟁H3">7.1 Routes</div>
+      <pre scx="⟁CODE">
+{
+  "type": "route",
+  "path": "/",
+  "component": "prime.docs.layout",
+  "props": {
+    "title": "XJSON v1 Manual"
+  }
+}
+      </pre>
+
+      <div scx="⟁H3">7.2 Components</div>
+      <pre scx="⟁CODE">
+{
+  "type": "component",
+  "id": "prime.docs.layout",
+  "slots": ["sidebar", "content"],
+  "template": [
+    {
+      "type": "element",
+      "tag": "div",
+      "props": { "scx": "⟁MAIN" },
+      "children": [
+        { "type": "slot", "name": "sidebar" },
+        { "type": "slot", "name": "content" }
+      ]
+    }
+  ]
+}
+      </pre>
+    </section>
+
+    <!-- 8. AGENTS -->
+    <section id="sec-8">
+      <div scx="⟁H2">8. Agents & MX2 Family</div>
+      <p scx="⟁P">
+        XJSON expresses agents as structured capability objects, not just URLs.
+      </p>
+      <pre scx="⟁CODE">
+{
+  "type": "agent",
+  "id": "mx2lm",
+  "role": "coordinator",
+  "skills": ["routing","intent-mapping","memory"],
+  "endpoints": {
+    "infer": "/api/mx2lm/infer",
+    "learn": "/api/mx2lm/learn"
+  }
+}
+      </pre>
+    </section>
+
+    <!-- 9. TAPES & OS -->
+    <section id="sec-9">
+      <div scx="⟁H2">9. Tapes, Holotapes, and OS Integration</div>
+      <pre scx="⟁CODE">
+{
+  "type": "tape",
+  "id": "xjson-spec-tape",
+  "entry": "ui.xjson",
+  "publicPath": "/tapes/xjson-spec/public/",
+  "agents": ["mx2lm","mx2qwen","mx2cline"],
+  "routes": ["/","/api","/examples"],
+  "flashram": ["prime.snapshot.001"]
+}
+      </pre>
+    </section>
+
+    <!-- 10. TRANSFORMATIONS -->
+    <section id="sec-10">
+      <div scx="⟁H2">10. Code→AST→XJSON Transformations</div>
+      <p scx="⟁P">
+        XJSON can be produced by reading any source language into an AST, then mapping
+        that AST to the XJSON schema. For example:
+      </p>
+      <pre scx="⟁CODE">
+<!-- HTML input -->
+&lt;button id="buy" class="primary"&gt;Buy&lt;/button&gt;
+
+<!-- XJSON -->
+{
+  "type": "element",
+  "tag": "button",
+  "props": { "id": "buy", "class": "primary" },
+  "children": [ { "type": "text", "value": "Buy" } ]
+}
+      </pre>
+    </section>
+
+    <!-- 11. SECURITY -->
+    <section id="sec-11">
+      <div scx="⟁H2">11. Security, Trust, and Validation</div>
+      <p scx="⟁P">
+        XJSON supports tape signing, SCX dictionary validation, and agent sandboxing.
+        Because logic is represented structurally, dangerous patterns can be detected
+        before execution.
+      </p>
+    </section>
+
+    <!-- 12. BLOCK RECIPES / CDN PACKS -->
+    <section id="sec-12">
+      <div scx="⟁H2">12. Block Recipes & CDN-fed Block Packs</div>
+      <p scx="⟁P">
+        You can ship block definitions via CDN and use a small JSON form to control
+        variables like spacing, radius, colors, and layout. The runtime merges the
+        incoming variables into the SCX token set.
+      </p>
+
+      <pre scx="⟁CODE">
+{
+  "type": "style",
+  "id": "cdn.prime.blocks",
+  "src": "https://cdn.example.com/xjson/prime-blocks.json",
+  "vars": {
+    "spacing.base": "10px",
+    "radius.card": "12px",
+    "color.accent": "#00ffff"
+  }
+}
+      </pre>
+
+      <p scx="⟁P">
+        This makes it trivial to spin up multiple frontends and OS views, all backed
+        by the same XJSON core with just a different block pack.
+      </p>
+    </section>
+
+    <!-- 13. GRAMMAR -->
+    <section id="sec-13">
+      <div scx="⟁H2">13. Reference Grammar (v1)</div>
+      <pre scx="⟁CODE">
+xjson-document  = object
+object          = "{" members "}"
+members         = pair *( "," pair )
+pair            = string ":" value
+
+value           = string / number / object / array / true / false / null
+array           = "[" [ value *( "," value ) ] "]"
+
+node            = element-node
+                / style-node
+                / logic-node
+                / route-node
+                / state-node
+                / agent-node
+                / tape-node
+                / flashram-node
+
+element-node    = object with "type" = "element"
+style-node      = object with "type" = "style"
+logic-node      = object with "type" = "logic"
+route-node      = object with "type" = "route"
+state-node      = object with "type" = "state"
+agent-node      = object with "type" = "agent"
+tape-node       = object with "type" = "tape"
+flashram-node   = object with "type" = "flashram"
+      </pre>
+    </section>
+
+    <section>
+      <div scx="⟁H3 ⟁MTMD">End of XJSON v1 PRIME Manual</div>
+      <p scx="⟁P ⟁MUTED">
+        This document is intentionally high-level and self-contained. Any block, node type,
+        or behavior you feel is missing can be registered as a new XJSON node or SCX token,
+        without breaking the core model.
+      </p>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

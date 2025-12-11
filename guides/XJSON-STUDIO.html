@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASX OS - Universal Operating System</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="/asx.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .panel {
+            background: rgba(30, 30, 46, 0.7);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 25%;
+        }
+
+        .editor {
+            width: 45%;
+        }
+
+        .chat {
+            width: 30%;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            color: #e0e0e0;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary {
+            background: rgba(22, 242, 170, 0.8);
+        }
+
+        .btn-primary:hover {
+            background: rgba(22, 242, 170, 1);
+        }
+
+        /* Systems Grid */
+        .systems-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .system-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 3px solid rgba(22, 242, 170, 0.8);
+        }
+
+        .system-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: rgba(22, 242, 170, 1);
+        }
+
+        .glyph-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .glyph-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            min-width: 60px;
+        }
+
+        .glyph-symbol {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+
+        .glyph-name {
+            font-size: 0.7rem;
+            color: #a0a0a0;
+        }
+
+        /* DNS Grid */
+        .dns-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .dns-item {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid rgba(56, 189, 248, 0.8);
+        }
+
+        .dns-host {
+            font-weight: 600;
+            color: rgba(56, 189, 248, 1);
+        }
+
+        .dns-desc {
+            font-size: 0.75rem;
+            color: #a0a0a0;
+            margin-top: 4px;
+        }
+
+        /* REST Controls */
+        .rest-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .rest-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #e0e0e0;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .rest-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(22, 242, 170, 0.5);
+        }
+
+        /* Code Editor Styles */
+        .editor-container {
+            flex: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #1e1e2e;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .editor-header {
+            background: rgba(40, 40, 60, 0.8);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .editor-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .editor-tab {
+            padding: 5px 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .editor-tab.active {
+            background: rgba(22, 242, 170, 0.3);
+        }
+
+        .code-area {
+            height: calc(100% - 50px);
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #f8f8f2;
+            overflow: auto;
+            background: #1e1e2e;
+        }
+
+        .code-line {
+            margin-bottom: 2px;
+        }
+
+        .code-comment {
+            color: #6272a4;
+        }
+
+        .code-keyword {
+            color: #ff79c6;
+        }
+
+        .code-function {
+            color: #50fa7b;
+        }
+
+        .code-string {
+            color: #f1fa8c;
+        }
+
+        .code-operator {
+            color: #ff79c6;
+        }
+
+        .code-type {
+            color: #8be9fd;
+        }
+
+        /* Chat Styles */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            max-width: 85%;
+        }
+
+        .message.user {
+            background: rgba(22, 242, 170, 0.2);
+            margin-left: auto;
+            border-bottom-right-radius: 2px;
+        }
+
+        .message.ai {
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom-left-radius: 2px;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+        }
+
+        .message-sender {
+            font-weight: 600;
+        }
+
+        .message-time {
+            color: #a0a0a0;
+        }
+
+        .message-content {
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input textarea {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px;
+            color: #e0e0e0;
+            resize: none;
+            font-size: 0.95rem;
+        }
+
+        .chat-input textarea:focus {
+            outline: none;
+            border-color: rgba(22, 242, 170, 0.5);
+        }
+
+        .send-btn {
+            background: rgba(22, 242, 170, 0.8);
+            border: none;
+            border-radius: 10px;
+            width: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            background: rgba(22, 242, 170, 1);
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.active {
+            background: rgba(22, 242, 170, 1);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.ready {
+            background: rgba(56, 189, 248, 1);
+        }
+
+        .status-dot.warning {
+            background: rgba(245, 158, 11, 1);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Port Display */
+        .port-display {
+            background: rgba(22, 242, 170, 0.1);
+            border: 1px solid rgba(22, 242, 170, 0.3);
+            border-radius: 6px;
+            padding: 8px;
+            margin-top: 10px;
+        }
+
+        .port-title {
+            font-size: 0.8rem;
+            color: rgba(22, 242, 170, 1);
+            margin-bottom: 4px;
+        }
+
+        .port-number {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Sidebar - Systems & DNS -->
+        <div class="panel sidebar">
+            <div class="panel-header">
+                <div class="panel-title">ASX Systems</div>
+                <div class="panel-actions">
+                    <button class="btn" onclick="ASX.testDNS('xjson.app')">DNS Test</button>
+                    <button class="btn btn-primary" onclick="ASX.launchBitBash()">Launch Backend</button>
+                </div>
+            </div>
+            
+            <div class="port-display">
+                <div class="port-title">ASX PORT SPECIFICATION</div>
+                <div class="port-number">61680+ (KUHUL-NPX v3)</div>
+            </div>
+            
+            <div class="systems-grid">
+                <div class="system-card">
+                    <div class="system-title">Kuhul System</div>
+                    <div class="glyph-list">
+                        <div class="glyph-item">
+                            <div class="glyph-symbol">Pop</div>
+                            <div class="glyph-name">function</div>
+                        </div>
+                        <div class="glyph-item">
+                            <div class="glyph-symbol">Wo</div>
+                            <div class="glyph-name">assign</div>
+                        </div>
+                        <div class="glyph-item">
+                            <div class="glyph-symbol">Sek</div>
+                            <div class="glyph-name">execute</div>
+                        </div>
+                    </div>
+                    <div class="rest-controls">
+                        <button class="rest-btn" onclick="ASX.executeKuhul()">Run Kuhul</button>
+                        <button class="rest-btn" onclick="ASX.callREST('/api/klh/router')">KLH Router</button>
+                    </div>
+                </div>
+
+                <div class="system-card">
+                    <div class="system-title">SCX System</div>
+                    <div class="glyph-list">
+                        <div class="glyph-item">
+                            <div class="glyph-symbol">(?)</div>
+                            <div class="glyph-name">if</div>
+                        </div>
+                        <div class="glyph-item">
+                            <div class="glyph-symbol">(∴)</div>
+                            <div class="glyph-name">then</div>
+                        </div>
+                        <div class="glyph-item">
+                            <div class="glyph-symbol">⟁</div>
+                            <div class="glyph-name">block</div>
+                        </div>
+                    </div>
+                    <div class="rest-controls">
+                        <button class="rest-btn" onclick="ASX.decompressSCX()">Decompress</button>
+                        <button class="rest-btn" onclick="ASX.callREST('/api/scxq2/compress')">Compress</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-header">
+                <div class="panel-title">DNS Authority</div>
+                <div class="panel-actions">
+                    <button class="btn" onclick="ASX.refreshDNS()">Refresh</button>
+                </div>
+            </div>
+
+            <div class="dns-grid">
+                <div class="dns-item">
+                    <div class="dns-host">xjson.app</div>
+                    <div class="dns-desc">OS Root Domain → 127.0.0.1:61680</div>
+                </div>
+                <div class="dns-item">
+                    <div class="dns-host">rig.xjson.app</div>
+                    <div class="dns-desc">ASX-RIG Backend → :61681</div>
+                </div>
+                <div class="dns-item">
+                    <div class="dns-host">hive.xjson.app</div>
+                    <div class="dns-desc">HIVE Shard Manager → :61680</div>
+                </div>
+                <div class="dns-item">
+                    <div class="dns-host">prime.xjson.app</div>
+                    <div class="dns-desc">PRIME Cockpit → :61682</div>
+                </div>
+            </div>
+
+            <div class="panel-header">
+                <div class="panel-title">REST Mesh</div>
+            </div>
+
+            <div class="rest-controls">
+                <button class="rest-btn" onclick="ASX.callREST('/api/xjson/compile')">XJSON Compile</button>
+                <button class="rest-btn" onclick="ASX.callREST('/api/hive/shards')">HIVE Shards</button>
+                <button class="rest-btn" onclick="ASX.callREST('/api/os/state')">OS State</button>
+                <button class="rest-btn" onclick="ASX.callREST('/api/trainer/status')">Trainer</button>
+                <button class="rest-btn" onclick="ASX.callREST('/api/prime/modules')">PRIME</button>
+                <button class="rest-btn" onclick="ASX.callREST('/api/basher/run')">Basher</button>
+            </div>
+
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-dot active"></div>
+                    <span>Kernel</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot ready"></div>
+                    <span>DNS</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot ready"></div>
+                    <span>REST</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Panel - Code Editor & Terminal -->
+        <div class="panel editor">
+            <div class="panel-header">
+                <div class="panel-title">ASX Kernel Terminal</div>
+                <div class="panel-actions">
+                    <button class="btn" onclick="ASX.clearTerminal()">Clear</button>
+                    <button class="btn btn-primary" onclick="ASX.callKUHUL('/kuhul/detect')">Detect Services</button>
+                </div>
+            </div>
+            <div class="editor-container">
+                <div class="editor-header">
+                    <div class="editor-tabs">
+                        <div class="editor-tab active">terminal</div>
+                        <div class="editor-tab">manifest.json</div>
+                        <div class="editor-tab">sw.js</div>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="btn" onclick="ASX.callKUHUL('/kuhul/ports')">Port Map</button>
+                    </div>
+                </div>
+                <div class="code-area" id="terminal-output">
+                    <div class="code-line"><span class="code-comment">// ASX OS - Universal Operating System v3</span></div>
+                    <div class="code-line"><span class="code-comment">// KUHUL-NPX v3 - ASX Port Specification: 61680+</span></div>
+                    <div class="code-line"></div>
+                    <div class="code-line"><span class="code-type">ASX></span> System initialized. Kernel v3-KUHUL online.</div>
+                    <div class="code-line"><span class="code-type">ASX></span> Port Root: 61680 | Architecture: 3-file-OS</div>
+                    <div class="code-line"><span class="code-type">ASX></span> DNS Zones: xjson.app → 127.0.0.1:61680</div>
+                    <div class="code-line"><span class="code-type">ASX></span> REST Mesh: /api/* + /kuhul/* endpoints active</div>
+                    <div class="code-line"><span class="code-type">ASX></span> Ready for KUHUL-NPX backend launch.</div>
+                    <div class="code-line" id="dynamic-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - AI Assistant -->
+        <div class="panel chat">
+            <div class="panel-header">
+                <div class="panel-title">ASX Assistant</div>
+                <div class="panel-actions">
+                    <button class="btn" onclick="ASX.clearChat()">Clear</button>
+                    <button class="btn btn-primary">Settings</button>
+                </div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message ai">
+                    <div class="message-header">
+                        <div class="message-sender">ASX Assistant</div>
+                        <div class="message-time" id="current-time"></div>
+                    </div>
+                    <div class="message-content">
+                        Welcome to ASX OS v3 with KUHUL-NPX integration. I can help you launch backend services, manage DNS, and test REST endpoints on ASX ports 61680+.
+                    </div>
+                </div>
+                <div class="message ai">
+                    <div class="message-header">
+                        <div class="message-sender">ASX Assistant</div>
+                        <div class="message-time" id="current-time2"></div>
+                    </div>
+                    <div class="message-content">
+                        Use "Launch Backend" to start KUHUL-NPX services. All ports follow ASX specification (61680+) - no Vite defaults.
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <textarea placeholder="Ask about KUHUL-NPX, port configuration, or backend services..." rows="3" id="chat-input"></textarea>
+                <button class="send-btn" onclick="ASX.sendMessage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ASX OS Core - Pure 3-File Architecture
+        class ASXOS {
+            constructor() {
+                this.terminal = document.getElementById('dynamic-output');
+                this.chat = document.getElementById('chat-messages');
+                this.manifest = null;
+                this.init();
+            }
+
+            async init() {
+                this.updateTime();
+                setInterval(() => this.updateTime(), 60000);
+                
+                // Load manifest
+                try {
+                    const response = await fetch('./manifest.json');
+                    this.manifest = await response.json();
+                    this.logToTerminal('Manifest loaded: ASX Port Specification 61680+', 'success');
+                } catch (error) {
+                    this.logToTerminal('Error loading manifest', 'error');
+                }
+
+                // Register service worker
+                if ('serviceWorker' in navigator) {
+                    try {
+                        await navigator.serviceWorker.register('sw.js');
+                        this.logToTerminal('Service Worker registered - KUHUL-NPX ready', 'success');
+                    } catch (error) {
+                        this.logToTerminal('Service Worker registration failed', 'error');
+                    }
+                }
+            }
+
+            updateTime() {
+                const now = new Date();
+                const timeString = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+                document.getElementById('current-time').textContent = timeString;
+                document.getElementById('current-time2').textContent = timeString;
+            }
+
+            logToTerminal(message, type = 'info') {
+                const line = document.createElement('div');
+                line.className = 'code-line';
+                
+                const prefix = document.createElement('span');
+                prefix.className = 'code-type';
+                prefix.textContent = 'ASX> ';
+                
+                const content = document.createElement('span');
+                content.textContent = message;
+                if (type === 'error') content.style.color = '#ff5555';
+                if (type === 'success') content.style.color = '#50fa7b';
+                
+                line.appendChild(prefix);
+                line.appendChild(content);
+                
+                this.terminal.appendChild(line);
+                this.terminal.parentElement.scrollTop = this.terminal.parentElement.scrollHeight;
+            }
+
+            addChatMessage(content, sender = 'ai') {
+                const messagesContainer = document.getElementById('chat-messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', sender);
+                
+                const now = new Date();
+                const timeString = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+                
+                messageDiv.innerHTML = `
+                    <div class="message-header">
+                        <div class="message-sender">${sender === 'user' ? 'You' : 'ASX Assistant'}</div>
+                        <div class="message-time">${timeString}</div>
+                    </div>
+                    <div class="message-content">${content}</div>
+                `;
+                
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            // KUHUL-NPX Integration
+            async launchBitBash() {
+                this.logToTerminal('Starting KUHUL-NPX v3 backend launcher...', 'info');
+                this.addChatMessage('Launching backend services via KUHUL-NPX on ASX ports 61680+', 'ai');
+                
+                try {
+                    const response = await fetch('/kuhul/bitbash');
+                    const result = await response.json();
+                    
+                    this.logToTerminal(`KUHUL-NPX: ${result.output}`, 'success');
+                    this.logToTerminal(`Services: ${Object.keys(result.services).join(', ')}`, 'info');
+                    this.addChatMessage('Backend services launched successfully on ASX ports', 'ai');
+                    
+                } catch (error) {
+                    this.logToTerminal('KUHUL-NPX launch failed', 'error');
+                    this.addChatMessage('Backend launch failed. Check service worker.', 'ai');
+                }
+            }
+
+            async callREST(endpoint) {
+                this.logToTerminal(`Calling REST: ${endpoint}`, 'info');
+                
+                try {
+                    const response = await fetch(endpoint);
+                    const result = await response.json();
+                    
+                    if (result.error) {
+                        this.logToTerminal(`REST Error: ${result.error}`, 'error');
+                    } else {
+                        this.logToTerminal(`REST Response: ${JSON.stringify(result)}`, 'success');
+                    }
+                } catch (error) {
+                    this.logToTerminal(`REST Call failed: ${error.message}`, 'error');
+                }
+            }
+
+            async callKUHUL(endpoint) {
+                this.logToTerminal(`Calling KUHUL: ${endpoint}`, 'info');
+                
+                try {
+                    const response = await fetch(endpoint);
+                    const result = await response.json();
+                    
+                    if (result.error) {
+                        this.logToTerminal(`KUHUL Error: ${result.error}`, 'error');
+                    } else {
+                        this.logToTerminal(`KUHUL Response: ${JSON.stringify(result)}`, 'success');
+                    }
+                } catch (error) {
+                    this.logToTerminal(`KUHUL Call failed: ${error.message}`, 'error');
+                }
+            }
+
+            // System Functions
+            executeKuhul() {
+                this.logToTerminal('Executing Kuhul: [Wo "Hello from Kuhul System"]', 'info');
+                this.addChatMessage('Kuhul system executed on port 61680', 'ai');
+            }
+
+            decompressSCX() {
+                this.logToTerminal('Decompressing SCX: (?) condition (∴) action ⟁', 'info');
+                this.addChatMessage('SCX decompressed: if condition then action block', 'ai');
+            }
+
+            testDNS(hostname = 'xjson.app') {
+                this.logToTerminal(`Resolving DNS: ${hostname}`, 'info');
+                this.addChatMessage(`DNS resolution requested for ${hostname}`, 'ai');
+                
+                // Simulate DNS resolution
+                setTimeout(() => {
+                    this.logToTerminal(`DNS Resolution: ${hostname} → 127.0.0.1:61680`, 'success');
+                }, 500);
+            }
+
+            refreshDNS() {
+                this.logToTerminal('Refreshing DNS authority cache...', 'info');
+                this.addChatMessage('DNS authority cache refreshed for ASX zones', 'ai');
+            }
+
+            clearTerminal() {
+                document.getElementById('dynamic-output').innerHTML = '';
+                this.logToTerminal('Terminal cleared', 'info');
+            }
+
+            clearChat() {
+                document.getElementById('chat-messages').innerHTML = '';
+                this.addChatMessage('Chat cleared. Ready for ASX OS commands.', 'ai');
+            }
+
+            sendMessage() {
+                const input = document.getElementById('chat-input');
+                const message = input.value.trim();
+                
+                if (message) {
+                    this.addChatMessage(message, 'user');
+                    input.value = '';
+                    
+                    // Simulate AI response
+                    setTimeout(() => {
+                        const responses = [
+                            "I can help you configure KUHUL-NPX services on ASX ports 61680+.",
+                            "The DNS authority shows all ASX zones are properly configured.",
+                            "REST mesh is operational. You can test any endpoint from the left panel.",
+                            "KUHUL-NPX v3 is ready for backend service launches on specified ports.",
+                            "All systems are following the ASX port specification (61680+)."
+                        ];
+                        const response = responses[Math.floor(Math.random() * responses.length)];
+                        this.addChatMessage(response, 'ai');
+                    }, 1000);
+                }
+            }
+        }
+
+        // Initialize ASX OS
+        const ASX = new ASXOS();
+
+        // Global access
+        window.ASX = ASX;
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tab switching
+            document.querySelectorAll('.editor-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.editor-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Enter key in chat
+            document.getElementById('chat-input').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    ASX.sendMessage();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

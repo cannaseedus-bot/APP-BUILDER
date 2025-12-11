@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCX Reference</title>
+<style>
+ body { font-family: sans-serif; background: #0b0e12; color: #e6f1ff; line-height: 1.6; padding: 2rem; }
+ h1, h2, h3 { color: #7cd3ff; }
+ code { background: #11161c; padding: 0.25rem 0.4rem; border-radius: 4px; }
+ pre { background: #11161c; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+ .section { margin-bottom: 3rem; }
+ .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+ hr { border: none; border-top: 1px solid #23303d; margin: 3rem 0; }
+</style>
+</head>
+<body>
+<h1>SCX Reference</h1>
+<p>SCX (Scripting Command eXtensions) is the symbolic action layer used across ASX and Micronaut systems.</p>
+
+<div class="section">
+<h2>Core Symbols</h2>
+<pre># → user/actor
+@ → network/internet
+$ → currency/tokens
+% → database/storage
+& → location/route
+* → time/timestamp
+^ → AI/agent
+! → alert/notify
+? → query/request</pre>
+</div>
+
+<div class="section">
+<h2>Action Verbs</h2>
+<pre>(>) send
+(<) receive
+(+) create
+(-) remove
+(=) assign
+(%) save
+(x) kill/destroy
+(∂) update
+(∞) loop</pre>
+</div>
+
+<div class="section">
+<h2>General Syntax</h2>
+<pre>subject symbol action object</pre>
+<pre>#player (∂) health = -10</pre>
+</div>
+
+<div class="section">
+<h2>Examples</h2>
+<pre>
+#player (+) $wallet
+#player (>) ^assistant "analyze area"
+%logs (+) "entered_room"
+!ui (>) "warning: low health"
+</pre>
+</div>
+
+<hr>
+<div class="section">
+<h2>Extended Examples (50+)</h2>
+<pre>
+#player (∂) stamina = -3               // decrease stamina
+#player (>) ^coach "advise rest"       // ask agent for coaching
+#enemy (x)                            // remove enemy
+&market (>) $payment                   // route to payment
+^mx2php (>) %db.users                  // backend agent writes to DB
+%local.settings (∂) theme = "dark"     // update UI setting
+!ui (>) "mission started"             // notify user
+#faction (∞) ^qwen "evaluate territory" // AI strategic loop
+#trader (>) $inventory "add:water"    // add item to shop
+%logs (+) {event:"door_open"}         // append log
+</pre>
+</div>
+
+<div class="section">
+<h2>Agent Brains: Bigrams, Trigrams & Meta-Maps</h2>
+<p>Agents use statistical memory patterns to determine intention and next actions.</p>
+<pre>
+// bigrams.json
+{
+  "enter room": "scan environment",
+  "low health": "seek medkit",
+  "enemy spotted": "prepare attack"
+}
+
+// trigrams.json
+{
+  "player hears noise": "predict ambush route"
+}
+
+// meta-intent-map.json
+{
+  "threat_high": ["defend", "call_backup"],
+  "resource_low": ["forage", "trade", "request_aid"]
+}
+</pre>
+</div>
+
+<div class="section">
+<h2>Using SCX with AI Brains</h2>
+<pre>
+^qwen (>) bigrams "enemy spotted"      // AI chooses next action
+^janus (∂) hallucination_level = +1    // adjust deception layer
+^mx2cline (>) meta-intent "resource_low" // request strategy path
+</pre>
+</div>
+
+<hr>
+<div class="section">
+<h2>SCX Extended Reference — Corporate OS / Vault-Tec Clean</h2>
+<p>This section expands SCX usage patterns across UI, Agents, Database, Runtime Events, Marketplace, Combat, and Faction AI.</p>
+
+<h3>1. Player & Character State</h3>
+<pre>
+#player (∂) health = -5
+#player (∂) stamina = +2
+#player (>) ^coach "recommend recovery plan"
+#npc_guard (>) dialogue "Halt! State your intent."
+#companion (∞) follow #player
+</pre>
+
+<h3>2. Environment & World State</h3>
+<pre>
+&room_01 (+) props "torch"
+&door_13 (∂) locked = true
+&weather (∂) state = "acid_storm"
+&market (>) rotation "daily_inventory"
+</pre>
+
+<h3>3. Inventory, Items, Crafting</h3>
+<pre>
+#player (>) $inventory "add:medkit"
+#player (>) $inventory "remove:rusted_sword"
+%crafting_db (∂) recipe.firebomb = ["cloth","oil","spark"]
+#player (>) ^qwen "suggest craftable items"
+</pre>
+
+<h3>4. UI & Notifications</h3>
+<pre>
+!ui (>) "Inventory Updated"
+!hud (>) status.healthbar
+!menu (>) open "settings"
+!ui (∂) theme = "vault-tec-clean"
+</pre>
+
+<h3>5. Database & Persistence</h3>
+<pre>
+%db.players (∂) #player.stats
+%local.settings (%) {"volume":72}
+%logs (+) { time:*now, event:"room_enter", actor:#player }
+</pre>
+
+<h3>6. Networking & Sync</h3>
+<pre>
+@server (>) %db.sync
+@lobby (<) players_online
+@peer (>) trade_request #player
+</pre>
+
+<h3>7. Marketplace & Currency</h3>
+<pre>
+#player (>) $wallet "spend:10"
+$market_rate (∂) value = +0.03
+#vendor (>) $inventory "add:rare_seed"
+#player (>) @trade_api "quote:blue_dream"
+</pre>
+
+<h3>8. Combat, Strategy & Agents</h3>
+<pre>
+#attacker (>) roll.dice
+#defender (∂) armies = -roll.result
+^mx2qwen (>) "assess battlefield"
+^janus (>) "generate decoy positions"
+</pre>
+
+<h3>9. Agent Brain Files — Bigrams / Trigrams / Meta</h3>
+<pre>
+// brains/bigrams.json
+{
+  "enemy spotted": "seek cover",
+  "low ammo": "switch weapon",
+  "player injured": "retreat"
+}
+
+// brains/trigrams.json
+{
+  "player health critical": "call medic",
+  "territory threatened heavily": "funnel reinforcements"
+}
+
+// brains/meta-intent-map.json
+{
+  "defense": ["fortify", "patrol", "monitor"],
+  "aggression": ["flank", "breach", "push_frontline"],
+  "resource_scarcity": ["trade", "scavenge", "ration"]
+}
+</pre>
+
+<h3>10. SCX Driving Agent Reasoning</h3>
+<pre>
+^mx2qwen (>) bigrams "enemy spotted"
+^janus (>) trigrams "player health critical"
+^mx2cline (>) meta-intent "aggression"
+
+// output behavior
+#squad_leader (>) command "flank east ridge"
+</pre>
+
+<h3>11. Faction AI Loops</h3>
+<pre>
+#faction_reapers (∞) ^mx2qwen "territory analysis"
+#faction_nomads (∞) ^janus "resource scouting"
+#faction_saints (∞) diplomacy.route #player
+</pre>
+
+<h3>12. Trickster / Maze / Scare Logic</h3>
+<pre>
+^janus (>) "fake movement path"
+#enemy (>) &corridor_4 ; then &corridor_2 (backtrack)
+!ui (>) "You hear footsteps... behind you."
+</pre>
+
+<h3>13. Vault-Tec Clean UI Notes</h3>
+<p>No scanlines. Rounded panels. Pastel blue headers. Clean spacing. Calm tone. No chaos UI.</p>
+
+</div>
+
+</body>
+</html>

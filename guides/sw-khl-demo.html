@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SW.KHL - K'uhul Hyper Language Demo</title>
+  <style>
+    :root {
+      --khl-bg: #020617;
+      --khl-bg-alt: #0f172a;
+      --khl-primary: #16f2aa;
+      --khl-secondary: #38bdf8;
+      --khl-accent: #a78bfa;
+      --khl-danger: #ef4444;
+      --khl-warning: #f59e0b;
+      --khl-text: #e5f2ff;
+      --khl-muted: #94a3b8;
+      --khl-border: rgba(148, 163, 184, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at 10% 0%, #0a1628 0%, #020617 50%, #000 100%);
+      color: var(--khl-text);
+      font-family: system-ui, -apple-system, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .khl-container {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      height: 100vh;
+      padding: 16px;
+      gap: 16px;
+    }
+
+    /* Header */
+    .khl-header {
+      background: linear-gradient(135deg, rgba(22, 242, 170, 0.12), rgba(56, 189, 248, 0.08));
+      border: 1px solid var(--khl-border);
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .khl-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .khl-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--khl-primary), var(--khl-secondary));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      color: #020617;
+      box-shadow: 0 0 20px rgba(22, 242, 170, 0.5);
+    }
+
+    .khl-title h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .khl-subtitle {
+      font-size: 0.85rem;
+      color: var(--khl-muted);
+      margin-top: 4px;
+    }
+
+    .khl-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 0.85rem;
+    }
+
+    .khl-stat {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--khl-border);
+      background: rgba(15, 23, 42, 0.8);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .khl-stat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--khl-primary);
+      box-shadow: 0 0 10px var(--khl-primary);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Main Layout */
+    .khl-main {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 16px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    /* Panels */
+    .khl-panel {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--khl-border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .khl-panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--khl-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(22, 242, 170, 0.05);
+    }
+
+    .khl-panel-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--khl-primary);
+    }
+
+    .khl-panel-badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(22, 242, 170, 0.15);
+      border: 1px solid rgba(22, 242, 170, 0.3);
+      font-size: 0.75rem;
+      color: var(--khl-primary);
+    }
+
+    .khl-panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    /* Manifest Editor */
+    .khl-editor {
+      background: #0a0e1a;
+      border-radius: 8px;
+      border: 1px solid var(--khl-border);
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: var(--khl-text);
+      resize: none;
+      height: 100%;
+      outline: none;
+    }
+
+    .khl-editor:focus {
+      border-color: var(--khl-primary);
+      box-shadow: 0 0 0 2px rgba(22, 242, 170, 0.1);
+    }
+
+    /* Function List */
+    .khl-function-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .khl-function-card {
+      background: rgba(22, 242, 170, 0.05);
+      border: 1px solid var(--khl-border);
+      border-radius: 8px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .khl-function-card:hover {
+      border-color: var(--khl-primary);
+      background: rgba(22, 242, 170, 0.1);
+      transform: translateX(4px);
+    }
+
+    .khl-function-card.active {
+      border-color: var(--khl-primary);
+      background: rgba(22, 242, 170, 0.15);
+      box-shadow: 0 0 20px rgba(22, 242, 170, 0.2);
+    }
+
+    .khl-function-name {
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--khl-primary);
+    }
+
+    .khl-function-desc {
+      font-size: 0.8rem;
+      color: var(--khl-muted);
+      margin-bottom: 8px;
+    }
+
+    .khl-function-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .khl-tag {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--khl-secondary);
+    }
+
+    .khl-tag.fold {
+      background: rgba(167, 139, 250, 0.15);
+      border-color: rgba(167, 139, 250, 0.3);
+      color: var(--khl-accent);
+    }
+
+    /* Execution Console */
+    .khl-console {
+      background: #0a0e1a;
+      border-radius: 8px;
+      border: 1px solid var(--khl-border);
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      height: 300px;
+      overflow-y: auto;
+    }
+
+    .khl-log-line {
+      margin-bottom: 6px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .khl-log-time {
+      color: var(--khl-muted);
+      font-size: 0.75rem;
+    }
+
+    .khl-log-icon {
+      font-size: 0.9rem;
+    }
+
+    .khl-log-text {
+      flex: 1;
+    }
+
+    .khl-log-line.success .khl-log-text {
+      color: var(--khl-primary);
+    }
+
+    .khl-log-line.error .khl-log-text {
+      color: var(--khl-danger);
+    }
+
+    .khl-log-line.info .khl-log-text {
+      color: var(--khl-secondary);
+    }
+
+    /* Buttons */
+    .khl-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 1px solid var(--khl-border);
+      background: rgba(22, 242, 170, 0.1);
+      color: var(--khl-text);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .khl-btn:hover {
+      background: rgba(22, 242, 170, 0.2);
+      border-color: var(--khl-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(22, 242, 170, 0.3);
+    }
+
+    .khl-btn.primary {
+      background: linear-gradient(135deg, var(--khl-primary), var(--khl-secondary));
+      border: none;
+      color: #020617;
+    }
+
+    .khl-btn.primary:hover {
+      box-shadow: 0 4px 20px rgba(22, 242, 170, 0.5);
+    }
+
+    .khl-btn-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    /* Input */
+    .khl-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--khl-border);
+      background: rgba(10, 14, 26, 0.8);
+      color: var(--khl-text);
+      font-size: 0.85rem;
+      outline: none;
+      margin-bottom: 10px;
+    }
+
+    .khl-input:focus {
+      border-color: var(--khl-primary);
+      box-shadow: 0 0 0 2px rgba(22, 242, 170, 0.1);
+    }
+
+    /* Chat Interface */
+    .khl-chat {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .khl-chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .khl-chat-message {
+      display: flex;
+      gap: 12px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .khl-chat-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .khl-chat-message.user .khl-chat-avatar {
+      background: linear-gradient(135deg, var(--khl-primary), var(--khl-secondary));
+    }
+
+    .khl-chat-message.bot .khl-chat-avatar {
+      background: linear-gradient(135deg, var(--khl-accent), var(--khl-secondary));
+    }
+
+    .khl-chat-bubble {
+      background: rgba(22, 242, 170, 0.1);
+      border: 1px solid var(--khl-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      max-width: 80%;
+    }
+
+    .khl-chat-message.user .khl-chat-bubble {
+      background: rgba(22, 242, 170, 0.15);
+      border-color: rgba(22, 242, 170, 0.3);
+    }
+
+    .khl-chat-message.bot .khl-chat-bubble {
+      background: rgba(167, 139, 250, 0.1);
+      border-color: rgba(167, 139, 250, 0.2);
+    }
+
+    .khl-chat-input-area {
+      padding: 16px;
+      border-top: 1px solid var(--khl-border);
+      background: rgba(10, 14, 26, 0.5);
+    }
+
+    .khl-chat-input-wrapper {
+      display: flex;
+      gap: 10px;
+    }
+
+    .khl-chat-input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--khl-border);
+      background: rgba(10, 14, 26, 0.8);
+      color: var(--khl-text);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .khl-chat-input:focus {
+      border-color: var(--khl-primary);
+      box-shadow: 0 0 0 2px rgba(22, 242, 170, 0.1);
+    }
+
+    .khl-chat-send {
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(135deg, var(--khl-primary), var(--khl-secondary));
+      color: #020617;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .khl-chat-send:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(22, 242, 170, 0.5);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(22, 242, 170, 0.3);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(22, 242, 170, 0.5);
+    }
+
+    /* Code Highlight */
+    .khl-code {
+      background: rgba(10, 14, 26, 0.8);
+      border: 1px solid var(--khl-border);
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      color: var(--khl-primary);
+    }
+
+    /* Fold Visualization */
+    .khl-fold-viz {
+      background: rgba(10, 14, 26, 0.8);
+      border: 1px solid var(--khl-border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .khl-fold-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--khl-accent);
+      margin-bottom: 12px;
+    }
+
+    .khl-fold-step {
+      padding: 8px 12px;
+      background: rgba(167, 139, 250, 0.05);
+      border-left: 3px solid var(--khl-accent);
+      margin-bottom: 8px;
+      font-size: 0.8rem;
+    }
+
+    .khl-fold-step.optimized {
+      background: rgba(22, 242, 170, 0.1);
+      border-left-color: var(--khl-primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .khl-main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="khl-container">
+    <!-- Header -->
+    <div class="khl-header">
+      <div class="khl-title">
+        <div class="khl-logo">⟁</div>
+        <div>
+          <h1>SW.KHL - K'uhul Hyper Language</h1>
+          <div class="khl-subtitle">JavaScript-Free Programming with manifest.json</div>
+        </div>
+      </div>
+      <div class="khl-stats">
+        <div class="khl-stat">
+          <div class="khl-stat-dot"></div>
+          <span>Runtime Active</span>
+        </div>
+        <div class="khl-stat">
+          <span>📦 No .js Files</span>
+        </div>
+        <div class="khl-stat">
+          <span>⚡ 0ms Startup</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="khl-main">
+      <!-- Left: Manifest Editor -->
+      <div class="khl-panel">
+        <div class="khl-panel-header">
+          <div class="khl-panel-title">📝 manifest.json Editor</div>
+          <div class="khl-panel-badge">All Functions Live Here</div>
+        </div>
+        <div class="khl-panel-body">
+          <div class="khl-btn-group">
+            <button class="khl-btn primary" onclick="saveManifest()">💾 Save Manifest</button>
+            <button class="khl-btn" onclick="resetManifest()">🔄 Reset</button>
+            <button class="khl-btn" onclick="compressSCX()">🗜️ Compress SCX</button>
+          </div>
+          <textarea class="khl-editor" id="manifest-editor" spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <!-- Middle: Function Browser & Execution -->
+      <div class="khl-panel">
+        <div class="khl-panel-header">
+          <div class="khl-panel-title">⚡ Function Browser</div>
+          <div class="khl-panel-badge" id="func-count">0 Functions</div>
+        </div>
+        <div class="khl-panel-body">
+          <div id="function-list" class="khl-function-list"></div>
+          
+          <div style="margin-top: 20px;">
+            <div style="font-weight: 600; margin-bottom: 10px; color: var(--khl-primary);">▶️ Execute Function</div>
+            <input type="text" class="khl-input" id="exec-params" placeholder='Parameters (JSON): {"x": 10}'>
+            <button class="khl-btn primary" onclick="executeFunction()" style="width: 100%;">⚡ Execute</button>
+          </div>
+
+          <div class="khl-fold-viz" id="fold-viz" style="display: none;">
+            <div class="khl-fold-title">🔧 Fold Optimization Applied</div>
+            <div id="fold-steps"></div>
+          </div>
+
+          <div style="margin-top: 16px;">
+            <div style="font-weight: 600; margin-bottom: 10px; color: var(--khl-secondary);">📊 Execution Console</div>
+            <div class="khl-console" id="exec-console"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: AI Chat Interface -->
+      <div class="khl-panel">
+        <div class="khl-panel-header">
+          <div class="khl-panel-title">💬 AI Chat (Powered by manifest.json)</div>
+          <div class="khl-panel-badge">K'uhul Functions</div>
+        </div>
+        <div class="khl-chat">
+          <div class="khl-chat-messages" id="chat-messages">
+            <div class="khl-chat-message bot">
+              <div class="khl-chat-avatar">🤖</div>
+              <div class="khl-chat-bubble">
+                <div><strong>Hello! I'm powered entirely by K'uhul functions in manifest.json.</strong></div>
+                <div style="margin-top: 12px; font-size: 0.85rem; opacity: 0.9;">
+                  <strong>Try these commands:</strong><br>
+                  • "multiply 5 by 2" → <span class="khl-code">multiply_by_two</span><br>
+                  • "add 15 and 27" → <span class="khl-code">add_numbers</span><br>
+                  • "authenticate user123" → <span class="khl-code">authenticate_user</span><br>
+                  • "fibonacci 20" → <span class="khl-code">calculate_fibonacci</span><br>
+                  • "train model for 10 epochs" → <span class="khl-code">train_model</span><br>
+                  • "calculate statistics" → <span class="khl-code">calculate_statistics</span><br>
+                  • "power of 3 with 5" → <span class="khl-code">power_of_three</span><br>
+                  • "fetch user profile" → <span class="khl-code">fetch_user_profile</span><br>
+                  • "process data" → <span class="khl-code">process_data</span><br>
+                  • "compress data" → <span class="khl-code">compress_data</span>
+                </div>
+                <div style="margin-top: 8px; font-size: 0.75rem; color: var(--khl-accent);">
+                  ⚡ All functions run via SW.KHL - no .js files needed!
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="khl-chat-input-area">
+            <div class="khl-chat-input-wrapper">
+              <input 
+                type="text" 
+                class="khl-chat-input" 
+                id="chat-input" 
+                placeholder="Ask me to run a K'uhul function..."
+                onkeypress="if(event.key==='Enter') sendMessage()"
+              >
+              <button class="khl-chat-send" onclick="sendMessage()">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // SW.KHL Runtime Implementation
+    class KuhulHyperLanguage {
+      constructor() {
+        this.manifest = null;
+        this.functions = {};
+        this.executionLog = [];
+      }
+
+      loadManifest(manifestJson) {
+        try {
+          this.manifest = JSON.parse(manifestJson);
+          this.functions = this.manifest.asx_os?.functions || {};
+          this.log('success', 'Manifest loaded successfully');
+          return true;
+        } catch (error) {
+          this.log('error', `Manifest parse error: ${error.message}`);
+          return false;
+        }
+      }
+
+      async execute(funcName, params = {}) {
+        const func = this.functions[funcName];
+        if (!func) {
+          this.log('error', `Function "${funcName}" not found`);
+          throw new Error(`Function ${funcName} not found`);
+        }
+
+        this.log('info', `Executing: ${funcName}(${JSON.stringify(params)})`);
+
+        // Decompress SCX if needed
+        const kuhul = func.scx 
+          ? this.decompressSCX(func.scx, func.scx_map)
+          : func.kuhul;
+
+        // Apply fold optimizations
+        if (func.folds && func.folds.length > 0) {
+          this.visualizeFolds(kuhul, func.folds);
+        }
+
+        // Execute K'uhul
+        const result = await this.interpret(kuhul, params);
+        
+        this.log('success', `Result: ${JSON.stringify(result)}`);
+        return result;
+      }
+
+      async interpret(kuhul, params) {
+        const context = { ...params };
+        const lines = Array.isArray(kuhul) ? kuhul : kuhul.split('\n');
+        
+        let i = 0;
+        while (i < lines.length) {
+          const line = lines[i];
+          const trimmed = line.trim();
+          
+          if (!trimmed || trimmed.startsWith('//')) {
+            i++;
+            continue;
+          }
+
+          // ⟁Pop⟁ - Define variables
+          if (trimmed.startsWith('⟁Pop⟁')) {
+            const vars = trimmed.replace('⟁Pop⟁', '').trim().split(/\s+/);
+            vars.forEach(v => {
+              if (params.hasOwnProperty(v)) {
+                context[v] = params[v];
+              }
+            });
+            i++;
+          }
+          // ⟁Wo⟁ - Assign value
+          else if (trimmed.startsWith('⟁Wo⟁')) {
+            const expr = trimmed.replace('⟁Wo⟁', '').trim();
+            const equalPos = expr.indexOf(' ');
+            if (equalPos > 0) {
+              const name = expr.substring(0, equalPos).trim();
+              const value = expr.substring(equalPos + 1).trim();
+              context[name] = await this.evaluate(value, context);
+            }
+            i++;
+          }
+          // ⟁Sek⟁ - Execute operation
+          else if (trimmed.startsWith('⟁Sek⟁')) {
+            const expr = trimmed.replace('⟁Sek⟁', '').trim();
+            const result = await this.evaluate(expr, context);
+            
+            // If the expression includes a variable assignment, store it
+            if (expr.includes('db.query') || expr.includes('forward_pass') || 
+                expr.includes('calculate_loss') || expr.includes('backprop')) {
+              // Store the result in a temporary variable
+              context['_last_result'] = result;
+            }
+            i++;
+          }
+          // ⟁Xul⟁ - Return
+          else if (trimmed.startsWith('⟁Xul⟁')) {
+            const expr = trimmed.replace('⟁Xul⟁', '').trim();
+            const result = await this.evaluate(expr, context);
+            return result;
+          }
+          // (?⟁ - Conditional
+          else if (trimmed.startsWith('(?⟁')) {
+            const condition = trimmed.replace('(?⟁', '').replace(/\s*\{?\s*$/, '').trim();
+            const conditionResult = await this.evaluate(condition, context);
+            
+            this.log('info', `Condition "${condition}" evaluated to: ${conditionResult}`);
+            
+            if (!conditionResult) {
+              // Skip to the end of the conditional block
+              let depth = 1;
+              i++;
+              while (i < lines.length && depth > 0) {
+                const checkLine = lines[i].trim();
+                if (checkLine.startsWith('(?⟁') || checkLine.startsWith('(⟲⟁')) {
+                  depth++;
+                } else if (checkLine === ')' || checkLine.startsWith(')')) {
+                  depth--;
+                }
+                i++;
+              }
+            } else {
+              i++;
+            }
+          }
+          // (⟲⟁ - Loop
+          else if (trimmed.startsWith('(⟲⟁')) {
+            // Extract loop parameters: (⟲⟁ iterator collection { or (⟲⟁ iterator max_value
+            const loopParams = trimmed.replace('(⟲⟁', '').replace(/\s*\{?\s*$/, '').trim();
+            const parts = loopParams.split(/\s+/);
+            
+            if (parts.length >= 2) {
+              const iterator = parts[0];
+              const collectionOrMax = parts[1];
+              
+              // Find the loop body (lines until closing parenthesis)
+              let loopBody = [];
+              let depth = 1;
+              let j = i + 1;
+              
+              while (j < lines.length && depth > 0) {
+                const loopLine = lines[j].trim();
+                if (loopLine.startsWith('(?⟁') || loopLine.startsWith('(⟲⟁')) {
+                  depth++;
+                  loopBody.push(lines[j]);
+                } else if (loopLine === ')' || loopLine.startsWith(')')) {
+                  depth--;
+                  if (depth > 0) {
+                    loopBody.push(lines[j]);
+                  }
+                } else {
+                  loopBody.push(lines[j]);
+                }
+                j++;
+              }
+              
+              // Evaluate the collection or max value
+              const maxOrCollection = await this.evaluate(collectionOrMax, context);
+              
+              // Execute loop
+              if (typeof maxOrCollection === 'number') {
+                // Numeric loop: for (let i = 0; i < max; i++)
+                for (let idx = 0; idx < maxOrCollection; idx++) {
+                  context[iterator] = idx;
+                  this.log('info', `Loop iteration ${idx + 1}/${maxOrCollection}`);
+                  await this.interpret(loopBody, context);
+                }
+              } else if (Array.isArray(maxOrCollection)) {
+                // Array loop: for each item
+                for (let idx = 0; idx < maxOrCollection.length; idx++) {
+                  context[iterator] = maxOrCollection[idx];
+                  this.log('info', `Loop iteration ${idx + 1}/${maxOrCollection.length}`);
+                  await this.interpret(loopBody, context);
+                }
+              }
+              
+              i = j; // Skip past the loop body
+            } else {
+              i++;
+            }
+          }
+          // ) - End of block
+          else if (trimmed === ')' || trimmed.startsWith(')')) {
+            i++;
+          }
+          else {
+            i++;
+          }
+        }
+
+        return context;
+      }
+
+      async evaluate(expr, context) {
+        // Enhanced expression evaluator
+        try {
+          const trimmed = expr.trim();
+          
+          // Handle empty expressions
+          if (!trimmed) return undefined;
+
+          // Handle object literals with named parameters (e.g., layers: [128, 64, 10])
+          if (trimmed.includes(':') && !trimmed.startsWith('{')) {
+            // This is a named parameter syntax, convert to object
+            const obj = {};
+            const pairs = trimmed.split(',').map(p => p.trim());
+            for (const pair of pairs) {
+              const [key, value] = pair.split(':').map(s => s.trim());
+              if (key && value) {
+                obj[key] = await this.evaluate(value, context);
+              }
+            }
+            return obj;
+          }
+
+          // Handle function calls with named parameters
+          if (trimmed.includes('(') && trimmed.includes(':')) {
+            const funcMatch = trimmed.match(/^(\w+(?:\.\w+)*)\((.*)\)$/);
+            if (funcMatch) {
+              const [, funcName, argsStr] = funcMatch;
+              const args = await this.evaluate(argsStr, context);
+              return await this.callFunction(funcName, args, context);
+            }
+          }
+
+          // Handle simple function calls
+          if (trimmed.includes('(') && !trimmed.includes(':')) {
+            const funcMatch = trimmed.match(/^(\w+(?:\.\w+)*)\((.*)\)$/);
+            if (funcMatch) {
+              const [, funcName, argsStr] = funcMatch;
+              let args;
+              if (argsStr.trim()) {
+                // Parse arguments
+                const argsList = this.parseArguments(argsStr);
+                args = [];
+                for (const arg of argsList) {
+                  args.push(await this.evaluate(arg, context));
+                }
+              }
+              return await this.callFunction(funcName, args, context);
+            }
+          }
+
+          // Handle object literals
+          if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+            const objStr = trimmed.slice(1, -1).trim();
+            const obj = {};
+            const pairs = this.parseObjectPairs(objStr);
+            for (const pair of pairs) {
+              const [key, value] = pair.split(':').map(s => s.trim());
+              if (key && value) {
+                obj[key] = await this.evaluate(value, context);
+              }
+            }
+            return obj;
+          }
+
+          // Handle array literals
+          if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+            const arrStr = trimmed.slice(1, -1).trim();
+            if (!arrStr) return [];
+            const items = arrStr.split(',').map(s => s.trim());
+            const arr = [];
+            for (const item of items) {
+              arr.push(await this.evaluate(item, context));
+            }
+            return arr;
+          }
+
+          // Handle string literals
+          if ((trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+              (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+            return trimmed.slice(1, -1);
+          }
+
+          // Handle boolean literals
+          if (trimmed === 'true') return true;
+          if (trimmed === 'false') return false;
+          if (trimmed === 'null') return null;
+          if (trimmed === 'undefined') return undefined;
+
+          // Handle numeric literals
+          if (/^-?\d+(\.\d+)?$/.test(trimmed)) {
+            return parseFloat(trimmed);
+          }
+
+          // Handle context variables
+          if (context.hasOwnProperty(trimmed)) {
+            return context[trimmed];
+          }
+
+          // Handle property access (e.g., user_record.exists)
+          if (trimmed.includes('.')) {
+            const parts = trimmed.split('.');
+            let value = context[parts[0]];
+            for (let i = 1; i < parts.length; i++) {
+              if (value && typeof value === 'object') {
+                value = value[parts[i]];
+              } else {
+                return undefined;
+              }
+            }
+            return value;
+          }
+
+          // Handle mathematical operations
+          if (/[+\-*\/]/.test(trimmed)) {
+            let evaluableExpr = trimmed;
+            for (const [key, value] of Object.entries(context)) {
+              const regex = new RegExp(`\\b${key}\\b`, 'g');
+              evaluableExpr = evaluableExpr.replace(regex, JSON.stringify(value));
+            }
+            
+            // Safe eval for math expressions only
+            const result = Function(`"use strict"; return (${evaluableExpr})`)();
+            return result;
+          }
+
+          // Handle comparison operations
+          if (/===|!==|==|!=|<=|>=|<|>/.test(trimmed)) {
+            let evaluableExpr = trimmed;
+            for (const [key, value] of Object.entries(context)) {
+              const regex = new RegExp(`\\b${key}\\b`, 'g');
+              evaluableExpr = evaluableExpr.replace(regex, JSON.stringify(value));
+            }
+            
+            const result = Function(`"use strict"; return (${evaluableExpr})`)();
+            return result;
+          }
+
+          // Return as-is if nothing else matches
+          return trimmed;
+        } catch (error) {
+          this.log('error', `Evaluation error: ${error.message}`);
+          return expr;
+        }
+      }
+
+      parseArguments(argsStr) {
+        // Simple argument parser (handles basic comma-separated args)
+        const args = [];
+        let current = '';
+        let depth = 0;
+        
+        for (const char of argsStr) {
+          if (char === '(' || char === '[' || char === '{') {
+            depth++;
+            current += char;
+          } else if (char === ')' || char === ']' || char === '}') {
+            depth--;
+            current += char;
+          } else if (char === ',' && depth === 0) {
+            args.push(current.trim());
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        
+        if (current.trim()) {
+          args.push(current.trim());
+        }
+        
+        return args;
+      }
+
+      parseObjectPairs(objStr) {
+        // Parse object key-value pairs
+        const pairs = [];
+        let current = '';
+        let depth = 0;
+        
+        for (const char of objStr) {
+          if (char === '(' || char === '[' || char === '{') {
+            depth++;
+            current += char;
+          } else if (char === ')' || char === ']' || char === '}') {
+            depth--;
+            current += char;
+          } else if (char === ',' && depth === 0) {
+            pairs.push(current.trim());
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        
+        if (current.trim()) {
+          pairs.push(current.trim());
+        }
+        
+        return pairs;
+      }
+
+      async callFunction(funcName, args, context) {
+        // Handle special K'uhul built-in functions
+        
+        // Cryptographic functions
+        if (funcName === 'scrypt') {
+          return 'hashed_password_' + Math.random().toString(36).substr(2, 9);
+        }
+        
+        if (funcName === 'jwt.sign') {
+          const payload = args && typeof args === 'object' ? args : (args && args[0]) || {};
+          return 'jwt_token_' + Math.random().toString(36).substr(2, 16);
+        }
+        
+        // Database functions
+        if (funcName === 'db.query') {
+          const table = args && args[0] ? args[0] : 'unknown';
+          this.log('info', `Database query: ${table}`);
+          return { exists: true, id: 123, hash: 'mock_hash', username: 'user123' };
+        }
+        
+        // Neural network functions
+        if (funcName === 'neural.init') {
+          const config = args && typeof args === 'object' ? args : {};
+          this.log('info', `Initializing neural network: ${JSON.stringify(config)}`);
+          return { 
+            type: 'neural_network', 
+            layers: config.layers || [128, 64, 10],
+            initialized: true
+          };
+        }
+        
+        if (funcName === 'forward_pass') {
+          const model = args && args[0] ? args[0] : context.model;
+          this.log('info', 'Executing forward pass');
+          return { predictions: [0.1, 0.8, 0.1] };
+        }
+        
+        if (funcName === 'calculate_loss') {
+          this.log('info', 'Calculating loss');
+          return 0.234;
+        }
+        
+        if (funcName === 'backprop') {
+          const model = args && args[0] ? args[0] : context.model;
+          this.log('info', 'Performing backpropagation');
+          return { gradients: 'computed' };
+        }
+        
+        // SCX compression
+        if (funcName === 'scx.compress') {
+          const data = args && args[0] ? args[0] : '';
+          this.log('info', `Compressing data: ${data}`);
+          return 'compressed_' + data;
+        }
+        
+        // Logging
+        if (funcName === 'log') {
+          const message = args ? args.join(' ') : '';
+          this.log('info', message);
+          return undefined;
+        }
+        
+        // Unknown function
+        this.log('info', `Calling function: ${funcName}`);
+        return { called: funcName, args };
+      }
+
+      decompressSCX(scx, map) {
+        let expanded = scx;
+        for (const [short, long] of Object.entries(map || {})) {
+          expanded = expanded.replaceAll(short, long);
+        }
+        return expanded.split('\n');
+      }
+
+      visualizeFolds(kuhul, folds) {
+        const foldSteps = document.getElementById('fold-steps');
+        const foldViz = document.getElementById('fold-viz');
+        
+        foldViz.style.display = 'block';
+        foldSteps.innerHTML = '';
+
+        folds.forEach(fold => {
+          const step = document.createElement('div');
+          step.className = 'khl-fold-step';
+          
+          if (fold === 'horizontal_1') {
+            step.innerHTML = `<strong>Horizontal Fold:</strong> Vectorizing sequential operations`;
+            step.classList.add('optimized');
+          } else if (fold.startsWith('vertical_')) {
+            step.innerHTML = `<strong>Vertical Fold:</strong> Parallelizing ${fold.split('_')[1]} operations`;
+            step.classList.add('optimized');
+          } else {
+            step.innerHTML = `<strong>${fold}:</strong> Applied`;
+          }
+          
+          foldSteps.appendChild(step);
+        });
+      }
+
+      log(type, message) {
+        this.executionLog.push({ type, message, time: new Date() });
+        
+        const console = document.getElementById('exec-console');
+        const line = document.createElement('div');
+        line.className = `khl-log-line ${type}`;
+        
+        const icon = type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ';
+        const time = new Date().toLocaleTimeString();
+        
+        line.innerHTML = `
+          <span class="khl-log-icon">${icon}</span>
+          <span class="khl-log-time">[${time}]</span>
+          <span class="khl-log-text">${message}</span>
+        `;
+        
+        console.appendChild(line);
+        console.scrollTop = console.scrollHeight;
+      }
+    }
+
+    // Initialize KHL Runtime
+    const KHL = new KuhulHyperLanguage();
+
+    // Default Manifest
+    const defaultManifest = {
+      "asx_os": {
+        "version": "4.0-khl",
+        "kernel": "/sw.khl",
+        "functions": {
+          "multiply_by_two": {
+            "description": "Multiplies a number by 2",
+            "params": ["x"],
+            "kuhul": [
+              "⟁Pop⟁ x",
+              "⟁Wo⟁ result x * 2",
+              "⟁Xul⟁ result"
+            ],
+            "returns": "result",
+            "folds": ["horizontal_1"]
+          },
+          "add_numbers": {
+            "description": "Adds two numbers together",
+            "params": ["a", "b"],
+            "kuhul": [
+              "⟁Pop⟁ a b",
+              "⟁Wo⟁ sum a + b",
+              "⟁Xul⟁ sum"
+            ],
+            "returns": "sum",
+            "folds": ["horizontal_1"]
+          },
+          "authenticate_user": {
+            "description": "Authenticates a user with username and password",
+            "params": ["username", "password"],
+            "kuhul": [
+              "⟁Pop⟁ username password",
+              "⟁Wo⟁ hash scrypt(password, salt)",
+              "⟁Sek⟁ user_record db.query(users, username)",
+              "(?⟁ user_record.exists",
+              "  ⟁Wo⟁ match hash === user_record.hash",
+              "  (?⟁ match",
+              "    ⟁Wo⟁ token jwt.sign({user_id: user_record.id})",
+              "    ⟁Xul⟁ {success: true, token: token}",
+              "  )",
+              ")",
+              "⟁Xul⟁ {success: false, error: invalid_credentials}"
+            ],
+            "returns": "{success, token?, error?}",
+            "shard": "users",
+            "rest_endpoint": "POST /auth/login",
+            "folds": ["horizontal_1"]
+          },
+          "calculate_fibonacci": {
+            "description": "Calculates the nth Fibonacci number",
+            "params": ["n"],
+            "kuhul": [
+              "⟁Pop⟁ n",
+              "⟁Wo⟁ a 0",
+              "⟁Wo⟁ b 1",
+              "⟁Wo⟁ i 0",
+              "(⟲⟁ i n",
+              "  ⟁Wo⟁ temp a + b",
+              "  ⟁Wo⟁ a b",
+              "  ⟁Wo⟁ b temp",
+              ")",
+              "⟁Xul⟁ a"
+            ],
+            "returns": "fibonacci_number",
+            "folds": ["horizontal_1", "loop_unroll_4"]
+          },
+          "train_model": {
+            "description": "Trains a neural network model",
+            "params": ["epochs"],
+            "kuhul": [
+              "⟁Pop⟁ epochs",
+              "⟁Wo⟁ model neural.init(layers: [128, 64, 10])",
+              "⟁Wo⟁ total_loss 0",
+              "(⟲⟁ epoch epochs",
+              "  ⟁Sek⟁ predictions forward_pass(model)",
+              "  ⟁Sek⟁ loss calculate_loss()",
+              "  ⟁Sek⟁ gradients backprop(model)",
+              "  ⟁Wo⟁ total_loss total_loss + loss",
+              "  ⟁Sek⟁ log(Epoch, epoch, Loss:, loss)",
+              ")",
+              "⟁Xul⟁ {model: model, final_loss: total_loss}"
+            ],
+            "returns": "trained_model",
+            "3d_control": true,
+            "parallel": false,
+            "folds": ["horizontal_1", "vertical_2"],
+            "shard": "trainer",
+            "gpu": true
+          },
+          "process_data": {
+            "description": "Processes and filters data",
+            "params": ["data"],
+            "kuhul": [
+              "⟁Pop⟁ data",
+              "⟁Wo⟁ filtered []",
+              "⟁Wo⟁ count 0",
+              "(⟲⟁ item data",
+              "  ⟁Wo⟁ count count + 1",
+              ")",
+              "⟁Xul⟁ {processed: data, count: count}"
+            ],
+            "returns": "{processed, count}",
+            "folds": ["horizontal_1"]
+          },
+          "compress_data": {
+            "description": "Compresses data using SCX",
+            "params": ["data"],
+            "scx": "⟁P⟁d⟁W⟁c=scx.compress(d)⟁X⟁c",
+            "scx_map": {
+              "⟁P⟁": "⟁Pop⟁",
+              "⟁W⟁": "⟁Wo⟁",
+              "⟁X⟁": "⟁Xul⟁",
+              "d": "data",
+              "c": "compressed"
+            },
+            "folds": ["horizontal_1"],
+            "compression_ratio": 0.87
+          },
+          "fetch_user_profile": {
+            "description": "Fetches a user profile from the database",
+            "params": ["user_id"],
+            "kuhul": [
+              "⟁Pop⟁ user_id",
+              "⟁Sek⟁ profile db.query(users, user_id)",
+              "⟁Xul⟁ profile"
+            ],
+            "returns": "user_profile",
+            "shard": "users",
+            "rest_endpoint": "GET /users/:id",
+            "folds": ["horizontal_1"]
+          },
+          "calculate_statistics": {
+            "description": "Calculates mean, sum, and count for a dataset",
+            "params": ["numbers"],
+            "kuhul": [
+              "⟁Pop⟁ numbers",
+              "⟁Wo⟁ sum 0",
+              "⟁Wo⟁ count 0",
+              "(⟲⟁ num numbers",
+              "  ⟁Wo⟁ sum sum + num",
+              "  ⟁Wo⟁ count count + 1",
+              ")",
+              "⟁Wo⟁ mean sum / count",
+              "⟁Xul⟁ {sum: sum, count: count, mean: mean}"
+            ],
+            "returns": "{sum, count, mean}",
+            "folds": ["horizontal_1", "vectorize_sum"]
+          },
+          "power_of_three": {
+            "description": "Demonstrates the Power of 3 principle",
+            "params": ["value"],
+            "kuhul": [
+              "⟁Pop⟁ value",
+              "⟁Wo⟁ result1 value * 3",
+              "⟁Wo⟁ result2 result1 * 3",
+              "⟁Wo⟁ result3 result2 * 3",
+              "⟁Xul⟁ {step1: result1, step2: result2, step3: result3, power_of_3: result3}"
+            ],
+            "returns": "{step1, step2, step3, power_of_3}",
+            "folds": ["horizontal_1"]
+          }
+        }
+      }
+    };
+
+    // Initialize
+    let currentFunction = null;
+
+    function init() {
+      const editor = document.getElementById('manifest-editor');
+      editor.value = JSON.stringify(defaultManifest, null, 2);
+      saveManifest();
+    }
+
+    function saveManifest() {
+      const editor = document.getElementById('manifest-editor');
+      const success = KHL.loadManifest(editor.value);
+      
+      if (success) {
+        updateFunctionList();
+      }
+    }
+
+    function resetManifest() {
+      const editor = document.getElementById('manifest-editor');
+      editor.value = JSON.stringify(defaultManifest, null, 2);
+      saveManifest();
+    }
+
+    function compressSCX() {
+      KHL.log('info', 'SCX compression would optimize K\'uhul syntax here');
+      alert('SCX Compression: This would compress the K\'uhul syntax using symbol mappings, achieving ~87% size reduction.');
+    }
+
+    function updateFunctionList() {
+      const list = document.getElementById('function-list');
+      const count = document.getElementById('func-count');
+      
+      list.innerHTML = '';
+      const functions = Object.entries(KHL.functions);
+      count.textContent = `${functions.length} Functions`;
+
+      functions.forEach(([name, func]) => {
+        const card = document.createElement('div');
+        card.className = 'khl-function-card';
+        if (currentFunction === name) card.classList.add('active');
+        
+        const folds = func.folds || [];
+        const tags = [
+          ...folds.map(f => `<span class="khl-tag fold">${f}</span>`),
+          func.shard ? `<span class="khl-tag">shard: ${func.shard}</span>` : '',
+          func.gpu ? `<span class="khl-tag">GPU</span>` : '',
+          func.parallel ? `<span class="khl-tag">Parallel</span>` : '',
+          func.scx ? `<span class="khl-tag">SCX Compressed</span>` : ''
+        ].filter(Boolean).join('');
+
+        card.innerHTML = `
+          <div class="khl-function-name">${name}</div>
+          <div class="khl-function-desc">${func.description || 'No description'}</div>
+          <div class="khl-function-meta">${tags}</div>
+        `;
+        
+        card.onclick = () => selectFunction(name);
+        list.appendChild(card);
+      });
+    }
+
+    function selectFunction(name) {
+      currentFunction = name;
+      updateFunctionList();
+      
+      const func = KHL.functions[name];
+      const paramsInput = document.getElementById('exec-params');
+      
+      // Set example parameters
+      const exampleParams = {};
+      (func.params || []).forEach(param => {
+        if (param === 'x' || param === 'n') exampleParams[param] = 10;
+        if (param === 'username') exampleParams[param] = 'user123';
+        if (param === 'password') exampleParams[param] = 'pass123';
+        if (param === 'epochs') exampleParams[param] = 5;
+        if (param === 'data') exampleParams[param] = 'sample_data';
+      });
+      
+      paramsInput.value = JSON.stringify(exampleParams);
+    }
+
+    async function executeFunction() {
+      if (!currentFunction) {
+        alert('Please select a function first');
+        return;
+      }
+
+      const paramsInput = document.getElementById('exec-params');
+      let params = {};
+      
+      try {
+        params = JSON.parse(paramsInput.value);
+      } catch (e) {
+        KHL.log('error', 'Invalid JSON parameters');
+        return;
+      }
+
+      try {
+        const result = await KHL.execute(currentFunction, params);
+        KHL.log('success', `Execution complete: ${JSON.stringify(result)}`);
+      } catch (error) {
+        KHL.log('error', `Execution failed: ${error.message}`);
+      }
+    }
+
+    // Chat Interface
+    function addMessage(type, text) {
+      const messages = document.getElementById('chat-messages');
+      const message = document.createElement('div');
+      message.className = `khl-chat-message ${type}`;
+      
+      const avatar = type === 'user' ? '👤' : '🤖';
+      
+      message.innerHTML = `
+        <div class="khl-chat-avatar">${avatar}</div>
+        <div class="khl-chat-bubble">${text}</div>
+      `;
+      
+      messages.appendChild(message);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      
+      if (!text) return;
+      
+      addMessage('user', text);
+      input.value = '';
+
+      // Parse intent from message
+      const intent = parseIntent(text);
+      
+      if (intent.function) {
+        addMessage('bot', `Executing <span class="khl-code">${intent.function}</span> with parameters: <span class="khl-code">${JSON.stringify(intent.params)}</span>`);
+        
+        try {
+          const result = await KHL.execute(intent.function, intent.params);
+          addMessage('bot', `✅ Result: <span class="khl-code">${JSON.stringify(result)}</span>`);
+        } catch (error) {
+          addMessage('bot', `❌ Error: ${error.message}`);
+        }
+      } else {
+        addMessage('bot', `I understand you want to "${text}". Here are available commands:<br><br>
+          <strong>Math & Numbers:</strong><br>
+          • "multiply X by 2" - Doubles a number<br>
+          • "add X and Y" - Adds two numbers<br>
+          • "fibonacci N" - Calculates Nth Fibonacci number<br>
+          • "calculate statistics" - Mean/sum of dataset<br>
+          • "power of 3 with N" - Power of 3 principle demo<br><br>
+          <strong>Authentication & Users:</strong><br>
+          • "authenticate USERNAME" - Login simulation<br>
+          • "fetch user profile" - Get user data<br><br>
+          <strong>AI & Training:</strong><br>
+          • "train model for N epochs" - Neural network training<br><br>
+          <strong>Data Processing:</strong><br>
+          • "process data" - Data filtering & counting<br>
+          • "compress data" - SCX compression demo
+        `);
+      }
+    }
+
+    function parseIntent(text) {
+      const lower = text.toLowerCase();
+      
+      // Multiply
+      if (lower.includes('multiply') || lower.includes('times')) {
+        const match = text.match(/(\d+)/);
+        const x = match ? parseInt(match[1]) : 10;
+        return { function: 'multiply_by_two', params: { x } };
+      }
+      
+      // Add
+      if (lower.includes('add') || lower.includes('sum') || lower.includes('plus')) {
+        const matches = text.match(/(\d+)/g);
+        if (matches && matches.length >= 2) {
+          return { 
+            function: 'add_numbers', 
+            params: { a: parseInt(matches[0]), b: parseInt(matches[1]) }
+          };
+        }
+      }
+      
+      // Authenticate
+      if (lower.includes('auth') || lower.includes('login')) {
+        const userMatch = text.match(/user\s*(\w+)/i);
+        const username = userMatch ? userMatch[1] : 'user123';
+        return { 
+          function: 'authenticate_user', 
+          params: { username, password: 'pass123' }
+        };
+      }
+      
+      // Fibonacci
+      if (lower.includes('fibonacci') || lower.includes('fib')) {
+        const match = text.match(/(\d+)/);
+        const n = match ? parseInt(match[1]) : 10;
+        return { function: 'calculate_fibonacci', params: { n } };
+      }
+      
+      // Train
+      if (lower.includes('train')) {
+        const match = text.match(/(\d+)/);
+        const epochs = match ? parseInt(match[1]) : 5;
+        return { function: 'train_model', params: { epochs } };
+      }
+      
+      // Compress
+      if (lower.includes('compress')) {
+        return { function: 'compress_data', params: { data: 'sample_data' } };
+      }
+      
+      // Profile / User
+      if (lower.includes('profile') || lower.includes('user')) {
+        const match = text.match(/(\d+)/);
+        const user_id = match ? parseInt(match[1]) : 123;
+        return { function: 'fetch_user_profile', params: { user_id } };
+      }
+      
+      // Statistics
+      if (lower.includes('statistic') || lower.includes('average') || lower.includes('mean')) {
+        return { 
+          function: 'calculate_statistics', 
+          params: { numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
+        };
+      }
+      
+      // Process data
+      if (lower.includes('process')) {
+        return { 
+          function: 'process_data', 
+          params: { data: ['item1', 'item2', 'item3'] }
+        };
+      }
+      
+      // Power of 3
+      if (lower.includes('power') && (lower.includes('3') || lower.includes('three'))) {
+        const match = text.match(/(\d+)/);
+        const value = match ? parseInt(match[1]) : 3;
+        return { function: 'power_of_three', params: { value } };
+      }
+      
+      return { function: null };
+    }
+
+    // Initialize on load
+    init();
+  </script>
+</body>
+</html>
