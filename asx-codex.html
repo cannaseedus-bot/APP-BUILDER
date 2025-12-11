@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ASX MEGA CODEX — XJSON • SCXQ2 • K’uhul • KLH • MX2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#020712" />
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    :root {
+      --bg: #020409;
+      --bg-alt: #050912;
+      --panel: #050a14;
+      --border: #16f2aa;
+      --border-soft: rgba(22,242,170,0.25);
+      --accent: #00ffd0;
+      --accent-soft: rgba(0,255,208,0.12);
+      --accent2: #44ff88;
+      --danger: #f25c5c;
+      --text: #e8fff6;
+      --muted: #7e8a92;
+      --shadow-soft: 0 18px 48px rgba(0,0,0,0.75);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-pill: 999px;
+      --transition-fast: 0.18s ease-out;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 0 0, #041725 0, #020409 55%);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* HUD HEADER ---------------------------------------------------------- */
+
+    header.hud {
+      position: relative;
+      z-index: 10;
+      background: radial-gradient(circle at 0 0, rgba(0,255,153,0.12) 0, rgba(0,0,0,0.7) 45%);
+      border-bottom: 1px solid rgba(0,255,153,0.35);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.66);
+    }
+
+    header .wrap {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo-mark {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .logo-glyph {
+      width: 32px;
+      height: 32px;
+      border-radius: 40% 65% 38% 70%;
+      background: radial-gradient(circle at 30% 20%, #00ffd0 0, #059669 35%, #020409 80%);
+      box-shadow:
+        0 0 22px rgba(0,255,153,0.6),
+        0 0 60px rgba(0,0,0,0.9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-glyph::after {
+      content: "";
+      position: absolute;
+      inset: 28%;
+      border-radius: inherit;
+      border: 1px solid rgba(0,0,0,0.55);
+      box-shadow: inset 0 0 14px rgba(0,0,0,0.8);
+    }
+
+    .logo-text-main {
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .logo-text-sub {
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hud-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+    }
+
+    .led {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #0f172a;
+      box-shadow: 0 0 0 rgba(22,242,170,0);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .led.on {
+      background: var(--accent2);
+      box-shadow:
+        0 0 12px rgba(68,255,136,0.9),
+        0 0 32px rgba(0,0,0,0.85);
+    }
+
+    .hud-pill {
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148,163,184,0.6);
+      padding: 0.12rem 0.7rem;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    /* LAYOUT -------------------------------------------------------------- */
+
+    .shell {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      max-width: 1440px;
+      margin: 0.5rem auto 1rem auto;
+      padding: 0 1.5rem 1.5rem 1.5rem;
+      gap: 1rem;
+      height: calc(100vh - 64px);
+    }
+
+    @media (max-width: 900px) {
+      .shell {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr);
+        padding-inline: 0.75rem;
+      }
+    }
+
+    /* SIDEBAR / TABS ------------------------------------------------------ */
+
+    .nav-panel {
+      background: radial-gradient(circle at 0 0, #071827 0, #020713 65%);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
+      padding: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      overflow: hidden;
+    }
+
+    .nav-title {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .nav-title span:last-child {
+      font-size: 0.7rem;
+      color: var(--accent);
+    }
+
+    .nav-search {
+      position: relative;
+    }
+
+    .nav-search input {
+      width: 100%;
+      padding: 0.4rem 0.7rem;
+      padding-left: 1.6rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(51,65,85,0.95);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.86) 0, #020409 55%);
+      color: var(--text);
+      font-size: 0.78rem;
+      outline: none;
+    }
+
+    .nav-search input::placeholder {
+      color: rgba(148,163,184,0.8);
+    }
+
+    .nav-search-icon {
+      position: absolute;
+      left: 0.55rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.75rem;
+      color: rgba(148,163,184,0.9);
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      overflow: auto;
+    }
+
+    .nav-item {
+      border-radius: 999px;
+      border: 1px solid transparent;
+      padding: 0.32rem 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.05rem;
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast), transform 0.12s ease-out;
+      position: relative;
+    }
+
+    .nav-item:hover {
+      background: radial-gradient(circle at 0 0, rgba(22,242,170,0.16) 0, rgba(15,23,42,0.9) 65%);
+      border-color: rgba(22,242,170,0.5);
+      transform: translateX(2px);
+    }
+
+    .nav-item.active {
+      background: radial-gradient(circle at 0 0, rgba(22,242,170,0.27) 0, rgba(6,12,20,0.98) 65%);
+      border-color: var(--border);
+      box-shadow: 0 0 0 1px rgba(22,242,170,0.18);
+    }
+
+    .nav-item-title {
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.3rem;
+    }
+
+    .nav-item-sub {
+      font-size: 0.7rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav-chip {
+      font-size: 0.65rem;
+      padding: 0.05rem 0.4rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.8);
+      color: rgba(148,163,184,0.9);
+    }
+
+    /* MAIN PANEL ---------------------------------------------------------- */
+
+    .main-panel {
+      background: radial-gradient(circle at 0 0, #071827 0, #020409 65%);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(15,23,42,0.9);
+      box-shadow: var(--shadow-soft);
+      padding: 1rem 1.1rem 1.1rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .main-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid rgba(15,23,42,0.9);
+      margin-bottom: 0.35rem;
+    }
+
+    .main-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .main-title {
+      font-size: 0.92rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .main-subtitle {
+      font-size: 0.74rem;
+      color: var(--muted);
+      max-width: 480px;
+    }
+
+    .main-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      font-size: 0.7rem;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 0.16rem 0.6rem;
+      border: 1px solid rgba(148,163,184,0.7);
+      color: rgba(148,163,184,0.9);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.85) 0, #020409 68%);
+    }
+
+    .badge.hot {
+      border-color: rgba(22,242,170,0.9);
+      color: var(--accent);
+      box-shadow: 0 0 16px rgba(22,242,170,0.4);
+    }
+
+    /* TAPE VIEWS ---------------------------------------------------------- */
+
+    .tape-viewport {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      margin-top: 0.3rem;
+    }
+
+    .tape-view {
+      position: absolute;
+      inset: 0;
+      padding: 0.65rem 0.4rem 0.7rem 0.2rem;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(18px);
+      transition:
+        opacity 0.35s ease-out,
+        transform 0.35s ease-out;
+      overflow: auto;
+      scrollbar-width: thin;
+    }
+
+    .tape-view::-webkit-scrollbar {
+      width: 6px;
+    }
+    .tape-view::-webkit-scrollbar-track {
+      background: #050915;
+    }
+    .tape-view::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, #16f2aa, #0ea5e9);
+      border-radius: 999px;
+    }
+
+    .tape-view.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    /* CONTENT UTILITIES --------------------------------------------------- */
+
+    h2, h3, h4 {
+      margin: 0.5rem 0 0.3rem 0;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h2 { font-size: 0.9rem; color: var(--accent); }
+    h3 { font-size: 0.84rem; color: var(--accent2); }
+    h4 { font-size: 0.8rem; color: var(--text); }
+
+    p {
+      margin: 0.25rem 0 0.35rem 0;
+      font-size: 0.8rem;
+      color: #d1fae5;
+      line-height: 1.4;
+    }
+
+    code, pre {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.74rem;
+    }
+
+    pre {
+      margin: 0.35rem 0 0.65rem 0;
+      padding: 0.55rem 0.7rem;
+      border-radius: var(--radius-md);
+      background: radial-gradient(circle at 0 0, #020617 0, #020617 55%);
+      border: 1px solid rgba(30,64,175,0.8);
+      color: #e0f2fe;
+      overflow-x: auto;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.7rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2 { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .card {
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(15,23,42,0.9);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.9) 0, #020617 65%);
+      box-shadow: 0 8px 26px rgba(0,0,0,0.9);
+      padding: 0.5rem 0.65rem 0.6rem 0.65rem;
+    }
+
+    .card-title {
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.25rem;
+    }
+
+    .chip {
+      font-size: 0.68rem;
+      padding: 0.08rem 0.45rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.8);
+      color: rgba(209,213,219,0.95);
+    }
+
+    .chip.green {
+      border-color: rgba(22,242,170,0.9);
+      color: var(--accent);
+    }
+
+    .mono-small {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .divider {
+      height: 1px;
+      border-radius: 999px;
+      background: linear-gradient(to right, rgba(15,23,42,0.2), rgba(22,242,170,0.7), rgba(15,23,42,0.2));
+      margin: 0.3rem 0 0.4rem 0;
+    }
+
+    .note {
+      font-size: 0.74rem;
+      color: #f9fafb;
+      background: rgba(22,163,74,0.16);
+      border-radius: 11px;
+      border: 1px solid rgba(22,163,74,0.6);
+      padding: 0.35rem 0.5rem;
+      margin: 0.5rem 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HUD HEADER -->
+  <header class="hud">
+    <div class="wrap">
+      <div class="logo-mark">
+        <div class="logo-glyph"></div>
+        <div>
+          <div class="logo-text-main">ASX MEGA CODEX</div>
+          <div class="logo-text-sub">XJSON • SCXQ2 • K’UHUL • KLH • MX2</div>
+        </div>
+      </div>
+      <div class="hud-status">
+        <div class="led on" id="hud-led"></div>
+        <span id="hud-status-text">ONLINE · LOCAL ASXR</span>
+        <span class="hud-pill" id="active-tape-pill">TAPE: —</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- SHELL -->
+  <div class="shell">
+    <!-- NAV / TAPE LIST -->
+    <aside class="nav-panel">
+      <div class="nav-title">
+        <span>CODEX TAPES</span>
+        <span>GHOST INDEX v1</span>
+      </div>
+
+      <div class="nav-search">
+        <span class="nav-search-icon">⌕</span>
+        <input id="nav-filter" placeholder="filter: xjson, scx, kuhul, hive, crown…" />
+      </div>
+
+      <ul class="nav-list" id="nav-list">
+        <!-- populated by JS -->
+      </ul>
+    </aside>
+
+    <!-- MAIN PANEL -->
+    <main class="main-panel">
+      <div class="main-header">
+        <div class="main-title-block">
+          <div class="main-title" id="main-title">ASX CODEX</div>
+          <div class="main-subtitle" id="main-subtitle">
+            Atomic HTML ghost-guide of the entire ASX stack: XJSON, SCXQ2, K’uhul, KLH HIVE-NET,
+            MX2 CROWNS, Basher, bridges, and PRIME OS cockpits — all encoded as tapes in one ASXR.
+          </div>
+        </div>
+        <div class="main-meta">
+          <span class="badge hot">DARK NEON · ASX</span>
+          <span class="badge">LOCAL-ONLY · OFFLINE-FIRST</span>
+        </div>
+      </div>
+
+      <div class="tape-viewport">
+        <!-- TAPE: XJSON PRIME SPEC -->
+        <section
+          class="tape-view active"
+          id="tape-xjson-prime"
+          data-tape-id="xjson-prime"
+          data-title="XJSON PRIME SPEC"
+          data-subtitle="Unified JSON OS language with XCFE control-flow and static API mesh."
+          data-tags="xjson,language,xcfe,os,server"
+        >
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">Core Concept</div>
+              <div class="divider"></div>
+              <p>
+                XJSON is the **single OS language** for ASX. Every app, tape, server, and agent is
+                described in JSON with **typed blocks**, **XCFE control-flow** (<code>@if/@then/@else</code>),
+                and a local **REST mesh** instead of ad-hoc backends.
+              </p>
+              <p class="mono-small">
+                Files: <code>FULL-XJSON-GUIDE.html</code>, <code>xjson-runtime.js</code>, static <code>/xjson/run</code> API.
+              </p>
+              <pre>{
+  "$schema": "xjson://v1/app",
+  "meta": {
+    "id": "devmicro_console",
+    "title": "DevMicro Console",
+    "version": "1.0.0"
+  },
+  "routes": {
+    "/": { "@view": "layout.main" },
+    "/logs": { "@view": "layout.logs" }
+  },
+  "logic": {
+    "checkAuth": {
+      "@if":   ["$session.user"],
+      "@then": { "@return": true },
+      "@else": { "@return": false }
+    }
+  }
+}</pre>
+            </div>
+            <div class="card">
+              <div class="card-title">XJSON Runtime Mesh</div>
+              <div class="divider"></div>
+              <p>
+                The <code>xjsonRun</code> helper sends a program + context to any node exposing
+                <code>/xjson/run</code>. HIVE-NET simply fans this out across multiple servers.
+              </p>
+              <pre>// xjson-runtime.js (client helper)
+export async function xjsonRun(baseUrl, program, context = {}) {
+  const res = await fetch(
+    baseUrl.replace(/\/$/, "") + "/xjson/run",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ program, context })
+    }
+  );
+
+  if (!res.ok) throw new Error("XJSON request failed");
+
+  const data = await res.json().catch(() => ({}));
+  if (!data.ok) throw new Error("XJSON error: " + (data.error || "unknown"));
+  return data.result;
+}</pre>
+              <p class="note">
+                XJSON is the **canonical backend**: KLH, K’uhul, Basher, HIVE-NET, tapes — all speak XJSON.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAPE: ATOMIC HTML SYSTEM -->
+        <section
+          class="tape-view"
+          id="tape-atomic-html"
+          data-tape-id="atomic-html"
+          data-title="ATOMIC HTML RUNTIME"
+          data-subtitle="Micro-layout engine with Atomic CSS blocks, zero frameworks, full OS UI."
+          data-tags="atomic,html,css,blocks,ui"
+        >
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">Atomic Layout Blocks</div>
+              <div class="divider"></div>
+              <p>
+                Atomic HTML replaces bloated frameworks with tiny, composable blocks:
+                <code>.row</code>, <code>.col</code>, <code>.stack</code>, <code>.chip</code>, etc.
+              </p>
+              <pre>&lt;div class="row gap-md align-center"&gt;
+  &lt;div class="chip chip-green"&gt;ASX&lt;/div&gt;
+  &lt;h2 class="text-neon"&gt;Atomic Ghost UI&lt;/h2&gt;
+&lt;/div&gt;
+
+&lt;div class="grid grid-3 gap-md mt-md"&gt;
+  &lt;article class="card"&gt;...&lt;/article&gt;
+  &lt;article class="card"&gt;...&lt;/article&gt;
+  &lt;article class="card"&gt;...&lt;/article&gt;
+&lt;/div&gt;</pre>
+              <p class="mono-small">Defined in <code>asx-design-kit.css</code> and Atomic HTML guides v3/v4.</p>
+            </div>
+            <div class="card">
+              <div class="card-title">Atomic Ghost Guide</div>
+              <div class="divider"></div>
+              <p>
+                The MEGA CODEX itself is an **Atomic Ghost Guide**: one HTML shell, many tapes, controlled
+                entirely by CSS + a few K’uhul-style routing hooks.
+              </p>
+              <pre>// Minimal Atomic keyboard for layout
+:root {
+  --gap-xs: .25rem; --gap-sm: .5rem;
+  --gap-md: .75rem; --gap-lg: 1rem;
+}
+.row { display:flex; align-items:flex-start; }
+.col { display:flex; flex-direction:column; }
+.gap-md { gap: var(--gap-md); }
+.grid { display:grid; }
+.grid-3 { grid-template-columns: repeat(3,minmax(0,1fr)); }</pre>
+              <p class="note">
+                Atomic HTML is the **visual dialect** of ASX — everything else (SCX, XJSON, K’uhul) is logic.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAPE: SCXQ2 ENGINE -->
+        <section
+          class="tape-view"
+          id="tape-scxq2"
+          data-tape-id="scxq2-engine"
+          data-title="SCXQ2 CIPHER ENGINE"
+          data-subtitle="Symbolic Cipher eXchange for compressing tapes, n-grams, and OS glyphs."
+          data-tags="scx,scxq2,cipher,compression,ngrams"
+        >
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">SCXQ2-Lite Compactor</div>
+              <div class="divider"></div>
+              <p>
+                SCXQ2 compresses text and training data into tiny glyph packets. For browser use, we can
+                run a base64 + dictionary variant via JS.
+              </p>
+              <pre>// SCXQ2-lite: browser-safe compactor
+const SCXQ2 = {
+  encode(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+  },
+  decode(payload) {
+    try { return decodeURIComponent(escape(atob(payload))); }
+    catch { return ""; }
+  }
+};
+
+// Example: compress a mini XJSON program
+const packed = SCXQ2.encode(JSON.stringify({
+  node: "$url",
+  status: "online"
+}));</pre>
+              <p>
+                In the full engine, SCX adds **dictionary encoding + RLE + Huffman** for 75%+ savings on
+                n-gram corpora and OS traces.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">N-Gram + SCX Integration</div>
+              <div class="divider"></div>
+              <p>
+                MX2LM and Qwen train on **SCX-compressed n-grams**:
+                unigrams → pentagrams, plus meta-intent maps for routing.
+              </p>
+              <pre>// Conceptual trainer step
+async function pushNgramBurst(text, score) {
+  const grams = extractNgrams(text);
+  const burst = { grams, score, ts: Date.now() };
+  const payload = SCXQ2.encode(JSON.stringify(burst));
+  await fetch("/api/ngrams/burst", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-scxq2" },
+    body: payload
+  });
+}</pre>
+              <p class="note">
+                In this Codex, each section is a **decompressed tape**; the ghost index can be re-packed into SCXQ2 anytime.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAPE: K’UHUL RUNTIME -->
+        <section
+          class="tape-view"
+          id="tape-kuhul"
+          data-tape-id="kuhul-runtime"
+          data-title="K’UHUL RUNTIME"
+          data-subtitle="Unified front-end brain for seeds, trainers, n-grams, stream visualizations."
+          data-tags="kuhul,runtime,trainer,qlora,seed"
+        >
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">Seed & RLHF Flow</div>
+              <div class="divider"></div>
+              <p>
+                K’uhul treats every user correction as a **seed tape**: text + score → hash → broadcast
+                to SW + seed stream + local n-gram builder.
+              </p>
+              <pre>async function pushTrain(text, score) {
+  const payload = { text, score, ts: Date.now() };
+  await fetch("/api/train", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  const data = JSON.stringify(payload);
+  const buf  = await crypto.subtle.digest("SHA-256",
+              new TextEncoder().encode(data));
+  const hash = [...new Uint8Array(buf)]
+      .map(b => b.toString(16).padStart(2,"0")).join("");
+
+  if (navigator.serviceWorker?.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: "seed",
+      payload: { hash, ts: Date.now() }
+    });
+  }
+}</pre>
+            </div>
+            <div class="card">
+              <div class="card-title">ASX-RAM Bridge</div>
+              <div class="divider"></div>
+              <p>
+                K’uhul uses **ASX-RAM** (SW message bus) instead of localStorage for shared brain state.
+              </p>
+              <pre>const ASXRAM = {
+  store(key, value) {
+    if (!navigator.serviceWorker?.controller) return;
+    navigator.serviceWorker.controller.postMessage({
+      type: "ram-store",
+      key,
+      value
+    });
+  },
+  get(key) {
+    return new Promise(resolve =&gt; {
+      if (!navigator.serviceWorker?.controller) return resolve(null);
+      const handler = (e) =&gt; {
+        if (e.data?.type === "ram-data" &amp;&amp; e.data.key === key) {
+          navigator.serviceWorker.removeEventListener("message", handler);
+          resolve(e.data.value);
+        }
+      };
+      navigator.serviceWorker.addEventListener("message", handler);
+      navigator.serviceWorker.controller.postMessage({
+        type: "ram-get",
+        key
+      });
+    });
+  }
+};</pre>
+              <p class="note">
+                The MEGA CODEX can itself be treated as a **training seed**: copy sections into your QLoRA dataset.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAPE: KLH HIVE-NET -->
+        <section
+          class="tape-view"
+          id="tape-klh"
+          data-tape-id="klh-hivenet"
+          data-title="KLH HIVE-NET"
+          data-subtitle="Multi-node XJSON grid, HIVE console, and SCX-aware routing."
+          data-tags="klh,hive,hive-net,mesh,grid"
+        >
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">HIVE-NET Console</div>
+              <div class="divider"></div>
+              <p>
+                HIVE-NET is a tiny console that pings each node’s <code>/xjson/run</code> endpoint, shows
+                online servers, and broadcasts a program to all live peers.
+              </p>
+              <pre>// hive-net.js (simplified)
+import { xjsonRun } from "./xjson-runtime.js";
+
+async function loadServers() {
+  const res = await fetch("./servers.json");
+  const servers = await res.json();
+  await pingServers(servers);
+}
+
+async function pingServers(servers) {
+  // send { node:"$url", status:"online" } program
+  // color rows based on results, cache online list, etc.
+}
+
+document.getElementById("broadcastBtn")
+  .addEventListener("click", () =&gt; {
+    // run program against all online servers
+  });
+
+loadServers();</pre>
+              <p class="mono-small">
+                <code>servers.json</code> holds base URLs (e.g. <code>http://localhost:3000</code>, <code>3001</code>, …)
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">KLH as Mesh Orchestrator</div>
+              <div class="divider"></div>
+              <p>
+                KLH rides on HIVE-NET as the **router brain**: each node exposes XJSON; KLH decides who
+                runs what job.
+              </p>
+              <pre>// Pseudo-spec: KLH route declaration
+{
+  "node_id": "prime-04-dashboard",
+  "capabilities": ["ui","logs","orchestrator"],
+  "routes": {
+    "health": {
+      "kind": "xjson",
+      "target": "/xjson/run",
+      "program": { "ping": "$now" }
+    },
+    "task:train": {
+      "kind": "queue",
+      "target": "gpu-cluster-01"
+    }
+  }
+}</pre>
+              <p class="note">
+                In the Codex, KLH is the **mental model**: when you see many tapes in one file, think “multi-hive in a single shell”.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAPE: MX2 CROWN RUNTIME -->
+        <section
+          class="tape-view"
+          id="tape-mx2-crown"
+          data-tape-id="mx2-crown"
+          data-title="MX2 CROWN RUNTIME"
+          data-subtitle="Crown personalities, tape-based API routing, ASX token gates and marketplace."
+          data-tags="crown,mx2,token,market,api"
+        >
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">Crown Definition</div>
+              <div class="divider"></div>
+              <p>
+                A **Crown** is a modular personality module with its own tape, lexicon, theme, and
+                API routes.
+              </p>
+              <pre>{
+  "id": "mx2_gpt4",
+  "name": "GPT-4 Crown",
+  "version": "1.0.0",
+  "theme": {
+    "color": "#00ffcc",
+    "icon": "👑"
+  },
+  "api_tape": "openai_gpt4_turbo.json",
+  "lexicon": "lexicon_gpt4.json",
+  "token_cost": 100,
+  "tier": "premium",
+  "capabilities": ["coding","analysis","creative"]
+}</pre>
+              <p class="mono-small">
+                Detailed spec lives in <code>MX2_CROWN_COMPLETE_SYSTEM.md</code> / PDF.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">Tape-based Model Routing</div>
+              <div class="divider"></div>
+              <p>
+                Model APIs are wrapped as **tapes**. The runtime just loads a tape and executes its
+                body template with context.
+              </p>
+              <pre>// Example: OpenAI GPT-4 Turbo tape
+{
+  "name": "OpenAI GPT-4 Turbo",
+  "endpoint": "https://api.openai.com/v1/chat/completions",
+  "method": "POST",
+  "headers": {
+    "Authorization": "Bearer {API_KEY}",
+    "Content-Type": "application/json"
+  },
+  "body_template": {
+    "model": "gpt-4-turbo-preview",
+    "messages": "{MESSAGES}",
+    "max_tokens": 4096,
+    "temperature": 0.7
+  },
+  "response_path": "choices[0].message.content",
+  "token_cost": 100
+}</pre>
+              <p class="note">
+                MX2 CROWN + ASX token economy turn your cluster into a **paid tape marketplace**.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAPE: BASHER + ASX-BRIDGE -->
+        <section
+          class="tape-view"
+          id="tape-basher"
+          data-tape-id="basher-bridge"
+          data-title="BASHER & ASX BRIDGE"
+          data-subtitle="Local Node static bridge + CLI orchestrator for bridge, tunnels, and training."
+          data-tags="basher,bridge,sw,tunnel,cli"
+        >
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">ASX Bridge (Static Node)</div>
+              <div class="divider"></div>
+              <p>
+                <code>asx-bridge.js</code> is a zero-dependency Node HTTP server serving your
+                MEGA CODEX and assets from a single root.
+              </p>
+              <pre>// runtime/asx-bridge.js (core idea)
+const http = require("http");
+const fs   = require("fs");
+const path = require("path");
+
+const ROOT = path.join(__dirname, "..");
+const PORT = process.env.PORT || 3000;
+
+http.createServer((req, res) =&gt; {
+  let pathname = decodeURIComponent(req.url || "/");
+  if (pathname === "/") pathname = "/index.html";
+  const filePath = path.join(ROOT, pathname);
+  fs.readFile(filePath, (err, data) =&gt; {
+    if (err) {
+      res.writeHead(404, { "Content-Type": "text/plain" });
+      return res.end("Not found");
+    }
+    res.writeHead(200);
+    res.end(data);
+  });
+}).listen(PORT);</pre>
+            </div>
+            <div class="card">
+              <div class="card-title">Basher CLI (Tri-Tunnel)</div>
+              <div class="divider"></div>
+              <p>
+                Basher controls the bridge, tunnels, and python trainer — logging PIDs and output.
+              </p>
+              <pre>// basher-cli.js (concept)
+async function bridgeStart(port = "3000") {
+  // spawn `node runtime/asx-bridge.js`
+  // write PID to runtime/.pids/bridge.pid
+}
+
+async function tunnelOpen({ provider = "localtunnel", port = "3000" }) {
+  // spawn `npx localtunnel` or `cloudflared tunnel`
+}
+
+async function train({ data, model, out }) {
+  // spawn python asx_train.py --data ... --model ... --out ...
+}</pre>
+              <p class="note">
+                In Godmode bundles, Basher becomes the **command cockpit** for your whole ASX rig.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAPE: TAPES & HOLOTAPES -->
+        <section
+          class="tape-view"
+          id="tape-holotapes"
+          data-tape-id="asx-tapes"
+          data-title="ASX TAPES & HOLOTAPES"
+          data-subtitle="Self-contained cartridges with brains, agents, routes, logs, and UI."
+          data-tags="tapes,holotape,forge,agents"
+        >
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">Tape Layout</div>
+              <div class="divider"></div>
+              <p>
+                Each tape is a folder with its own brains, agents, db, logs, and public UI.
+              </p>
+              <pre>/tapes/
+  └── wasteland_warrior/
+      ├── brains/
+      │    ├── nlp.json
+      │    └── meta-intent-map.json
+      ├── agents/
+      │    └── agents.json
+      ├── db/
+      │    └── asx-db.json
+      ├── logs/
+      │    └── chat-2025-11-09.json
+      ├── public/
+      │    └── index.html
+      ├── tape.json
+      └── route.php</pre>
+            </div>
+            <div class="card">
+              <div class="card-title">Tape Self-Registration (Codex Style)</div>
+              <div class="divider"></div>
+              <p>
+                Each section in this MEGA CODEX is treated as a tape and broadcasts heartbeats to
+                the service worker + KLH router.
+              </p>
+              <pre>&lt;script&gt;
+(function () {
+  const TAPE_ID = "asx-tapes"; // this section
+
+  function sendHeartbeat() {
+    fetch("/api/local/" + encodeURIComponent(TAPE_ID)).catch(() =&gt; {});
+    if (navigator.serviceWorker?.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: "TAPE_HEARTBEAT",
+        tape: TAPE_ID,
+        url: location.pathname,
+        time: Date.now(),
+        meta: { title: document.title || TAPE_ID }
+      });
+    }
+  }
+
+  window.addEventListener("load", () =&gt; {
+    sendHeartbeat();
+    setInterval(sendHeartbeat, 5000);
+  });
+})();
+&lt;/script&gt;</pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAPE: PRIME OS & COCKPITS -->
+        <section
+          class="tape-view"
+          id="tape-prime-os"
+          data-tape-id="prime-os"
+          data-title="PRIME OS & COCKPITS"
+          data-subtitle="Single-page OS shells: matrix rain, multi-shard dashboards, and judge views."
+          data-tags="prime-os,cockpit,judge,ui"
+        >
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">Single-page PRIME OS</div>
+              <div class="divider"></div>
+              <p>
+                PRIME OS is a single HTML shell containing login, studio view, emulator hub, social
+                grid, SCX terminal, and ASX brain in one file.
+              </p>
+              <pre>&lt;body&gt;
+  &lt;div id="boot"&gt;&lt;/div&gt;
+  &lt;div id="os" hidden&gt;&lt;/div&gt;
+
+  &lt;script&gt;
+    // Boot, then morph into OS view
+    async function bootPrime() {
+      // verify wallet, load shards, attach SW, hydrate studios…
+      document.getElementById("boot").hidden = true;
+      document.getElementById("os").hidden = false;
+    }
+  &lt;/script&gt;
+&lt;/body&gt;</pre>
+            </div>
+            <div class="card">
+              <div class="card-title">Judge & Multi-Agent Views</div>
+              <div class="divider"></div>
+              <p>
+                Judge views host MX2LM, Qwen, Cline, Janus, etc. in a 5-panel layout with
+                “who works first” delegation.
+              </p>
+              <pre>// Concept: multi-agent round
+{
+  "prompt": "Design ASX TPU-OS",
+  "agents": ["mx2lm","qwen","cline"],
+  "coordinator": "judge",
+  "flow": [
+    "coordinator.select_primary",
+    "primary.respond",
+    "secondaries.comment",
+    "judge.summarize"
+  ]
+}</pre>
+              <p class="note">
+                The MEGA CODEX can be embedded as a **PRIME-OS app** to give in-OS docs for your rig.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAPE: WEBGL / GEOMETRY -->
+        <section
+          class="tape-view"
+          id="tape-geometry"
+          data-tape-id="prime-geometry"
+          data-title="GEOMETRY & WEBGL STACK"
+          data-subtitle="Three.js worlds for terrain, voxels, LOD, BVH, and spotlight demos."
+          data-tags="webgl,three,geometry,terrain,voxels"
+        >
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">Terrain & Voxels</div>
+              <div class="divider"></div>
+              <p>
+                The 3D stack uses Three.js demos as reference builds for ASX worlds:
+                Minecraft-style voxels, terrain raycasting, batch LOD, and more.
+              </p>
+              <pre>// terrain: heightfield
+const geometry = new THREE.PlaneGeometry(
+  7500, 7500,
+  worldWidth - 1,
+  worldDepth - 1
+);
+geometry.rotateX(-Math.PI / 2);
+// mutate vertices.y from noise data…
+
+// minecraft-style voxels: merged planes
+const pxGeometry = new THREE.PlaneGeometry(100, 100);
+// adjust UVs, rotate, translate, push into BufferGeometryUtils.merge</pre>
+            </div>
+            <div class="card">
+              <div class="card-title">Spotlights & BVH</div>
+              <div class="divider"></div>
+              <p>
+                Additional demos show **spotlight shadows**, **PLY models**, and **BVH / LOD**
+                techniques to keep ASX worlds light but expressive.
+              </p>
+              <pre>// SpotLight basics
+const spotLight = new THREE.SpotLight(0xffffff, 100);
+spotLight.position.set(2.5, 5, 2.5);
+spotLight.angle = Math.PI / 6;
+spotLight.castShadow = true;
+// add helpers, shadow camera, GUI controls…</pre>
+              <p class="note">
+                You can treat these as **render tapes**: each world is a tape mounted into a PRIME cockpit.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- ASXR GHOST INDEX + K’UHUL/SCX WIRING -->
+  <script>
+    // ASXR_GHOST_INDEX — each entry is a tape description to drive the sidebar.
+    const ASXR_GHOST_INDEX = [
+      {
+        id: "xjson-prime",
+        label: "XJSON PRIME",
+        subtitle: "Language • XCFE • /xjson/run mesh",
+        tags: ["xjson","language","xcfe","server"]
+      },
+      {
+        id: "atomic-html",
+        label: "ATOMIC HTML",
+        subtitle: "Blocks • Layout • Ghost UI",
+        tags: ["atomic","html","css","ui"]
+      },
+      {
+        id: "scxq2-engine",
+        label: "SCXQ2 ENGINE",
+        subtitle: "Cipher • Compression • N-grams",
+        tags: ["scx","cipher","compression"]
+      },
+      {
+        id: "kuhul-runtime",
+        label: "K’UHUL RUNTIME",
+        subtitle: "Seeds • RLHF • ASX-RAM",
+        tags: ["kuhul","trainer","rlhf"]
+      },
+      {
+        id: "klh-hivenet",
+        label: "KLH HIVE-NET",
+        subtitle: "Mesh • Grid • Multi-node",
+        tags: ["klh","hive","mesh"]
+      },
+      {
+        id: "mx2-crown",
+        label: "MX2 CROWN",
+        subtitle: "Crowns • APIs • Tokens",
+        tags: ["crown","market","token"]
+      },
+      {
+        id: "basher-bridge",
+        label: "BASHER + BRIDGE",
+        subtitle: "CLI • Tunnel • Logs",
+        tags: ["basher","bridge","tunnel"]
+      },
+      {
+        id: "asx-tapes",
+        label: "TAPES / HOLOTAPES",
+        subtitle: "Cartridges • Brains • Agents",
+        tags: ["tapes","holotape"]
+      },
+      {
+        id: "prime-os",
+        label: "PRIME OS",
+        subtitle: "Single-page OS • Judge Views",
+        tags: ["prime","os","cockpit"]
+      },
+      {
+        id: "prime-geometry",
+        label: "GEOMETRY STACK",
+        subtitle: "WebGL • Terrain • Voxels",
+        tags: ["webgl","three","geometry"]
+      }
+    ];
+
+    // Minimal SCXQ2-lite — identity compactor for ghost index
+    const SCXQ2_LITE = {
+      pack:  obj  => btoa(unescape(encodeURIComponent(JSON.stringify(obj)))),
+      unpack: str => JSON.parse(decodeURIComponent(escape(atob(str))))
+    };
+
+    // Optionally you could SCX-pack the index and unpack on load:
+    const _packedIndex = SCXQ2_LITE.pack(ASXR_GHOST_INDEX);
+    const ASXR_INDEX = SCXQ2_LITE.unpack(_packedIndex);
+
+    // TAPE NAV + VIEW SWITCHING
+    const navListEl      = document.getElementById("nav-list");
+    const navFilterInput = document.getElementById("nav-filter");
+    const mainTitleEl    = document.getElementById("main-title");
+    const mainSubtitleEl = document.getElementById("main-subtitle");
+    const activeTapePill = document.getElementById("active-tape-pill");
+
+    const views = Array.from(document.querySelectorAll(".tape-view"));
+
+    function buildNav(items) {
+      navListEl.innerHTML = "";
+      for (const tape of items) {
+        const li = document.createElement("li");
+        li.className = "nav-item";
+        li.dataset.tapeId = tape.id;
+
+        const titleRow = document.createElement("div");
+        titleRow.className = "nav-item-title";
+        titleRow.innerHTML = `<span>${tape.label}</span><span class="nav-chip">${tape.tags[0] || "core"}</span>`;
+
+        const subRow = document.createElement("div");
+        subRow.className = "nav-item-sub";
+        subRow.textContent = tape.subtitle;
+
+        li.appendChild(titleRow);
+        li.appendChild(subRow);
+        li.addEventListener("click", () => activateTape(tape.id));
+        navListEl.appendChild(li);
+      }
+    }
+
+    function setNavActive(tapeId) {
+      for (const li of navListEl.querySelectorAll(".nav-item")) {
+        li.classList.toggle("active", li.dataset.tapeId === tapeId);
+      }
+    }
+
+    function sendTapeHeartbeat(tapeId, title) {
+      // 1) REST ping (optional, no-op if missing)
+      fetch("/api/local/" + encodeURIComponent(tapeId)).catch(() => {});
+
+      // 2) SW channel
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type: "TAPE_HEARTBEAT",
+          tape: tapeId,
+          url: location.pathname,
+          time: Date.now(),
+          meta: {
+            title: title || tapeId,
+            codex: true,
+            ghost: true
+          }
+        });
+      }
+
+      // 3) BroadcastChannel for multi-tab sync (best-effort)
+      try {
+        const bc = new BroadcastChannel("ASX_TAPE_SYNC");
+        bc.postMessage({
+          type: "TAPE_PING",
+          tape: tapeId,
+          ts: Date.now()
+        });
+      } catch {}
+    }
+
+    function activateTape(tapeId) {
+      const view = views.find(v => v.dataset.tapeId === tapeId);
+      if (!view) return;
+
+      views.forEach(v => v.classList.toggle("active", v === view));
+
+      const title = view.dataset.title || tapeId;
+      const subtitle = view.dataset.subtitle || "";
+      mainTitleEl.textContent = title;
+      mainSubtitleEl.textContent = subtitle;
+      activeTapePill.textContent = "TAPE: " + tapeId.toUpperCase();
+
+      const hash = "#tape-" + tapeId;
+      if (location.hash !== hash) history.replaceState(null, "", hash);
+
+      sendTapeHeartbeat(tapeId, title);
+    }
+
+    function restoreFromHash() {
+      const h = location.hash.replace("#tape-", "");
+      if (h) {
+        activateTape(h);
+        setNavActive(h);
+      } else {
+        activateTape("xjson-prime");
+        setNavActive("xjson-prime");
+      }
+    }
+
+    navFilterInput.addEventListener("input", () => {
+      const q = navFilterInput.value.toLowerCase().trim();
+      const filtered = ASXR_INDEX.filter(t => {
+        if (!q) return true;
+        const haystack = [
+          t.id,
+          t.label,
+          t.subtitle,
+          ...(t.tags || [])
+        ].join(" ").toLowerCase();
+        return haystack.includes(q);
+      });
+      buildNav(filtered);
+      // maintain active highlight
+      const activeId = document.querySelector(".tape-view.active")?.dataset.tapeId;
+      setNavActive(activeId);
+    });
+
+    buildNav(ASXR_INDEX);
+    restoreFromHash();
+    window.addEventListener("hashchange", restoreFromHash);
+
+    // SERVICE WORKER REGISTRATION (optional, harmless if absent)
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    }
+  </script>
+</body>
+</html>
