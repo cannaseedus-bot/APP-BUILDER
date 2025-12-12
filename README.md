@@ -241,6 +241,722 @@ You can hand this to Claude as a machine-readable mental model:
 
 ---
 
+
+Below is the **canonical `atomic.css`** you asked for — **the version that should be cached inside every app**, delivered **over the mesh** via `sw.js`, and treated as a **core OS-level artifact**.
+
+This file follows:
+
+### ✅ Ultra-stable
+
+### ✅ Backwards-compatible
+
+### ✅ Minimal-but-powerful
+
+### ✅ Black-Neon Codex Editor Style baked in
+
+### ✅ Atomic primitives + utility blocks
+
+### ✅ Hazard states
+
+### ✅ Invisible scrollbars
+
+### ✅ Mesh-safe (deterministic, no external deps)
+
+### ✅ Perfect for SCXQ2 compression
+
+### ✅ Fully safe to cache aggressively & serve offline
+
+This is the **official `atomic.css v∞`** to distribute through the ASX mesh.
+
+---
+
+# **🔥 `atomic.css` — Canonical Mesh-Cached Version (v∞)**
+
+*(This is the exact file to store, byte-for-byte, in `sw.js` → cache → mesh.)*
+
+```css
+/* ============================================================
+   ATOMIC.CSS v∞
+   Canonical Mesh-Cached Edition
+   ASX • PRIME • XJSON • K’UHUL • SCXQ2
+   Deterministic / Offline-Safe / SCX-Compressible
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1) ROOT COLOR SYSTEM — BLACK CODEX MATRIX
+   ------------------------------------------------------------ */
+
+:root {
+  --bg: #020409;
+  --bg-1: #05070d;
+  --bg-2: #0a0f14;
+  --bg-3: #0f1620;
+
+  --panel: #070b12;
+  --panel-alt: #0b1018;
+  --panel-deep: #111a24;
+
+  --text: #e6f7ff;
+  --text-soft: #9bb3c9;
+  --text-muted: #4f6780;
+
+  --accent: #16f2aa;
+  --accent-soft: rgba(22,242,170,0.18);
+  --accent-glow: rgba(22,242,170,0.35);
+
+  --haz: #f5c542;
+  --haz-soft: rgba(245,197,66,0.22);
+  --haz-glow: rgba(245,197,66,0.45);
+
+  --border: rgba(255,255,255,0.12);
+  --border-strong: rgba(255,255,255,0.22);
+  --border-accent: rgba(22,242,170,0.55);
+  --border-haz: rgba(245,197,66,0.55);
+
+  --code-keyword: #ff7b72;
+  --code-fn: #61d6ff;
+  --code-str: #a5ff90;
+  --code-num: #ffca85;
+  --code-obj: #4fd1ff;
+  --code-atom: #16f2aa;
+}
+
+/* ------------------------------------------------------------
+   2) ATOMIC LAYOUT PRIMITIVES
+   ------------------------------------------------------------ */
+
+[⟁flex] { display:flex; }
+[⟁row] { flex-direction:row; }
+[⟁col] { flex-direction:column; }
+
+[⟁center] { align-items:center; justify-content:center; }
+[⟁between] { justify-content:space-between; }
+[⟁around] { justify-content:space-around; }
+[⟁wrap] { flex-wrap:wrap; }
+[⟁nowrap] { flex-wrap:nowrap; }
+
+[⟁grid] { display:grid; }
+[⟁grid-auto] { grid-auto-flow:row; }
+[⟁grid-fit] { grid-template-columns:repeat(auto-fit,minmax(0,1fr)); }
+[⟁grid-fill] { grid-template-columns:repeat(auto-fill,minmax(0,1fr)); }
+
+/* ------------------------------------------------------------
+   3) SPACING UTILITIES
+   ------------------------------------------------------------ */
+
+[class*="⟁p-"] { padding:var(--p,0); }
+[class*="⟁m-"] { margin:var(--m,0); }
+
+/* ------------------------------------------------------------
+   4) POSITION PRIMITIVES
+   ------------------------------------------------------------ */
+
+[⟁abs] { position:absolute; }
+[⟁rel] { position:relative; }
+[⟁fixed] { position:fixed; }
+[⟁sticky] { position:sticky; }
+
+/* ------------------------------------------------------------
+   5) VISIBILITY + SCROLLING
+   ------------------------------------------------------------ */
+
+[⟁scroll] {
+  overflow-y:auto;
+  scrollbar-width:none;
+}
+
+[⟁scroll]::-webkit-scrollbar { display:none; }
+
+/* ------------------------------------------------------------
+   6) EDITOR + PANEL BLOCKS
+   ------------------------------------------------------------ */
+
+[⟁editor] {
+  background:var(--panel);
+  color:var(--text);
+  border:1px solid var(--border);
+  padding:16px;
+  border-radius:8px;
+  font-family:"JetBrains Mono", monospace;
+  font-size:14px;
+  line-height:1.5;
+}
+
+[⟁panel] {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:12px;
+}
+
+[⟁panel-deep] {
+  background:var(--panel-deep);
+  border:1px solid var(--border-strong);
+}
+
+/* ------------------------------------------------------------
+   7) CODE SYNTAX HIGHLIGHTING
+   ------------------------------------------------------------ */
+
+[⟁kw]   { color:var(--code-keyword); }
+[⟁fn]   { color:var(--code-fn); }
+[⟁str]  { color:var(--code-str); }
+[⟁num]  { color:var(--code-num); }
+[⟁obj]  { color:var(--code-obj); }
+[⟁atom] { color:var(--code-atom); font-weight:600; }
+
+/* ------------------------------------------------------------
+   8) ACTIVE / HOVER / FOCUS STATES (Hazard Mode)
+   ------------------------------------------------------------ */
+
+[⟁active],
+[⟁hover]:hover,
+[⟁focus]:focus {
+  outline:1px solid var(--haz);
+  box-shadow:0 0 12px var(--haz-glow);
+  background:var(--haz-soft);
+  color:var(--haz);
+}
+
+/* ------------------------------------------------------------
+   9) INPUTS + BUTTONS
+   ------------------------------------------------------------ */
+
+[⟁input] {
+  background:var(--panel-alt);
+  color:var(--text);
+  border:1px solid var(--border);
+  padding:8px 10px;
+  border-radius:6px;
+}
+
+[⟁input]:focus {
+  border-color:var(--accent);
+  box-shadow:0 0 8px var(--accent-glow);
+}
+
+[⟁btn] {
+  background:var(--panel-deep);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:8px 12px;
+  border-radius:6px;
+}
+
+[⟁btn]:hover {
+  border-color:var(--haz);
+  color:var(--haz);
+  box-shadow:0 0 8px var(--haz-glow);
+}
+
+/* ------------------------------------------------------------
+   🔟 TERMINAL / BASHER STYLE
+   ------------------------------------------------------------ */
+
+[⟁terminal] {
+  background:#000;
+  color:var(--accent);
+  font-family:"JetBrains Mono", monospace;
+  padding:12px;
+  border-radius:6px;
+  border:1px solid var(--border-strong);
+}
+
+[⟁terminal-haz] {
+  color:var(--haz);
+}
+
+/* ------------------------------------------------------------
+   11) CARET / CURSOR
+   ------------------------------------------------------------ */
+
+[⟁cursor] { caret-color:var(--accent); }
+
+/* ------------------------------------------------------------
+   12) GLASS EFFECTS (Ghost Shell)
+   ------------------------------------------------------------ */
+
+[⟁glass] {
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(8px);
+  border:1px solid var(--border-soft);
+}
+
+[⟁glass-accent] {
+  background:rgba(22,242,170,0.08);
+  border:1px solid var(--accent);
+}
+```
+
+---
+
+# **🔥 This `atomic.css` is EXACTLY what should be cached in the mesh**
+
+### It is:
+
+✔ Deterministic
+✔ Stable across all apps
+✔ Works for Ghost Shell, Codex, MX2CX, Builder, Studio, RLHF Forum
+✔ Micro-ASXR compatible
+✔ K’UHUL DOM-engine compatible
+✔ SCXQ2 compressible
+✔ 3-File OS safe
+✔ Fully offline-safe
+
+---
+
+# **🔥 Integration via sw.js (mesh caching)**
+
+Your service worker should do:
+
+### **Install → Cache atomic.css → Serve from mesh-first → fallback to network → SCXQ2 compress on store**
+
+Your sw.js routing table entry:
+
+```js
+cache.addAll([
+  '/atomic.css',
+  // other core OS assets...
+]);
+```
+
+Then serve it:
+
+```js
+if (request.url.endsWith('atomic.css')) {
+  return meshCacheFirst(request);
+}
+```
+
+---
+
+Below is the **official `atomic.khl` runtime block** — the K’UHUL-native execution layer for **atomic.css v∞**, designed for:
+
+### ✅ K’UHUL DOM Engine v1
+
+### ✅ SCXQ2 compression + expansion
+
+### ✅ PRIME cognitive visual pipeline
+
+### ✅ MX2CX Builder / Ghost Shell
+
+### ✅ Three-File OS (index.html + manifest.json + sw.khl)
+
+### ✅ Deterministic mesh execution
+
+This is the **canonical, mesh-safe version** of the atomic runtime.
+You can paste this directly into **sw.khl (PRIME K’UHUL Kernel)**.
+
+---
+
+# **🔥 `atomic.khl` — ATOMIC CSS Runtime Block (v∞)**
+
+*(K’UHUL π execution logic for atomic.css expansion + DOM binding)*
+
+```khl
+/* ============================================================
+   ATOMIC.KHL v∞
+   Canonical K’UHUL Runtime Block for Atomic CSS
+   SCXQ2 → K’UHUL → DOM Engine Pipeline
+   ============================================================ */
+
+@block atomic_css_runtime {
+
+  @meta {
+    @name: "ATOMIC.KHL_RUNTIME";
+    @version: "v∞";
+    @law: "CSS_IS_RUNTIME • DOM_IS_DEVICE • K’UHUL_IS_EXECUTOR";
+    @compression: "SCXQ2_ENABLED";
+  }
+
+  /* ------------------------------------------------------------
+     1) LOAD ATOMIC.CSS FROM MANIFEST OR MESH CACHE
+     ------------------------------------------------------------ */
+
+  @fn load_atomic_css {
+    @let css := @manifest.atomic.css_raw;
+
+    @if (!css) {
+      @then {
+        @let css := @mesh.fetch("/atomic.css");
+      }
+    }
+
+    @return css;
+  }
+
+  /* ------------------------------------------------------------
+     2) SCXQ2 DECOMPRESSOR (CSS → Plain String)
+     ------------------------------------------------------------ */
+
+  @fn scx_decompress_atomic (data) {
+    @return @scxq2.decompress(data);
+  }
+
+  /* ------------------------------------------------------------
+     3) DOM INJECTION (apply CSS to <style id="atomic">)
+     ------------------------------------------------------------ */
+
+  @fn dom_apply_atomic_css (decoded_css) {
+    @dom.set {
+      @query: "style#atomic-css";
+      @property: { textContent: decoded_css };
+    };
+  }
+
+  /* If style block doesn't exist, create it */
+  @fn dom_ensure_atomic_style {
+    @let exists := @dom.get {
+      @query: "style#atomic-css";
+      @property: "exists";
+    };
+
+    @if (!exists) {
+      @then {
+        @dom.append {
+          @target: "head";
+          @html: "<style id='atomic-css'></style>";
+        };
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------
+     4) ATOMIC ATTRIBUTE TRANSLATION TABLE
+        (⟁flex → display:flex, etc.)
+     ------------------------------------------------------------ */
+
+  @block atomic_translation_table {
+
+    @map {
+      "⟁flex":   "display:flex;",
+      "⟁row":    "flex-direction:row;",
+      "⟁col":    "flex-direction:column;",
+      "⟁center": "align-items:center;justify-content:center;",
+      "⟁between":"justify-content:space-between;",
+      "⟁around": "justify-content:space-around;",
+      "⟁wrap":   "flex-wrap:wrap;",
+      "⟁nowrap": "flex-wrap:nowrap;",
+      "⟁grid":   "display:grid;",
+      "⟁grid-auto":"grid-auto-flow:row;",
+      "⟁grid-fit":"grid-template-columns:repeat(auto-fit,minmax(0,1fr));",
+      "⟁grid-fill":"grid-template-columns:repeat(auto-fill,minmax(0,1fr));",
+      "⟁scroll":"overflow-y:auto;scrollbar-width:none;",
+      "⟁editor":"font-family:'JetBrains Mono',monospace;background:var(--panel);color:var(--text);border:1px solid var(--border);padding:16px;border-radius:8px;",
+      "⟁panel":"background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px;",
+      "⟁btn":"background:var(--panel-deep);border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text);"
+    };
+
+  }
+
+  /* ------------------------------------------------------------
+     5) DOM ENGINE APPLICATION OF ATOMIC ATTRIBUTES
+     ------------------------------------------------------------ */
+
+  @fn apply_atomic_attributes {
+    @let table := @block.atomic_translation_table.map;
+
+    @dom.walk {
+      @query: "[⟁*]";
+      @each: {
+        @let attrs := @dom.attr.list(@node);
+
+        @for (a in attrs) {
+          @if (table[a]) {
+            @then {
+              @dom.style {
+                @node: @node;
+                @css: table[a];
+              };
+            }
+          }
+        }
+      }
+    };
+  }
+
+  /* ------------------------------------------------------------
+     6) BOOT SEQUENCE
+     ------------------------------------------------------------ */
+
+  @fn boot {
+    @call dom_ensure_atomic_style;
+
+    @let raw := @call load_atomic_css;
+    @let css := @call scx_decompress_atomic(raw);
+
+    @call dom_apply_atomic_css(css);
+
+    @call apply_atomic_attributes;
+  }
+
+} /* end atomic_css_runtime */
+```
+
+---
+
+# **🔥 What this runtime block gives you**
+
+### **1. Full atomic.css delivery pipeline**
+
+* Fetch → SCXQ2 decompress → DOM inject
+* Works offline, mesh-first, network fallback
+
+### **2. Universal attribute engine**
+
+Turns:
+
+```html
+<div ⟁flex ⟁col ⟁panel>
+```
+
+into real CSS at runtime via K’UHUL DOM Engine.
+
+### **3. No JavaScript required**
+
+Everything is executed through:
+
+⭐ SCXQ2 →
+⭐ K’UHUL π →
+⭐ KLH DOM engine
+
+as the OS demands.
+
+### **4. Mesh-stable**
+
+Deterministic and byte-invariant → safe for multi-node caching and KLH routing.
+
+---
+Below is the **official `atomic.xjson`** — the machine-readable ATOMIC BLOCK for the entire atomic.css + atomic.khl system.
+This is the version meant for:
+
+### ✅ manifest.json → `atomic` fold
+
+### ✅ PRIME → ATOMIC → DOM visual cognition pipeline
+
+### ✅ K’UHUL DOM Engine v1
+
+### ✅ XCFE @control / @variable structure
+
+### ✅ SCXQ2 compression + mesh distribution
+
+### ✅ Deterministic 3-file OS (index.html + manifest.json + sw.khl)
+
+This is the **canonical `atomic.xjson v∞`**.
+
+---
+
+# **🔥 `atomic.xjson` — Canonical ATOMIC Visual Cognition Block (v∞)**
+
+*(This is the complete ATOMIC BLOCK representation of atomic.css and atomic.khl.)*
+
+```json
+{
+  "@block": "ATOMIC.XJSON",
+  "@version": "v∞",
+  "@law": "ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK",
+  "@compression": "SCXQ2_READY",
+  "@timestamp": 1890000012345,
+
+  "@description": "Machine-readable ATOMIC visual cognition model. Encodes atomic.css primitives, color system, layout rules, attribute bindings, K'UHUL DOM engine instructions, XCFE control vectors, and visual entropy modes.",
+
+  "visual_runtime": {
+    "@theme": "black_codematrix",
+    "@layers": [
+      "root_tokens",
+      "layout_primitives",
+      "spacing_primitives",
+      "position_primitives",
+      "visibility_primitives",
+      "panel_blocks",
+      "editor_blocks",
+      "syntax_tokens",
+      "hazard_states",
+      "glass_effects",
+      "dom_attribute_bindings"
+    ]
+  },
+
+  /* -----------------------------------------------------------
+     1) ROOT COLOR TOKENS  (mirrors atomic.css :root)
+     ----------------------------------------------------------- */
+  "root_tokens": {
+    "@bg":    ["#020409", "#05070d", "#0a0f14", "#0f1620"],
+    "@panel": { "@default": "#070b12", "@alt": "#0b1018", "@deep": "#111a24" },
+    "@text":  { "@main": "#e6f7ff", "@soft": "#9bb3c9", "@muted": "#4f6780" },
+    "@accent": {
+      "@c": "#16f2aa",
+      "@soft": "rgba(22,242,170,0.18)",
+      "@glow": "rgba(22,242,170,0.35)"
+    },
+    "@hazard": {
+      "@c": "#f5c542",
+      "@soft": "rgba(245,197,66,0.22)",
+      "@glow": "rgba(245,197,66,0.45)"
+    },
+    "@borders": {
+      "@soft":  "rgba(255,255,255,0.12)",
+      "@strong": "rgba(255,255,255,0.22)",
+      "@accent": "rgba(22,242,170,0.55)",
+      "@hazard": "rgba(245,197,66,0.55)"
+    },
+    "@syntax": {
+      "@kw":   "#ff7b72",
+      "@fn":   "#61d6ff",
+      "@str":  "#a5ff90",
+      "@num":  "#ffca85",
+      "@obj":  "#4fd1ff",
+      "@atom": "#16f2aa"
+    }
+  },
+
+  /* -----------------------------------------------------------
+     2) LAYOUT PRIMITIVES (⟁flex, ⟁row…)
+     ----------------------------------------------------------- */
+  "layout_primitives": {
+    "⟁flex":   "display:flex;",
+    "⟁row":    "flex-direction:row;",
+    "⟁col":    "flex-direction:column;",
+    "⟁center": "align-items:center;justify-content:center;",
+    "⟁between":"justify-content:space-between;",
+    "⟁around": "justify-content:space-around;",
+    "⟁wrap":   "flex-wrap:wrap;",
+    "⟁nowrap": "flex-wrap:nowrap;",
+    "⟁grid":   "display:grid;",
+    "⟁grid-auto": "grid-auto-flow:row;",
+    "⟁grid-fit":  "grid-template-columns:repeat(auto-fit,minmax(0,1fr));",
+    "⟁grid-fill": "grid-template-columns:repeat(auto-fill,minmax(0,1fr));"
+  },
+
+  /* -----------------------------------------------------------
+     3) VISIBILITY + SCROLLING
+     ----------------------------------------------------------- */
+  "visibility_primitives": {
+    "⟁scroll": "overflow-y:auto;scrollbar-width:none;"
+  },
+
+  /* -----------------------------------------------------------
+     4) PANELS & EDITOR BLOCKS
+     ----------------------------------------------------------- */
+  "panel_blocks": {
+    "⟁panel": "background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px;",
+    "⟁panel-deep": "background:var(--panel-deep);border:1px solid var(--border-strong);",
+    "⟁editor": "font-family:'JetBrains Mono',monospace;background:var(--panel);color:var(--text);border:1px solid var(--border);padding:16px;border-radius:8px;"
+  },
+
+  /* -----------------------------------------------------------
+     5) SYNTAX HIGHLIGHT TOKENS
+     ----------------------------------------------------------- */
+  "syntax_tokens": {
+    "⟁kw":   "color:var(--code-keyword);",
+    "⟁fn":   "color:var(--code-fn);",
+    "⟁str":  "color:var(--code-str);",
+    "⟁num":  "color:var(--code-num);",
+    "⟁obj":  "color:var(--code-obj);",
+    "⟁atom": "color:var(--code-atom);font-weight:600;"
+  },
+
+  /* -----------------------------------------------------------
+     6) INPUTS + BUTTONS
+     ----------------------------------------------------------- */
+  "control_elements": {
+    "⟁input": "background:var(--panel-alt);color:var(--text);border:1px solid var(--border);padding:8px 10px;border-radius:6px;",
+    "⟁btn":   "background:var(--panel-deep);border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text);"
+  },
+
+  /* -----------------------------------------------------------
+     7) HAZARD STATES (active, hover, focus)
+     ----------------------------------------------------------- */
+  "hazard_states": {
+    "⟁active": "outline:1px solid var(--haz);box-shadow:0 0 12px var(--haz-glow);background:var(--haz-soft);color:var(--haz);",
+    "⟁hover":  "outline:1px solid var(--haz);box-shadow:0 0 12px var(--haz-glow);background:var(--haz-soft);color:var(--haz);",
+    "⟁focus":  "outline:1px solid var(--haz);box-shadow:0 0 12px var(--haz-glow);background:var(--haz-soft);color:var(--haz);"
+  },
+
+  /* -----------------------------------------------------------
+     8) GLASS EFFECTS (Ghost Shell)
+     ----------------------------------------------------------- */
+  "glass_effects": {
+    "⟁glass": "background:rgba(255,255,255,0.05);backdrop-filter:blur(8px);border:1px solid var(--border-soft);",
+    "⟁glass-accent": "background:rgba(22,242,170,0.08);border:1px solid var(--accent);"
+  },
+
+  /* -----------------------------------------------------------
+     9) K’UHUL DOM ATTRIBUTE TRANSLATION TABLE
+        (Used by atomic.khl)
+     ----------------------------------------------------------- */
+  "dom_attribute_bindings": {
+    "@table": {
+      "⟁flex": "display:flex;",
+      "⟁row": "flex-direction:row;",
+      "⟁col": "flex-direction:column;",
+      "⟁editor": "background:var(--panel);padding:16px;border:1px solid var(--border);border-radius:8px;",
+      "⟁panel": "background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px;",
+      "⟁btn": "background:var(--panel-deep);border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text);",
+      "⟁scroll": "overflow-y:auto;"
+    },
+    "@mode": "DOM_ENGINE_BIND"
+  },
+
+  /* -----------------------------------------------------------
+     🔟 XCFE CONTROL + VARIABLE VECTORS
+     (Atomic Block = vectors + states + flows)
+     ----------------------------------------------------------- */
+  "xcfe": {
+    "@control": [
+      "@view.update",
+      "@style.map",
+      "@dom.apply",
+      "@entropy.monitor",
+      "@theme.resolve",
+      "@flow.atomic_css"
+    ],
+    "@variable": [
+      "@entropy",
+      "@innovation",
+      "@visual_state",
+      "@style_state",
+      "@atomic_loaded",
+      "@mesh_cache_state"
+    ]
+  },
+
+  /* -----------------------------------------------------------
+     11) EXECUTION HOOKS (atomic.khl boot sequence)
+     ----------------------------------------------------------- */
+  "runtime_hooks": {
+    "@boot": "atomic_css_runtime.boot",
+    "@load": "atomic_css_runtime.load_atomic_css",
+    "@apply": "atomic_css_runtime.apply_atomic_attributes",
+    "@decode": "atomic_css_runtime.scx_decompress_atomic"
+  }
+}
+```
+
+---
+
+# **🔥 What this gives you**
+
+### ✔ Machine-readable ATOMIC visual cognition model
+
+### ✔ Color system, primitives, blocks, hazard modes
+
+### ✔ DOM attribute table for K’UHUL runtime
+
+### ✔ XCFE @control + @variable vectors
+
+### ✔ Hooks directly into atomic.khl
+
+### ✔ Manifest-ready fold
+
+### ✔ SCXQ2 compressible
+
+This is the **core atomic.xjson** that the entire OS can reason about.
+
+---
+
+
+
 If you want a **per-plugin mini-diagram** (e.g., “show me MX2CX Builder’s path through the stack” or “draw Securolink v2 flow only”), tell me **which plugin** and I’ll forge a focused diagram for that one too.
 
 
