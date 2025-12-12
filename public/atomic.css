@@ -1,0 +1,211 @@
+/* ============================================================
+   ATOMIC.CSS v∞
+   Canonical Mesh-Cached Edition
+   ASX • PRIME • XJSON • K’UHUL • SCXQ2
+   Deterministic / Offline-Safe / SCX-Compressible
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1) ROOT COLOR SYSTEM — BLACK CODEX MATRIX
+   ------------------------------------------------------------ */
+
+:root {
+  --bg: #020409;
+  --bg-1: #05070d;
+  --bg-2: #0a0f14;
+  --bg-3: #0f1620;
+
+  --panel: #070b12;
+  --panel-alt: #0b1018;
+  --panel-deep: #111a24;
+
+  --text: #e6f7ff;
+  --text-soft: #9bb3c9;
+  --text-muted: #4f6780;
+
+  --accent: #16f2aa;
+  --accent-soft: rgba(22,242,170,0.18);
+  --accent-glow: rgba(22,242,170,0.35);
+
+  --haz: #f5c542;
+  --haz-soft: rgba(245,197,66,0.22);
+  --haz-glow: rgba(245,197,66,0.45);
+
+  --border: rgba(255,255,255,0.12);
+  --border-strong: rgba(255,255,255,0.22);
+  --border-accent: rgba(22,242,170,0.55);
+  --border-haz: rgba(245,197,66,0.55);
+
+  --code-keyword: #ff7b72;
+  --code-fn: #61d6ff;
+  --code-str: #a5ff90;
+  --code-num: #ffca85;
+  --code-obj: #4fd1ff;
+  --code-atom: #16f2aa;
+}
+
+/* ------------------------------------------------------------
+   2) ATOMIC LAYOUT PRIMITIVES
+   ------------------------------------------------------------ */
+
+[⟁flex] { display:flex; }
+[⟁row] { flex-direction:row; }
+[⟁col] { flex-direction:column; }
+
+[⟁center] { align-items:center; justify-content:center; }
+[⟁between] { justify-content:space-between; }
+[⟁around] { justify-content:space-around; }
+[⟁wrap] { flex-wrap:wrap; }
+[⟁nowrap] { flex-wrap:nowrap; }
+
+[⟁grid] { display:grid; }
+[⟁grid-auto] { grid-auto-flow:row; }
+[⟁grid-fit] { grid-template-columns:repeat(auto-fit,minmax(0,1fr)); }
+[⟁grid-fill] { grid-template-columns:repeat(auto-fill,minmax(0,1fr)); }
+
+/* ------------------------------------------------------------
+   3) SPACING UTILITIES
+   ------------------------------------------------------------ */
+
+[class*="⟁p-"] { padding:var(--p,0); }
+[class*="⟁m-"] { margin:var(--m,0); }
+
+/* ------------------------------------------------------------
+   4) POSITION PRIMITIVES
+   ------------------------------------------------------------ */
+
+[⟁abs] { position:absolute; }
+[⟁rel] { position:relative; }
+[⟁fixed] { position:fixed; }
+[⟁sticky] { position:sticky; }
+
+/* ------------------------------------------------------------
+   5) VISIBILITY + SCROLLING
+   ------------------------------------------------------------ */
+
+[⟁scroll] {
+  overflow-y:auto;
+  scrollbar-width:none;
+}
+
+[⟁scroll]::-webkit-scrollbar { display:none; }
+
+/* ------------------------------------------------------------
+   6) EDITOR + PANEL BLOCKS
+   ------------------------------------------------------------ */
+
+[⟁editor] {
+  background:var(--panel);
+  color:var(--text);
+  border:1px solid var(--border);
+  padding:16px;
+  border-radius:8px;
+  font-family:"JetBrains Mono", monospace;
+  font-size:14px;
+  line-height:1.5;
+}
+
+[⟁panel] {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:12px;
+}
+
+[⟁panel-deep] {
+  background:var(--panel-deep);
+  border:1px solid var(--border-strong);
+}
+
+/* ------------------------------------------------------------
+   7) CODE SYNTAX HIGHLIGHTING
+   ------------------------------------------------------------ */
+
+[⟁kw]   { color:var(--code-keyword); }
+[⟁fn]   { color:var(--code-fn); }
+[⟁str]  { color:var(--code-str); }
+[⟁num]  { color:var(--code-num); }
+[⟁obj]  { color:var(--code-obj); }
+[⟁atom] { color:var(--code-atom); font-weight:600; }
+
+/* ------------------------------------------------------------
+   8) ACTIVE / HOVER / FOCUS STATES (Hazard Mode)
+   ------------------------------------------------------------ */
+
+[⟁active],
+[⟁hover]:hover,
+[⟁focus]:focus {
+  outline:1px solid var(--haz);
+  box-shadow:0 0 12px var(--haz-glow);
+  background:var(--haz-soft);
+  color:var(--haz);
+}
+
+/* ------------------------------------------------------------
+   9) INPUTS + BUTTONS
+   ------------------------------------------------------------ */
+
+[⟁input] {
+  background:var(--panel-alt);
+  color:var(--text);
+  border:1px solid var(--border);
+  padding:8px 10px;
+  border-radius:6px;
+}
+
+[⟁input]:focus {
+  border-color:var(--accent);
+  box-shadow:0 0 8px var(--accent-glow);
+}
+
+[⟁btn] {
+  background:var(--panel-deep);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:8px 12px;
+  border-radius:6px;
+}
+
+[⟁btn]:hover {
+  border-color:var(--haz);
+  color:var(--haz);
+  box-shadow:0 0 8px var(--haz-glow);
+}
+
+/* ------------------------------------------------------------
+   🔟 TERMINAL / BASHER STYLE
+   ------------------------------------------------------------ */
+
+[⟁terminal] {
+  background:#000;
+  color:var(--accent);
+  font-family:"JetBrains Mono", monospace;
+  padding:12px;
+  border-radius:6px;
+  border:1px solid var(--border-strong);
+}
+
+[⟁terminal-haz] {
+  color:var(--haz);
+}
+
+/* ------------------------------------------------------------
+   11) CARET / CURSOR
+   ------------------------------------------------------------ */
+
+[⟁cursor] { caret-color:var(--accent); }
+
+/* ------------------------------------------------------------
+   12) GLASS EFFECTS (Ghost Shell)
+   ------------------------------------------------------------ */
+
+[⟁glass] {
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(8px);
+  border:1px solid var(--border-soft);
+}
+
+[⟁glass-accent] {
+  background:rgba(22,242,170,0.08);
+  border:1px solid var(--accent);
+}
