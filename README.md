@@ -1757,6 +1757,579 @@ Here's your SCX Atomic CSS foundation with all quadrant integration:
    ============================================================ */
 ```
 
+⟁ ATOMIC HTML CSS RUNTIME EXAMPLE
+
+```html
+<!DOCTYPE html>
+<html style="--entropy: 0; --velocity: 1; --signal: 0.5;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atomic Runtime Dashboard</title>
+  <link rel="stylesheet" href="../public/atomic.css">
+  <style>
+    :root{
+  /* core palette */
+  --bg-0:#020409;
+  --bg-1:#050912;
+  --bg-2:#0a1220;
+  --panel:rgba(255,255,255,.06);
+  --fg-0:#e8f5ff;
+  --fg-1:#9fb3c8;
+  --accent:#16f2aa;
+  --accent-soft:rgba(22,242,170,.25);
+  --hazard:#ffb300;
+  --danger:#ff6b6b;
+
+  /* xcfe + runtime */
+  --entropy:0;
+  --velocity:1;
+  --signal:0;
+  --hazard-state:0;
+
+  /* physics */
+  --px:0;
+  --py:0;
+  --rot:0;
+  --force-x:0;
+  --force-y:0;
+  --mass:1;
+
+  /* visual runtime */
+  --glow:0;
+  --blur:0;
+  --z:0;
+
+  /* spacing */
+  --s1:4px;
+  --s2:8px;
+  --s3:12px;
+  --s4:16px;
+  --s5:24px;
+  --s6:32px;
+
+  --r1:4px;
+  --r2:8px;
+  --r3:12px;
+  --r4:16px;
+
+  --fs0:12px;
+  --fs1:14px;
+  --fs2:16px;
+  --fs3:18px;
+
+  --border:rgba(255,255,255,.12);
+  --border-soft:rgba(255,255,255,.08);
+}
+
+/* ===============================
+   ATOMIC LAYOUT
+   =============================== */
+[⟁flex]{display:flex}
+[⟁grid]{display:grid}
+[⟁col]{flex-direction:column}
+[⟁row]{flex-direction:row}
+[⟁wrap]{flex-wrap:wrap}
+[⟁center]{display:flex;align-items:center;justify-content:center}
+[⟁between]{display:flex;align-items:center;justify-content:space-between}
+[⟁start]{display:flex;align-items:flex-start;justify-content:flex-start}
+[⟁fill]{width:100%;height:100%}
+[⟁wfull]{width:100%}
+[⟁hfull]{height:100%}
+[⟁rel]{position:relative}
+[⟁abs]{position:absolute}
+[⟁sticky]{position:sticky;top:0}
+[⟁hidden]{display:none}
+[⟁clip]{overflow:hidden}
+[⟁scroll]{overflow:auto}
+[⟁nosel]{user-select:none}
+[⟁nowrap]{white-space:nowrap}
+[⟁round]{border-radius:var(--r2)}
+[⟁round2]{border-radius:var(--r3)}
+
+/* no visible scrollbars */
+[⟁no-scrollbar]{scrollbar-width:none;-ms-overflow-style:none}
+[⟁no-scrollbar]::-webkit-scrollbar{width:0;height:0}
+
+/* ===============================
+   SPACING
+   =============================== */
+[⟁p1]{padding:var(--s1)}
+[⟁p2]{padding:var(--s2)}
+[⟁p3]{padding:var(--s3)}
+[⟁p4]{padding:var(--s4)}
+[⟁p5]{padding:var(--s5)}
+
+[⟁px2]{padding-left:var(--s2);padding-right:var(--s2)}
+[⟁px3]{padding-left:var(--s3);padding-right:var(--s3)}
+[⟁py2]{padding-top:var(--s2);padding-bottom:var(--s2)}
+[⟁py3]{padding-top:var(--s3);padding-bottom:var(--s3)}
+
+[⟁g1]{gap:var(--s1)}
+[⟁g2]{gap:var(--s2)}
+[⟁g3]{gap:var(--s3)}
+[⟁g4]{gap:var(--s4)}
+[⟁g5]{gap:var(--s5)}
+
+/* ===============================
+   TEXT
+   =============================== */
+[⟁text]{color:var(--fg-0)}
+[⟁muted]{color:var(--fg-1)}
+[⟁fs0]{font-size:var(--fs0)}
+[⟁fs1]{font-size:var(--fs1)}
+[⟁fs2]{font-size:var(--fs2)}
+[⟁fs3]{font-size:var(--fs3)}
+[⟁mono]{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+[⟁bold]{font-weight:600}
+
+/* ===============================
+   BACKGROUNDS + BORDERS
+   =============================== */
+[⟁bg0]{background:var(--bg-0)}
+[⟁bg1]{background:var(--bg-1)}
+[⟁bg2]{background:var(--bg-2)}
+[⟁panel]{background:var(--panel)}
+[⟁border]{border:1px solid var(--border)}
+[⟁border-soft]{border:1px solid var(--border-soft)}
+
+/* ===============================
+   GHOST GLASS (CORE)
+   =============================== */
+[⟁ghost]{
+  background:var(--panel);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--border);
+  border-radius:var(--r3)
+}
+[⟁ghost-strong]{
+  backdrop-filter:blur(14px);
+  background:rgba(255,255,255,.10)
+}
+[⟁ghost-accent]{
+  border-color:var(--accent);
+  box-shadow:0 0 12px var(--accent-soft)
+}
+
+/* ===============================
+   UI PRIMITIVES
+   =============================== */
+[⟁card]{background:rgba(255,255,255,.04);border:1px solid var(--border-soft);border-radius:var(--r3)}
+[⟁shadow]{box-shadow:0 10px 30px rgba(0,0,0,.35)}
+[⟁btn]{
+  appearance:none;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.05);
+  color:var(--fg-0);
+  border-radius:var(--r2);
+  padding:8px 12px;
+  cursor:pointer;
+  transition:background .2s,border-color .2s,transform .05s
+}
+[⟁btn]:hover{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.18)}
+[⟁btn]:active{transform:translateY(1px)}
+[⟁btn-accent]{border-color:rgba(22,242,170,.45);color:var(--accent)}
+[⟁tag]{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:3px 8px;
+  border-radius:999px;
+  border:1px solid rgba(22,242,170,.30);
+  background:rgba(22,242,170,.08);
+  color:var(--accent);
+  font-size:12px
+}
+[⟁input]{
+  width:100%;
+  border:1px solid var(--border);
+  background:rgba(0,0,0,.25);
+  color:var(--fg-0);
+  border-radius:var(--r2);
+  padding:10px 12px;
+  outline:none
+}
+[⟁input]:focus{border-color:rgba(22,242,170,.55);box-shadow:0 0 0 3px rgba(22,242,170,.10)}
+
+/* ===============================
+   GLASS TABS
+   =============================== */
+.tab-glass{
+  padding:8px 14px;
+  border-radius:var(--r2);
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
+  backdrop-filter:blur(12px);
+  color:var(--accent);
+  cursor:pointer;
+  transition:.25s
+}
+.tab-glass:hover{background:rgba(255,255,255,.15)}
+.tab-glass.active{
+  background:var(--accent);
+  color:#000;
+  box-shadow:0 0 14px var(--accent-soft)
+}
+
+/* ===============================
+   XCFE CONTROL STATES
+   =============================== */
+.xcfe-if{display:none}
+.xcfe-if.active{display:block}
+
+.xcfe-perception{filter:blur(calc(var(--blur)*1px))}
+.xcfe-representation{transform:scale(calc(1 + var(--entropy)*0.1))}
+.xcfe-reasoning{border-left:3px solid var(--accent);padding-left:var(--s2)}
+.xcfe-decision{color:var(--accent);font-weight:600}
+.xcfe-action{background:var(--accent-soft)}
+.xcfe-reflection{opacity:.7}
+
+.xcfe-signal{box-shadow:0 0 calc(var(--glow)*8px) var(--accent)}
+
+.xcfe-hazard{border:2px solid var(--hazard);animation:pulse 1s infinite}
+.xcfe-danger{border:2px solid var(--danger);background:rgba(255,107,107,.15)}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* ===============================
+   RUNTIME PHYSICS
+   =============================== */
+[physics]{
+  transform:
+    translate(calc(var(--px)*1px),calc(var(--py)*1px))
+    rotate(calc(var(--rot)*1deg));
+  transition:transform calc(.12s / max(var(--velocity), .001));
+  will-change:transform;
+}
+
+/* collision */
+.collision-active{border:2px solid var(--danger);animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+
+/* ===============================
+   SVG / 3D
+   =============================== */
+.svg3d{perspective:1000px;transform-style:preserve-3d;transform:translateZ(calc(var(--z)*1px))}
+.svg3d-glow{filter:drop-shadow(0 0 calc(var(--glow)*5px) var(--accent))}
+.svg3d-blur{filter:blur(calc(var(--velocity)*2px))}
+
+/* ===============================
+   ACCESSIBILITY + PERF
+   =============================== */
+[data-focus]:focus{outline:2px solid var(--accent)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body ⟁bg0 ⟁text ⟁fill style="padding: 0;">
+  
+  <!-- NAVIGATION -->
+  <nav ⟁nav ⟁sticky>
+    <div ⟁nav-brand>
+      <div style="width: 24px; height: 24px; background: var(--accent); border-radius: var(--r1);"></div>
+      <span>Runtime OS</span>
+    </div>
+    <div ⟁nav-links>
+      <div class="tab-glass active">Dashboard</div>
+      <div class="tab-glass">Tapes</div>
+      <div class="tab-glass">Studios</div>
+      <div class="tab-glass">Mesh</div>
+    </div>
+  </nav>
+  
+  <!-- MAIN LAYOUT -->
+  <div ⟁flex ⟁fill>
+    
+    <!-- SIDEBAR -->
+    <aside ⟁sidebar ⟁sticky>
+      <div ⟁sidebar-header>
+        <h3 ⟁fs2 ⟁bold>Runtime State</h3>
+      </div>
+      <div ⟁sidebar-content ⟁g3>
+        
+        <!-- RUNTIME INDICATORS -->
+        <div ⟁flex ⟁col ⟁g2>
+          <div ⟁flex ⟁between>
+            <span ⟁muted>Entropy</span>
+            <span ⟁text ⟁bold style="font-family: var(--mono);">
+              {{ Math.round(entropy * 100) / 100 }}
+            </span>
+          </div>
+          <div ⟁entropy-visual></div>
+        </div>
+        
+        <div ⟁flex ⟁col ⟁g2>
+          <div ⟁flex ⟁between>
+            <span ⟁muted>Velocity</span>
+            <span ⟁text ⟁bold style="font-family: var(--mono);">
+              {{ velocity }}x
+            </span>
+          </div>
+          <div ⟁progress>
+            <div ⟁progress-bar style="width: calc(var(--velocity) * 20%);"></div>
+          </div>
+        </div>
+        
+        <div ⟁flex ⟁col ⟁g2>
+          <div ⟁flex ⟁between>
+            <span ⟁muted>Signal</span>
+            <span ⟁signal-strength ⟁signal-strength="3">
+              <div ⟁signal-bar></div>
+              <div ⟁signal-bar></div>
+              <div ⟁signal-bar></div>
+              <div ⟁signal-bar></div>
+              <div ⟁signal-bar></div>
+            </span>
+          </div>
+        </div>
+        
+        <!-- XCFE PHASES -->
+        <div ⟁flex ⟁col ⟁g2>
+          <span ⟁muted ⟁fs0>XCFE Flow</span>
+          <div ⟁flex ⟁g1>
+            <div ⟁xcfe-phase ⟁xcfe-phase="Pop">Pop</div>
+            <div ⟁xcfe-phase ⟁xcfe-phase="Wo" ⟁xcfe-phase-active="true">Wo</div>
+            <div ⟁xcfe-phase ⟁xcfe-phase="Sek">Sek</div>
+            <div ⟁xcfe-phase ⟁xcfe-phase="Xul">Xul</div>
+          </div>
+        </div>
+        
+        <!-- QUICK ACTIONS -->
+        <div ⟁flex ⟁col ⟁g2>
+          <span ⟁muted ⟁fs0>Quick Actions</span>
+          <button ⟁btn ⟁btn-accent ⟁wfull>⟁ Execute</button>
+          <button ⟁btn ⟁wfull>⚡ Control</button>
+          <button ⟁btn ⟁wfull>🌀 State</button>
+        </div>
+        
+      </div>
+    </aside>
+    
+    <!-- MAIN CONTENT -->
+    <main ⟁flex ⟁col ⟁fill ⟁scroll ⟁no-scrollbar style="padding: var(--s4);">
+      
+      <!-- DASHBOARD GRID -->
+      <div ⟁dashboard ⟁g3>
+        
+        <!-- STATS CARD -->
+        <div ⟁card ⟁col-span-4 ⟁shadow>
+          <div ⟁flex ⟁between>
+            <h3 ⟁fs2 ⟁bold>System Metrics</h3>
+            <div ⟁badge ⟁badge-primary>Live</div>
+          </div>
+          <div ⟁grid-auto-sm ⟁mt3 ⟁g3>
+            <div ⟁flex ⟁col ⟁center ⟁p3 ⟁bg1 ⟁round>
+              <span ⟁fs3 ⟁bold ⟁text-accent>94.1%</span>
+              <span ⟁muted ⟁fs0>Compression</span>
+            </div>
+            <div ⟁flex ⟁col ⟁center ⟁p3 ⟁bg1 ⟁round>
+              <span ⟁fs3 ⟁bold ⟁text>0.2ms</span>
+              <span ⟁muted ⟁fs0>Quantum Speed</span>
+            </div>
+            <div ⟁flex ⟁col ⟁center ⟁p3 ⟁bg1 ⟁round>
+              <span ⟁fs3 ⟁bold ⟁text>∞</span>
+              <span ⟁muted ⟁fs0>Runtime</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- TAPE CONTROLS -->
+        <div ⟁card ⟁col-span-4 ⟁shadow>
+          <div ⟁flex ⟁between>
+            <h3 ⟁fs2 ⟁bold>Active Tapes</h3>
+            <button ⟁btn ⟁btn-accent ⟁fs0>+ New</button>
+          </div>
+          <div ⟁mt3 ⟁g2>
+            <div ⟁flex ⟁between ⟁p2 ⟁bg1 ⟁round>
+              <div ⟁flex ⟁g2>
+                <div style="width: 12px; height: 12px; background: var(--accent); border-radius: 2px;"></div>
+                <span>Atomic Studio</span>
+              </div>
+              <div ⟁badge ⟁badge-success>Running</div>
+            </div>
+            <div ⟁flex ⟁between ⟁p2 ⟁bg1 ⟁round>
+              <div ⟁flex ⟁g2>
+                <div style="width: 12px; height: 12px; background: var(--accent); border-radius: 2px;"></div>
+                <span>3D Studio</span>
+              </div>
+              <div ⟁badge ⟁badge-secondary>Paused</div>
+            </div>
+            <div ⟁flex ⟁between ⟁p2 ⟁bg1 ⟁round>
+              <div ⟁flex ⟁g2>
+                <div style="width: 12px; height: 12px; background: var(--accent); border-radius: 2px;"></div>
+                <span>Web Studio</span>
+              </div>
+              <div ⟁badge ⟁badge-warning>Loading</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- MESH NETWORK -->
+        <div ⟁card ⟁col-span-4 ⟁shadow>
+          <div ⟁flex ⟁between>
+            <h3 ⟁fs2 ⟁bold>Mesh Network</h3>
+            <div ⟁runtime-indicator></div>
+          </div>
+          <div ⟁mt3>
+            <div ⟁flex ⟁col ⟁g2>
+              <div ⟁flex ⟁between>
+                <span ⟁muted>Nodes</span>
+                <span ⟁text>8 active</span>
+              </div>
+              <div ⟁flex ⟁between>
+                <span ⟁muted>Latency</span>
+                <span ⟁text>12ms</span>
+              </div>
+              <div ⟁flex ⟁between>
+                <span ⟁muted>Throughput</span>
+                <span ⟁text>1.2 Gb/s</span>
+              </div>
+            </div>
+            <!-- Network visualization would go here -->
+            <div style="height: 100px; background: var(--bg-2); border-radius: var(--r2); margin-top: var(--s3);"></div>
+          </div>
+        </div>
+        
+        <!-- PHYSICS DEMO -->
+        <div ⟁card ⟁col-span-8 ⟁shadow>
+          <div ⟁flex ⟁between>
+            <h3 ⟁fs2 ⟁bold>Physics Sandbox</h3>
+            <button ⟁btn ⟁fs0 onclick="resetPhysics()">Reset</button>
+          </div>
+          <div ⟁mt3 style="height: 200px; background: var(--bg-2); border-radius: var(--r2); position: relative; overflow: hidden;">
+            <div id="physics-object" physics style="
+              position: absolute;
+              width: 40px;
+              height: 40px;
+              background: var(--accent);
+              border-radius: var(--r2);
+              --px: 100;
+              --py: 80;
+            "></div>
+          </div>
+          <div ⟁flex ⟁g2 ⟁mt3>
+            <button ⟁btn onclick="applyForce('x', 20)">→ Force X+</button>
+            <button ⟁btn onclick="applyForce('x', -20)">← Force X-</button>
+            <button ⟁btn onclick="applyForce('y', 20)">↓ Force Y+</button>
+            <button ⟁btn onclick="applyForce('y', -20)">↑ Force Y-</button>
+          </div>
+        </div>
+        
+        <!-- API CONSOLE -->
+        <div ⟁card ⟁col-span-4 ⟁shadow>
+          <div ⟁flex ⟁between>
+            <h3 ⟁fs2 ⟁bold>API Console</h3>
+            <div ⟁badge ⟁badge-primary>Online</div>
+          </div>
+          <div ⟁mt3>
+            <div ⟁flex ⟁g2 ⟁mb3>
+              <button class="tab-glass active">⟁ SCX</button>
+              <button class="tab-glass">⚡ XCFE</button>
+              <button class="tab-glass">🌀 State</button>
+            </div>
+            <div ⟁code style="height: 120px;">
+              <pre ⟁fs1>{{{<br>  "system": "running",<br>  "entropy": {{ entropy }},<br>  "velocity": {{ velocity }},<br>  "signal": {{ signal }}<br>}}}</pre>
+            </div>
+            <div ⟁flex ⟁g2 ⟁mt3>
+              <button ⟁btn ⟁btn-accent ⟁wfull onclick="callAPI('scx')">Execute</button>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
+    </main>
+    
+  </div>
+  
+  <!-- RUNTIME FOOTER -->
+  <footer style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--s2) var(--s3);
+    background: var(--bg-1);
+    border-top: 1px solid var(--border-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--fs0);
+  ">
+    <div ⟁flex ⟁g2>
+      <span ⟁muted>Runtime OS v∞</span>
+      <span ⟁text style="font-family: var(--mono);">⟁ ⚡ 🌀 🧬 🎨</span>
+    </div>
+    <div ⟁flex ⟁g2>
+      <span ⟁muted>State:</span>
+      <span ⟁text ⟁bold>Running</span>
+      <span style="width: 6px; height: 6px; background: var(--accent); border-radius: 50%; margin-left: var(--s1);"></span>
+    </div>
+  </footer>
+
+<script>
+  // Simple runtime state management
+  let entropy = 0.3;
+  let velocity = 1.2;
+  let signal = 0.7;
+  
+  function updateRuntime() {
+    // Update CSS variables
+    document.documentElement.style.setProperty('--entropy', entropy);
+    document.documentElement.style.setProperty('--velocity', velocity);
+    document.documentElement.style.setProperty('--signal', signal);
+    
+    // Update display values
+    document.querySelectorAll('[entropy]').forEach(el => {
+      el.textContent = Math.round(entropy * 100) / 100;
+    });
+    
+    // Animate entropy visualization
+    entropy = (entropy + 0.01) % 1;
+    
+    // Update signal strength
+    const signalStrength = Math.floor(signal * 5) + 1;
+    const signalEl = document.querySelector('[⟁signal-strength]');
+    if (signalEl) {
+      signalEl.setAttribute('⟁signal-strength', signalStrength);
+    }
+  }
+  
+  // Physics functions
+  function applyForce(axis, force) {
+    const obj = document.getElementById('physics-object');
+    const current = parseFloat(obj.style.getPropertyValue(`--p${axis}`)) || 0;
+    obj.style.setProperty(`--p${axis}`, current + force);
+    obj.classList.add('collision-active');
+    setTimeout(() => obj.classList.remove('collision-active'), 300);
+  }
+  
+  function resetPhysics() {
+    const obj = document.getElementById('physics-object');
+    obj.style.setProperty('--px', '100');
+    obj.style.setProperty('--py', '80');
+    obj.style.setProperty('--rot', '0');
+  }
+  
+  function callAPI(endpoint) {
+    const consoleEl = document.querySelector('pre');
+    consoleEl.textContent = `{\n  "endpoint": "${endpoint}",\n  "status": "processing",\n  "timestamp": ${Date.now()}\n}`;
+    
+    setTimeout(() => {
+      consoleEl.textContent = `{\n  "endpoint": "${endpoint}",\n  "status": "success",\n  "result": "executed",\n  "timestamp": ${Date.now()}\n}`;
+    }, 1000);
+  }
+  
+  // Start runtime updates
+  setInterval(updateRuntime, 100);
+  
+  // Initialize
+  updateRuntime();
+</script>
+</body>
+</html>
+
+```
+
  ⟁ ATOMIC CSS FOUNDATION - SCX COMPRESSION PRINCIPLES
 
 ```css
