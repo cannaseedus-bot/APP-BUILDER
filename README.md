@@ -1766,7 +1766,7 @@ Here's your SCX Atomic CSS foundation with all quadrant integration:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Atomic Runtime Dashboard</title>
-  <link rel="stylesheet" href="../public/atomic.css">
+  <link rel="stylesheet" href="https://mx2lm.app/atomic.css">
   <style>
     :root{
   /* core palette */
