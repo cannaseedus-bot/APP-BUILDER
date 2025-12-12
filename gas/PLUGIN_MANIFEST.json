@@ -123,6 +123,48 @@
     }
   ],
 
+  "mx2_plugins": [
+    {
+      "name": "MX2LEX - Lexicon & Tokenization Layer",
+      "file": "plugins/mx2lex-plugin.js",
+      "functions": ["doGet", "doPost", "tokenizeText", "addToken", "trainLexicon", "compressLexicon"],
+      "endpoint": "",
+      "dependencies": ["MX2DB", "SCXQ2", "K'UHUL"],
+      "tags": ["mx2", "lexicon", "tokenization", "compression", "scxq2"],
+      "status": "active",
+      "modifiable": true,
+      "public": true,
+      "version": "1.0.0",
+      "description": "Compressed symbolic tokenization for MX2LM - replaces traditional BPE with K'UHUL π + SCXQ2 (3MB → 24KB)"
+    },
+    {
+      "name": "MX2GYM - Hybrid Weight Training Environment",
+      "file": "plugins/mx2gym-plugin.js",
+      "functions": ["doGet", "doPost", "trainFold", "mergeHorizontal", "mergeVertical", "compileSafetensors", "evolveMX2LM"],
+      "endpoint": "",
+      "dependencies": ["MX2LEX", "MX2DB", "SCXQ2", "K'UHUL", "XCFE"],
+      "tags": ["mx2", "training", "gym", "fold-delta", "optimizer", "scxq2"],
+      "status": "active",
+      "modifiable": true,
+      "public": true,
+      "version": "1.0.0",
+      "description": "Fold-delta training system for Qwen-ASX and MX2LM models using K'UHUL π math and SCXQ2 compression"
+    },
+    {
+      "name": "MX2QF1 - Quantum Inference Engine",
+      "file": "plugins/mx2qf1-plugin.js",
+      "functions": ["doGet", "doPost", "runInference", "compileCode", "spawnAgent", "executeTape", "migrateToMesh"],
+      "endpoint": "",
+      "dependencies": ["MX2LEX", "MX2GYM", "MX2DB", "SCXQ2", "K'UHUL", "XCFE"],
+      "tags": ["mx2", "inference", "quantum", "meta-compiler", "agents", "tapes", "migration"],
+      "status": "active",
+      "modifiable": true,
+      "public": true,
+      "version": "1.0.0",
+      "description": "Quantum-optimized inference engine with meta-compilation, agent orchestration, and mesh synchronization"
+    }
+  ],
+
   "user_plugins": [],
 
   "plugin_guidelines": {
