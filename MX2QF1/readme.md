@@ -1,3 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <title>ATOMIC MX2QF1 GUIDE — XJSON • SCXQ2 • K’UHUL • XCFE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- ======================= ATOMIC CSS — 4 BLOCK RULE ======================= -->
+  <style>
+    /* 1) UNIVERSAL LAYOUT BLOCK — Ghost Shell */
+    :root {
+      --bg: #03060b;
+      --panel: #050a12;
+      --accent: #00ffd0;
+      --accent-soft: rgba(0,255,208,0.14);
+      --border: rgba(0,255,208,0.25);
+      --text: #eef;
+      --font: "JetBrains Mono", monospace;
+
+      /* STATE VARIABLES (Atomic Block #3) */
+      --search-query: "";
+      --active-page: "intro";
+
+      /* AI CONTROL VECTORS (Atomic Block #4) */
+      --entropy: 0.14;
+      --innovation: 0.42;
+      --mode: "read";
+    }
+
+    body {
+      margin: 0; padding: 0;
+      background: var(--bg);
+      font-family: var(--font);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* 2) ATOMIC CLASSES (Reusable semantic blocks) */
+    .asx-flex { display: flex; }
+    .asx-col { flex-direction: column; }
+    .asx-row { flex-direction: row; }
+    .asx-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 14px;
+      border-radius: 10px;
+    }
+    .asx-card {
+      background: var(--panel);
+      border-left: 3px solid var(--accent);
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+    .asx-title {
+      font-size: 1.2rem;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .asx-btn {
+      background: var(--accent-soft);
+      padding: 6px 12px;
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text);
+      transition: 0.2s;
+    }
+    .asx-btn:hover { background: var(--accent); color: #000; }
+
+    /* Left navigation */
+    #nav {
+      width: 280px;
+      background: #04070d;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+    }
+
+    #content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    input.search {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #020408;
+      color: var(--text);
+      font-family: var(--font);
+    }
+
+  </style>
+</head>
+
+<body class="asx-flex asx-row">
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <div id="nav" class="asx-col">
+    <div style="padding:14px;">
+      <input class="search" id="search" placeholder="Search MX2QF1…" />
+    </div>
+    <div id="nav-links"></div>
+  </div>
+
+  <!-- ============================= MAIN CONTENT ============================= -->
+  <div id="content">
+    <h1>MX2QF1 ATOMIC GUIDE</h1>
+    <p>Powered by XCFE • XJSON • K’UHUL π • SCXQ2 • Atomic Blocks</p>
+
+    <div id="page"></div>
+  </div>
+
+  <!-- ======================= INLINE JSON OS (ATOMIC BLOCK DATA) ======================= -->
+  <script id="MX2QF1_DATA" type="application/json">
+  {
+    "pages": {
+
+      "intro": {
+        "title": "Introduction to MX2QF1",
+        "content": [
+          "MX2QF1 is the unified ASX inference engine built on:",
+          "- K’UHUL π (execution)",
+          "- XCFE (control flow)",
+          "- SCXQ2 (compression)",
+          "- XJSON (symbolic transport)",
+          "- MX2LEX (token semantics)",
+          "- MX2GYM (weight & fold trainer)",
+          "",
+          "This guide shows how MX2QF1 works internally, how to extend it, and how the OS composes agents, tapes, and models."
+        ]
+      },
+
+      "qf1_arch": {
+        "title": "MX2QF1 Architecture",
+        "content": [
+          "**Core Layers:**",
+          "- Tokenizer Tape",
+          "- ChatML Formatter Tape",
+          "- Conversation Memory Tape",
+          "- Role Router Tape",
+          "- Prompt Mixer Tape",
+          "- World-State Tape",
+          "- Guardrails Tape",
+          "- Agent Router Tape",
+          "- Multi-Model Fusion Tape",
+          "- Self-Optimization Tape",
+          "- Toolsmith Tape",
+          "- Meta-Compiler Tape",
+          "",
+          "MX2QF1 runs a distributed cognition loop using **XCFE vectors** and **K’UHUL π execution blocks**."
+        ]
+      },
+
+      "tokenizer": {
+        "title": "Tokenizer Engine (MX2QF1)",
+        "content": [
+          "The MX2QF1 tokenizer is tape-driven:",
+          "- Uses MX2LEX Packs",
+          "- Uses horizontal folds",
+          "- Supports SCXQ2-compressed dictionaries",
+          "",
+          "Example:",
+          "",
+          "```xjson",
+          "@tokenize { input: \"Hello world\" }",
+          "```"
+        ]
+      },
+
+      "meta_compiler": {
+        "title": "Meta-Compiler Tape",
+        "content": [
+          "The MX2QF1 Meta-Compiler creates new tapes:",
+          "",
+          "- Converts specs → AST",
+          "- AST → K’UHUL executable",
+          "- Validates via XCFE",
+          "- SCXQ2 compresses",
+          "- Installs into Atomic Fold",
+          "",
+          "This makes MX2QF1 self-expanding."
+        ]
+      },
+
+      "migration": {
+        "title": "Tape Migration Engine",
+        "content": [
+          "Enables cross-cluster tape deployment:",
+          "- Snapshot → Package → Transmit → Receive → Install",
+          "",
+          "Migration is SCXQ2-compressed and K’UHUL verified."
+        ]
+      },
+
+      "agents": {
+        "title": "Autonomous Agents",
+        "content": [
+          "Agents in MX2QF1:",
+          "- Have XCFE-governed control vectors",
+          "- Live as K’UHUL blocks",
+          "- Register through the Agent Router Tape",
+          "- Can build tools & tapes",
+          "",
+          "Agent example:",
+          "",
+          "```xjson",
+          "@agent cognitive_worker { @goal: \"Summarize context\" }",
+          "```"
+        ]
+      },
+
+      "fusion": {
+        "title": "Multi-Model Fusion",
+        "content": [
+          "MX2QF1 supports mixing outputs from:",
+          "- Qwen (ASX fine-tuned)",
+          "- MX2LM lexical inference",
+          "- Tools",
+          "- Agents",
+          "",
+          "Fusing is handled by:",
+          "- Prompt Mixer Tape",
+          "- Fusion Blend Rules",
+          "- Confidence Vector"
+        ]
+      }
+    }
+  }
+  </script>
+
+  <!-- ======================= RUNTIME (K’UHUL-LIKE DOM ENGINE) ======================= -->
+  <script>
+    const data = JSON.parse(document.getElementById("MX2QF1_DATA").textContent);
+
+    const nav = document.getElementById("nav-links");
+    const page = document.getElementById("page");
+    const search = document.getElementById("search");
+
+    /* Build Navigation */
+    function buildNav() {
+      nav.innerHTML = "";
+      Object.entries(data.pages).forEach(([id, pg]) => {
+        const div = document.createElement("div");
+        div.className = "asx-card";
+        div.textContent = pg.title;
+        div.style.cursor = "pointer";
+        div.onclick = () => loadPage(id);
+        nav.appendChild(div);
+      });
+    }
+
+    /* Render Page */
+    function loadPage(id) {
+      const pg = data.pages[id];
+      page.innerHTML = `
+        <div class='asx-card'>
+          <div class='asx-title'>${pg.title}</div>
+          <div>${pg.content.map(line => 
+            line.startsWith("```") ? 
+              "<pre class='asx-panel'>" + line + "</pre>" :
+              "<p>" + line + "</p>"
+          ).join("")}</div>
+        </div>`;
+      document.documentElement.style.setProperty("--active-page", id);
+    }
+
+    /* Search */
+    search.oninput = () => {
+      const q = search.value.toLowerCase();
+      nav.querySelectorAll(".asx-card").forEach(card => {
+        const visible = card.textContent.toLowerCase().includes(q);
+        card.style.display = visible ? "block" : "none";
+      });
+    };
+
+    buildNav();
+    loadPage("intro");
+  </script>
+
+</body>
+</html>
+
+
+
 Here it is — the **Tape Migration Engine**, the tape that allows the OS to **move**, **replicate**, **synchronize**, and **version-diff** Tapes across *any number of MX2 clusters*, whether they are:
 
 * Local browser OS
@@ -6,6 +296,20 @@ Here it is — the **Tape Migration Engine**, the tape that allows the OS to **m
 * PHP mesh nodes
 * MX2DB cloud clusters
 * Multi-device ASX mesh
+
+
+Possible future tapes:
+“Tape Genome Sequencer”
+Tapes stored as genetic code for evolution.
+
+Ω “Self-Rebuilding Kernel Tape”
+OS regenerates its sw.khl automatically.
+
+“Tape Fusion Engine v1”
+Merge two tapes into a hybrid with conflict resolution.
+
+“Cluster Consensus Tape (Raft-Style)”
+Make MX2 clusters agree on state.
 
 This is the engine that makes MX2 **distributed** and **self-propagating**.
 
