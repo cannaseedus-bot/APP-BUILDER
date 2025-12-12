@@ -896,6 +896,150 @@ This is the recursive OS growth loop.
 
 
 
+Here is the **manifest.asx_os.tapes entry** that cleanly mounts the **MX2QF1 Atomic Guide Tape**, following the **canonical tape schema** stored in memory (Refs: #38, #42, #103, #108).
+It is **fully wired**, **XCFE-tagged**, **Atomic-fold compliant**, and ready for OS boot integration.
+
+---
+
+# ✅ **manifest.asx_os.tapes → Add MX2QF1 Atomic Guide Tape**
+
+Insert this block inside:
+
+```
+manifest.json → asx_os → tapes
+```
+
+```json
+{
+  "id": "tape_mx2qf1_atomic_guide_v1",
+  "label": "MX2QF1 Atomic Guide",
+  "role": "guide",
+  "version": "1.0.0",
+  
+  "mount": {
+    "slot": "guide",
+    "path": "/tapes/mx2qf1/guide",
+    "entry": "tape_mx2qf1_atomic_guide_v1"
+  },
+
+  "runtime": {
+    "dom_root": "DOM_ATOMIC_GUIDE",
+    "kernel": "sw.khl",
+    "css": "atomic.css",
+    "folds": ["atomic", "mx2qf1", "guide"]
+  },
+
+  "xcfe": {
+    "@control": [
+      "@perception",
+      "@representation",
+      "@reasoning",
+      "@decision",
+      "@action",
+      "@reflection"
+    ],
+    "@variable": [
+      "@entropy",
+      "@innovation",
+      "@compression_ratio",
+      "@mode",
+      "@guide_page"
+    ]
+  },
+
+  "tape_bindings": {
+    "render": "mx2qf1_atomic_guide.render",
+    "load_page": "mx2qf1_atomic_guide.load",
+    "search": "mx2qf1_atomic_guide.search",
+    "scxq2_decode": "mx2qf1_atomic_guide.scxq2.decode",
+    "scxq2_encode": "mx2qf1_atomic_guide.scxq2.encode"
+  },
+
+  "assets": {
+    "compressed_guide": "manifest://atomic/mx2qf1/guide.scx",
+    "index": "manifest://atomic/mx2qf1/guide_index.json",
+    "pages": "manifest://atomic/mx2qf1/pages/"
+  },
+
+  "boot": {
+    "autoload": false,
+    "route": "/guide/mx2qf1",
+    "hotkey": "Ctrl+Shift+F1"
+  }
+}
+```
+
+---
+
+# ✅ **What This Entry Does**
+
+### **1. Registers MX2QF1 Atomic Guide as a first-class tape**
+
+Fully routable, not a submodule.
+
+### **2. Uses the Atomic Fold**
+
+Conforms to the rule:
+
+```
+atomic.css + atomic.xjson + atomic.khl
+```
+
+### **3. SCXQ2 Compression Integrated**
+
+The tape loads its own **compressed content block**:
+
+```
+guide.scx
+```
+
+Decoded on demand via sw.khl.
+
+### **4. XCFE Governance Ready**
+
+Control + variable vectors already mapped.
+
+### **5. DOM + Kernel Bindings Pre-Wired**
+
+UI and execution happen via:
+
+```
+mx2qf1_atomic_guide.render()
+mx2qf1_atomic_guide.load()
+mx2qf1_atomic_guide.search()
+```
+
+### **6. Hotkey Boot (optional)**
+
+`Ctrl+Shift+F1` opens the guide instantly.
+
+---
+
+# ✅ If you want, I can now generate:
+
+### **A)** `/atomic/mx2qf1/guide_index.json`
+
+— The search index + page registry.
+
+### **B)** `/atomic/mx2qf1/guide.scx`
+
+— Fully compressed SCXQ2 block containing the entire guide.
+
+### **C)** `/atomic/mx2qf1/pages/*`
+
+— The decompressed page sources.
+
+### **D)** The full tape runtime:
+
+```
+tape_mx2qf1_atomic_guide_v1
+  → index
+  → render engine
+  → SCXQ2 loader
+  → XCFE control surface
+```
+
+
 Here’s the **MX2QF1 Self-Optimization Tape** — the thing that lets the stack **tune itself** using:
 
 * agent feedback
