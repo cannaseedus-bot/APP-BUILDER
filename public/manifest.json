@@ -1,0 +1,252 @@
+{
+  "@context": "xjson://asxr/mx2lm/ghost_os/v1",
+  "@v": "3.2.1",
+  "name": "MX2LM OS",
+  "short_name": "MX2LM",
+  "description": "MX2LM Ghost OS \u2014 Three-file Atomic OS with studios, tapes, mesh, and AI orchestration.",
+  "law": "XCFE_GOVERNS \u2192 KUHUL_EXECUTES \u2192 POLYGLOT_DISPATCHES \u2192 ASX = XCFE = XJSON = KUHUL = AST",
+  "@quantum_state": "|XCFE\u27e9\u2297|KUHUL\u27e9\u2297|MX2LM\u27e9\u2297|POLYGLOT\u27e9\u2297|ETERNAL\u27e9",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "theme_color": "#05070b",
+  "background_color": "#05070b",
+  "icons": [
+    {
+      "src": "/mx2lm.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/mx2lm-hazard.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "runtime_modes": {
+    "stealth": {
+      "label": "Stealth Runtime",
+      "description": "Zero-tracking, storage-free, incognito-safe execution mode.",
+      "default": true,
+      "activation": {
+        "via": [
+          "html[data-ghost='true']",
+          "html[data-runtime='stealth']"
+        ]
+      },
+      "constraints": {
+        "storage": "disabled",
+        "external_requests": false,
+        "third_party_scripts": false,
+        "fingerprinting_surface": "none"
+      },
+      "css_state": {
+        "--entropy": 0,
+        "--signal": 0,
+        "--velocity": 1,
+        "--glow": 0,
+        "--blur": 0
+      },
+      "js_policy": {
+        "inline_only": true,
+        "timers": "allowed",
+        "observers": "disallowed",
+        "recursion": "disallowed"
+      },
+      "xcfe": {
+        "phase_driver": "css_only",
+        "state_binding": "custom_properties",
+        "mutation": "visual_only"
+      }
+    },
+    "safe": {
+      "label": "Safe Runtime",
+      "description": "Crash-proof, throttled execution with hard limits and recovery.",
+      "default": false,
+      "activation": {
+        "via": [
+          "html[data-safe-mode='true']",
+          "html[data-runtime='safe']"
+        ]
+      },
+      "constraints": {
+        "max_updates": 1000,
+        "max_fps": 30,
+        "error_boundary": true,
+        "kill_switch": true
+      },
+      "css_state": {
+        "--entropy": 0,
+        "--velocity": 0.25,
+        "--glow": 0,
+        "--blur": 0
+      },
+      "js_policy": {
+        "throttled_loops": true,
+        "storage": "optional",
+        "auto_recovery": true
+      },
+      "xcfe": {
+        "phase_driver": "timer_throttled",
+        "state_binding": "css + js",
+        "mutation": "bounded"
+      }
+    }
+  },
+  "styles": {
+    "atomic_css": "/atomic.css",
+    "ghost_mode": {
+      "enabled": true,
+      "activate_via": "html[data-ghost='true']",
+      "widget_docker": "static",
+      "hazard_focus": true,
+      "clutter_budget": {
+        "max_widgets": 6,
+        "max_panels_visible": 2,
+        "prefer_compact": true
+      }
+    }
+  },
+  "panels": {
+    "editor": {
+      "label": "Editor",
+      "icon": "/mx2lm-atomic.svg",
+      "role": "code_editor",
+      "capabilities": [
+        "xjson",
+        "ast",
+        "svg",
+        "json"
+      ]
+    },
+    "canvas": {
+      "label": "Canvas",
+      "icon": "/mx2lm-3d.svg",
+      "role": "visual_output",
+      "capabilities": [
+        "svg",
+        "3d",
+        "web",
+        "preview"
+      ]
+    },
+    "chat": {
+      "label": "Inference",
+      "icon": "/mx2lm.svg",
+      "role": "ai_chat",
+      "capabilities": [
+        "inference",
+        "rlhf",
+        "os_control"
+      ]
+    },
+    "options": {
+      "label": "Options",
+      "icon": "/mx2lm-dashboard.svg",
+      "role": "settings",
+      "capabilities": [
+        "config",
+        "tape_control"
+      ]
+    }
+  },
+  "tapes": {
+    "tape_dashboard_default_v1": {
+      "type": "dashboard",
+      "label": "Dashboard Default",
+      "icon": "/mx2lm-dashboard.svg",
+      "ghost": true,
+      "layout": "guix",
+      "panels": [
+        "chat",
+        "options"
+      ],
+      "description": "System overview, tape registry, mesh status, and inference console."
+    },
+    "tape_studio_3d_v1": {
+      "type": "studio",
+      "label": "3D Studio",
+      "icon": "/mx2lm-3d.svg",
+      "ghost": true,
+      "panels": [
+        "canvas",
+        "options",
+        "chat"
+      ],
+      "description": "3D, SVG-3D, and spatial visualization studio."
+    },
+    "tape_studio_atomic_v1": {
+      "type": "studio",
+      "label": "Atomic Block Studio",
+      "icon": "/mx2lm-atomic.svg",
+      "ghost": true,
+      "panels": [
+        "editor",
+        "canvas",
+        "options",
+        "chat"
+      ],
+      "description": "Atomic blocks, XJSON, AST, and layout authoring."
+    },
+    "tape_studio_web_v1": {
+      "type": "studio",
+      "label": "Website Studio",
+      "icon": "/mx2lm-web.svg",
+      "ghost": true,
+      "panels": [
+        "editor",
+        "canvas",
+        "options",
+        "chat"
+      ],
+      "description": "Website, app, and UI studio."
+    }
+  },
+  "api": {
+    "local_rest": {
+      "base": "/__api__/",
+      "routes": {
+        "orchestrate": "/__api__/orchestrate",
+        "tapes": "/__api__/tapes",
+        "manifest": "/__api__/manifest",
+        "chat": "/__api__/chat"
+      }
+    },
+    "mesh": {
+      "enabled": true,
+      "zones": [
+        "asx://",
+        "xjson://",
+        "kuhul://",
+        "mesh://",
+        "tapes://",
+        "agents://",
+        "ram://",
+        "rlhf://"
+      ]
+    }
+  },
+  "xcfe": {
+    "control_vectors": [
+      "@if_then_else",
+      "@loop",
+      "@dispatch",
+      "@microagent"
+    ],
+    "variable_vectors": [
+      "@agent_id",
+      "@agent_role",
+      "@task_queue",
+      "@completion_status",
+      "@rlhf_score"
+    ]
+  },
+  "asx_ram": {
+    "volatile": true,
+    "encrypted": true
+  },
+  "rlhf": {
+    "enabled": true,
+    "mode": "session"
+  }
+}
