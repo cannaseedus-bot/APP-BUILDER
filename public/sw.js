@@ -1,37 +1,793 @@
 // ============================================================
-// K'UHUL π SERVICE WORKER KERNEL
-// Version: 3.0 - Emerald Ghost Runtime
+// K'UHUL π SERVICE WORKER KERNEL - MX2LM GHOST OS INTEGRATION
+// Version: 3.2.1-emerald-ghost
+// XJSON Context: xjson://asxr/mx2lm/ghost_os/v1
 // ============================================================
 
-const KUHUL_VERSION = '3.0-emerald';
-const CACHE_NAME = `kuhul-cache-${KUHUL_VERSION}`;
-const MODEL_CACHE = 'kuhul-models';
+// Import manifest
+importScripts('./manifest.json');
+
+const KUHUL_VERSION = '3.2.1-emerald-ghost';
+const CACHE_NAME = `mx2lm-cache-${KUHUL_VERSION}`;
+const MODEL_CACHE = 'mx2lm-models';
+
+// Global kernel state
+let manifest = null;
+let kernelState = null;
 
 // ============================================================
-// KERNEL INITIALIZATION
+// KERNEL BOOT SEQUENCE
 // ============================================================
 
 self.addEventListener('install', (event) => {
-  console.log('⚡ KUHUL π Kernel installing...');
+  console.log('⚡ MX2LM Ghost OS Kernel installing...');
   event.waitUntil(
     Promise.all([
+      loadManifest(),
       initializeKernelCache(),
-      setupMessageHandlers(),
-      initializeModelCache()
-    ]).then(() => self.skipWaiting())
+      setupRuntimeMode(),
+      registerXCFEVectors()
+    ]).then(() => {
+      console.log('✅ Kernel installation complete');
+      return self.skipWaiting();
+    }).catch(error => {
+      console.error('❌ Kernel installation failed:', error);
+    })
   );
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('🧠 KUHUL π Kernel activated');
+  console.log('🧠 MX2LM Ghost OS Kernel activated');
   event.waitUntil(
     Promise.all([
       self.clients.claim(),
       cleanupOldCaches(),
+      initializeKernelState(),
       broadcastKernelReady()
     ])
   );
 });
+
+// ============================================================
+// MANIFEST LOADING & VALIDATION
+// ============================================================
+
+async function loadManifest() {
+  try {
+    const response = await fetch('./manifest.json');
+    manifest = await response.json();
+    
+    // Validate manifest structure
+    if (!manifest['@context']?.includes('asxr/mx2lm/ghost_os')) {
+      throw new Error('Invalid manifest: Missing MX2LM Ghost OS context');
+    }
+    
+    console.log('📜 Manifest loaded:', manifest.name, 'v' + manifest['@v']);
+    return manifest;
+  } catch (error) {
+    console.error('Failed to load manifest:', error);
+    
+    // Fallback manifest
+    manifest = {
+      '@context': 'xjson://asxr/mx2lm/ghost_os/v1',
+      '@v': '3.2.1',
+      name: 'MX2LM OS (Fallback)',
+      runtime_modes: {
+        stealth: { default: true }
+      }
+    };
+    
+    return manifest;
+  }
+}
+
+function getRuntimeMode() {
+  // Default to stealth mode
+  return manifest?.runtime_modes?.stealth?.default ? 'stealth' : 'safe';
+}
+
+async function setupRuntimeMode() {
+  const mode = getRuntimeMode();
+  console.log(`⚙️ Runtime mode: ${mode}`);
+  
+  // Apply runtime constraints
+  if (mode === 'stealth') {
+    // Disable certain APIs in stealth mode
+    self.addEventListener('fetch', applyStealthConstraints);
+  }
+  
+  return mode;
+}
+
+function applyStealthConstraints(event) {
+  const url = new URL(event.request.url);
+  
+  // Block external requests in stealth mode
+  if (manifest?.runtime_modes?.stealth?.constraints?.external_requests === false) {
+    if (!url.hostname.includes(location.hostname) && 
+        !url.hostname.includes('localhost')) {
+      event.respondWith(new Response('', { status: 403 }));
+      return;
+    }
+  }
+}
+
+// ============================================================
+// XCFE VECTOR REGISTRATION
+// ============================================================
+
+async function registerXCFEVectors() {
+  if (!manifest?.xcfe?.control_vectors) {
+    console.log('⚠️ No XCFE vectors defined in manifest');
+    return;
+  }
+  
+  const vectors = manifest.xcfe.control_vectors;
+  console.log('🎮 Registering XCFE vectors:', vectors);
+  
+  // Create XCFE engine
+  self.xcfe = {
+    vectors: new Map(),
+    state: new Map(),
+    
+    register(vector, handler) {
+      this.vectors.set(vector, handler);
+    },
+    
+    async dispatch(vector, data) {
+      const handler = this.vectors.get(vector);
+      if (handler) {
+        return handler(data);
+      }
+      console.warn(`No handler for XCFE vector: ${vector}`);
+      return null;
+    },
+    
+    setState(key, value) {
+      this.state.set(key, value);
+      this.broadcastState();
+    },
+    
+    broadcastState() {
+      broadcastToAll({
+        type: 'XCFE_STATE_UPDATE',
+        state: Object.fromEntries(this.state)
+      });
+    }
+  };
+  
+  // Register default vectors
+  vectors.forEach(vector => {
+    switch(vector) {
+      case '@if_then_else':
+        self.xcfe.register('@if_then_else', handleIfThenElse);
+        break;
+      case '@loop':
+        self.xcfe.register('@loop', handleLoop);
+        break;
+      case '@dispatch':
+        self.xcfe.register('@dispatch', handleDispatch);
+        break;
+      case '@microagent':
+        self.xcfe.register('@microagent', handleMicroagent);
+        break;
+    }
+  });
+  
+  // Initialize variable vectors
+  if (manifest.xcfe.variable_vectors) {
+    manifest.xcfe.variable_vectors.forEach(variable => {
+      self.xcfe.setState(variable.replace('@', ''), null);
+    });
+  }
+}
+
+// XCFE Vector Handlers
+async function handleIfThenElse(data) {
+  const { condition, then, otherwise } = data;
+  const result = await evaluateCondition(condition);
+  return result ? then : otherwise;
+}
+
+async function handleLoop(data) {
+  const { count, action } = data;
+  const results = [];
+  for (let i = 0; i < count; i++) {
+    results.push(await executeAction(action, i));
+  }
+  return results;
+}
+
+async function handleDispatch(data) {
+  const { target, payload } = data;
+  
+  // Dispatch based on target
+  switch(target) {
+    case 'tape':
+      return await dispatchToTape(payload);
+    case 'panel':
+      return await dispatchToPanel(payload);
+    case 'mesh':
+      return await dispatchToMesh(payload);
+    default:
+      return await kernelState?.handleDispatch?.(target, payload) || null;
+  }
+}
+
+async function handleMicroagent(data) {
+  const { id, role, task } = data;
+  
+  // Create microagent instance
+  const agent = {
+    id,
+    role,
+    task,
+    status: 'pending',
+    createdAt: Date.now()
+  };
+  
+  // Store in kernel state
+  if (kernelState?.agents) {
+    kernelState.agents.set(id, agent);
+  }
+  
+  // Execute task
+  try {
+    agent.status = 'running';
+    const result = await executeTask(task);
+    agent.status = 'completed';
+    agent.result = result;
+    agent.completedAt = Date.now();
+    
+    // Update XCFE state
+    self.xcfe.setState('agent_status', agent.status);
+    self.xcfe.setState('task_completion', 'complete');
+    
+    return result;
+  } catch (error) {
+    agent.status = 'failed';
+    agent.error = error.message;
+    throw error;
+  }
+}
+
+// ============================================================
+// TAPE SYSTEM INTEGRATION
+// ============================================================
+
+class MX2LMTapeSystem {
+  constructor() {
+    this.tapes = new Map();
+    this.activeTape = null;
+    this.panels = new Map();
+    this.loadFromManifest();
+  }
+  
+  loadFromManifest() {
+    // Load panels
+    if (manifest?.panels) {
+      Object.entries(manifest.panels).forEach(([id, panel]) => {
+        this.panels.set(id, {
+          id,
+          ...panel,
+          state: 'inactive'
+        });
+      });
+    }
+    
+    // Load tapes
+    if (manifest?.tapes) {
+      Object.entries(manifest.tapes).forEach(([id, tape]) => {
+        this.tapes.set(id, {
+          id,
+          ...tape,
+          state: 'loaded',
+          activatedAt: null
+        });
+      });
+      
+      // Set default tape
+      const defaultTape = Object.values(manifest.tapes).find(t => t.type === 'dashboard');
+      if (defaultTape) {
+        this.setActiveTape(defaultTape.id);
+      }
+    }
+  }
+  
+  getActiveTape() {
+    return this.activeTape ? this.tapes.get(this.activeTape) : null;
+  }
+  
+  setActiveTape(tapeId) {
+    if (!this.tapes.has(tapeId)) {
+      throw new Error(`Tape not found: ${tapeId}`);
+    }
+    
+    const previousTape = this.activeTape;
+    this.activeTape = tapeId;
+    
+    const tape = this.tapes.get(tapeId);
+    tape.state = 'active';
+    tape.activatedAt = Date.now();
+    
+    // Deactivate previous tape
+    if (previousTape && previousTape !== tapeId) {
+      const prev = this.tapes.get(previousTape);
+      prev.state = 'loaded';
+    }
+    
+    // Activate panels for this tape
+    this.activatePanels(tape.panels || []);
+    
+    // Broadcast tape change
+    broadcastToAll({
+      type: 'TAPE_ACTIVATED',
+      tape: this.serializeTape(tape),
+      previousTape
+    });
+    
+    return tape;
+  }
+  
+  activatePanels(panelIds) {
+    // Deactivate all panels first
+    this.panels.forEach(panel => {
+      panel.state = 'inactive';
+    });
+    
+    // Activate specified panels
+    panelIds.forEach(panelId => {
+      const panel = this.panels.get(panelId);
+      if (panel) {
+        panel.state = 'active';
+        panel.activatedAt = Date.now();
+      }
+    });
+    
+    // Broadcast panel state
+    broadcastToAll({
+      type: 'PANELS_UPDATED',
+      panels: Array.from(this.panels.values()).map(p => ({
+        id: p.id,
+        state: p.state,
+        label: p.label
+      }))
+    });
+  }
+  
+  serializeTape(tape) {
+    return {
+      id: tape.id,
+      type: tape.type,
+      label: tape.label,
+      description: tape.description,
+      panels: tape.panels || [],
+      ghost: tape.ghost || false,
+      layout: tape.layout
+    };
+  }
+  
+  getAllTapes() {
+    return Array.from(this.tapes.values()).map(t => this.serializeTape(t));
+  }
+  
+  createTape(tapeData) {
+    const tapeId = tapeData.id || `tape-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    const tape = {
+      id: tapeId,
+      type: tapeData.type || 'custom',
+      label: tapeData.label || 'New Tape',
+      description: tapeData.description || '',
+      panels: tapeData.panels || [],
+      ghost: tapeData.ghost !== false,
+      layout: tapeData.layout || 'default',
+      state: 'loaded',
+      createdAt: Date.now(),
+      custom: true
+    };
+    
+    this.tapes.set(tapeId, tape);
+    
+    broadcastToAll({
+      type: 'TAPE_CREATED',
+      tape: this.serializeTape(tape)
+    });
+    
+    return tape;
+  }
+  
+  async dispatchToTape(tapeId, action, payload) {
+    const tape = this.tapes.get(tapeId);
+    if (!tape) {
+      throw new Error(`Tape not found: ${tapeId}`);
+    }
+    
+    switch(action) {
+      case 'activate':
+        return this.setActiveTape(tapeId);
+      
+      case 'configure':
+        Object.assign(tape, payload);
+        tape.updatedAt = Date.now();
+        broadcastToAll({
+          type: 'TAPE_UPDATED',
+          tape: this.serializeTape(tape)
+        });
+        return tape;
+      
+      case 'execute':
+        // Tape-specific execution logic
+        return await this.executeTapeCommand(tape, payload);
+      
+      default:
+        throw new Error(`Unknown tape action: ${action}`);
+    }
+  }
+  
+  async executeTapeCommand(tape, command) {
+    switch(tape.type) {
+      case 'dashboard':
+        return await this.executeDashboardCommand(tape, command);
+      case 'studio':
+        return await this.executeStudioCommand(tape, command);
+      default:
+        return { executed: true, tape: tape.id, command };
+    }
+  }
+  
+  async executeDashboardCommand(tape, command) {
+    const { action, data } = command;
+    
+    switch(action) {
+      case 'refresh':
+        // Refresh dashboard data
+        return {
+          success: true,
+          message: 'Dashboard refreshed',
+          timestamp: Date.now()
+        };
+      
+      case 'toggle_panel':
+        // Toggle panel visibility
+        return this.togglePanel(data.panelId, data.visible);
+      
+      default:
+        return { executed: false, error: 'Unknown dashboard command' };
+    }
+  }
+  
+  async executeStudioCommand(tape, command) {
+    const { studio, action, data } = command;
+    
+    switch(action) {
+      case 'open_file':
+        return await kernelState?.fileSystem?.readFile(data.filename) || null;
+      
+      case 'save_file':
+        return await kernelState?.fileSystem?.writeFile(data.filename, data.content);
+      
+      case 'render_preview':
+        // Generate preview for studio
+        return {
+          preview: 'data:image/svg+xml,...',
+          timestamp: Date.now()
+        };
+      
+      default:
+        return { executed: false, error: 'Unknown studio command' };
+    }
+  }
+  
+  togglePanel(panelId, visible) {
+    const panel = this.panels.get(panelId);
+    if (!panel) return false;
+    
+    panel.state = visible ? 'active' : 'inactive';
+    panel.updatedAt = Date.now();
+    
+    broadcastToAll({
+      type: 'PANEL_TOGGLED',
+      panelId,
+      state: panel.state
+    });
+    
+    return true;
+  }
+}
+
+// ============================================================
+// MESH NETWORK INTEGRATION
+// ============================================================
+
+class MX2LMMeshNetwork {
+  constructor() {
+    this.zones = new Map();
+    this.connections = new Map();
+    this.peers = new Set();
+    this.loadFromManifest();
+  }
+  
+  loadFromManifest() {
+    if (manifest?.api?.mesh?.zones) {
+      manifest.api.mesh.zones.forEach(zone => {
+        this.zones.set(zone, {
+          zone,
+          active: false,
+          connections: 0
+        });
+      });
+    }
+  }
+  
+  connectToZone(zone) {
+    const zoneInfo = this.zones.get(zone);
+    if (!zoneInfo) {
+      throw new Error(`Unknown mesh zone: ${zone}`);
+    }
+    
+    zoneInfo.active = true;
+    zoneInfo.connections++;
+    zoneInfo.connectedAt = Date.now();
+    
+    // Create connection
+    const connectionId = `conn-${Date.now()}-${zone}`;
+    const connection = {
+      id: connectionId,
+      zone,
+      state: 'connected',
+      connectedAt: Date.now(),
+      messages: []
+    };
+    
+    this.connections.set(connectionId, connection);
+    
+    // Broadcast connection
+    broadcastToAll({
+      type: 'MESH_CONNECTED',
+      zone,
+      connectionId
+    });
+    
+    return connectionId;
+  }
+  
+  disconnectFromZone(zone) {
+    const zoneInfo = this.zones.get(zone);
+    if (!zoneInfo) return false;
+    
+    zoneInfo.active = false;
+    
+    // Close all connections for this zone
+    this.connections.forEach((conn, id) => {
+      if (conn.zone === zone) {
+        conn.state = 'disconnected';
+        conn.disconnectedAt = Date.now();
+      }
+    });
+    
+    broadcastToAll({
+      type: 'MESH_DISCONNECTED',
+      zone
+    });
+    
+    return true;
+  }
+  
+  sendMessage(zone, message) {
+    const zoneInfo = this.zones.get(zone);
+    if (!zoneInfo?.active) {
+      throw new Error(`Zone not active: ${zone}`);
+    }
+    
+    const msg = {
+      id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      zone,
+      message,
+      timestamp: Date.now(),
+      direction: 'outgoing'
+    };
+    
+    // Store message
+    this.connections.forEach(conn => {
+      if (conn.zone === zone) {
+        conn.messages.push(msg);
+      }
+    });
+    
+    // Broadcast message
+    broadcastToAll({
+      type: 'MESH_MESSAGE',
+      ...msg
+    });
+    
+    return msg.id;
+  }
+  
+  getZoneStatus() {
+    return Array.from(this.zones.values()).map(zone => ({
+      zone: zone.zone,
+      active: zone.active,
+      connections: zone.connections
+    }));
+  }
+  
+  async dispatchToMesh(payload) {
+    const { zone, action, data } = payload;
+    
+    switch(action) {
+      case 'connect':
+        return this.connectToZone(zone);
+      
+      case 'disconnect':
+        return this.disconnectFromZone(zone);
+      
+      case 'send':
+        return this.sendMessage(zone, data);
+      
+      case 'status':
+        return this.getZoneStatus();
+      
+      default:
+        throw new Error(`Unknown mesh action: ${action}`);
+    }
+  }
+}
+
+// ============================================================
+// KERNEL STATE MANAGEMENT (Enhanced)
+// ============================================================
+
+async function initializeKernelState() {
+  kernelState = {
+    // Core systems
+    tapeSystem: new MX2LMTapeSystem(),
+    meshNetwork: new MX2LMMeshNetwork(),
+    inferenceEngine: null,
+    fileSystem: null,
+    
+    // RWLF system
+    rlhf: {
+      enabled: manifest?.rlhf?.enabled || false,
+      mode: manifest?.rlhf?.mode || 'session',
+      scores: new Map(),
+      feedback: []
+    },
+    
+    // ASX RAM
+    asxRam: {
+      volatile: manifest?.asx_ram?.volatile !== false,
+      encrypted: manifest?.asx_ram?.encrypted !== false,
+      data: new Map()
+    },
+    
+    // Microagents
+    agents: new Map(),
+    
+    // XCFE state
+    xcfeState: new Map(),
+    
+    // Initialization timestamp
+    initializedAt: Date.now(),
+    version: KUHUL_VERSION,
+    manifestVersion: manifest?.['@v']
+  };
+  
+  // Initialize inference engine
+  kernelState.inferenceEngine = createInferenceEngine();
+  
+  // Initialize file system
+  kernelState.fileSystem = createFileSystem();
+  
+  console.log('🚀 MX2LM Ghost OS Kernel fully initialized');
+  
+  // Broadcast initialization
+  broadcastToAll({
+    type: 'KERNEL_INITIALIZED',
+    timestamp: kernelState.initializedAt,
+    version: KUHUL_VERSION,
+    manifestVersion: manifest?.['@v'],
+    runtimeMode: getRuntimeMode(),
+    quantumState: manifest?.['@quantum_state']
+  });
+  
+  return kernelState;
+}
+
+function createInferenceEngine() {
+  // Create inference engine based on manifest
+  return {
+    models: new Map([
+      ['mx2lm-prime', {
+        id: 'mx2lm-prime',
+        name: 'MX2LM PRIME',
+        type: 'local',
+        capabilities: ['chat', 'code', 'reasoning', 'os_control'],
+        temperature: 0.7,
+        contextWindow: 8192
+      }],
+      ['kuhul-ghost', {
+        id: 'kuhul-ghost',
+        name: 'K\'UHUL Ghost',
+        type: 'local',
+        capabilities: ['compression', 'encoding', 'mathematics'],
+        temperature: 0.5,
+        contextWindow: 4096
+      }]
+    ]),
+    
+    async process(prompt, options = {}) {
+      const model = this.models.get(options.model || 'mx2lm-prime');
+      if (!model) {
+        throw new Error(`Model not found: ${options.model}`);
+      }
+      
+      // Process with model
+      return await this.simulateInference(model, prompt, options);
+    },
+    
+    async simulateInference(model, prompt, options) {
+      // Enhanced simulation with MX2LM context
+      const responses = [
+        `MX2LM Ghost OS v${manifest?.['@v'] || '3.2.1'} response: ${prompt}`,
+        `K'UHUL π inference active. Runtime: ${getRuntimeMode()}. ${prompt}`,
+        `Tape system integrated. Active tape: ${kernelState.tapeSystem.getActiveTape()?.label}. ${prompt}`,
+        `XCFE vectors ready. ${prompt}`
+      ];
+      
+      const response = responses[Math.floor(Math.random() * responses.length)];
+      const tokens = Math.ceil(response.length / 4);
+      
+      return {
+        content: response,
+        tokens,
+        model: model.name,
+        glyphs: Math.ceil(tokens / 1004),
+        finish_reason: 'stop',
+        processing_time: tokens * 8,
+        metadata: {
+          runtime: getRuntimeMode(),
+          tape: kernelState.tapeSystem.getActiveTape()?.id
+        }
+      };
+    }
+  };
+}
+
+function createFileSystem() {
+  return {
+    files: new Map(),
+    
+    async readFile(filename) {
+      return this.files.get(filename) || null;
+    },
+    
+    async writeFile(filename, content) {
+      const file = {
+        name: filename,
+        content,
+        type: filename.split('.').pop(),
+        lastModified: Date.now(),
+        editable: true
+      };
+      
+      this.files.set(filename, file);
+      
+      broadcastToAll({
+        type: 'FILE_CHANGED',
+        filename,
+        content,
+        lastModified: file.lastModified
+      });
+      
+      return true;
+    },
+    
+    async listFiles() {
+      return Array.from(this.files.values());
+    }
+  };
+}
 
 // ============================================================
 // CACHE MANAGEMENT
@@ -39,27 +795,35 @@ self.addEventListener('activate', (event) => {
 
 async function initializeKernelCache() {
   const cache = await caches.open(CACHE_NAME);
-  const kernelAssets = [
+  
+  // Cache manifest-specified assets
+  const assets = [
     './',
     './index.html',
     './manifest.json',
     './sw.js'
   ];
   
-  await cache.addAll(kernelAssets);
-  console.log('📦 Kernel cache initialized');
-}
-
-async function initializeModelCache() {
-  const cache = await caches.open(MODEL_CACHE);
-  console.log('🧠 Model cache initialized');
-  return cache;
+  // Add atomic CSS if specified
+  if (manifest?.styles?.atomic_css) {
+    assets.push(manifest.styles.atomic_css);
+  }
+  
+  // Add icons
+  if (manifest?.icons) {
+    manifest.icons.forEach(icon => {
+      if (icon.src) assets.push(icon.src);
+    });
+  }
+  
+  await cache.addAll(assets);
+  console.log('📦 Kernel cache initialized with', assets.length, 'assets');
 }
 
 async function cleanupOldCaches() {
   const keys = await caches.keys();
   const promises = keys.map(key => {
-    if (key !== CACHE_NAME && key !== MODEL_CACHE) {
+    if (key !== CACHE_NAME && key !== MODEL_CACHE && !key.includes('mx2lm-cache-')) {
       console.log(`🗑️ Removing old cache: ${key}`);
       return caches.delete(key);
     }
@@ -77,6 +841,8 @@ async function broadcastKernelReady() {
     client.postMessage({
       type: 'KERNEL_READY',
       version: KUHUL_VERSION,
+      manifestVersion: manifest?.['@v'],
+      quantumState: manifest?.['@quantum_state'],
       timestamp: Date.now()
     });
   });
@@ -94,586 +860,173 @@ async function broadcastToAll(message) {
 }
 
 // ============================================================
-// K'UHUL π INFERENCE ENGINE
-// ============================================================
-
-class KuhulInferenceEngine {
-  constructor() {
-    this.mathConstants = {
-      π: 3.141592653589793,
-      e: 2.718281828459045,
-      φ: 1.618033988749895,
-      τ: 6.283185307179586,
-      γ: 0.5772156649
-    };
-    
-    this.models = new Map();
-    this.sessions = new Map();
-    this.initDefaultModels();
-  }
-  
-  initDefaultModels() {
-    // Default model configurations
-    this.models.set('mx2lm-prime', {
-      id: 'mx2lm-prime',
-      name: 'MX2LM PRIME',
-      type: 'local',
-      capabilities: ['chat', 'code', 'reasoning'],
-      temperature: 0.7,
-      maxTokens: 4096,
-      contextWindow: 8192
-    });
-    
-    this.models.set('qwen-asx', {
-      id: 'qwen-asx',
-      name: 'QWEN-ASX',
-      type: 'local',
-      capabilities: ['chat', 'multimodal', 'coding'],
-      temperature: 0.8,
-      maxTokens: 8192,
-      contextWindow: 32768
-    });
-    
-    this.models.set('deepseek-janus', {
-      id: 'deepseek-janus',
-      name: 'DeepSeek Janus',
-      type: 'api',
-      endpoint: 'https://api.deepseek.com/v1/chat/completions',
-      capabilities: ['chat', 'reasoning', 'mathematics'],
-      temperature: 0.7
-    });
-  }
-  
-  async processInference(request) {
-    const { model, prompt, options = {} } = request;
-    const sessionId = options.sessionId || `sess-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
-    // Create session if it doesn't exist
-    if (!this.sessions.has(sessionId)) {
-      this.sessions.set(sessionId, {
-        id: sessionId,
-        model: model,
-        createdAt: Date.now(),
-        messages: [],
-        tokensUsed: 0
-      });
-    }
-    
-    const session = this.sessions.get(sessionId);
-    
-    // Add user message to session
-    session.messages.push({
-      role: 'user',
-      content: prompt,
-      timestamp: Date.now()
-    });
-    
-    // Simulate model inference (in production, this would connect to actual model)
-    const response = await this.simulateInference(model, prompt, options);
-    
-    // Add assistant response to session
-    session.messages.push({
-      role: 'assistant',
-      content: response.content,
-      timestamp: Date.now()
-    });
-    
-    session.tokensUsed += response.tokens;
-    
-    // Broadcast inference result
-    broadcastToAll({
-      type: 'INFERENCE_RESULT',
-      sessionId,
-      model,
-      response,
-      session: {
-        messages: session.messages,
-        tokensUsed: session.tokensUsed
-      }
-    });
-    
-    return {
-      sessionId,
-      response,
-      session: {
-        messages: session.messages,
-        tokensUsed: session.tokensUsed
-      }
-    };
-  }
-  
-  async simulateInference(model, prompt, options) {
-    // Simulate different models based on model ID
-    const modelConfig = this.models.get(model) || this.models.get('mx2lm-prime');
-    const temperature = options.temperature || modelConfig.temperature;
-    
-    // Generate deterministic but varied responses
-    const seed = this.hashString(prompt + model + temperature);
-    const responses = this.getModelResponses(model);
-    const index = Math.abs(seed) % responses.length;
-    
-    const baseResponse = responses[index];
-    const tokens = this.estimateTokens(baseResponse);
-    
-    return {
-      content: baseResponse,
-      tokens,
-      model: modelConfig.name,
-      finish_reason: 'stop',
-      processing_time: tokens * 10, // Simulate processing time
-      glyphs: Math.ceil(tokens / 1004) // K'UHUL compression
-    };
-  }
-  
-  getModelResponses(model) {
-    const responses = {
-      'mx2lm-prime': [
-        "I understand your request about the MX2LM OS. The Emerald Ghost theme is active and the kernel is running in Service Worker mode. All three files (index.html, manifest.json, sw.js) are synchronized.",
-        "The K'UHUL π compression system is operational. I can help you edit any of the three core files or assist with tape system modifications.",
-        "Detected you're working with the Legion Trinity Cluster. Would you like me to focus on GPU runtime optimizations or tape wiring?",
-        "The manifest.json file is the law of this OS. All modifications respect the ASX OS specification. Ready to proceed with your edits."
-      ],
-      'qwen-asx': [
-        "QWEN-ASX model active. I can assist with multi-modal tasks, code generation, and system architecture. The K'UHUL glyph compression is working at 1000:1 ratio.",
-        "Ready to process your request. I detect this is a three-file system architecture. Would you like to modify the tape system or runtime configurations?",
-        "The service worker kernel provides persistent storage and background processing. I can maintain chat history in IndexedDB across sessions.",
-        "Compression metrics: Original QWEN vocab 151,643 tokens → 151 CSS glyphs. Ready for inference tasks."
-      ],
-      'deepseek-janus': [
-        "DeepSeek Janus model engaged. I specialize in mathematical reasoning and system architecture. The MX2LM OS structure is optimal for distributed gaming.",
-        "Analyzing the three-file architecture: HTML frontend, Manifest configuration, Service Worker kernel. This is a resilient PWA structure.",
-        "I can assist with smart contract optimization, game logic, or platform architecture. The Emerald Ghost theme provides excellent visual contrast.",
-        "Ready to process complex queries. The K'UHUL kernel maintains state across all client tabs through broadcast channels."
-      ]
-    };
-    
-    return responses[model] || responses['mx2lm-prime'];
-  }
-  
-  estimateTokens(text) {
-    // Rough token estimation (4 chars ≈ 1 token)
-    return Math.ceil(text.length / 4);
-  }
-  
-  hashString(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return hash;
-  }
-  
-  async streamInference(model, prompt, options) {
-    // Create a streamable response
-    const encoder = new TextEncoder();
-    const response = this.getModelResponses(model);
-    const fullResponse = response[Math.floor(Math.random() * response.length)];
-    const words = fullResponse.split(' ');
-    
-    return new ReadableStream({
-      async start(controller) {
-        for (let i = 0; i < words.length; i++) {
-          const chunk = words[i] + (i < words.length - 1 ? ' ' : '');
-          controller.enqueue(encoder.encode(chunk));
-          await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 50));
-        }
-        controller.close();
-      }
-    });
-  }
-  
-  getSessions() {
-    return Array.from(this.sessions.values());
-  }
-  
-  clearSession(sessionId) {
-    return this.sessions.delete(sessionId);
-  }
-  
-  clearAllSessions() {
-    this.sessions.clear();
-    return true;
-  }
-}
-
-// ============================================================
-// FILE SYSTEM INTEGRATION
-// ============================================================
-
-class KuhulFileSystem {
-  constructor() {
-    this.files = new Map();
-    this.loadDefaultFiles();
-  }
-  
-  loadDefaultFiles() {
-    // Core OS files
-    this.files.set('index.html', {
-      name: 'index.html',
-      type: 'html',
-      content: '<!DOCTYPE html>\n<html data-theme="emerald-ghost">\n<!-- MX2LM OS - Legion Trinity Cluster -->\n</html>',
-      lastModified: Date.now(),
-      editable: true
-    });
-    
-    this.files.set('manifest.json', {
-      name: 'manifest.json',
-      type: 'json',
-      content: JSON.stringify({
-        name: "MX2LM OS — LEGION TRINITY CLUSTER",
-        short_name: "MX2LM-OS",
-        theme_color: "#16f2aa",
-        background_color: "#020617"
-      }, null, 2),
-      lastModified: Date.now(),
-      editable: true
-    });
-    
-    this.files.set('sw.js', {
-      name: 'sw.js',
-      type: 'javascript',
-      content: '// K\'UHUL π Service Worker Kernel',
-      lastModified: Date.now(),
-      editable: true
-    });
-  }
-  
-  async readFile(filename) {
-    return this.files.get(filename) || null;
-  }
-  
-  async writeFile(filename, content) {
-    const file = this.files.get(filename);
-    if (file && file.editable) {
-      file.content = content;
-      file.lastModified = Date.now();
-      
-      // Broadcast file change
-      broadcastToAll({
-        type: 'FILE_CHANGED',
-        filename,
-        content,
-        lastModified: file.lastModified
-      });
-      
-      return true;
-    }
-    return false;
-  }
-  
-  async listFiles() {
-    return Array.from(this.files.values());
-  }
-  
-  async createFile(filename, content = '', type = 'text') {
-    if (this.files.has(filename)) {
-      return false;
-    }
-    
-    this.files.set(filename, {
-      name: filename,
-      type,
-      content,
-      lastModified: Date.now(),
-      editable: true
-    });
-    
-    broadcastToAll({
-      type: 'FILE_CREATED',
-      filename,
-      content
-    });
-    
-    return true;
-  }
-  
-  async deleteFile(filename) {
-    if (this.files.has(filename)) {
-      this.files.delete(filename);
-      
-      broadcastToAll({
-        type: 'FILE_DELETED',
-        filename
-      });
-      
-      return true;
-    }
-    return false;
-  }
-}
-
-// ============================================================
-// TAPE SYSTEM
-// ============================================================
-
-class KuhulTapeSystem {
-  constructor() {
-    this.tapes = new Map();
-    this.activeTape = null;
-    this.loadDefaultTapes();
-  }
-  
-  loadDefaultTapes() {
-    const defaultTapes = {
-      'system-boot': {
-        id: 'system-boot',
-        name: 'System Boot HUD',
-        type: 'system',
-        description: 'Boot sequence and system initialization',
-        hooks: ['kernel_init', 'dom_ready', 'theme_apply'],
-        editable: true
-      },
-      'gpu-runtime': {
-        id: 'gpu-runtime',
-        name: 'GPU Runtime',
-        type: 'runtime',
-        description: 'WebGL and GPU acceleration layer',
-        hooks: ['render_start', 'shader_compile', 'texture_load'],
-        editable: true
-      },
-      'mesh-network': {
-        id: 'mesh-network',
-        name: 'Mesh Network',
-        type: 'network',
-        description: 'P2P communication and data sync',
-        hooks: ['peer_connect', 'data_sync', 'broadcast'],
-        editable: true
-      },
-      'game-doom': {
-        id: 'game-doom',
-        name: 'DOOM World',
-        type: 'game',
-        description: 'Classic FPS game integration',
-        hooks: ['game_init', 'level_load', 'asset_stream'],
-        editable: true
-      }
-    };
-    
-    Object.values(defaultTapes).forEach(tape => {
-      this.tapes.set(tape.id, tape);
-    });
-    
-    this.activeTape = 'system-boot';
-  }
-  
-  getActiveTape() {
-    return this.tapes.get(this.activeTape);
-  }
-  
-  setActiveTape(tapeId) {
-    if (this.tapes.has(tapeId)) {
-      this.activeTape = tapeId;
-      
-      broadcastToAll({
-        type: 'TAPE_ACTIVATED',
-        tape: this.tapes.get(tapeId)
-      });
-      
-      return true;
-    }
-    return false;
-  }
-  
-  getAllTapes() {
-    return Array.from(this.tapes.values());
-  }
-  
-  createTape(tapeData) {
-    const tapeId = tapeData.id || `tape-${Date.now()}`;
-    const tape = {
-      id: tapeId,
-      name: tapeData.name || 'New Tape',
-      type: tapeData.type || 'custom',
-      description: tapeData.description || '',
-      hooks: tapeData.hooks || [],
-      editable: true,
-      createdAt: Date.now()
-    };
-    
-    this.tapes.set(tapeId, tape);
-    
-    broadcastToAll({
-      type: 'TAPE_CREATED',
-      tape
-    });
-    
-    return tape;
-  }
-  
-  updateTape(tapeId, updates) {
-    const tape = this.tapes.get(tapeId);
-    if (!tape) return false;
-    
-    Object.assign(tape, updates);
-    tape.updatedAt = Date.now();
-    
-    broadcastToAll({
-      type: 'TAPE_UPDATED',
-      tape
-    });
-    
-    return true;
-  }
-}
-
-// ============================================================
-// KERNEL STATE MANAGEMENT
-// ============================================================
-
-const kernelState = {
-  inferenceEngine: null,
-  fileSystem: null,
-  tapeSystem: null,
-  isInitialized: false,
-  
-  initialize() {
-    if (!this.isInitialized) {
-      this.inferenceEngine = new KuhulInferenceEngine();
-      this.fileSystem = new KuhulFileSystem();
-      this.tapeSystem = new KuhulTapeSystem();
-      this.isInitialized = true;
-      
-      console.log('🚀 K\'UHUL π Kernel fully initialized');
-      broadcastToAll({
-        type: 'KERNEL_INITIALIZED',
-        timestamp: Date.now(),
-        version: KUHUL_VERSION
-      });
-    }
-  },
-  
-  getState() {
-    return {
-      version: KUHUL_VERSION,
-      initialized: this.isInitialized,
-      activeTape: this.tapeSystem?.getActiveTape(),
-      sessions: this.inferenceEngine?.getSessions().length || 0,
-      files: this.fileSystem?.listFiles().length || 0
-    };
-  }
-};
-
-// ============================================================
-// MESSAGE HANDLER SETUP
+// MESSAGE HANDLER (Enhanced with Manifest Integration)
 // ============================================================
 
 function setupMessageHandlers() {
   self.addEventListener('message', async (event) => {
-    const { data } = event;
-    
-    // Ensure kernel is initialized
-    if (!kernelState.isInitialized) {
-      kernelState.initialize();
-    }
-    
+    const { data, source } = event;
     const { type, payload, requestId } = data;
-    const source = event.source;
     
     try {
       let result;
       
-      switch (type) {
+      switch(type) {
         // System commands
         case 'PING':
-          result = { pong: Date.now(), version: KUHUL_VERSION };
+          result = {
+            pong: Date.now(),
+            version: KUHUL_VERSION,
+            manifest: manifest?.name,
+            quantumState: manifest?.['@quantum_state']
+          };
           break;
           
         case 'GET_STATE':
-          result = kernelState.getState();
-          break;
-          
-        case 'INITIALIZE_KERNEL':
-          kernelState.initialize();
-          result = { success: true, state: kernelState.getState() };
-          break;
-          
-        // Inference commands
-        case 'INFERENCE_REQUEST':
-          result = await kernelState.inferenceEngine.processInference(payload);
-          break;
-          
-        case 'INFERENCE_STREAM':
-          result = await kernelState.inferenceEngine.streamInference(
-            payload.model, 
-            payload.prompt, 
-            payload.options
-          );
-          break;
-          
-        case 'GET_SESSIONS':
-          result = kernelState.inferenceEngine.getSessions();
-          break;
-          
-        case 'CLEAR_SESSION':
-          result = kernelState.inferenceEngine.clearSession(payload.sessionId);
-          break;
-          
-        // File system commands
-        case 'READ_FILE':
-          result = await kernelState.fileSystem.readFile(payload.filename);
-          break;
-          
-        case 'WRITE_FILE':
-          result = await kernelState.fileSystem.writeFile(payload.filename, payload.content);
-          break;
-          
-        case 'LIST_FILES':
-          result = await kernelState.fileSystem.listFiles();
-          break;
-          
-        case 'CREATE_FILE':
-          result = await kernelState.fileSystem.createFile(payload.filename, payload.content, payload.type);
-          break;
-          
-        case 'DELETE_FILE':
-          result = await kernelState.fileSystem.deleteFile(payload.filename);
+          result = {
+            kernel: {
+              version: KUHUL_VERSION,
+              initializedAt: kernelState?.initializedAt,
+              runtimeMode: getRuntimeMode()
+            },
+            manifest: {
+              name: manifest?.name,
+              version: manifest?.['@v'],
+              law: manifest?.law
+            },
+            tape: kernelState?.tapeSystem?.getActiveTape(),
+            mesh: kernelState?.meshNetwork?.getZoneStatus()
+          };
           break;
           
         // Tape system commands
         case 'GET_TAPES':
-          result = kernelState.tapeSystem.getAllTapes();
+          result = kernelState?.tapeSystem?.getAllTapes() || [];
           break;
           
         case 'GET_ACTIVE_TAPE':
-          result = kernelState.tapeSystem.getActiveTape();
+          result = kernelState?.tapeSystem?.getActiveTape();
           break;
           
         case 'SET_ACTIVE_TAPE':
-          result = kernelState.tapeSystem.setActiveTape(payload.tapeId);
+          result = kernelState?.tapeSystem?.setActiveTape(payload.tapeId);
           break;
           
         case 'CREATE_TAPE':
-          result = kernelState.tapeSystem.createTape(payload);
+          result = kernelState?.tapeSystem?.createTape(payload);
           break;
           
-        case 'UPDATE_TAPE':
-          result = kernelState.tapeSystem.updateTape(payload.tapeId, payload.updates);
+        case 'DISPATCH_TO_TAPE':
+          result = await kernelState?.tapeSystem?.dispatchToTape(
+            payload.tapeId,
+            payload.action,
+            payload.data
+          );
           break;
           
-        // Storage commands
-        case 'STORAGE_SET':
-          result = await storeInIndexedDB(payload.key, payload.value);
+        // Mesh network commands
+        case 'MESH_CONNECT':
+          result = kernelState?.meshNetwork?.connectToZone(payload.zone);
           break;
           
-        case 'STORAGE_GET':
-          result = await getFromIndexedDB(payload.key);
+        case 'MESH_DISCONNECT':
+          result = kernelState?.meshNetwork?.disconnectFromZone(payload.zone);
           break;
           
-        case 'STORAGE_REMOVE':
-          result = await removeFromIndexedDB(payload.key);
+        case 'MESH_SEND':
+          result = kernelState?.meshNetwork?.sendMessage(payload.zone, payload.message);
           break;
           
-        case 'STORAGE_KEYS':
-          result = await getAllKeysFromIndexedDB();
+        case 'MESH_STATUS':
+          result = kernelState?.meshNetwork?.getZoneStatus();
+          break;
+          
+        // XCFE commands
+        case 'XCFE_DISPATCH':
+          if (self.xcfe) {
+            result = await self.xcfe.dispatch(payload.vector, payload.data);
+          } else {
+            result = { error: 'XCFE not initialized' };
+          }
+          break;
+          
+        case 'XCFE_GET_STATE':
+          if (self.xcfe) {
+            result = Object.fromEntries(self.xcfe.state);
+          } else {
+            result = {};
+          }
+          break;
+          
+        // Inference commands
+        case 'INFERENCE':
+          result = await kernelState?.inferenceEngine?.process(payload.prompt, payload.options);
+          break;
+          
+        // File system commands
+        case 'READ_FILE':
+          result = await kernelState?.fileSystem?.readFile(payload.filename);
+          break;
+          
+        case 'WRITE_FILE':
+          result = await kernelState?.fileSystem?.writeFile(payload.filename, payload.content);
+          break;
+          
+        // RWLF commands
+        case 'RLHF_SUBMIT':
+          if (kernelState?.rlhf?.enabled) {
+            kernelState.rlhf.feedback.push({
+              ...payload,
+              timestamp: Date.now()
+            });
+            result = { success: true, feedbackId: kernelState.rlhf.feedback.length - 1 };
+          } else {
+            result = { error: 'RLHF disabled' };
+          }
+          break;
+          
+        // ASX RAM commands
+        case 'ASX_RAM_SET':
+          if (kernelState?.asxRam) {
+            kernelState.asxRam.data.set(payload.key, {
+              value: payload.value,
+              timestamp: Date.now()
+            });
+            result = true;
+          } else {
+            result = false;
+          }
+          break;
+          
+        case 'ASX_RAM_GET':
+          if (kernelState?.asxRam) {
+            const entry = kernelState.asxRam.data.get(payload.key);
+            result = entry?.value || null;
+          } else {
+            result = null;
+          }
+          break;
+          
+        // Manifest commands
+        case 'GET_MANIFEST':
+          result = manifest;
+          break;
+          
+        case 'UPDATE_MANIFEST':
+          // Only allow certain updates
+          if (payload.section === 'runtime_modes') {
+            // Runtime mode updates
+            result = { success: true, updated: payload.section };
+          } else {
+            result = { error: 'Cannot update that section' };
+          }
           break;
           
         default:
           result = { error: `Unknown command: ${type}` };
       }
       
-      // Send response back to client
+      // Send response
       if (source && source.postMessage) {
         source.postMessage({
           type: `${type}_RESPONSE`,
@@ -699,173 +1052,83 @@ function setupMessageHandlers() {
 }
 
 // ============================================================
-// INDEXEDDB STORAGE
-// ============================================================
-
-const DB_NAME = 'kuhul_kernel_db';
-const DB_VERSION = 1;
-let db = null;
-
-async function getDatabase() {
-  if (db) return db;
-  
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    
-    request.onupgradeneeded = (event) => {
-      const database = event.target.result;
-      
-      // Create object stores
-      if (!database.objectStoreNames.contains('kernel_state')) {
-        database.createObjectStore('kernel_state', { keyPath: 'key' });
-      }
-      
-      if (!database.objectStoreNames.contains('chat_history')) {
-        const store = database.createObjectStore('chat_history', { 
-          keyPath: 'id',
-          autoIncrement: true 
-        });
-        store.createIndex('sessionId', 'sessionId', { unique: false });
-        store.createIndex('timestamp', 'timestamp', { unique: false });
-      }
-      
-      if (!database.objectStoreNames.contains('model_cache')) {
-        const store = database.createObjectStore('model_cache', { 
-          keyPath: 'key'
-        });
-        store.createIndex('expires', 'expires', { unique: false });
-      }
-    };
-    
-    request.onsuccess = (event) => {
-      db = event.target.result;
-      resolve(db);
-    };
-    
-    request.onerror = (event) => {
-      reject(event.target.error);
-    };
-  });
-}
-
-async function storeInIndexedDB(key, value) {
-  try {
-    const database = await getDatabase();
-    return new Promise((resolve, reject) => {
-      const transaction = database.transaction(['kernel_state'], 'readwrite');
-      const store = transaction.objectStore('kernel_state');
-      const request = store.put({ key, value, timestamp: Date.now() });
-      
-      request.onsuccess = () => resolve(true);
-      request.onerror = () => reject(request.error);
-    });
-  } catch (error) {
-    console.error('Failed to store in IndexedDB:', error);
-    return false;
-  }
-}
-
-async function getFromIndexedDB(key) {
-  try {
-    const database = await getDatabase();
-    return new Promise((resolve, reject) => {
-      const transaction = database.transaction(['kernel_state'], 'readonly');
-      const store = transaction.objectStore('kernel_state');
-      const request = store.get(key);
-      
-      request.onsuccess = () => resolve(request.result?.value || null);
-      request.onerror = () => reject(request.error);
-    });
-  } catch (error) {
-    console.error('Failed to get from IndexedDB:', error);
-    return null;
-  }
-}
-
-async function removeFromIndexedDB(key) {
-  try {
-    const database = await getDatabase();
-    return new Promise((resolve, reject) => {
-      const transaction = database.transaction(['kernel_state'], 'readwrite');
-      const store = transaction.objectStore('kernel_state');
-      const request = store.delete(key);
-      
-      request.onsuccess = () => resolve(true);
-      request.onerror = () => reject(request.error);
-    });
-  } catch (error) {
-    console.error('Failed to remove from IndexedDB:', error);
-    return false;
-  }
-}
-
-async function getAllKeysFromIndexedDB() {
-  try {
-    const database = await getDatabase();
-    return new Promise((resolve, reject) => {
-      const transaction = database.transaction(['kernel_state'], 'readonly');
-      const store = transaction.objectStore('kernel_state');
-      const request = store.getAllKeys();
-      
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  } catch (error) {
-    console.error('Failed to get keys from IndexedDB:', error);
-    return [];
-  }
-}
-
-// ============================================================
-// FETCH HANDLER (PROXY)
+// FETCH HANDLER (Enhanced with Local REST API)
 // ============================================================
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
-  // Handle kernel API requests
-  if (url.pathname === '/kernel/api') {
-    event.respondWith(handleKernelAPI(event.request));
-    return;
+  // Handle local REST API (from manifest)
+  if (manifest?.api?.local_rest?.routes) {
+    const routes = manifest.api.local_rest.routes;
+    
+    for (const [route, path] of Object.entries(routes)) {
+      if (url.pathname === path) {
+        event.respondWith(handleLocalAPI(route, event.request));
+        return;
+      }
+    }
   }
   
-  // Cache-first strategy for static assets
+  // Handle mesh zones
+  if (manifest?.api?.mesh?.zones) {
+    const zones = manifest.api.mesh.zones;
+    for (const zone of zones) {
+      const zonePrefix = zone.replace('://', '');
+      if (url.pathname.startsWith(`/${zonePrefix}/`)) {
+        event.respondWith(handleMeshRequest(zone, url, event.request));
+        return;
+      }
+    }
+  }
+  
+  // Default: cache-first strategy
   if (event.request.method === 'GET') {
     event.respondWith(
       caches.match(event.request).then(response => {
         return response || fetch(event.request).then(fetchResponse => {
-          // Cache the response for future use
+          // Cache the response
           return caches.open(CACHE_NAME).then(cache => {
             cache.put(event.request, fetchResponse.clone());
             return fetchResponse;
           });
         });
       }).catch(() => {
-        // Return offline page or fallback
+        // Fallback to offline page
         return caches.match('./');
       })
     );
   }
 });
 
-async function handleKernelAPI(request) {
+async function handleLocalAPI(route, request) {
   try {
-    const data = await request.json();
-    const { type, payload } = data;
-    
-    // Route to appropriate handler
     let result;
-    switch (type) {
-      case 'health':
-        result = { status: 'healthy', version: KUHUL_VERSION };
+    
+    switch(route) {
+      case 'orchestrate':
+        const data = await request.json();
+        result = await handleOrchestration(data);
         break;
         
-      case 'models':
-        result = Array.from(kernelState.inferenceEngine.models.values());
+      case 'tapes':
+        result = kernelState?.tapeSystem?.getAllTapes() || [];
+        break;
+        
+      case 'manifest':
+        result = manifest;
+        break;
+        
+      case 'chat':
+        const chatData = await request.json();
+        result = await kernelState?.inferenceEngine?.process(
+          chatData.prompt,
+          chatData.options
+        );
         break;
         
       default:
-        result = { error: 'Unknown API endpoint' };
+        result = { error: 'Unknown API route' };
     }
     
     return new Response(JSON.stringify(result), {
@@ -880,32 +1143,88 @@ async function handleKernelAPI(request) {
   }
 }
 
+async function handleOrchestration(data) {
+  // Orchestrate multiple systems
+  const { actions } = data;
+  const results = [];
+  
+  for (const action of actions) {
+    try {
+      switch(action.type) {
+        case 'tape':
+          const tapeResult = await kernelState.tapeSystem.dispatchToTape(
+            action.tapeId,
+            action.action,
+            action.data
+          );
+          results.push({ type: 'tape', result: tapeResult });
+          break;
+          
+        case 'mesh':
+          const meshResult = await kernelState.meshNetwork.dispatchToMesh(action);
+          results.push({ type: 'mesh', result: meshResult });
+          break;
+          
+        case 'inference':
+          const inferenceResult = await kernelState.inferenceEngine.process(
+            action.prompt,
+            action.options
+          );
+          results.push({ type: 'inference', result: inferenceResult });
+          break;
+          
+        default:
+          results.push({ type: action.type, error: 'Unknown action type' });
+      }
+    } catch (error) {
+      results.push({ type: action.type, error: error.message });
+    }
+  }
+  
+  return { results, timestamp: Date.now() };
+}
+
+async function handleMeshRequest(zone, url, request) {
+  // Handle mesh zone requests
+  const path = url.pathname.split('/').slice(2).join('/');
+  
+  return new Response(JSON.stringify({
+    zone,
+    path,
+    method: request.method,
+    timestamp: Date.now(),
+    status: 'routed'
+  }), {
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+
 // ============================================================
-// SYNC EVENTS
+// SYNC & PERIODIC TASKS
 // ============================================================
 
 self.addEventListener('sync', (event) => {
   console.log('🔄 Sync event:', event.tag);
   
-  if (event.tag === 'kuhul-sync') {
+  if (event.tag === 'mx2lm-sync') {
     event.waitUntil(syncKernelState());
   }
 });
 
 async function syncKernelState() {
   try {
-    // Sync state across all clients
-    const state = kernelState.getState();
+    // Sync across all connected clients
+    const state = {
+      kernel: KUHUL_VERSION,
+      manifest: manifest?.['@v'],
+      tape: kernelState?.tapeSystem?.getActiveTape()?.id,
+      runtime: getRuntimeMode()
+    };
     
-    // Store in IndexedDB for persistence
-    await storeInIndexedDB('last_sync', {
-      state,
-      timestamp: Date.now()
-    });
-    
-    // Broadcast sync completion
+    // Broadcast sync
     broadcastToAll({
       type: 'SYNC_COMPLETE',
+      state,
       timestamp: Date.now()
     });
     
@@ -915,28 +1234,24 @@ async function syncKernelState() {
   }
 }
 
-// ============================================================
-// PERIODIC BACKGROUND TASKS
-// ============================================================
-
 self.addEventListener('periodicsync', (event) => {
-  if (event.tag === 'kuhul-maintenance') {
+  if (event.tag === 'mx2lm-maintenance') {
     event.waitUntil(performMaintenance());
   }
 });
 
 async function performMaintenance() {
-  console.log('🔧 Performing kernel maintenance');
+  console.log('🔧 Performing MX2LM maintenance');
   
-  // Clean up old sessions
-  const now = Date.now();
-  const sessions = kernelState.inferenceEngine?.getSessions() || [];
-  
-  sessions.forEach(session => {
-    if (now - session.createdAt > 24 * 60 * 60 * 1000) { // 24 hours
-      kernelState.inferenceEngine.clearSession(session.id);
-    }
-  });
+  // Clean up old data
+  if (kernelState?.asxRam?.volatile) {
+    const now = Date.now();
+    kernelState.asxRam.data.forEach((value, key) => {
+      if (now - value.timestamp > 3600000) { // 1 hour
+        kernelState.asxRam.data.delete(key);
+      }
+    });
+  }
   
   // Clean cache
   const cache = await caches.open(CACHE_NAME);
@@ -953,20 +1268,88 @@ async function performMaintenance() {
 }
 
 // ============================================================
-// KERNEL EXPORTS (for debugging)
+// UTILITY FUNCTIONS
 // ============================================================
 
-if (typeof self.kuhul === 'undefined') {
-  self.kuhul = {
-    version: KUHUL_VERSION,
-    getState: () => kernelState.getState(),
-    broadcast: broadcastToAll,
+async function evaluateCondition(condition) {
+  // Simple condition evaluation
+  if (typeof condition === 'boolean') return condition;
+  if (typeof condition === 'function') return await condition();
+  return Boolean(condition);
+}
+
+async function executeAction(action, index) {
+  if (typeof action === 'function') {
+    return await action(index);
+  }
+  return action;
+}
+
+async function executeTask(task) {
+  if (typeof task === 'function') {
+    return await task();
+  }
+  
+  // Handle task objects
+  if (task.type === 'dispatch') {
+    return await handleDispatch(task);
+  }
+  
+  return task;
+}
+
+async function dispatchToTape(payload) {
+  return await kernelState?.tapeSystem?.dispatchToTape(
+    payload.tapeId,
+    payload.action,
+    payload.data
+  );
+}
+
+async function dispatchToPanel(payload) {
+  // Panel dispatch logic
+  const { panelId, action, data } = payload;
+  
+  switch(action) {
+    case 'activate':
+      return kernelState?.tapeSystem?.activatePanels([panelId]);
     
-    // Expose for debugging
-    _inferenceEngine: kernelState.inferenceEngine,
-    _fileSystem: kernelState.fileSystem,
-    _tapeSystem: kernelState.tapeSystem
+    case 'deactivate':
+      // Deactivate specific panel
+      return true;
+    
+    default:
+      throw new Error(`Unknown panel action: ${action}`);
+  }
+}
+
+async function dispatchToMesh(payload) {
+  return await kernelState?.meshNetwork?.dispatchToMesh(payload);
+}
+
+// ============================================================
+// KERNEL EXPORTS (Debugging)
+// ============================================================
+
+if (typeof self.mx2lm === 'undefined') {
+  self.mx2lm = {
+    version: KUHUL_VERSION,
+    manifest: () => manifest,
+    state: () => kernelState,
+    tape: () => kernelState?.tapeSystem,
+    mesh: () => kernelState?.meshNetwork,
+    xcfe: () => self.xcfe,
+    
+    // Debug methods
+    _debug: {
+      reloadManifest: loadManifest,
+      resetKernel: initializeKernelState,
+      forceSync: syncKernelState
+    }
   };
 }
 
-console.log('🚀 K\'UHUL π Kernel loaded successfully');
+console.log('🚀 MX2LM Ghost OS Kernel loaded successfully');
+console.log('📜 Manifest:', manifest?.name, 'v' + manifest?.['@v']);
+console.log('🎮 XCFE Law:', manifest?.law);
+console.log('🌌 Quantum State:', manifest?.['@quantum_state']);
