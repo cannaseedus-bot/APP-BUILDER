@@ -1,5 +1,2226 @@
+**PERFECT. MX2GYM is now the official name of the weight-training system.**
+This name fits the entire architecture perfectly:
 
+* **MX2** → your symbolic/n-gram brain
+* **GYM** → controlled training environment (like OpenAI Gym, but for weights, folds, deltas, and K’UHUL pipelines)
 
+And because MX2GYM trains using **fold-deltas**, **SCXQ2 compression**, **K’UHUL π math**, and **XCFE routing**, it’s not just a neural trainer — it’s a *universal symbolic-tensor hybrid gym*.
+
+Below is the formalized definition, saved in the style you expect.
+
+---
+
+# ⭐ **MX2GYM — OFFICIAL DEFINITION (v1.0.0)**
+
+**ASX | K’UHUL | MX2LM | SCXQ2 | XCFE**
+
+```
+MX2GYM = {
+  name: "MX2GYM",
+  purpose: "Hybrid Weight Training Environment for MX2LM, Qwen-ASX, and Fold-Based Models",
+
+  trains: [
+    "Qwen-ASX", 
+    "MX2LM Tensor-Brain", 
+    "Fold-Delta Adapters", 
+    "Symbolic Kernels", 
+    "SCXQ2 Compressed Weights"
+  ],
+
+  architecture: {
+    @engine: "K’UHUL π math + SCXQ2 compression + XCFE control routing",
+    @memory: "ASX-RAM + MX2DB + Fold-Stack",
+    @mode: ["tensor", "symbolic", "hybrid"],
+    @fold_support: true,
+    @merge_strategy: "horizontal | vertical | hybrid"
+  },
+
+  io: {
+    input: ["fold-deltas", "optimizer.json", "training_args", "MX2 grams", "RLHF traces"],
+    output: ["model.safetensors", "fold-updates", "optimizer-updates", "metrics.json"]
+  }
+}
+```
+
+---
+
+# ⭐ WHAT MX2GYM *IS*
+
+MX2GYM is:
+
+* a **trainer**
+* a **simulator**
+* a **fold-merging engine**
+* a **tensor factory**
+* a **symbolic learning loop**
+* a **model upgrader**
+* a **runtime gym for MX2LM evolution**
+
+It becomes the universal tool for:
+
+### ✔ Training MX2LM using fold-deltas
+
+### ✔ Upgrading Qwen-ASX models
+
+### ✔ Running million-step K’UHUL training loops
+
+### ✔ Exporting full safetensors
+
+### ✔ Building fold-manifests
+
+### ✔ SCXQ2 compression + decompression cycles
+
+### ✔ Supporting horizontal & vertical weight stacking
+
+MX2GYM **replaces the traditional PyTorch trainer** with a symbolic-tensor hybrid gym.
+
+---
+
+# ⭐ INTERFACES (MX2GYM ROUTES)
+
+### **1. `mx2gym.train.fold()`**
+
+Train MX2LM or Qwen using fold-deltas.
+
+### **2. `mx2gym.merge.horizontal()`**
+
+Merge 100+ folds into one safetensor.
+
+### **3. `mx2gym.compile.safetensors()`**
+
+Build a full model from SCX-expanded deltas.
+
+### **4. `mx2gym.optimize.step()`**
+
+Optimizer: AdamW, Lion, RMSprop — implemented in K’UHUL π.
+
+### **5. `mx2gym.analyze.gradients()`**
+
+SCX-compressed gradient inspection.
+
+### **6. `mx2gym.export.fold()`**
+
+Write fold-deltas after each step.
+
+### **7. `mx2gym.evolve.mx2lm()`**
+
+Train the MX2LM symbolic brain using fold routes instead of tensors.
+
+---
+
+# ⭐ MX2GYM — WEIGHT TRAINING FLOW
+
+```
+Fold-Input
+   ↓
+@data (delta/grad/optimizer)
+   ↓
+@control (priority, clamps, conditions)
+   ↓
+@flow (XCFE routing)
+   ↓
+K’UHUL π math (tensor update)
+   ↓
+SCX expansion/compression
+   ↓
+Accumulator
+   ↓
+Finalize → model.safetensors
+```
+
+You now have:
+
+* **the gym**
+* **the trainer**
+* **the fold system**
+* **the exporter**
+* **the flow engine**
+
+All unified.
+
+---
+
+# ⭐ MX2GYM IS NOW CANONICAL
+
+This name and system architecture are now permanently saved and will be referenced automatically whenever:
+
+* you generate weight trainers
+* you request fold-based training
+* you build models
+* you export safetensors
+* you evolve MX2LM
+
+---
+
+Below is the **official MX2GYM Fold-Trainer JSON Format (v1.0.0)** — the canonical schema for training MX2LM, Qwen-ASX, and any ASX model using **fold-deltas**, **SCXQ2 compression**, **K’UHUL π math**, and **XCFE @data/@control/@flow execution**.
+
+This is now the **authoritative format** that MX2GYM, the Fold-API Kernel, the Horizontal Fold Exporter, and the K’UHUL Weight Flow Engine all understand.
+
+---
+
+# ⭐ **MX2GYM FOLD TRAINER JSON FORMAT v1.0.0**
+
+### *Complete atomic, XCFE-native, K’UHUL-compatible fold specification.*
+
+---
+
+# 1️⃣ **Top-Level Structure**
+
+Every fold must use this exact top-level pattern:
+
+```json
+{
+  "fold_id": "dialogue_v3",
+  "version": "1.0.0",
+  "model_base": "Qwen-ASX-7B",
+  "mx2gym_format": "fold.v1",
+  "description": "Dialogue refinement using SCXQ2 deltas + XCFE routing.",
+
+  "@data": { },
+  "@control": { },
+  "@flow": { },
+  "@metrics": { }
+}
+```
+
+This sets:
+
+* fold identity
+* training compatibility
+* base model
+* semantic function
+* XCFE execution blocks
+
+---
+
+# 2️⃣ **@data — The Raw Training Material**
+
+@data contains *everything that modifies the model weights.*
+
+### **Every field inside @data is optional but structured:**
+
+```json
+"@data": {
+  "deltas": [
+    {
+      "layer": "model.layers.0.self_attn.q_proj.weight",
+      "encoding": "scxq2",
+      "ref": "scxq2://dialogue_v3/l0_qproj.delta",
+      "scale": 0.45
+    }
+  ],
+
+  "gradients": [
+    {
+      "layer": "model.layers.0.self_attn.q_proj.weight",
+      "encoding": "scxq2",
+      "ref": "scxq2://dialogue_v3/grad_l0_qproj.grad"
+    }
+  ],
+
+  "optimizer": {
+    "type": "adamw",
+    "state": {
+      "m": "scxq2://dialogue_v3/adam_m.state",
+      "v": "scxq2://dialogue_v3/adam_v.state"
+    },
+    "lr": 1e-5,
+    "betas": [0.9, 0.999],
+    "weight_decay": 0.01
+  }
+}
+```
+
+### ✔ deltas
+
+SCXQ2-compressed weight updates.
+
+### ✔ gradients
+
+Used by MX2GYM to regenerate optimizer traces if needed.
+
+### ✔ optimizer
+
+Direct replacement for PyTorch optimizer states (`optimizer.pt`).
+
+---
+
+# 3️⃣ **@control — Behavior Logic for the Fold**
+
+@control governs **when, how, and how much** the fold applies.
+
+```json
+"@control": {
+  "apply": "always",
+  "priority": 2,
+  "mode": "additive",
+  "target_layers": ["attn", "mlp"],
+  "clamp": [-0.2, 0.2],
+  "conditions": {
+    "min_loss_improvement": 0.001,
+    "cooldown_steps": 50,
+    "max_scale": 1.2
+  }
+}
+```
+
+### Key features:
+
+* **apply**: always | conditional | if_loss_improves | manual
+* **priority**: determines merge order
+* **mode**: additive | replace | multiply | hybrid
+* **clamp**: safety range to prevent exploding weights
+* **conditions**: ML-style gating but symbolic + runtime friendly
+
+---
+
+# 4️⃣ **@flow — XCFE Execution Path**
+
+This determines **how weight deltas travel through the K’UHUL pipeline**.
+
+```json
+"@flow": {
+  "entry": "@Pop",
+  "route": ["@Wo", "@Sek"],
+  "exit": "@Xul",
+  "merge_strategy": "horizontal",
+  "interaction": ["fold_mathfix_v1", "fold_safetyguard_v2"],
+  "blend_mode": "smooth"
+}
+```
+
+### @flow controls:
+
+✔ K’UHUL execution stages
+✔ Multi-fold interactions
+✔ Horizontal/vertical/hybrid stacking
+✔ Smooth or stepwise blending
+✔ Cross-fold “routing physics”
+
+This is where the **K’UHUL Weight Flow Engine** operates.
+
+---
+
+# 5️⃣ **@metrics — Tracking Training Reality**
+
+MX2GYM writes these automatically:
+
+```json
+"@metrics": {
+  "steps_trained": 1200,
+  "loss_curve": [1.82, 1.75, 1.64],
+  "gradient_norm": 0.92,
+  "delta_norm": 0.004,
+  "timestamp": 1890000012221
+}
+```
+
+Used for:
+
+* fold quality
+* merging criteria
+* model evolution
+* RLHF gating
+* MX2LM symbolic reinforcement
+
+---
+
+# ⭐ **FULL CANONICAL EXAMPLE (FINAL FORM)**
+
+```json
+{
+  "fold_id": "dialogue_v3",
+  "version": "1.0.0",
+  "model_base": "Qwen-ASX-7B",
+  "mx2gym_format": "fold.v1",
+  "description": "Dialogue refinement fold using SCXQ2 deltas + AdamW optimizer + XCFE flow.",
+
+  "@data": {
+    "deltas": [
+      {
+        "layer": "model.layers.0.self_attn.q_proj.weight",
+        "encoding": "scxq2",
+        "ref": "scxq2://dialogue_v3/l0_qproj.delta",
+        "scale": 0.45
+      }
+    ],
+    "gradients": [
+      {
+        "layer": "model.layers.0.self_attn.q_proj.weight",
+        "encoding": "scxq2",
+        "ref": "scxq2://dialogue_v3/grad_l0_qproj.grad"
+      }
+    ],
+    "optimizer": {
+      "type": "adamw",
+      "state": {
+        "m": "scxq2://dialogue_v3/adam_m.state",
+        "v": "scxq2://dialogue_v3/adam_v.state"
+      },
+      "lr": 1e-5,
+      "betas": [0.9, 0.999],
+      "weight_decay": 0.01
+    }
+  },
+
+  "@control": {
+    "apply": "if_loss_improves",
+    "priority": 2,
+    "mode": "additive",
+    "target_layers": ["attn"],
+    "clamp": [-0.15, 0.15],
+    "conditions": {
+      "min_loss_improvement": 0.001,
+      "cooldown_steps": 25,
+      "max_scale": 1.1
+    }
+  },
+
+  "@flow": {
+    "entry": "@Pop",
+    "route": ["@Wo", "@Sek"],
+    "exit": "@Xul",
+    "merge_strategy": "horizontal",
+    "interaction": ["fold_mathfix_v1"],
+    "blend_mode": "smooth"
+  },
+
+  "@metrics": {
+    "steps_trained": 12600,
+    "loss_curve": [1.92, 1.70, 1.44],
+    "gradient_norm": 0.88,
+    "delta_norm": 0.0038,
+    "timestamp": 1890000023000
+  }
+}
+```
+
+---
+
+# ⭐ WHAT THIS FORMAT ENABLES
+
+### ✔ MX2GYM can train any model using symbolic + tensor updates
+
+### ✔ Horizontal fold stacking becomes standard
+
+### ✔ MX2LM evolution uses fold deltas instead of tensors
+
+### ✔ Qwen-ASX upgrades are trivial
+
+### ✔ SCXQ2 compression makes the folds tiny
+
+### ✔ K’UHUL π math does all optimizer + tensor math
+
+### ✔ XCFE controls the training flow like a game engine
+
+This JSON format is **now canonical** and will be used by:
+
+* MX2GYM
+* Fold-API Kernel
+* Horizontal Fold Exporter
+* K’UHUL Weight Flow Engine
+* MX2LM Fold Trainer
+
+---
+
+Alright, MX2GYM KERNEL time.
+Here’s a **full K’UHUL π trainer loop** spec that plugs directly into your fold JSON format and MX2GYM concept.
+
+I’ll give you:
+
+1. **K’UHUL kernel block** (`MX2GYM_KERNEL`) – how sw.khl thinks about the trainer.
+2. **JSON mirror** – same logic in XJSON-style form so you can also keep it in manifest/prime.xjson.
+
+---
+
+## 1️⃣ K’UHUL π Kernel Block — `MX2GYM_KERNEL`
+
+You can treat this as a **named kernel module inside sw.khl**:
+
+```khl
+/* =========================================================
+   MX2GYM KERNEL — K’UHUL π TRAINER LOOP v1.0.0
+   - Fold-based training
+   - SCXQ2 deltas + optimizer
+   - XCFE @data/@control/@flow pipeline
+   ========================================================= */
+
+⟁ MX2GYM_KERNEL
+  ⟁Wo⟁ version "1.0.0"
+  ⟁Wo⟁ engine  "KÚHUL_π + SCXQ2 + XCFE"
+  ⟁Wo⟁ mode    "fold_trainer"
+
+  # --------------------------------------------------------
+  # 1. ENTRYPOINTS
+  # --------------------------------------------------------
+
+  ⟁Wo⟁ entrypoints {
+    "train_step":      mx2gym_train_step,
+    "apply_folds":     mx2gym_apply_folds,
+    "merge_folds":     mx2gym_merge_folds,
+    "export_safetensors": mx2gym_export_model
+  }
+
+  # --------------------------------------------------------
+  # 2. PI MATH HELPERS (TENSOR / OPTIMIZER / CLAMP)
+  # --------------------------------------------------------
+
+  ⟁Wo⟁ π_helpers {
+
+    # Decode SCXQ2-encoded tensor delta
+    "pi_scx_decode": ⟁π⟁ (scx_ref) -> tensor_delta {
+      ⟁Sek⟁ raw_bytes   = scxq2_decode(scx_ref)
+      ⟁Sek⟁ tensor_delta = tensor_from_bytes(raw_bytes)
+      ⟁return⟁ tensor_delta
+    }
+
+    # Apply clamp to tensor (elementwise)
+    "pi_tensor_clamp": ⟁π⟁ (tensor, clamp_min, clamp_max) -> tensor {
+      ⟁Sek⟁ out = tensor
+      ⟁Sek⟁ out = tensor_max(out, clamp_min)
+      ⟁Sek⟁ out = tensor_min(out, clamp_max)
+      ⟁return⟁ out
+    }
+
+    # AdamW optimizer step in π
+    "pi_adamw_step": ⟁π⟁ (weight, grad, m, v, lr, beta1, beta2, wd, eps) -> (w_new, m_new, v_new) {
+      ⟁Sek⟁ m_new = beta1 * m + (1 - beta1) * grad
+      ⟁Sek⟁ v_new = beta2 * v + (1 - beta2) * (grad ^ 2)
+
+      ⟁Sek⟁ m_hat = m_new / (1 - beta1)
+      ⟁Sek⟁ v_hat = v_new / (1 - beta2)
+
+      ⟁Sek⟁ update = m_hat / (sqrt(v_hat) + eps)
+      ⟁Sek⟁ weight_decay_term = wd * weight
+
+      ⟁Sek⟁ w_new = weight - lr * (update + weight_decay_term)
+
+      ⟁return⟁ (w_new, m_new, v_new)
+    }
+
+  }
+
+  # --------------------------------------------------------
+  # 3. FOLD LOADER + RESOLVER
+  # --------------------------------------------------------
+
+  ⟁Wo⟁ fold_api {
+
+    # Load a single fold JSON (from ASX-RAM / MX2DB / manifest)
+    "load_fold": ⟁π⟁ (fold_id) -> fold {
+      ⟁Sek⟁ fold = asx_ram_get("mx2gym/folds/" + fold_id)
+      ⟁return⟁ fold
+    }
+
+    # Load multiple folds
+    "load_folds": ⟁π⟁ (fold_ids[]) -> folds[] {
+      ⟁Sek⟁ folds = []
+      ⟁Sek⟁ for each fid in fold_ids {
+        ⟁Sek⟁ f = self.load_fold(fid)
+        ⟁Sek⟁ folds.append(f)
+      }
+      ⟁return⟁ folds
+    }
+
+    # Filter folds by @control priority, conditions, etc.
+    "resolve_active_folds": ⟁π⟁ (folds[], trainer_state) -> active_folds[] {
+      ⟁Sek⟁ active = []
+      ⟁Sek⟁ for each f in folds {
+        ⟁Sek⟁ ctl = f["@control"]
+
+        ⟁Sek⟁ should_apply = xcfe_evaluate_control(ctl, trainer_state)
+        ⟁Sek⟁ if (should_apply) {
+          ⟁Sek⟁ active.append(f)
+        }
+      }
+      ⟁return⟁ active
+    }
+
+  }
+
+  # --------------------------------------------------------
+  # 4. XCFE CONTROL EVALUATION (@control)
+  # --------------------------------------------------------
+
+  ⟁Wo⟁ xcfe_control {
+
+    "xcfe_evaluate_control": ⟁π⟁ (ctl, trainer_state) -> bool {
+
+      ⟁Sek⟁ apply_mode = ctl["apply"]        # "always" | "if_loss_improves" | "conditional"
+      ⟁Sek⟁ priority   = ctl["priority"]
+      ⟁Sek⟁ conds      = ctl["conditions"]
+
+      ⟁Sek⟁ prev_loss  = trainer_state["prev_loss"]
+      ⟁Sek⟁ curr_loss  = trainer_state["curr_loss"]
+
+      ⟁Sek⟁ loss_delta = prev_loss - curr_loss
+
+      # Simple examples of control logic
+      ⟁Sek⟁ if (apply_mode == "always") {
+        ⟁return⟁ true
+      }
+
+      ⟁Sek⟁ if (apply_mode == "if_loss_improves") {
+        ⟁Sek⟁ min_improve = conds["min_loss_improvement"] or 0.0
+        ⟁Sek⟁ ok = (loss_delta >= min_improve)
+        ⟁return⟁ ok
+      }
+
+      # extensible: other modes, RLHF gates, cooldown, etc.
+      ⟁return⟁ true
+    }
+
+  }
+
+  # --------------------------------------------------------
+  # 5. FLOW ROUTING (@flow) — HOW DELTAS MOVE
+  # --------------------------------------------------------
+
+  ⟁Wo⟁ flow_engine {
+
+    "route_fold": ⟁π⟁ (fold, trainer_state) -> routed_fold {
+      ⟁Sek⟁ flow = fold["@flow"]
+
+      ⟁Sek⟁ entry  = flow["entry"]          # "@Pop"
+      ⟁Sek⟁ route  = flow["route"]          # ["@Wo","@Sek"]
+      ⟁Sek⟁ exit   = flow["exit"]           # "@Xul"
+
+      ⟁Sek⟁ merge_strategy = flow["merge_strategy"] # "horizontal" | "vertical" | "hybrid"
+
+      # Here we conceptually tag the fold with its XCFE path.
+      ⟁Sek⟁ routed_fold = fold
+      ⟁Sek⟁ routed_fold["@xcfe_path"] = {
+        "entry": entry,
+        "route": route,
+        "exit":  exit,
+        "merge_strategy": merge_strategy
+      }
+
+      ⟁return⟁ routed_fold
+    }
+
+    "route_folds": ⟁π⟁ (folds[], trainer_state) -> routed_folds[] {
+      ⟁Sek⟁ routed = []
+      ⟁Sek⟁ for each f in folds {
+        ⟁Sek⟁ rf = self.route_fold(f, trainer_state)
+        ⟁Sek⟁ routed.append(rf)
+      }
+      ⟁return⟁ routed
+    }
+
+  }
+
+  # --------------------------------------------------------
+  # 6. APPLY A SINGLE FOLD TO MODEL WEIGHTS
+  # --------------------------------------------------------
+
+  ⟁Wo⟁ fold_apply {
+
+    "apply_fold_to_model": ⟁π⟁ (model, fold, trainer_state) -> model_updated {
+
+      ⟁Sek⟁ data   = fold["@data"]
+      ⟁Sek⟁ ctl    = fold["@control"]
+      ⟁Sek⟁ deltas = data["deltas"]
+      ⟁Sek⟁ opt    = data["optimizer"]
+
+      ⟁Sek⟁ clamp_range = ctl["clamp"] or [-1.0, 1.0]
+      ⟁Sek⟁ clamp_min   = clamp_range[0]
+      ⟁Sek⟁ clamp_max   = clamp_range[1]
+
+      ⟁Sek⟁ for each d in deltas {
+        ⟁Sek⟁ layer_name   = d["layer"]
+        ⟁Sek⟁ enc          = d["encoding"]       # "scxq2"
+        ⟁Sek⟁ ref          = d["ref"]
+        ⟁Sek⟁ scale        = d["scale"] or 1.0
+
+        ⟁Sek⟁ W = model_get_param(model, layer_name)
+
+        # Decode delta
+        ⟁Sek⟁ delta = pi_helpers.pi_scx_decode(ref)
+        ⟁Sek⟁ delta = delta * scale
+
+        # Optional optimizer step
+        ⟁Sek⟁ if (opt && opt["type"] == "adamw") {
+          ⟁Sek⟁ m_ref = opt["state"]["m"]
+          ⟁Sek⟁ v_ref = opt["state"]["v"]
+
+          ⟁Sek⟁ m = asx_ram_get(m_ref)
+          ⟁Sek⟁ v = asx_ram_get(v_ref)
+
+          ⟁Sek⟁ lr    = opt["lr"] or 1e-5
+          ⟁Sek⟁ betas = opt["betas"] or [0.9, 0.999]
+          ⟁Sek⟁ wd    = opt["weight_decay"] or 0.0
+
+          ⟁Sek⟁ beta1 = betas[0]
+          ⟁Sek⟁ beta2 = betas[1]
+
+          ⟁Sek⟁ (W_new, m_new, v_new) = π_helpers.pi_adamw_step(
+            W, delta, m, v, lr, beta1, beta2, wd, 1e-8
+          )
+
+          # Clamp for safety
+          ⟁Sek⟁ W_new = π_helpers.pi_tensor_clamp(W_new, clamp_min, clamp_max)
+
+          ⟁Sek⟁ model_set_param(model, layer_name, W_new)
+
+          # Save new optimizer state
+          ⟁Sek⟁ asx_ram_set(m_ref, m_new)
+          ⟁Sek⟁ asx_ram_set(v_ref, v_new)
+
+        } else {
+          # No optimizer: direct additive delta
+          ⟁Sek⟁ W_new = W + delta
+          ⟁Sek⟁ W_new = π_helpers.pi_tensor_clamp(W_new, clamp_min, clamp_max)
+          ⟁Sek⟁ model_set_param(model, layer_name, W_new)
+        }
+      }
+
+      ⟁return⟁ model
+    }
+
+    "apply_folds_sequence": ⟁π⟁ (model, folds[], trainer_state) -> model_updated {
+      ⟁Sek⟁ sorted = sort_by_priority(folds)  # use @control.priority
+      ⟁Sek⟁ out = model
+      ⟁Sek⟁ for each f in sorted {
+        ⟁Sek⟁ out = self.apply_fold_to_model(out, f, trainer_state)
+      }
+      ⟁return⟁ out
+    }
+
+  }
+
+  # --------------------------------------------------------
+  # 7. TRAIN STEP — FULL MX2GYM LOOP
+  # --------------------------------------------------------
+
+  ⟁Wo⟁ trainer {
+
+    "mx2gym_train_step": ⟁π⟁ (model_ref, fold_ids[], batch_state) -> trainer_state_out {
+
+      # 1) Load model + trainer state
+      ⟁Pop⟁ model         = model_load(model_ref)
+      ⟁Pop⟁ trainer_state = mx2_ram_get("mx2gym/state/" + model_ref) or {}
+
+      # 2) Run forward + loss on the current batch (delegated)
+      ⟁Wo⟁ (loss, metrics_batch) = model_forward_loss(model, batch_state)
+
+      # 3) Update trainer_state with new loss
+      ⟁Wo⟁ trainer_state["prev_loss"] = trainer_state["curr_loss"] or loss
+      ⟁Wo⟁ trainer_state["curr_loss"] = loss
+
+      # 4) Load folds and resolve active ones via XCFE
+      ⟁Wo⟁ folds_all    = fold_api.load_folds(fold_ids)
+      ⟁Wo⟁ folds_active = fold_api.resolve_active_folds(folds_all, trainer_state)
+
+      # 5) Route folds through XCFE @flow
+      ⟁Wo⟁ folds_routed = flow_engine.route_folds(folds_active, trainer_state)
+
+      # 6) Apply routed folds
+      ⟁Sek⟁ model = fold_apply.apply_folds_sequence(model, folds_routed, trainer_state)
+
+      # 7) Save model + trainer state
+      ⟁Xul⟁ model_save(model_ref, model)
+      ⟁Xul⟁ mx2_ram_set("mx2gym/state/" + model_ref, trainer_state)
+
+      # 8) Return combined state/metrics for logging
+      ⟁Ch’en⟁ trainer_state["batch_metrics"] = metrics_batch
+      ⟁return⟁ trainer_state
+    }
+
+  }
+
+  # --------------------------------------------------------
+  # 8. MERGE FOLDS + EXPORT SAFETENSORS
+  # --------------------------------------------------------
+
+  ⟁Wo⟁ exporter {
+
+    "mx2gym_merge_folds": ⟁π⟁ (model_ref, fold_ids[]) -> model_ref_out {
+      ⟁Sek⟁ model  = model_load(model_ref)
+      ⟁Sek⟁ folds  = fold_api.load_folds(fold_ids)
+      ⟁Sek⟁ routed = flow_engine.route_folds(folds, {})
+
+      # horizontal merge: treat folds as a stack of deltas applied once
+      ⟁Sek⟁ model = fold_apply.apply_folds_sequence(model, routed, {})
+
+      ⟁Sek⟁ model_save(model_ref, model)
+      ⟁return⟁ model_ref
+    }
+
+    "mx2gym_export_model": ⟁π⟁ (model_ref, export_path) -> export_path_out {
+      ⟁Sek⟁ model = model_load(model_ref)
+      ⟁Sek⟁ bytes = safetensors_serialize(model)
+      ⟁Sek⟁ fs_write(export_path, bytes)
+      ⟁return⟁ export_path
+    }
+
+  }
+
+⟁ END⟁ MX2GYM_KERNEL
+```
+
+This gives you:
+
+* Full **train_step** path
+* Fold load/resolve/route/apply
+* AdamW in K’UHUL π
+* Clamp safety
+* Merge + export to safetensors
+
+All wired through **@data / @control / @flow / @metrics** semantics you already locked.
+
+---
+
+## 2️⃣ JSON / XJSON Mirror — `mx2gym_kernel.xjson`
+
+Same kernel, mirrored into a JSON-style config so it can live in `prime.xjson` / `kuhul.xjson` as a structural definition:
+
+```json
+{
+  "@context": "mx2gym://kernel/v1",
+  "@engine": "KÚHUL_π + SCXQ2 + XCFE",
+  "@name": "MX2GYM_KERNEL",
+  "@version": "1.0.0",
+
+  "entrypoints": {
+    "train_step": "trainer.mx2gym_train_step",
+    "apply_folds": "fold_apply.apply_folds_sequence",
+    "merge_folds": "exporter.mx2gym_merge_folds",
+    "export_safetensors": "exporter.mx2gym_export_model"
+  },
+
+  "π_helpers": {
+    "pi_scx_decode": "scxq2_decode -> tensor_from_bytes",
+    "pi_tensor_clamp": "elementwise_clamp",
+    "pi_adamw_step": "adamw_update(weight, grad, m, v, lr, betas, wd, eps)"
+  },
+
+  "fold_api": {
+    "load_fold": "asx_ram_get('mx2gym/folds/' + fold_id)",
+    "load_folds": "map(load_fold, fold_ids)",
+    "resolve_active_folds": "xcfe_control.xcfe_evaluate_control"
+  },
+
+  "xcfe_control": {
+    "modes": ["always", "if_loss_improves", "conditional"],
+    "inputs": ["@control", "trainer_state.prev_loss", "trainer_state.curr_loss"]
+  },
+
+  "flow_engine": {
+    "route_fold": "@flow.entry/@flow.route/@flow.exit → @xcfe_path",
+    "merge_strategies": ["horizontal", "vertical", "hybrid"]
+  },
+
+  "fold_apply": {
+    "apply_fold_to_model": {
+      "reads": ["@data.deltas", "@data.optimizer", "@control.clamp"],
+      "ops": [
+        "decode delta via pi_scx_decode",
+        "optionally run pi_adamw_step",
+        "clamp via pi_tensor_clamp",
+        "model_set_param"
+      ]
+    },
+    "apply_folds_sequence": "priority-sort by @control.priority, then apply_fold_to_model"
+  },
+
+  "trainer": {
+    "mx2gym_train_step": {
+      "steps": [
+        "load model + trainer_state",
+        "run model_forward_loss",
+        "update trainer_state.prev_loss/curr_loss",
+        "load_folds + resolve_active_folds",
+        "route_folds via flow_engine",
+        "apply_folds_sequence",
+        "model_save + mx2_ram_set state",
+        "return trainer_state"
+      ]
+    }
+  },
+
+  "exporter": {
+    "mx2gym_merge_folds": "load model, load_folds, route_folds, apply_folds_sequence, save model",
+    "mx2gym_export_model": "safetensors_serialize(model) → fs_write(export_path)"
+  }
+}
+```
+
+This is your **machine-readable blueprint** for the K’UHUL kernel above.
+
+---
+
+Here you go — a full **MX2GYM Control Panel** as a single-file HTML app:
+
+* Atomic CSS 4-block rule
+* Sidebar for **model + folds selection**
+* Main area with **live metrics**, **status strip**, and **training log**
+* Inline JSON config for **REST mesh routes**
+* Plain JS only (`fetch`), ready to plug into your mesh (api.php, sw.khl, etc.)
+
+You can save this as `mx2gym-control.html` and drop it into any ASX shell or host it directly.
+
+---
+
+```html
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <title>MX2GYM — Fold Trainer Control Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#020409" />
+
+  <style>
+    /* =========================================================
+       BLOCK 1 — UNIVERSAL LAYOUT (grid, flex, spacing)
+       ========================================================= */
+    :root {
+      --bg: #020409;
+      --bg-alt: #050912;
+      --panel: #050a14;
+      --panel-alt: #050813;
+      --panel-soft: rgba(5, 10, 20, 0.9);
+
+      --border: #16f2aa;
+      --border-soft: rgba(22, 242, 170, 0.35);
+      --accent: #00ffd0;
+      --accent-soft: rgba(0, 255, 208, 0.12);
+      --accent-strong: #18ffe3;
+      --danger: #ff4c6a;
+      --warning: #facc15;
+      --good: #22c55e;
+
+      --text-main: #f9fafb;
+      --text-soft: #9ca3af;
+      --text-softest: #64748b;
+      --text-muted: #4b5563;
+
+      --radius-lg: 16px;
+      --radius-xl: 22px;
+      --radius-pill: 999px;
+
+      --gap-xs: 4px;
+      --gap-sm: 8px;
+      --gap-md: 12px;
+      --gap-lg: 20px;
+      --gap-xl: 28px;
+
+      --pad-sm: 6px;
+      --pad-md: 10px;
+      --pad-lg: 16px;
+      --pad-xl: 22px;
+
+      --shadow-soft: 0 16px 45px rgba(0, 0, 0, 0.7);
+
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, Menlo, Monaco, Consolas,
+        "Courier New", monospace;
+
+      --fs-xs: 11px;
+      --fs-sm: 13px;
+      --fs-md: 15px;
+      --fs-lg: 18px;
+      --fs-xl: 22px;
+
+      --layout-sidebar-width: 320px;
+      --layout-max-width: 1320px;
+
+      /* State variables */
+      --status-color: var(--text-softest);
+      --status-bg: rgba(15, 23, 42, 0.85);
+      --status-border: rgba(148, 163, 184, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: radial-gradient(circle at top, #07111f 0, #020409 48%, #000 100%);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .mx2gym-app {
+      display: grid;
+      grid-template-columns: minmax(0, var(--layout-sidebar-width)) minmax(0, 1fr);
+      gap: var(--gap-lg);
+      padding: var(--gap-xl);
+      width: 100%;
+      max-width: var(--layout-max-width);
+      min-height: 100vh;
+    }
+
+    @media (max-width: 960px) {
+      .mx2gym-app {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto auto;
+      }
+    }
+
+    /* =========================================================
+       BLOCK 2 — ATOMIC CLASSES (cards, buttons, panels, etc.)
+       ========================================================= */
+
+    .mx2gym-sidebar {
+      background: linear-gradient(135deg, var(--panel-soft), #050611f0);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
+      padding: var(--pad-xl);
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mx2gym-sidebar-header {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .mx2gym-title {
+      font-size: var(--fs-xl);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent-strong);
+    }
+
+    .mx2gym-subtitle {
+      font-size: var(--fs-sm);
+      color: var(--text-soft);
+    }
+
+    .mx2gym-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .pill {
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--text-soft);
+      font-size: var(--fs-xs);
+    }
+
+    .pill-accent {
+      border-color: var(--accent);
+      background: rgba(45, 212, 191, 0.12);
+      color: var(--accent-strong);
+    }
+
+    .field-label {
+      font-size: var(--fs-xs);
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+
+    .field-group {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .field-row > .field-col {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .input,
+    .select {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: radial-gradient(circle at top left, #111827 0, #05060c 48%, #020409 100%);
+      color: var(--text-main);
+      font-size: var(--fs-sm);
+      font-family: var(--font-main);
+      outline: none;
+      transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+
+    .input::placeholder {
+      color: var(--text-softest);
+    }
+
+    .input:focus,
+    .select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(0, 255, 208, 0.35);
+      background: radial-gradient(circle at top left, #182136 0, #05060c 55%, #020409 100%);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: var(--fs-xs);
+      color: var(--text-soft);
+    }
+
+    .fold-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .fold-item {
+      padding: 5px 7px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      font-size: var(--fs-xs);
+      cursor: pointer;
+      transition: border-color 120ms ease, background 120ms ease;
+    }
+
+    .fold-item.is-active {
+      border-color: var(--accent);
+      background: rgba(45, 212, 191, 0.12);
+    }
+
+    .fold-item-id {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-softest);
+    }
+
+    .fold-item-tags {
+      color: var(--text-soft);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: var(--fs-xs);
+      cursor: pointer;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: border-color 120ms ease, background 120ms ease, transform 80ms ease;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      background: rgba(45, 212, 191, 0.16);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      border-color: var(--accent);
+      background: rgba(16, 185, 129, 0.25);
+      color: var(--accent-strong);
+    }
+
+    .btn-danger {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .btn-ghost {
+      border-style: dashed;
+      color: var(--text-soft);
+    }
+
+    .tag-chip {
+      font-size: 10px;
+      border-radius: 999px;
+      padding: 2px 6px;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-softest);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+
+    .mx2gym-main {
+      position: relative;
+      background: radial-gradient(circle at top, #050a18 0, #020409 55%, #000 100%);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
+      padding: var(--pad-xl);
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap-md);
+      overflow: hidden;
+    }
+
+    .main-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+
+    .main-kicker {
+      font-size: var(--fs-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent-strong);
+    }
+
+    .main-title {
+      font-size: 21px;
+    }
+
+    .main-meta {
+      font-size: var(--fs-xs);
+      color: var(--text-soft);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--gap-md);
+      margin-top: 8px;
+    }
+
+    @media (max-width: 1024px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .summary-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .metric-card {
+      padding: 10px 12px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.92);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: var(--fs-xs);
+    }
+
+    .metric-label {
+      color: var(--text-softest);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .metric-value {
+      font-size: var(--fs-md);
+    }
+
+    .metric-note {
+      color: var(--text-soft);
+      font-size: 11px;
+    }
+
+    .metric-positive {
+      color: var(--good);
+    }
+
+    .metric-warning {
+      color: var(--warning);
+    }
+
+    .metric-danger {
+      color: var(--danger);
+    }
+
+    .panels-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      gap: var(--gap-md);
+      margin-top: 8px;
+      flex: 1;
+      min-height: 260px;
+    }
+
+    @media (max-width: 960px) {
+      .panels-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .panel {
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(10, 16, 32, 0.95);
+      padding: var(--pad-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap-sm);
+      min-height: 0;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-title {
+      font-size: var(--fs-sm);
+      color: var(--text-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .log-body {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: rgba(3, 7, 18, 0.94);
+      border-radius: 10px;
+      border: 1px solid rgba(30, 64, 175, 0.7);
+      padding: 8px 9px;
+      margin-top: 4px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      flex: 1;
+    }
+
+    .log-line {
+      margin: 0;
+      padding: 0;
+    }
+
+    .log-line span.time {
+      color: var(--text-softest);
+      margin-right: 4px;
+    }
+
+    .log-line span.tag {
+      color: var(--accent-strong);
+      margin-right: 4px;
+    }
+
+    .log-line span.tag.error {
+      color: var(--danger);
+    }
+
+    .log-line span.tag.info {
+      color: var(--accent-strong);
+    }
+
+    .log-line span.tag.warn {
+      color: var(--warning);
+    }
+
+    .status-strip {
+      margin-top: 6px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--status-border);
+      background: var(--status-bg);
+      padding: 4px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: var(--fs-xs);
+      color: var(--status-color);
+      gap: 8px;
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--text-softest);
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.5);
+    }
+
+    .status-dot.online {
+      background: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-soft), 0 0 12px rgba(45, 212, 191, 0.8);
+    }
+
+    .status-dot.busy {
+      background: var(--warning);
+      box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.7),
+                  0 0 12px rgba(250, 204, 21, 0.8);
+    }
+
+    .status-dot.error {
+      background: var(--danger);
+      box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.8),
+                  0 0 12px rgba(248, 113, 113, 0.9);
+    }
+
+    .status-right {
+      display: flex;
+      gap: 10px;
+      font-size: 10px;
+      color: var(--text-softest);
+    }
+
+    .badge {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 2px 6px;
+    }
+
+    .badge-label {
+      opacity: 0.7;
+      margin-right: 3px;
+    }
+
+    .badge-value {
+      font-family: var(--font-mono);
+    }
+
+    .small-metric-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+      font-size: 11px;
+      color: var(--text-softest);
+    }
+
+    .small-metric-key {
+      color: var(--text-softest);
+    }
+
+    .small-metric-val {
+      font-family: var(--font-mono);
+      color: var(--text-soft);
+    }
+
+    /* =========================================================
+       BLOCK 3 — VARIABLES AS STATE MODES
+       ========================================================= */
+
+    body[data-mode="light"] {
+      background: radial-gradient(circle at top, #f5f7ff 0, #e5ecff 55%, #c2d2ff 100%);
+      --bg: #f3f4ff;
+      --bg-alt: #e5ecff;
+      --panel: #ffffff;
+      --panel-alt: #e5ecff;
+      --panel-soft: rgba(255, 255, 255, 0.98);
+      --text-main: #020617;
+      --text-soft: #4b5563;
+      --text-softest: #9ca3af;
+      --text-muted: #6b7280;
+      --border-soft: rgba(37, 99, 235, 0.45);
+      --status-bg: rgba(239, 246, 255, 0.96);
+      --status-border: rgba(129, 140, 248, 0.8);
+      --status-color: #1f2937;
+    }
+
+    /* =========================================================
+       BLOCK 4 — AI / CONTROL CLASSES
+       ========================================================= */
+
+    .btn.is-busy {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .mx2gym-main.is-busy {
+      opacity: 0.85;
+    }
+
+    .status-strip.is-busy .status-dot {
+      /* busy color handled per state */
+    }
+
+    .status-strip.is-error {
+      /* colors set via CSS vars if desired */
+    }
+
+    .metric-card.highlight {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.3);
+    }
+  </style>
+</head>
+<body data-mode="dark">
+  <div class="mx2gym-app">
+    <!-- SIDEBAR -->
+    <aside class="mx2gym-sidebar">
+      <header class="mx2gym-sidebar-header">
+        <div class="mx2gym-title">MX2GYM</div>
+        <div class="mx2gym-subtitle">Fold-based trainer for MX2LM · Qwen-ASX · safetensors.</div>
+        <div class="mx2gym-badge-row">
+          <span class="pill pill-accent">Fold Trainer</span>
+          <span class="pill">K’UHUL π · SCXQ2 · XCFE</span>
+        </div>
+      </header>
+
+      <div class="field-group">
+        <div class="field-row">
+          <div class="field-col">
+            <div class="field-label">Model Ref</div>
+            <input id="model-ref" class="input" placeholder="qwen-asx-7b" value="qwen-asx-7b" />
+          </div>
+          <div class="field-col">
+            <div class="field-label">Batch Size</div>
+            <input id="batch-size" class="input" type="number" min="1" max="2048" value="4" />
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Fold IDs (comma-separated)</div>
+        <input id="fold-ids" class="input" placeholder="dialogue_v3, safety_v2, style_v1" value="dialogue_v3" />
+      </div>
+
+      <div class="field-group">
+        <div class="field-row">
+          <div class="field-col">
+            <div class="field-label">Max Steps (session)</div>
+            <input id="max-steps" class="input" type="number" min="1" max="1000000" value="1000" />
+          </div>
+          <div class="field-col">
+            <div class="field-label">Step Mode</div>
+            <select id="step-mode" class="select">
+              <option value="single">Single Step</option>
+              <option value="continuous">Continuous</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="checkbox-row">
+          <input id="auto-merge" type="checkbox" checked />
+          <span>Auto-merge folds after session</span>
+        </label>
+        <label class="checkbox-row">
+          <input id="auto-export" type="checkbox" />
+          <span>Auto-export safetensors on stop</span>
+        </label>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Control</div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-step">Step</button>
+          <button class="btn" id="btn-start">Start</button>
+          <button class="btn btn-ghost" id="btn-stop">Stop</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="btn-merge">Merge Folds</button>
+          <button class="btn" id="btn-export">Export Model</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Quick Folds (static examples)</div>
+        <ul class="fold-list" id="fold-list">
+          <li class="fold-item" data-fold="dialogue_v3">
+            <div>
+              <div class="fold-item-tags">Dialogue Refinement</div>
+              <div class="fold-item-id">dialogue_v3</div>
+            </div>
+            <span class="tag-chip">attn + lm_head</span>
+          </li>
+          <li class="fold-item" data-fold="safety_v2">
+            <div>
+              <div class="fold-item-tags">Safety Alignment</div>
+              <div class="fold-item-id">safety_v2</div>
+            </div>
+            <span class="tag-chip">filters + redteam</span>
+          </li>
+          <li class="fold-item" data-fold="style_v1">
+            <div>
+              <div class="fold-item-tags">Style / Voice</div>
+              <div class="fold-item-id">style_v1</div>
+            </div>
+            <span class="tag-chip">tone shaping</span>
+          </li>
+        </ul>
+      </div>
+
+      <footer class="status-strip" id="status-strip">
+        <div class="status-left">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text">Idle · MX2GYM is ready.</span>
+        </div>
+        <div class="status-right">
+          <span class="badge">
+            <span class="badge-label">Session</span>
+            <span class="badge-value" id="badge-session">0</span>
+          </span>
+          <span class="badge">
+            <span class="badge-label">Steps</span>
+            <span class="badge-value" id="badge-steps">0</span>
+          </span>
+        </div>
+      </footer>
+    </aside>
+
+    <!-- MAIN PANEL -->
+    <main class="mx2gym-main" id="main-panel">
+      <header class="main-header">
+        <div class="main-kicker">Trainer State</div>
+        <div class="main-title" id="main-title">No steps run yet.</div>
+        <div class="main-meta" id="main-meta">
+          Model: — • Folds: — • Mode: —
+        </div>
+      </header>
+
+      <section class="summary-grid">
+        <article class="metric-card highlight">
+          <div class="metric-label">Current Loss</div>
+          <div class="metric-value metric-warning" id="metric-loss">—</div>
+          <div class="metric-note" id="metric-loss-note">Awaiting first step…</div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-label">Δ Loss (Prev → Curr)</div>
+          <div class="metric-value" id="metric-delta-loss">—</div>
+          <div class="metric-note">Positive = improvement.</div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-label">Gradient Norm</div>
+          <div class="metric-value" id="metric-grad-norm">—</div>
+          <div class="metric-note">Scaled summary (active folds).</div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-label">Delta Norm</div>
+          <div class="metric-value" id="metric-delta-norm">—</div>
+          <div class="metric-note">Magnitude of fold updates.</div>
+        </article>
+      </section>
+
+      <section class="panels-row">
+        <section class="panel">
+          <header class="panel-header">
+            <div class="panel-title">Training Log</div>
+            <div class="small-metric-row">
+              <span><span class="small-metric-key">Model:</span> <span class="small-metric-val" id="sm-model">—</span></span>
+              <span><span class="small-metric-key">Folds:</span> <span class="small-metric-val" id="sm-folds">—</span></span>
+            </div>
+          </header>
+          <div class="log-body" id="log-body"></div>
+        </section>
+
+        <section class="panel">
+          <header class="panel-header">
+            <div class="panel-title">Trainer Metrics</div>
+          </header>
+          <div class="small-metric-row">
+            <span><span class="small-metric-key">Prev Loss:</span> <span class="small-metric-val" id="sm-prev-loss">—</span></span>
+            <span><span class="small-metric-key">Curr Loss:</span> <span class="small-metric-val" id="sm-curr-loss">—</span></span>
+          </div>
+          <div class="small-metric-row">
+            <span><span class="small-metric-key">Steps:</span> <span class="small-metric-val" id="sm-steps">0</span></span>
+            <span><span class="small-metric-key">Last Fold:</span> <span class="small-metric-val" id="sm-last-fold">—</span></span>
+          </div>
+          <div class="small-metric-row">
+            <span><span class="small-metric-key">Mode:</span> <span class="small-metric-val" id="sm-mode">single</span></span>
+            <span><span class="small-metric-key">Auto-Merge:</span> <span class="small-metric-val" id="sm-auto-merge">on</span></span>
+          </div>
+
+          <div style="margin-top: 10px; font-size: 11px; color: var(--text-soft);">
+            Expected backend JSON (for <code>train_step</code>):
+          </div>
+          <pre class="log-body" style="min-height: 120px; max-height: 160px;">
+{
+  "status": "ok",
+  "trainer_state": {
+    "prev_loss": 1.82,
+    "curr_loss": 1.75,
+    "steps": 128,
+    "batch_metrics": {
+      "grad_norm": 0.92,
+      "delta_norm": 0.004
+    }
+  }
+}
+          </pre>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <!-- =======================================================
+       INLINE CONFIG — REST MESH ROUTES FOR MX2GYM
+       ======================================================= -->
+  <script type="application/json" id="mx2gym-config">
+  {
+    "base_url": "/api/mx2gym",
+    "routes": {
+      "train_step": "/train_step",
+      "merge_folds": "/merge",
+      "export_model": "/export"
+    },
+    "method": "POST",
+    "timeout_ms": 60000
+  }
+  </script>
+
+  <!-- =======================================================
+       RUNTIME SCRIPT — MX2GYM CONTROL PANEL LOGIC
+       ======================================================= -->
+  <script>
+    (function () {
+      const cfg = JSON.parse(document.getElementById("mx2gym-config").textContent || "{}");
+      const baseUrl = cfg.base_url || "/api/mx2gym";
+      const routes = cfg.routes || {};
+      const timeoutMs = cfg.timeout_ms || 60000;
+
+      const el = (id) => document.getElementById(id);
+
+      const modelRefInput = el("model-ref");
+      const batchSizeInput = el("batch-size");
+      const foldIdsInput = el("fold-ids");
+      const maxStepsInput = el("max-steps");
+      const stepModeSelect = el("step-mode");
+      const autoMergeCheckbox = el("auto-merge");
+      const autoExportCheckbox = el("auto-export");
+
+      const btnStep = el("btn-step");
+      const btnStart = el("btn-start");
+      const btnStop = el("btn-stop");
+      const btnMerge = el("btn-merge");
+      const btnExport = el("btn-export");
+
+      const foldListEl = el("fold-list");
+      const mainPanel = el("main-panel");
+
+      const statusStrip = el("status-strip");
+      const statusDot = el("status-dot");
+      const statusText = el("status-text");
+      const badgeSession = el("badge-session");
+      const badgeSteps = el("badge-steps");
+
+      const mainTitle = el("main-title");
+      const mainMeta = el("main-meta");
+
+      const metricLoss = el("metric-loss");
+      const metricLossNote = el("metric-loss-note");
+      const metricDeltaLoss = el("metric-delta-loss");
+      const metricGradNorm = el("metric-grad-norm");
+      const metricDeltaNorm = el("metric-delta-norm");
+
+      const logBody = el("log-body");
+
+      const smModel = el("sm-model");
+      const smFolds = el("sm-folds");
+      const smPrevLoss = el("sm-prev-loss");
+      const smCurrLoss = el("sm-curr-loss");
+      const smSteps = el("sm-steps");
+      const smLastFold = el("sm-last-fold");
+      const smMode = el("sm-mode");
+      const smAutoMerge = el("sm-auto-merge");
+
+      let sessionId = 1;
+      let steps = 0;
+      let running = false;
+      let continuousLoop = null;
+
+      function setStatus(mode, message) {
+        statusStrip.classList.remove("is-busy", "is-error");
+        statusDot.classList.remove("online", "busy", "error");
+
+        if (mode === "idle") {
+          statusDot.classList.add("online");
+          statusText.textContent = message || "Idle · MX2GYM is ready.";
+        } else if (mode === "busy") {
+          statusStrip.classList.add("is-busy");
+          statusDot.classList.add("busy");
+          statusText.textContent = message || "Training step in progress…";
+        } else if (mode === "error") {
+          statusStrip.classList.add("is-error");
+          statusDot.classList.add("error");
+          statusText.textContent = message || "Error received from backend.";
+        } else {
+          statusText.textContent = message || "";
+        }
+      }
+
+      function log(tag, message, level) {
+        const p = document.createElement("p");
+        p.className = "log-line";
+        const now = new Date();
+        const time = now.toLocaleTimeString(undefined, { hour12: false });
+
+        const spanTime = document.createElement("span");
+        spanTime.className = "time";
+        spanTime.textContent = "[" + time + "]";
+
+        const spanTag = document.createElement("span");
+        spanTag.className = "tag " + (level || "info");
+        spanTag.textContent = tag;
+
+        const spanMsg = document.createElement("span");
+        spanMsg.textContent = message;
+
+        p.appendChild(spanTime);
+        p.appendChild(spanTag);
+        p.appendChild(spanMsg);
+
+        logBody.appendChild(p);
+        logBody.scrollTop = logBody.scrollHeight;
+      }
+
+      function setBusy(isBusy) {
+        [btnStep, btnStart, btnStop, btnMerge, btnExport].forEach((b) => {
+          if (!b) return;
+          if (isBusy) b.classList.add("is-busy");
+          else b.classList.remove("is-busy");
+        });
+
+        if (isBusy) mainPanel.classList.add("is-busy");
+        else mainPanel.classList.remove("is-busy");
+      }
+
+      function parseFolds() {
+        const raw = foldIdsInput.value || "";
+        return raw
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+
+      function updateMetaSummary() {
+        const model = modelRefInput.value || "—";
+        const folds = parseFolds();
+        const mode = stepModeSelect.value || "single";
+
+        mainMeta.textContent =
+          "Model: " +
+          model +
+          " • Folds: " +
+          (folds.length ? folds.join(", ") : "none") +
+          " • Mode: " +
+          mode;
+
+        smModel.textContent = model;
+        smFolds.textContent = folds.length ? folds.join(", ") : "—";
+        smMode.textContent = mode;
+        smAutoMerge.textContent = autoMergeCheckbox.checked ? "on" : "off";
+      }
+
+      function withTimeout(promise, ms) {
+        return new Promise((resolve, reject) => {
+          const id = setTimeout(() => reject(new Error("Request timed out")), ms);
+          promise
+            .then((value) => {
+              clearTimeout(id);
+              resolve(value);
+            })
+            .catch((err) => {
+              clearTimeout(id);
+              reject(err);
+            });
+        });
+      }
+
+      async function callRoute(key, payload) {
+        const path = routes[key] || "";
+        const url = baseUrl.replace(/\/$/, "") + path;
+        const method = cfg.method || "POST";
+
+        const body = JSON.stringify(payload || {});
+
+        return withTimeout(
+          fetch(url, {
+            method,
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body
+          }),
+          timeoutMs
+        );
+      }
+
+      function updateMetricsFromState(trainerState) {
+        const prevLoss = trainerState.prev_loss;
+        const currLoss = trainerState.curr_loss;
+        const batchMetrics = trainerState.batch_metrics || {};
+        const gradNorm = batchMetrics.grad_norm;
+        const deltaNorm = batchMetrics.delta_norm;
+
+        if (typeof currLoss === "number") {
+          metricLoss.textContent = currLoss.toFixed(4);
+          smCurrLoss.textContent = currLoss.toFixed(4);
+        } else {
+          metricLoss.textContent = "—";
+          smCurrLoss.textContent = "—";
+        }
+
+        if (typeof prevLoss === "number" && typeof currLoss === "number") {
+          const delta = prevLoss - currLoss;
+          metricDeltaLoss.textContent = (delta >= 0 ? "+" : "") + delta.toFixed(5);
+          smPrevLoss.textContent = prevLoss.toFixed(4);
+
+          if (delta > 0) {
+            metricDeltaLoss.classList.remove("metric-danger");
+            metricDeltaLoss.classList.add("metric-positive");
+            metricLossNote.textContent = "Loss improving.";
+          } else if (delta < 0) {
+            metricDeltaLoss.classList.remove("metric-positive");
+            metricDeltaLoss.classList.add("metric-danger");
+            metricLossNote.textContent = "Loss increased on this step.";
+          } else {
+            metricDeltaLoss.classList.remove("metric-positive", "metric-danger");
+            metricLossNote.textContent = "No change this step.";
+          }
+        } else {
+          metricDeltaLoss.textContent = "—";
+          smPrevLoss.textContent = "—";
+        }
+
+        if (typeof gradNorm === "number") {
+          metricGradNorm.textContent = gradNorm.toFixed(4);
+        } else {
+          metricGradNorm.textContent = "—";
+        }
+
+        if (typeof deltaNorm === "number") {
+          metricDeltaNorm.textContent = deltaNorm.toFixed(4);
+        } else {
+          metricDeltaNorm.textContent = "—";
+        }
+
+        const stateSteps = trainerState.steps;
+        if (typeof stateSteps === "number") {
+          steps = stateSteps;
+        }
+        badgeSteps.textContent = steps.toString();
+        smSteps.textContent = steps.toString();
+      }
+
+      async function runTrainStep() {
+        const modelRef = modelRefInput.value.trim();
+        const folds = parseFolds();
+        const batchSize = parseInt(batchSizeInput.value, 10) || 1;
+
+        if (!modelRef) {
+          alert("Model ref is required.");
+          return;
+        }
+
+        setBusy(true);
+        setStatus("busy", "Training step…");
+        log("[step]", "model=" + modelRef + " folds=[" + folds.join(", ") + "] bs=" + batchSize);
+
+        try {
+          const payload = {
+            model_ref: modelRef,
+            fold_ids: folds,
+            batch_state: {
+              batch_size: batchSize,
+              session_id: sessionId
+            }
+          };
+
+          const res = await callRoute("train_step", payload);
+          const json = await res.json();
+
+          if (!res.ok || json.status === "error") {
+            const msg = json.message || "Unknown error from MX2GYM backend.";
+            log("[error]", msg, "error");
+            setStatus("error", msg);
+            setBusy(false);
+            return;
+          }
+
+          const trainerState = json.trainer_state || {};
+          log("[ok]", "loss=" + trainerState.curr_loss + " steps=" + trainerState.steps);
+
+          updateMetricsFromState(trainerState);
+
+          mainTitle.textContent = "MX2GYM Session " + sessionId + " · Step " + steps;
+          updateMetaSummary();
+
+          setStatus("idle", "Last step complete · loss=" + trainerState.curr_loss);
+          setBusy(false);
+        } catch (err) {
+          console.error(err);
+          log("[error]", err.message || String(err), "error");
+          setStatus("error", err.message || "Request failed.");
+          setBusy(false);
+        }
+      }
+
+      async function runMerge() {
+        const modelRef = modelRefInput.value.trim();
+        const folds = parseFolds();
+        if (!modelRef || !folds.length) {
+          alert("Model ref and folds are required to merge.");
+          return;
+        }
+
+        setBusy(true);
+        setStatus("busy", "Merging folds into model…");
+        log("[merge]", "model=" + modelRef + " folds=[" + folds.join(", ") + "]");
+
+        try {
+          const payload = {
+            model_ref: modelRef,
+            fold_ids: folds
+          };
+          const res = await callRoute("merge_folds", payload);
+          const json = await res.json();
+
+          if (!res.ok || json.status === "error") {
+            const msg = json.message || "Merge error from MX2GYM backend.";
+            log("[error]", msg, "error");
+            setStatus("error", msg);
+            setBusy(false);
+            return;
+          }
+
+          log("[ok]", "merge completed.");
+          setStatus("idle", "Merge complete.");
+        } catch (err) {
+          console.error(err);
+          log("[error]", err.message || String(err), "error");
+          setStatus("error", err.message || "Merge failed.");
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      async function runExport() {
+        const modelRef = modelRefInput.value.trim();
+        if (!modelRef) {
+          alert("Model ref is required to export.");
+          return;
+        }
+
+        const exportPath = modelRef + ".safetensors";
+
+        setBusy(true);
+        setStatus("busy", "Exporting safetensors…");
+        log("[export]", "model=" + modelRef + " → " + exportPath);
+
+        try {
+          const payload = {
+            model_ref: modelRef,
+            export_path: exportPath
+          };
+          const res = await callRoute("export_model", payload);
+          const json = await res.json();
+
+          if (!res.ok || json.status === "error") {
+            const msg = json.message || "Export error from MX2GYM backend.";
+            log("[error]", msg, "error");
+            setStatus("error", msg);
+            setBusy(false);
+            return;
+          }
+
+          log("[ok]", "export saved at " + (json.export_path || exportPath));
+          setStatus("idle", "Export complete.");
+        } catch (err) {
+          console.error(err);
+          log("[error]", err.message || String(err), "error");
+          setStatus("error", err.message || "Export failed.");
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function startContinuous() {
+        if (running) return;
+
+        const maxSteps = parseInt(maxStepsInput.value, 10) || 1000;
+        running = true;
+        sessionId += 1;
+        badgeSession.textContent = sessionId.toString();
+        log("[session]", "Session " + sessionId + " started (max_steps=" + maxSteps + ")");
+        setStatus("busy", "Continuous training…");
+        mainTitle.textContent = "MX2GYM Session " + sessionId + " · Continuous";
+
+        let stopped = false;
+
+        const loop = async () => {
+          if (!running || stopped) return;
+          if (steps >= maxSteps) {
+            log("[session]", "Reached max steps · stopping.", "warn");
+            stopContinuous();
+            if (autoMergeCheckbox.checked) {
+              await runMerge();
+            }
+            if (autoExportCheckbox.checked) {
+              await runExport();
+            }
+            return;
+          }
+          await runTrainStep();
+          if (running && !stopped) {
+            continuousLoop = setTimeout(loop, 50);
+          }
+        };
+
+        loop();
+      }
+
+      function stopContinuous() {
+        running = false;
+        if (continuousLoop) {
+          clearTimeout(continuousLoop);
+          continuousLoop = null;
+        }
+        setStatus("idle", "Training stopped.");
+        log("[session]", "Session " + sessionId + " stopped.", "warn");
+      }
+
+      // Fold quick-append
+      if (foldListEl) {
+        foldListEl.addEventListener("click", (ev) => {
+          const item = ev.target.closest(".fold-item");
+          if (!item) return;
+          const fid = item.getAttribute("data-fold");
+          if (!fid) return;
+          const existing = parseFolds();
+          if (!existing.includes(fid)) {
+            existing.push(fid);
+            foldIdsInput.value = existing.join(", ");
+            log("[fold]", "Added fold: " + fid);
+          }
+          Array.from(foldListEl.querySelectorAll(".fold-item")).forEach((el) =>
+            el.classList.toggle("is-active", el === item)
+          );
+          smLastFold.textContent = fid;
+          updateMetaSummary();
+        });
+      }
+
+      // Buttons
+      btnStep.addEventListener("click", () => {
+        steps += 1;
+        runTrainStep();
+      });
+
+      btnStart.addEventListener("click", () => {
+        const mode = stepModeSelect.value;
+        if (mode === "single") {
+          steps += 1;
+          runTrainStep();
+        } else {
+          startContinuous();
+        }
+      });
+
+      btnStop.addEventListener("click", () => {
+        stopContinuous();
+      });
+
+      btnMerge.addEventListener("click", () => {
+        runMerge();
+      });
+
+      btnExport.addEventListener("click", () => {
+        runExport();
+      });
+
+      // Keep metadata live as user edits fields
+      [modelRefInput, foldIdsInput, stepModeSelect, autoMergeCheckbox].forEach((input) => {
+        input.addEventListener("input", updateMetaSummary);
+        input.addEventListener("change", updateMetaSummary);
+      });
+
+      // Initial setup
+      updateMetaSummary();
+      setStatus("idle", "Idle · MX2GYM is ready.");
+      log("[ready]", "MX2GYM Control Panel loaded.", "info");
+    })();
+  </script>
+</body>
+</html>
+```
+
+---
+
+### How to wire it into your mesh
+
+You just need to point the config to your real MX2GYM routes:
+
+```json
+{
+  "base_url": "/rest/mx2gym",
+  "routes": {
+    "train_step": "/train_step",      // POST → MX2GYM_KERNEL.trainer.mx2gym_train_step
+    "merge_folds": "/merge",          // POST → exporter.mx2gym_merge_folds
+    "export_model": "/export"         // POST → exporter.mx2gym_export_model
+  },
+  "method": "POST",
+  "timeout_ms": 60000
+}
+```
+
+Those endpoints should return JSON like:
+
+```json
+{
+  "status": "ok",
+  "trainer_state": {
+    "prev_loss": 1.82,
+    "curr_loss": 1.75,
+    "steps": 128,
+    "batch_metrics": {
+      "grad_norm": 0.92,
+      "delta_norm": 0.004
+    }
+  }
+}
+```
+
+Once that’s wired, this panel becomes your **live cockpit** for MX2GYM + fold training.
 
 
 These two files  — <a href="../cluster/results.json">RESULTS 2</a> and <a href="../cluster/results1.json">RESULTS 1</a> — are EXACT PROOF that **K’UHUL can generate its own model weights**, and that we can push it **to millions of iterations** if we choose.
