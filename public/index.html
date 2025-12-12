@@ -2047,7 +2047,546 @@
       </div>
     </div>
   </div>
+// Add this script to your HTML file (before closing </body>)
+<script>
+// ============================================================
+// K'UHUL π CLIENT BRIDGE
+// ============================================================
 
+class KuhulClientBridge {
+  constructor() {
+    this.messageQueue = new Map();
+    this.nextRequestId = 0;
+    this.isKernelReady = false;
+    this.kernelVersion = null;
+    
+    this.init();
+  }
+  
+  async init() {
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.register('./sw.js');
+        console.log('🚀 Service Worker registered:', registration);
+        
+        // Wait for service worker to be ready
+        if (registration.active) {
+          this.setupMessageHandlers();
+        } else if (registration.installing) {
+          registration.installing.addEventListener('statechange', () => {
+            if (registration.active) {
+              this.setupMessageHandlers();
+            }
+          });
+        }
+        
+        // Listen for kernel messages
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          this.handleKernelMessage(event.data);
+        });
+        
+      } catch (error) {
+        console.error('Service Worker registration failed:', error);
+      }
+    } else {
+      console.warn('Service Workers not supported, running in fallback mode');
+    }
+  }
+  
+  setupMessageHandlers() {
+    // Send initial ping to check kernel status
+    this.sendToKernel('PING', {}).then(response => {
+      console.log('🧠 Kernel responded:', response);
+      this.isKernelReady = true;
+      this.kernelVersion = response.result?.version;
+      
+      // Initialize kernel
+      this.sendToKernel('INITIALIZE_KERNEL', {});
+    });
+  }
+  
+  handleKernelMessage(data) {
+    const { type, requestId, result, error } = data;
+    
+    // Handle broadcast messages
+    if (!requestId) {
+      switch (type) {
+        case 'KERNEL_READY':
+          console.log('🧠 Kernel ready:', result);
+          this.isKernelReady = true;
+          this.kernelVersion = result.version;
+          break;
+          
+        case 'KERNEL_INITIALIZED':
+          console.log('🚀 Kernel fully initialized');
+          this.updateUIState();
+          break;
+          
+        case 'INFERENCE_RESULT':
+          this.handleInferenceResult(result);
+          break;
+          
+        case 'FILE_CHANGED':
+          this.handleFileChanged(result);
+          break;
+          
+        case 'TAPE_ACTIVATED':
+          this.handleTapeActivated(result);
+          break;
+          
+        case 'SYNC_COMPLETE':
+          console.log('🔄 Kernel sync complete');
+          break;
+      }
+      return;
+    }
+    
+    // Handle response to specific requests
+    const resolver = this.messageQueue.get(requestId);
+    if (resolver) {
+      if (error) {
+        resolver.reject(new Error(error));
+      } else {
+        resolver.resolve(result);
+      }
+      this.messageQueue.delete(requestId);
+    }
+  }
+  
+  async sendToKernel(type, payload) {
+    return new Promise((resolve, reject) => {
+      const requestId = this.nextRequestId++;
+      this.messageQueue.set(requestId, { resolve, reject });
+      
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type,
+          payload,
+          requestId
+        });
+      } else {
+        reject(new Error('Service Worker not ready'));
+      }
+    });
+  }
+  
+  // ============================================================
+  // PUBLIC API METHODS
+  // ============================================================
+  
+  // Inference
+  async chat(model, prompt, options = {}) {
+    return this.sendToKernel('INFERENCE_REQUEST', {
+      model,
+      prompt,
+      options
+    });
+  }
+  
+  async chatStream(model, prompt, options = {}) {
+    return this.sendToKernel('INFERENCE_STREAM', {
+      model,
+      prompt,
+      options
+    });
+  }
+  
+  // Files
+  async readFile(filename) {
+    return this.sendToKernel('READ_FILE', { filename });
+  }
+  
+  async writeFile(filename, content) {
+    return this.sendToKernel('WRITE_FILE', { filename, content });
+  }
+  
+  async listFiles() {
+    return this.sendToKernel('LIST_FILES', {});
+  }
+  
+  // Tapes
+  async getTapes() {
+    return this.sendToKernel('GET_TAPES', {});
+  }
+  
+  async getActiveTape() {
+    return this.sendToKernel('GET_ACTIVE_TAPE', {});
+  }
+  
+  async setActiveTape(tapeId) {
+    return this.sendToKernel('SET_ACTIVE_TAPE', { tapeId });
+  }
+  
+  // Sessions
+  async getSessions() {
+    return this.sendToKernel('GET_SESSIONS', {});
+  }
+  
+  async clearSession(sessionId) {
+    return this.sendToKernel('CLEAR_SESSION', { sessionId });
+  }
+  
+  // Storage
+  async store(key, value) {
+    return this.sendToKernel('STORAGE_SET', { key, value });
+  }
+  
+  async retrieve(key) {
+    return this.sendToKernel('STORAGE_GET', { key });
+  }
+  
+  // ============================================================
+  // UI INTEGRATION METHODS
+  // ============================================================
+  
+  updateUIState() {
+    // Update kernel status in UI
+    const kernelIndicator = document.querySelector('.asx-chip-dot');
+    if (kernelIndicator) {
+      kernelIndicator.style.background = 'radial-gradient(circle, #22c55e 0, #22c55e 40%, transparent 70%)';
+    }
+    
+    // Update version display
+    const versionSpan = document.querySelector('.text-xs[style*="color:#bbf7d0"]');
+    if (versionSpan && this.kernelVersion) {
+      versionSpan.textContent = `K'UHUL sw.khl v${this.kernelVersion}`;
+    }
+  }
+  
+  handleInferenceResult(result) {
+    // Update chat stream in right panel
+    const chatStream = document.getElementById('chat-stream');
+    if (chatStream) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'chat-msg assistant';
+      msgDiv.innerHTML = `
+        <strong>${result.model}</strong><br/>
+        ${result.response.content}<br/>
+        <small style="color:#7dd3fc">
+          Tokens: ${result.response.tokens} · 
+          Glyphs: ${result.response.glyphs} · 
+          Time: ${result.response.processing_time}ms
+        </small>
+      `;
+      chatStream.appendChild(msgDiv);
+      chatStream.scrollTop = chatStream.scrollHeight;
+    }
+    
+    // Update inference stats
+    this.updateInferenceStats(result);
+  }
+  
+  handleFileChanged(result) {
+    // Update editor if this file is currently open
+    const editorFilename = document.getElementById('editor-filename');
+    if (editorFilename && editorFilename.textContent.includes(result.filename)) {
+      const editorBody = document.getElementById('editor-body');
+      if (editorBody) {
+        editorBody.textContent = result.content;
+      }
+    }
+    
+    // Show notification
+    this.showNotification(`File updated: ${result.filename}`);
+  }
+  
+  handleTapeActivated(result) {
+    // Update tape selection in UI
+    const tapeElements = document.querySelectorAll('.tape-tile, .model-pill');
+    tapeElements.forEach(el => {
+      if (el.textContent.includes(result.tape.name)) {
+        el.classList.add('active', 'active-tape');
+      } else {
+        el.classList.remove('active', 'active-tape');
+      }
+    });
+    
+    // Update active tape display
+    const tapeDisplay = document.querySelector('.tape-select span:nth-child(2)');
+    if (tapeDisplay) {
+      tapeDisplay.textContent = result.tape.id;
+      tapeDisplay.style.color = '#a5f3fc';
+    }
+  }
+  
+  updateInferenceStats(result) {
+    const statsElement = document.querySelector('.text-xs.text-soft');
+    if (statsElement) {
+      statsElement.innerHTML = `
+        Mode: <span style="color:#a5f3fc;">One-on-One · 
+        Model: ${result.model} · 
+        Tokens: ${result.session?.tokensUsed || 0}
+        </span>
+      `;
+    }
+  }
+  
+  showNotification(message) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, rgba(22, 242, 170, 0.9), rgba(0, 170, 255, 0.9));
+      color: #020617;
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+    `;
+    
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      notification.style.animation = 'slideOut 0.3s ease';
+      setTimeout(() => notification.remove(), 300);
+    }, 3000);
+    
+    // Add animations
+    if (!document.getElementById('notification-animations')) {
+      const style = document.createElement('style');
+      style.id = 'notification-animations';
+      style.textContent = `
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+          from { transform: translateX(0); opacity: 1; }
+          to { transform: translateX(100%); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  }
+  
+  // ============================================================
+  // CONVENIENCE METHODS
+  // ============================================================
+  
+  async quickChat(prompt, model = 'mx2lm-prime') {
+    try {
+      const response = await this.chat(model, prompt);
+      
+      // Also update the main chat input/display
+      const chatInput = document.getElementById('chat-input');
+      const sendButton = document.getElementById('sendChat');
+      
+      if (chatInput && sendButton) {
+        chatInput.value = prompt;
+        sendButton.click();
+      }
+      
+      return response;
+    } catch (error) {
+      console.error('Quick chat failed:', error);
+      throw error;
+    }
+  }
+  
+  async editFile(filename, newContent) {
+    try {
+      const success = await this.writeFile(filename, newContent);
+      if (success) {
+        this.showNotification(`${filename} updated successfully`);
+      }
+      return success;
+    } catch (error) {
+      console.error('File edit failed:', error);
+      this.showNotification(`Failed to edit ${filename}`);
+      throw error;
+    }
+  }
+  
+  async switchTape(tapeId) {
+    try {
+      const success = await this.setActiveTape(tapeId);
+      if (success) {
+        this.showNotification(`Switched to tape: ${tapeId}`);
+      }
+      return success;
+    } catch (error) {
+      console.error('Tape switch failed:', error);
+      throw error;
+    }
+  }
+}
+
+// ============================================================
+// INITIALIZE AND ATTACH TO WINDOW
+// ============================================================
+
+// Wait for DOM to be ready
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize the bridge
+  window.kuhulBridge = new KuhulClientBridge();
+  
+  // Attach bridge to existing chat functionality
+  const chatInput = document.getElementById('chat-input');
+  const sendButton = document.getElementById('sendChat');
+  const chatStream = document.getElementById('chat-stream');
+  
+  if (sendButton && chatInput && chatStream) {
+    // Override the existing send functionality
+    const originalSend = sendButton.onclick;
+    sendButton.onclick = async () => {
+      const message = chatInput.value.trim();
+      if (!message || !window.kuhulBridge.isKernelReady) return;
+      
+      // Add user message
+      const userMsg = document.createElement('div');
+      userMsg.className = 'chat-msg user';
+      userMsg.textContent = message;
+      chatStream.appendChild(userMsg);
+      
+      // Clear input
+      chatInput.value = '';
+      
+      try {
+        // Send to kernel
+        const response = await window.kuhulBridge.chat('mx2lm-prime', message);
+        
+        // Add assistant response
+        const aiMsg = document.createElement('div');
+        aiMsg.className = 'chat-msg assistant';
+        aiMsg.innerHTML = `
+          ${response.response.content}<br/>
+          <small style="color:#7dd3fc">
+            Model: ${response.model} · 
+            Session: ${response.sessionId.substr(0, 8)}...
+          </small>
+        `;
+        chatStream.appendChild(aiMsg);
+        
+        // Scroll to bottom
+        chatStream.scrollTop = chatStream.scrollHeight;
+        
+      } catch (error) {
+        console.error('Chat failed:', error);
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'chat-msg system';
+        errorMsg.textContent = `Error: ${error.message}`;
+        chatStream.appendChild(errorMsg);
+      }
+    };
+  }
+  
+  // Enhance studio tabs with kernel integration
+  const studioTabs = document.querySelectorAll('.studio-tab');
+  studioTabs.forEach(tab => {
+    tab.addEventListener('click', async () => {
+      const target = tab.getAttribute('data-target');
+      
+      // If it's a file tab, load content from kernel
+      if (target.includes('file')) {
+        const filename = target.replace('-file', '') + (target.includes('kernel') ? '.js' : target.includes('manifest') ? '.json' : '.html');
+        
+        try {
+          if (window.kuhulBridge.isKernelReady) {
+            const file = await window.kuhulBridge.readFile(filename);
+            if (file) {
+              const editorBody = document.getElementById('editor-body');
+              if (editorBody) {
+                editorBody.textContent = file.content;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Failed to load file:', error);
+        }
+      }
+    });
+  });
+  
+  // Enhance tape/model pills
+  const modelPills = document.querySelectorAll('.model-pill');
+  modelPills.forEach(pill => {
+    pill.addEventListener('click', async () => {
+      const modelName = pill.textContent.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      
+      try {
+        if (window.kuhulBridge.isKernelReady) {
+          // You could load model-specific settings here
+          window.kuhulBridge.showNotification(`Model selected: ${pill.textContent}`);
+        }
+      } catch (error) {
+        console.error('Model switch failed:', error);
+      }
+    });
+  });
+  
+  // Auto-initialize chat on page load
+  setTimeout(() => {
+    if (window.kuhulBridge.isKernelReady) {
+      // Send welcome message
+      const welcomeMsg = document.createElement('div');
+      welcomeMsg.className = 'chat-msg system';
+      welcomeMsg.innerHTML = `
+        <strong>K'UHUL π Kernel Online</strong><br/>
+        Kernel Version: ${window.kuhulBridge.kernelVersion || '3.0'}<br/>
+        Ready for inference and file operations.
+      `;
+      if (chatStream) {
+        chatStream.appendChild(welcomeMsg);
+      }
+    }
+  }, 2000);
+});
+
+// ============================================================
+// EXPOSE GLOBAL HELPERS
+// ============================================================
+
+// Global helper functions for easy access
+window.Kuhul = {
+  // Quick chat
+  async ask(prompt, model = 'mx2lm-prime') {
+    if (!window.kuhulBridge) {
+      console.error('Kuhul bridge not initialized');
+      return null;
+    }
+    return window.kuhulBridge.quickChat(prompt, model);
+  },
+  
+  // File operations
+  async edit(filename, content) {
+    if (!window.kuhulBridge) return false;
+    return window.kuhulBridge.editFile(filename, content);
+  },
+  
+  async read(filename) {
+    if (!window.kuhulBridge) return null;
+    return window.kuhulBridge.readFile(filename);
+  },
+  
+  // Tape operations
+  async useTape(tapeId) {
+    if (!window.kuhulBridge) return false;
+    return window.kuhulBridge.switchTape(tapeId);
+  },
+  
+  // System info
+  getStatus() {
+    if (!window.kuhulBridge) return { ready: false };
+    return {
+      ready: window.kuhulBridge.isKernelReady,
+      version: window.kuhulBridge.kernelVersion
+    };
+  },
+  
+  // Direct kernel access (advanced)
+  get kernel() {
+    return window.kuhulBridge;
+  }
+};
+
+console.log('🤖 K\'UHUL π Client Bridge initialized');
+  </script>
   <!-- =========================================================
        INLINE RUNTIME HINTS (minimal, DOM-only; no kernel logic)
        ========================================================= -->
@@ -2391,4 +2930,5 @@
     }
   </script>
 </body>
+
 </html>
