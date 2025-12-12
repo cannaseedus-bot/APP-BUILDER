@@ -275,217 +275,223 @@ This is the **official `atomic.css v∞`** to distribute through the ASX mesh.
 *(This is the exact file to store, byte-for-byte, in `sw.js` → cache → mesh.)*
 
 ```css
-/* ============================================================
-   ATOMIC.CSS v∞
-   Canonical Mesh-Cached Edition
-   ASX • PRIME • XJSON • K’UHUL • SCXQ2
-   Deterministic / Offline-Safe / SCX-Compressible
-   ============================================================ */
+/* =============================================================
+   GHOST MODE v∞ — ATOMIC.CSS RUNTIME TIER
+   Activated via: <html data-ghost="true">
+   ============================================================= */
 
-/* ------------------------------------------------------------
-   1) ROOT COLOR SYSTEM — BLACK CODEX MATRIX
-   ------------------------------------------------------------ */
+/* -------------------------------------------------------------
+   0) GHOST VARIABLES / RHYTHM (ADOPTED)
+------------------------------------------------------------- */
+html[data-ghost="true"] {
+  /* Layout */
+  --ghost-header-height: 52px;
+  --ghost-footer-height: 24px;
+  --ghost-sidebar-width: 260px;
 
-:root {
-  --bg: #020409;
-  --bg-1: #05070d;
-  --bg-2: #0a0f14;
-  --bg-3: #0f1620;
+  /* Spacing / grid */
+  --ghost-unit: 4px;
+  --ghost-gap: calc(var(--ghost-unit) * 4);
 
-  --panel: #070b12;
-  --panel-alt: #0b1018;
-  --panel-deep: #111a24;
+  /* Animation */
+  --ghost-transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 
-  --text: #e6f7ff;
-  --text-soft: #9bb3c9;
-  --text-muted: #4f6780;
+  /* Theme overrides */
+  --bg: #05070b;
+  --bg-2: #060a11;
+  --bg-3: #0b1018;
 
-  --accent: #16f2aa;
-  --accent-soft: rgba(22,242,170,0.18);
-  --accent-glow: rgba(22,242,170,0.35);
+  --panel: #0b1016;
+  --panel-alt: #101722;
 
-  --haz: #f5c542;
-  --haz-soft: rgba(245,197,66,0.22);
-  --haz-glow: rgba(245,197,66,0.45);
+  --accent: #00ffd0;
+  --accent-soft: rgba(0,255,208,0.20);
 
-  --border: rgba(255,255,255,0.12);
-  --border-strong: rgba(255,255,255,0.22);
-  --border-accent: rgba(22,242,170,0.55);
-  --border-haz: rgba(245,197,66,0.55);
+  --hazard: #f5c451;
+  --hazard-soft: rgba(245,196,81,0.25);
 
-  --code-keyword: #ff7b72;
-  --code-fn: #61d6ff;
-  --code-str: #a5ff90;
-  --code-num: #ffca85;
-  --code-obj: #4fd1ff;
-  --code-atom: #16f2aa;
+  --border-soft: rgba(255,255,255,0.08);
+
+  --text: #e3f6ff;
+  --text-soft: #8ba0b8;
+  --text-muted: #5c6f82;
+
+  background: var(--bg);
+  color: var(--text);
 }
 
-/* ------------------------------------------------------------
-   2) ATOMIC LAYOUT PRIMITIVES
-   ------------------------------------------------------------ */
+/* -------------------------------------------------------------
+   1) ATOMIC BLOCKS — CANONICAL + DATA ALIAS (ADOPTED)
+------------------------------------------------------------- */
 
-[⟁flex] { display:flex; }
-[⟁row] { flex-direction:row; }
-[⟁col] { flex-direction:column; }
-
-[⟁center] { align-items:center; justify-content:center; }
-[⟁between] { justify-content:space-between; }
-[⟁around] { justify-content:space-around; }
-[⟁wrap] { flex-wrap:wrap; }
-[⟁nowrap] { flex-wrap:nowrap; }
-
-[⟁grid] { display:grid; }
-[⟁grid-auto] { grid-auto-flow:row; }
-[⟁grid-fit] { grid-template-columns:repeat(auto-fit,minmax(0,1fr)); }
-[⟁grid-fill] { grid-template-columns:repeat(auto-fill,minmax(0,1fr)); }
-
-/* ------------------------------------------------------------
-   3) SPACING UTILITIES
-   ------------------------------------------------------------ */
-
-[class*="⟁p-"] { padding:var(--p,0); }
-[class*="⟁m-"] { margin:var(--m,0); }
-
-/* ------------------------------------------------------------
-   4) POSITION PRIMITIVES
-   ------------------------------------------------------------ */
-
-[⟁abs] { position:absolute; }
-[⟁rel] { position:relative; }
-[⟁fixed] { position:fixed; }
-[⟁sticky] { position:sticky; }
-
-/* ------------------------------------------------------------
-   5) VISIBILITY + SCROLLING
-   ------------------------------------------------------------ */
-
-[⟁scroll] {
-  overflow-y:auto;
-  scrollbar-width:none;
+/* Header */
+[⟁header-block],
+[data-block="header"] {
+  height: var(--ghost-header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 calc(var(--ghost-gap) + 2px);
+  border-bottom: 1px solid var(--border-soft);
 }
 
-[⟁scroll]::-webkit-scrollbar { display:none; }
-
-/* ------------------------------------------------------------
-   6) EDITOR + PANEL BLOCKS
-   ------------------------------------------------------------ */
-
-[⟁editor] {
-  background:var(--panel);
-  color:var(--text);
-  border:1px solid var(--border);
-  padding:16px;
-  border-radius:8px;
-  font-family:"JetBrains Mono", monospace;
-  font-size:14px;
-  line-height:1.5;
+/* Sidebar */
+[⟁sidebar-block],
+[data-block="sidebar"] {
+  width: var(--ghost-sidebar-width);
+  padding: var(--ghost-gap);
+  border-right: 1px solid var(--border-soft);
 }
 
-[⟁panel] {
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:12px;
+/* Body */
+[⟁body-block],
+[data-block="body"] {
+  padding: var(--ghost-gap);
+  overflow: auto;
 }
 
-[⟁panel-deep] {
-  background:var(--panel-deep);
-  border:1px solid var(--border-strong);
+/* Footer */
+[⟁footer-block],
+[data-block="footer"] {
+  height: var(--ghost-footer-height);
+  padding: 4px var(--ghost-gap);
+  border-top: 1px solid var(--border-soft);
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
-/* ------------------------------------------------------------
-   7) CODE SYNTAX HIGHLIGHTING
-   ------------------------------------------------------------ */
-
-[⟁kw]   { color:var(--code-keyword); }
-[⟁fn]   { color:var(--code-fn); }
-[⟁str]  { color:var(--code-str); }
-[⟁num]  { color:var(--code-num); }
-[⟁obj]  { color:var(--code-obj); }
-[⟁atom] { color:var(--code-atom); font-weight:600; }
-
-/* ------------------------------------------------------------
-   8) ACTIVE / HOVER / FOCUS STATES (Hazard Mode)
-   ------------------------------------------------------------ */
-
-[⟁active],
-[⟁hover]:hover,
-[⟁focus]:focus {
-  outline:1px solid var(--haz);
-  box-shadow:0 0 12px var(--haz-glow);
-  background:var(--haz-soft);
-  color:var(--haz);
+/* -------------------------------------------------------------
+   2) HARD COCKPIT GEOMETRY (ADOPTED)
+------------------------------------------------------------- */
+html[data-ghost="true"] * {
+  border-radius: 6px;
 }
 
-/* ------------------------------------------------------------
-   9) INPUTS + BUTTONS
-   ------------------------------------------------------------ */
-
-[⟁input] {
-  background:var(--panel-alt);
-  color:var(--text);
-  border:1px solid var(--border);
-  padding:8px 10px;
-  border-radius:6px;
+html[data-ghost="true"] .ghost-panel,
+html[data-ghost="true"] .ghost-widget-docker {
+  border-radius: 10px;
 }
 
-[⟁input]:focus {
-  border-color:var(--accent);
-  box-shadow:0 0 8px var(--accent-glow);
+/* -------------------------------------------------------------
+   3) GLASS SURFACES (ALIAS SAFE)
+------------------------------------------------------------- */
+[⟁glass],
+[data-glass="true"] {
+  background: rgba(7,11,17,0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border-soft);
 }
 
-[⟁btn] {
-  background:var(--panel-deep);
-  border:1px solid var(--border);
-  color:var(--text);
-  padding:8px 12px;
-  border-radius:6px;
+[⟁glass-accent],
+[data-glass="accent"] {
+  background: linear-gradient(
+    135deg,
+    rgba(0,255,208,0.22),
+    rgba(7,11,17,0.96)
+  );
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 16px rgba(0,255,208,0.35);
 }
 
-[⟁btn]:hover {
-  border-color:var(--haz);
-  color:var(--haz);
-  box-shadow:0 0 8px var(--haz-glow);
+/* -------------------------------------------------------------
+   4) TAPE VIEW SWITCHING (ADOPTED)
+------------------------------------------------------------- */
+html[data-ghost="true"] [data-tape-view] {
+  display: none;
 }
 
-/* ------------------------------------------------------------
-   🔟 TERMINAL / BASHER STYLE
-   ------------------------------------------------------------ */
-
-[⟁terminal] {
-  background:#000;
-  color:var(--accent);
-  font-family:"JetBrains Mono", monospace;
-  padding:12px;
-  border-radius:6px;
-  border:1px solid var(--border-strong);
+html[data-ghost="true"] [data-tape-view].active {
+  display: grid;
+  animation: tape-transition 0.3s ease-out;
 }
 
-[⟁terminal-haz] {
-  color:var(--haz);
+/* Tape transition */
+@keyframes tape-transition {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-/* ------------------------------------------------------------
-   11) CARET / CURSOR
-   ------------------------------------------------------------ */
-
-[⟁cursor] { caret-color:var(--accent); }
-
-/* ------------------------------------------------------------
-   12) GLASS EFFECTS (Ghost Shell)
-   ------------------------------------------------------------ */
-
-[⟁glass] {
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(8px);
-  border:1px solid var(--border-soft);
+/* -------------------------------------------------------------
+   5) GHOST GRID UTILITIES (ADOPTED)
+------------------------------------------------------------- */
+html[data-ghost="true"] .ghost-grid {
+  display: grid;
+  gap: var(--ghost-gap);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
-[⟁glass-accent] {
-  background:rgba(22,242,170,0.08);
-  border:1px solid var(--accent);
+html[data-ghost="true"] .ghost-cell {
+  background: var(--panel);
+  border: 1px solid var(--border-soft);
+  padding: var(--ghost-gap);
 }
+
+/* -------------------------------------------------------------
+   6) TAPE PREVIEW / REGISTRY UI (ADOPTED)
+------------------------------------------------------------- */
+html[data-ghost="true"] .tape-preview {
+  background: var(--panel);
+  border: 1px solid var(--border-soft);
+  padding: 12px;
+  transition: var(--ghost-transition);
+}
+
+html[data-ghost="true"] .tape-preview:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+html[data-ghost="true"] .tape-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  background: var(--bg-3);
+  color: var(--text-soft);
+}
+
+/* -------------------------------------------------------------
+   7) ACCESSIBILITY (ADOPTED)
+------------------------------------------------------------- */
+html[data-ghost="true"] [data-focusable]:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--hazard),
+    0 0 12px var(--hazard-soft);
+}
+
+/* High contrast */
+@media (prefers-contrast: high) {
+  html[data-ghost="true"] {
+    --border-soft: rgba(255,255,255,0.3);
+  }
+}
+
+/* -------------------------------------------------------------
+   8) MOTION SAFETY (ADOPTED)
+------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html[data-ghost="true"] * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mobile glass optimization */
+@media (max-width: 768px) {
+  html[data-ghost="true"] [⟁glass],
+  html[data-ghost="true"] [data-glass="true"] {
+    backdrop-filter: blur(5px);
+  }
+}
+
 ```
 
 ---
