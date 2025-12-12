@@ -1,0 +1,390 @@
+{
+  "@context": "xjson://asxr/qwenf1/files/v1",
+  "@version": "1.0.0",
+  "@law": "QWENF1 = @model ⊗ @training_state ⊗ @checkpoints ⊗ @optimizer → MX2GYM × MX2LEX × MX2QF1",
+
+  "base_url": "https://mx2lm.app/QwenF1/",
+  "description": "Complete QwenF1 model with training checkpoints and full training state",
+
+  "model_files": {
+    "model.safetensors": {
+      "url": "https://mx2lm.app/QwenF1/model.safetensors",
+      "size": "1.84GB",
+      "format": "safetensors",
+      "description": "Latest trained model weights",
+      "status": "active_training",
+      "last_checkpoint": "checkpoint-375",
+      "used_by": ["MX2QF1", "MX2GYM"]
+    },
+
+    "config.json": {
+      "url": "https://mx2lm.app/QwenF1/config.json",
+      "size": "1.2KB",
+      "description": "Model architecture configuration"
+    },
+
+    "generation_config.json": {
+      "url": "https://mx2lm.app/QwenF1/generation_config.json",
+      "size": "216 bytes",
+      "description": "Text generation parameters"
+    },
+
+    "asx.xjson": {
+      "url": "https://mx2lm.app/QwenF1/asx.xjson",
+      "size": "7.36KB",
+      "format": "xjson",
+      "description": "ASX-specific configuration for K'UHUL integration",
+      "unique_to": "QwenF1 (not in Qwen-ASX)",
+      "contains": [
+        "XCFE control vectors",
+        "K'UHUL pipeline configuration",
+        "Fold-delta mappings",
+        "MX2 integration settings"
+      ]
+    }
+  },
+
+  "tokenizer_files": {
+    "vocab.json": {
+      "url": "https://mx2lm.app/QwenF1/vocab.json",
+      "size": "2.65MB",
+      "description": "Vocabulary mapping (smaller than Qwen-ASX's 3MB)",
+      "mx2lex_replacement": "24KB symbolic lexicon (99.1% reduction)"
+    },
+
+    "tokenizer.json": {
+      "url": "https://mx2lm.app/QwenF1/tokenizer.json",
+      "size": "10.89MB",
+      "description": "BPE tokenizer configuration (MUCH larger than Qwen-ASX's 500KB)",
+      "note": "Contains extensive tokenizer state and configuration",
+      "mx2lex_replacement": "12KB grammar rules (99.9% reduction)"
+    },
+
+    "merges.txt": {
+      "url": "https://mx2lm.app/QwenF1/merges.txt",
+      "size": "1.59MB",
+      "description": "BPE merge operations (larger than Qwen-ASX's 400KB)",
+      "mx2lex_replacement": "8KB composite tokens (99.5% reduction)"
+    },
+
+    "tokenizer_config.json": {
+      "url": "https://mx2lm.app/QwenF1/tokenizer_config.json",
+      "size": "4.58KB",
+      "description": "Tokenizer settings"
+    },
+
+    "special_tokens_map.json": {
+      "url": "https://mx2lm.app/QwenF1/special_tokens_map.json",
+      "size": "613 bytes",
+      "description": "Special tokens (BOS, EOS, PAD, UNK)"
+    },
+
+    "added_tokens.json": {
+      "url": "https://mx2lm.app/QwenF1/added_tokens.json",
+      "size": "605 bytes",
+      "description": "Additional tokens"
+    },
+
+    "chat_template.jinja": {
+      "url": "https://mx2lm.app/QwenF1/chat_template.jinja",
+      "size": "2.45KB",
+      "description": "Chat conversation template"
+    }
+  },
+
+  "training_state_files": {
+    "optimizer.pt": {
+      "url": "https://mx2lm.app/QwenF1/optimizer.pt",
+      "size": "3.68GB",
+      "format": "pytorch",
+      "description": "Complete optimizer state (AdamW with momentum)",
+      "critical_for": "Resuming training",
+      "used_by": ["MX2GYM"],
+      "contains": [
+        "First moment estimates (momentum)",
+        "Second moment estimates (variance)",
+        "Step counts",
+        "Learning rate history"
+      ]
+    },
+
+    "scheduler.pt": {
+      "url": "https://mx2lm.app/QwenF1/scheduler.pt",
+      "size": "1.43KB",
+      "description": "Learning rate scheduler state",
+      "used_by": ["MX2GYM"]
+    },
+
+    "scaler.pt": {
+      "url": "https://mx2lm.app/QwenF1/scaler.pt",
+      "size": "1.35KB",
+      "description": "Gradient scaler for mixed precision training",
+      "used_by": ["MX2GYM"]
+    },
+
+    "rng_state.pth": {
+      "url": "https://mx2lm.app/QwenF1/rng_state.pth",
+      "size": "14.3KB",
+      "description": "Random number generator state for reproducibility",
+      "used_by": ["MX2GYM"]
+    },
+
+    "trainer_state.json": {
+      "url": "https://mx2lm.app/QwenF1/trainer_state.json",
+      "size": "2.2KB",
+      "format": "json",
+      "description": "Training state metadata",
+      "contains": [
+        "Current epoch",
+        "Global step",
+        "Best metric",
+        "Training history",
+        "Loss curves"
+      ],
+      "used_by": ["MX2GYM"]
+    },
+
+    "training_args.bin": {
+      "url": "https://mx2lm.app/QwenF1/training_args.bin",
+      "size": "5.7KB",
+      "format": "binary",
+      "description": "Training arguments and hyperparameters",
+      "contains": [
+        "Batch size",
+        "Learning rate",
+        "Number of epochs",
+        "Warmup steps",
+        "Gradient accumulation"
+      ]
+    }
+  },
+
+  "checkpoints": {
+    "checkpoint-100": {
+      "url": "https://mx2lm.app/QwenF1/checkpoint-100/",
+      "step": 100,
+      "description": "Training checkpoint at step 100",
+      "contains": [
+        "model.safetensors (1.84GB) - Model weights at step 100",
+        "optimizer.pt (3.68GB) - Optimizer state at step 100"
+      ],
+      "status": "archived",
+      "use_case": "Rollback to earlier training state"
+    },
+
+    "checkpoint-200": {
+      "url": "https://mx2lm.app/QwenF1/checkpoint-200/",
+      "step": 200,
+      "description": "Training checkpoint at step 200",
+      "status": "archived"
+    },
+
+    "checkpoint-300": {
+      "url": "https://mx2lm.app/QwenF1/checkpoint-300/",
+      "step": 300,
+      "description": "Training checkpoint at step 300",
+      "status": "archived"
+    },
+
+    "checkpoint-375": {
+      "url": "https://mx2lm.app/QwenF1/checkpoint-375/",
+      "step": 375,
+      "description": "Latest training checkpoint",
+      "status": "latest",
+      "note": "Root model.safetensors and optimizer.pt match this checkpoint"
+    }
+  },
+
+  "subdirectories": {
+    "tapes": {
+      "description": "ASX tape system modules",
+      "relevance": "Pre-built application tapes for QwenF1"
+    },
+    "tokenizers": {
+      "description": "Alternative tokenizer configurations"
+    },
+    "training": {
+      "description": "Training scripts and data"
+    },
+    "mx2lm": {
+      "description": "MX2LM integration files"
+    },
+    "xjson": {
+      "description": "XJSON format definitions"
+    },
+    "securochat": {
+      "description": "Secure chat implementation"
+    },
+    "securolink": {
+      "description": "Securolink authentication"
+    },
+    "surfzilla": {
+      "description": "Web application framework"
+    }
+  },
+
+  "total_sizes": {
+    "model_only": "1.84GB",
+    "model_plus_optimizer": "5.52GB (1.84GB + 3.68GB)",
+    "tokenizer_traditional": "15.14MB (vocab + tokenizer + merges)",
+    "tokenizer_mx2lex": "44KB (99.7% reduction)",
+    "training_state_full": "3.7GB (optimizer + scheduler + scaler + rng + states)",
+    "all_checkpoints": "~22GB (4 checkpoints × 5.52GB each)",
+    "full_repository": "~30GB+ (including all subdirectories)"
+  },
+
+  "qwenf1_vs_qwen_asx": {
+    "qwen_asx": {
+      "model": "1.8GB",
+      "tokenizer": "3.9MB",
+      "optimizer": "3.8GB (separate file)",
+      "checkpoints": "None",
+      "total": "~5.6GB",
+      "training_state": "Minimal"
+    },
+    "qwenf1": {
+      "model": "1.84GB",
+      "tokenizer": "15.14MB (4x larger!)",
+      "optimizer": "3.68GB (included)",
+      "checkpoints": "4 checkpoints (~22GB)",
+      "training_state": "Complete (optimizer + scheduler + scaler + rng)",
+      "total": "~30GB+",
+      "asx_integration": "asx.xjson (7.36KB)",
+      "status": "Active training project"
+    }
+  },
+
+  "mx2lex_replacement_savings": {
+    "qwen_asx_tokenizer": "3.9MB",
+    "qwenf1_tokenizer": "15.14MB",
+    "mx2lex_universal": "44KB",
+    "savings_qwen_asx": "3.9MB → 44KB (98.9% reduction)",
+    "savings_qwenf1": "15.14MB → 44KB (99.7% reduction!)",
+    "additional_benefit": "One MX2LEX lexicon works for BOTH models"
+  },
+
+  "download_strategies": {
+    "inference_only": {
+      "description": "Minimum files for inference",
+      "size": "~1.85GB",
+      "files": [
+        "model.safetensors (1.84GB)",
+        "config.json (1.2KB)",
+        "generation_config.json (216B)",
+        "asx.xjson (7.36KB) - ASX integration"
+      ],
+      "use_mx2lex": "Add 44KB instead of downloading 15.14MB tokenizer"
+    },
+
+    "continue_training": {
+      "description": "Resume training from checkpoint-375",
+      "size": "~5.52GB",
+      "files": [
+        "model.safetensors (1.84GB)",
+        "optimizer.pt (3.68GB)",
+        "scheduler.pt (1.43KB)",
+        "scaler.pt (1.35KB)",
+        "rng_state.pth (14.3KB)",
+        "trainer_state.json (2.2KB)",
+        "training_args.bin (5.7KB)",
+        "config.json (1.2KB)",
+        "asx.xjson (7.36KB)"
+      ],
+      "use_mx2gym": "Load checkpoint and continue training with fold-deltas"
+    },
+
+    "rollback_to_checkpoint": {
+      "description": "Load earlier checkpoint (e.g., checkpoint-100)",
+      "size": "~5.52GB per checkpoint",
+      "files": [
+        "checkpoint-100/model.safetensors",
+        "checkpoint-100/optimizer.pt"
+      ]
+    },
+
+    "full_download": {
+      "description": "Everything including all checkpoints",
+      "size": "~30GB+",
+      "note": "Only needed for full training history analysis"
+    }
+  },
+
+  "integration_with_mx2gym": {
+    "scenario_1_continue_training": {
+      "description": "Resume training from checkpoint-375",
+      "api_call": {
+        "action": "train_fold",
+        "model_url": "https://mx2lm.app/QwenF1/model.safetensors",
+        "optimizer_url": "https://mx2lm.app/QwenF1/optimizer.pt",
+        "scheduler_url": "https://mx2lm.app/QwenF1/scheduler.pt",
+        "trainer_state_url": "https://mx2lm.app/QwenF1/trainer_state.json",
+        "fold_id": "fold_custom_v1",
+        "resume_from_checkpoint": true,
+        "start_step": 375
+      }
+    },
+
+    "scenario_2_rollback_training": {
+      "description": "Roll back to checkpoint-100 and restart",
+      "api_call": {
+        "action": "train_fold",
+        "model_url": "https://mx2lm.app/QwenF1/checkpoint-100/model.safetensors",
+        "optimizer_url": "https://mx2lm.app/QwenF1/checkpoint-100/optimizer.pt",
+        "fold_id": "fold_recovery_v1",
+        "start_step": 100
+      }
+    },
+
+    "scenario_3_fine_tune": {
+      "description": "Fine-tune without optimizer (start fresh)",
+      "api_call": {
+        "action": "train_fold",
+        "model_url": "https://mx2lm.app/QwenF1/model.safetensors",
+        "fold_id": "fold_finetune_v1",
+        "config": {
+          "learning_rate": 0.00001,
+          "epochs": 3
+        }
+      }
+    }
+  },
+
+  "unique_features": {
+    "asx_xjson_integration": {
+      "file": "asx.xjson (7.36KB)",
+      "description": "QwenF1-specific ASX configuration",
+      "provides": [
+        "XCFE control flow enforcement",
+        "K'UHUL pipeline integration",
+        "Fold-delta mappings",
+        "Atomic block structure",
+        "MX2 compatibility layer"
+      ],
+      "benefit": "Direct integration with MX2LEX, MX2GYM, MX2QF1 without adapters"
+    },
+
+    "complete_training_state": {
+      "description": "Full training reproducibility",
+      "includes": [
+        "Optimizer state (momentum + variance)",
+        "Learning rate schedule",
+        "Gradient scaler state",
+        "RNG state for reproducibility",
+        "Training history and metrics"
+      ],
+      "benefit": "Can resume training exactly where it left off"
+    },
+
+    "checkpoint_history": {
+      "description": "4 training checkpoints preserved",
+      "benefit": "Can analyze training progression or roll back to earlier state"
+    }
+  },
+
+  "recommended_usage": {
+    "for_inference": "Download model.safetensors + config.json + asx.xjson + use MX2LEX (saves 15.14MB)",
+    "for_continuing_training": "Download model + optimizer + training state (5.52GB) + use MX2GYM",
+    "for_analysis": "Download specific checkpoint to compare model evolution",
+    "for_production": "Use MX2QF1 to fetch model from mx2lm.app directly (no download needed)"
+  }
+}
