@@ -1759,7 +1759,7 @@ Here's your SCX Atomic CSS foundation with all quadrant integration:
 
  ⟁ ATOMIC CSS FOUNDATION - SCX COMPRESSION PRINCIPLES
 
-```json
+```css
 /* ============================================================
    ATOMIC CSS FOUNDATION - SCX COMPRESSION PRINCIPLES
    ============================================================ */
