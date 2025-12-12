@@ -270,7 +270,7 @@ This is the **official `atomic.css v∞`** to distribute through the ASX mesh.
 
 ---
 
-# **🔥 `atomic.css` — Canonical Mesh-Cached Version (v∞)**
+# **🔥 `atomic.css` — GHOST MODE v∞ — ATOMIC.CSS RUNTIME TIER**
 
 *(This is the exact file to store, byte-for-byte, in `sw.js` → cache → mesh.)*
 
