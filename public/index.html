@@ -2059,7 +2059,270 @@
       </div>
     </div>
   </div>
-// Add this to your HTML before closing </body>
+
+<!-- Theme Switcher Components to add to your existing HTML -->
+<div class="theme-toggle-btn" onclick="toggleThemeSwitcher()">
+  🎨
+</div>
+
+<div class="theme-switcher-panel" id="themeSwitcher">
+  <div class="theme-switcher-header">
+    <div class="theme-switcher-title">Theme Settings</div>
+    <button class="theme-switcher-close" onclick="toggleThemeSwitcher()">×</button>
+  </div>
+  
+  <div class="theme-category">
+    <div class="theme-category-title">Studio Environment</div>
+    <div class="theme-options">
+      <div class="theme-option active" onclick="setTheme('studio', 'quantum')">
+        <div class="theme-preview" data-type="studio-quantum"></div>
+        <div class="theme-name">Quantum</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('studio', 'foundry')">
+        <div class="theme-preview" data-type="studio-foundry"></div>
+        <div class="theme-name">Foundry</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('studio', 'forge')">
+        <div class="theme-preview" data-type="studio-forge"></div>
+        <div class="theme-name">Forge</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('studio', 'crystal')">
+        <div class="theme-preview" data-type="studio-crystal"></div>
+        <div class="theme-name">Crystal</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="theme-category">
+    <div class="theme-category-title">Ghost Interface</div>
+    <div class="theme-options">
+      <div class="theme-option active" onclick="setTheme('ghost', 'specter')">
+        <div class="theme-preview" data-type="ghost-specter"></div>
+        <div class="theme-name">Specter</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('ghost', 'synth')">
+        <div class="theme-preview" data-type="ghost-synth"></div>
+        <div class="theme-name">Synth</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('ghost', 'bio')">
+        <div class="theme-preview" data-type="ghost-bio"></div>
+        <div class="theme-name">Bio</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('ghost', 'pulse')">
+        <div class="theme-preview" data-type="ghost-pulse"></div>
+        <div class="theme-name">Pulse</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="theme-category">
+    <div class="theme-category-title">Tape Interface</div>
+    <div class="theme-options">
+      <div class="theme-option active" onclick="setTheme('tape', 'cyan')">
+        <div class="theme-preview" data-type="tape-cyan"></div>
+        <div class="theme-name">Cyan</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('tape', 'amber')">
+        <div class="theme-preview" data-type="tape-amber"></div>
+        <div class="theme-name">Amber</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('tape', 'violet')">
+        <div class="theme-preview" data-type="tape-violet"></div>
+        <div class="theme-name">Violet</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('tape', 'slate')">
+        <div class="theme-preview" data-type="tape-slate"></div>
+        <div class="theme-name">Slate</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="theme-category">
+    <div class="theme-category-title">App Interface</div>
+    <div class="theme-options">
+      <div class="theme-option active" onclick="setTheme('app', 'glass')">
+        <div class="theme-preview" data-type="app-glass"></div>
+        <div class="theme-name">Glass</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('app', 'matte')">
+        <div class="theme-preview" data-type="app-matte"></div>
+        <div class="theme-name">Matte</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('app', 'neon')">
+        <div class="theme-preview" data-type="app-neon"></div>
+        <div class="theme-name">Neon</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('app', 'terminal')">
+        <div class="theme-preview" data-type="app-terminal"></div>
+        <div class="theme-name">Terminal</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="theme-category">
+    <div class="theme-category-title">Quick Presets</div>
+    <div class="theme-options">
+      <div class="theme-option" onclick="applyPreset('cyberpunk')">
+        <div class="theme-preview" style="background: linear-gradient(135deg, #16f2aa, #000000); border: 1px solid #16f2aa;"></div>
+        <div class="theme-name">Cyberpunk</div>
+      </div>
+      <div class="theme-option" onclick="applyPreset('hacker')">
+        <div class="theme-preview" style="background: linear-gradient(135deg, #f59e0b, #000000); border: 1px solid #00ff00;"></div>
+        <div class="theme-name">Hacker</div>
+      </div>
+      <div class="theme-option" onclick="applyPreset('bio-tech')">
+        <div class="theme-preview" style="background: linear-gradient(135deg, #06b6d4, #064e3b); border: 1px solid #6ee7b7;"></div>
+        <div class="theme-name">Bio-Tech</div>
+      </div>
+      <div class="theme-option" onclick="applyPreset('deep-purple')">
+        <div class="theme-preview" style="background: linear-gradient(135deg, #8b5cf6, #1e1b4b); border: 1px solid #a855f7;"></div>
+        <div class="theme-name">Deep Purple</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Theme Loading Overlay (shown briefly on page load) -->
+<div class="theme-loading" id="themeLoading">
+  <div class="theme-loading-spinner"></div>
+</div>
+
+<script>
+// Theme Switcher Manager
+const ThemeManager = {
+  current: {
+    studio: 'quantum',
+    ghost: 'specter', 
+    tape: 'cyan',
+    app: 'glass'
+  },
+  
+  presets: {
+    cyberpunk: { studio: 'quantum', ghost: 'synth', tape: 'cyan', app: 'neon' },
+    hacker: { studio: 'forge', ghost: 'specter', tape: 'terminal', app: 'terminal' },
+    'bio-tech': { studio: 'crystal', ghost: 'bio', tape: 'cyan', app: 'glass' },
+    'deep-purple': { studio: 'foundry', ghost: 'pulse', tape: 'violet', app: 'matte' }
+  },
+  
+  init() {
+    this.load();
+    this.updateUI();
+    setTimeout(() => {
+      document.getElementById('themeLoading').style.display = 'none';
+    }, 500);
+  },
+  
+  setTheme(component, theme) {
+    document.documentElement.setAttribute(`data-${component}`, theme);
+    this.current[component] = theme;
+    this.save();
+    this.updateUI();
+  },
+  
+  applyPreset(preset) {
+    if (this.presets[preset]) {
+      const themes = this.presets[preset];
+      Object.entries(themes).forEach(([component, theme]) => {
+        this.setTheme(component, theme);
+      });
+      document.documentElement.setAttribute('data-preset', preset);
+    }
+  },
+  
+  save() {
+    localStorage.setItem('ghost-os-theme', JSON.stringify(this.current));
+  },
+  
+  load() {
+    try {
+      const saved = localStorage.getItem('ghost-os-theme');
+      if (saved) {
+        this.current = JSON.parse(saved);
+        Object.entries(this.current).forEach(([component, theme]) => {
+          document.documentElement.setAttribute(`data-${component}`, theme);
+        });
+      }
+    } catch (e) {
+      console.log('No saved theme found, using defaults');
+    }
+  },
+  
+  updateUI() {
+    // Update active states in theme switcher
+    document.querySelectorAll('.theme-option').forEach(option => {
+      option.classList.remove('active');
+    });
+    
+    // Set active states based on current themes
+    Object.entries(this.current).forEach(([component, theme]) => {
+      const option = document.querySelector(`.theme-option[onclick*="setTheme('${component}', '${theme}')"]`);
+      if (option) option.classList.add('active');
+    });
+  },
+  
+  exportTheme() {
+    return JSON.stringify(this.current, null, 2);
+  },
+  
+  importTheme(themeData) {
+    try {
+      const themes = JSON.parse(themeData);
+      Object.entries(themes).forEach(([component, theme]) => {
+        this.setTheme(component, theme);
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+};
+
+// Global functions for HTML onclick handlers
+function setTheme(component, theme) {
+  ThemeManager.setTheme(component, theme);
+}
+
+function applyPreset(preset) {
+  ThemeManager.applyPreset(preset);
+}
+
+function toggleThemeSwitcher() {
+  const switcher = document.getElementById('themeSwitcher');
+  switcher.classList.toggle('active');
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+  ThemeManager.init();
+  
+  // Close theme switcher when clicking outside
+  document.addEventListener('click', (e) => {
+    const switcher = document.getElementById('themeSwitcher');
+    const toggleBtn = document.querySelector('.theme-toggle-btn');
+    
+    if (switcher.classList.contains('active') && 
+        !switcher.contains(e.target) && 
+        !toggleBtn.contains(e.target)) {
+      switcher.classList.remove('active');
+    }
+  });
+  
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Ctrl/Cmd + T to toggle theme switcher
+    if ((e.ctrlKey || e.metaKey) && e.key === 't') {
+      e.preventDefault();
+      toggleThemeSwitcher();
+    }
+    
+    // Escape to close theme switcher
+    if (e.key === 'Escape') {
+      document.getElementById('themeSwitcher').classList.remove('active');
+    }
+  });
+});
+</script>
+  
 <script>
 // ============================================================
 // MX2LM GHOST OS CLIENT BRIDGE
@@ -3121,3 +3384,4 @@ if (!document.getElementById('notification-animations')) {
 </body>
 
 </html>
+
