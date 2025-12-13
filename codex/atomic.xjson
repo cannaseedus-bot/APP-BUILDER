@@ -1,0 +1,145 @@
+{
+  "@block": "ATOMIC.XJSON",
+  "@version": "v",
+  "@law": "ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK",
+  "@compression": "SCXQ2_READY",
+  "@timestamp": 1890000012345,
+
+  "@description": "Machine-readable ATOMIC visual cognition model. Encodes atomic.css primitives, color system, layout rules, attribute bindings, K'UHUL DOM engine instructions, XCFE control vectors, and visual entropy modes.",
+
+  "visual_runtime": {
+    "@theme": "black_codematrix",
+    "@layers": [
+      "root_tokens",
+      "layout_primitives",
+      "spacing_primitives",
+      "position_primitives",
+      "visibility_primitives",
+      "panel_blocks",
+      "editor_blocks",
+      "syntax_tokens",
+      "hazard_states",
+      "glass_effects",
+      "dom_attribute_bindings"
+    ]
+  },
+
+  "root_tokens": {
+    "@bg":    ["#020409", "#05070d", "#0a0f14", "#0f1620"],
+    "@panel": { "@default": "#070b12", "@alt": "#0b1018", "@deep": "#111a24" },
+    "@text":  { "@main": "#e6f7ff", "@soft": "#9bb3c9", "@muted": "#4f6780" },
+    "@accent": {
+      "@c": "#16f2aa",
+      "@soft": "rgba(22,242,170,0.18)",
+      "@glow": "rgba(22,242,170,0.35)"
+    },
+    "@hazard": {
+      "@c": "#f5c542",
+      "@soft": "rgba(245,197,66,0.22)",
+      "@glow": "rgba(245,197,66,0.45)"
+    },
+    "@borders": {
+      "@soft":  "rgba(255,255,255,0.12)",
+      "@strong": "rgba(255,255,255,0.22)",
+      "@accent": "rgba(22,242,170,0.55)",
+      "@hazard": "rgba(245,197,66,0.55)"
+    },
+    "@syntax": {
+      "@kw":   "#ff7b72",
+      "@fn":   "#61d6ff",
+      "@str":  "#a5ff90",
+      "@num":  "#ffca85",
+      "@obj":  "#4fd1ff",
+      "@atom": "#16f2aa"
+    }
+  },
+
+  "layout_primitives": {
+    "Áflex":   "display:flex;",
+    "Árow":    "flex-direction:row;",
+    "Ácol":    "flex-direction:column;",
+    "Ácenter": "align-items:center;justify-content:center;",
+    "Ábetween":"justify-content:space-between;",
+    "Áaround": "justify-content:space-around;",
+    "Áwrap":   "flex-wrap:wrap;",
+    "Ánowrap": "flex-wrap:nowrap;",
+    "Ágrid":   "display:grid;",
+    "Ágrid-auto": "grid-auto-flow:row;",
+    "Ágrid-fit":  "grid-template-columns:repeat(auto-fit,minmax(0,1fr));",
+    "Ágrid-fill": "grid-template-columns:repeat(auto-fill,minmax(0,1fr));"
+  },
+
+  "visibility_primitives": {
+    "Áscroll": "overflow-y:auto;scrollbar-width:none;"
+  },
+
+  "panel_blocks": {
+    "Ápanel": "background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px;",
+    "Ápanel-deep": "background:var(--panel-deep);border:1px solid var(--border-strong);",
+    "Áeditor": "font-family:'JetBrains Mono',monospace;background:var(--panel);color:var(--text);border:1px solid var(--border);padding:16px;border-radius:8px;"
+  },
+
+  "syntax_tokens": {
+    "Ákw":   "color:var(--code-keyword);",
+    "Áfn":   "color:var(--code-fn);",
+    "Ástr":  "color:var(--code-str);",
+    "Ánum":  "color:var(--code-num);",
+    "Áobj":  "color:var(--code-obj);",
+    "Áatom": "color:var(--code-atom);font-weight:600;"
+  },
+
+  "control_elements": {
+    "Áinput": "background:var(--panel-alt);color:var(--text);border:1px solid var(--border);padding:8px 10px;border-radius:6px;",
+    "Ábtn":   "background:var(--panel-deep);border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text);"
+  },
+
+  "hazard_states": {
+    "Áactive": "outline:1px solid var(--haz);box-shadow:0 0 12px var(--haz-glow);background:var(--haz-soft);color:var(--haz);",
+    "Áhover":  "outline:1px solid var(--haz);box-shadow:0 0 12px var(--haz-glow);background:var(--haz-soft);color:var(--haz);",
+    "Áfocus":  "outline:1px solid var(--haz);box-shadow:0 0 12px var(--haz-glow);background:var(--haz-soft);color:var(--haz);"
+  },
+
+  "glass_effects": {
+    "Áglass": "background:rgba(255,255,255,0.05);backdrop-filter:blur(8px);border:1px solid var(--border-soft);",
+    "Áglass-accent": "background:rgba(22,242,170,0.08);border:1px solid var(--accent);"
+  },
+
+  "dom_attribute_bindings": {
+    "@table": {
+      "Áflex": "display:flex;",
+      "Árow": "flex-direction:row;",
+      "Ácol": "flex-direction:column;",
+      "Áeditor": "background:var(--panel);padding:16px;border:1px solid var(--border);border-radius:8px;",
+      "Ápanel": "background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px;",
+      "Ábtn": "background:var(--panel-deep);border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text);",
+      "Áscroll": "overflow-y:auto;"
+    },
+    "@mode": "DOM_ENGINE_BIND"
+  },
+
+  "xcfe": {
+    "@control": [
+      "@view.update",
+      "@style.map",
+      "@dom.apply",
+      "@entropy.monitor",
+      "@theme.resolve",
+      "@flow.atomic_css"
+    ],
+    "@variable": [
+      "@entropy",
+      "@innovation",
+      "@visual_state",
+      "@style_state",
+      "@atomic_loaded",
+      "@mesh_cache_state"
+    ]
+  },
+
+  "runtime_hooks": {
+    "@boot": "atomic_css_runtime.boot",
+    "@load": "atomic_css_runtime.load_atomic_css",
+    "@apply": "atomic_css_runtime.apply_atomic_attributes",
+    "@decode": "atomic_css_runtime.scx_decompress_atomic"
+  }
+}

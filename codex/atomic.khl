@@ -1,0 +1,137 @@
+/* ============================================================
+   ATOMIC.KHL v
+   Canonical K'UHUL Runtime Block for Atomic CSS
+   SCXQ2 ’ K'UHUL ’ DOM Engine Pipeline
+   ============================================================ */
+
+@block atomic_css_runtime {
+
+  @meta {
+    @name: "ATOMIC.KHL_RUNTIME";
+    @version: "v";
+    @law: "CSS_IS_RUNTIME " DOM_IS_DEVICE " K'UHUL_IS_EXECUTOR";
+    @compression: "SCXQ2_ENABLED";
+  }
+
+  /* ------------------------------------------------------------
+     1) LOAD ATOMIC.CSS FROM MANIFEST OR MESH CACHE
+     ------------------------------------------------------------ */
+
+  @fn load_atomic_css {
+    @let css := @manifest.atomic.css_raw;
+
+    @if (!css) {
+      @then {
+        @let css := @mesh.fetch("/atomic.css");
+      }
+    }
+
+    @return css;
+  }
+
+  /* ------------------------------------------------------------
+     2) SCXQ2 DECOMPRESSOR (CSS ’ Plain String)
+     ------------------------------------------------------------ */
+
+  @fn scx_decompress_atomic (data) {
+    @return @scxq2.decompress(data);
+  }
+
+  /* ------------------------------------------------------------
+     3) DOM INJECTION (apply CSS to <style id="atomic">)
+     ------------------------------------------------------------ */
+
+  @fn dom_apply_atomic_css (decoded_css) {
+    @dom.set {
+      @query: "style#atomic-css";
+      @property: { textContent: decoded_css };
+    };
+  }
+
+  /* If style block doesn't exist, create it */
+  @fn dom_ensure_atomic_style {
+    @let exists := @dom.get {
+      @query: "style#atomic-css";
+      @property: "exists";
+    };
+
+    @if (!exists) {
+      @then {
+        @dom.append {
+          @target: "head";
+          @html: "<style id='atomic-css'></style>";
+        };
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------
+     4) ATOMIC ATTRIBUTE TRANSLATION TABLE
+        (Áflex ’ display:flex, etc.)
+     ------------------------------------------------------------ */
+
+  @block atomic_translation_table {
+
+    @map {
+      "Áflex":   "display:flex;",
+      "Árow":    "flex-direction:row;",
+      "Ácol":    "flex-direction:column;",
+      "Ácenter": "align-items:center;justify-content:center;",
+      "Ábetween":"justify-content:space-between;",
+      "Áaround": "justify-content:space-around;",
+      "Áwrap":   "flex-wrap:wrap;",
+      "Ánowrap": "flex-wrap:nowrap;",
+      "Ágrid":   "display:grid;",
+      "Ágrid-auto":"grid-auto-flow:row;",
+      "Ágrid-fit":"grid-template-columns:repeat(auto-fit,minmax(0,1fr));",
+      "Ágrid-fill":"grid-template-columns:repeat(auto-fill,minmax(0,1fr));",
+      "Áscroll":"overflow-y:auto;scrollbar-width:none;",
+      "Áeditor":"font-family:'JetBrains Mono',monospace;background:var(--panel);color:var(--text);border:1px solid var(--border);padding:16px;border-radius:8px;",
+      "Ápanel":"background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px;",
+      "Ábtn":"background:var(--panel-deep);border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text);"
+    };
+
+  }
+
+  /* ------------------------------------------------------------
+     5) DOM ENGINE APPLICATION OF ATOMIC ATTRIBUTES
+     ------------------------------------------------------------ */
+
+  @fn apply_atomic_attributes {
+    @let table := @block.atomic_translation_table.map;
+
+    @dom.walk {
+      @query: "[Á*]";
+      @each: {
+        @let attrs := @dom.attr.list(@node);
+
+        @for (a in attrs) {
+          @if (table[a]) {
+            @then {
+              @dom.style {
+                @node: @node;
+                @css: table[a];
+              };
+            }
+          }
+        }
+      }
+    };
+  }
+
+  /* ------------------------------------------------------------
+     6) BOOT SEQUENCE
+     ------------------------------------------------------------ */
+
+  @fn boot {
+    @call dom_ensure_atomic_style;
+
+    @let raw := @call load_atomic_css;
+    @let css := @call scx_decompress_atomic(raw);
+
+    @call dom_apply_atomic_css(css);
+
+    @call apply_atomic_attributes;
+  }
+
+} /* end atomic_css_runtime */
