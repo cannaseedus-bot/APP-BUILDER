@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="emerald-ghost">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASX Ghost OS</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href data-asx-atomic-inject />
+</head>
+<body>
+  <div id="asx-ghost-root" data-os="asx_ghost_os" data-kernel="sw.khl" data-runtime="ASXR">
+    <!-- Ghost Shell structure injected by K'UHUL DOM Engine from manifest.json -->
+    <div class="ghost-loading">
+      <div class="loader">⟁</div>
+      <div>Booting K'UHUL Kernel...</div>
+    </div>
+  </div>
+
+  <script>
+    // Minimal bootstrap - kernel takes over
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('⟁ Kernel registered'))
+        .catch(err => console.warn('Kernel registration failed:', err));
+    }
+  </script>
+</body>
+</html>

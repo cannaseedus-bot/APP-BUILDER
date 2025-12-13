@@ -1,1566 +1,23 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="emerald-ghost">
+<html lang="en" data-theme="emerald-ghost" data-studio="quantum" data-ghost="specter" data-tape="cyan" data-app="glass">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MX2LM OS — LEGION TRINITY STUDIO</title>
+  <title>MX2LM APP: AI CHAT, AI BUILD, AI PLAY GAMES, LEARN AI</title>
   <link rel="manifest" href="manifest.json" />
-  <style>
-    /* =========================================================
-       GLASS EMERALD G(HOST) THEME
-       Blends ASX Design Kit tokens with Emerald glass
-       ========================================================= */
-    :root {
-      /* Core BG + Text */
-      --asx-bg: #020617;
-      --asx-bg-alt: #020819;
-      --asx-surface: #020b16;
-      --asx-text: #e6fffa;
-      --asx-muted: #7dd3fc;
-
-      /* Emerald / Cyan Glass */
-      --asx-emerald: #16f2aa;
-      --asx-emerald-soft: rgba(22, 242, 170, 0.13);
-      --asx-emerald-strong: rgba(22, 242, 170, 0.22);
-      --asx-cyan: #22d3ee;
-      --asx-cyan-soft: rgba(34, 211, 238, 0.16);
-
-      /* Borders / Strokes */
-      --asx-stroke-soft: rgba(148, 163, 184, 0.25);
-      --asx-stroke-emerald: rgba(45, 212, 191, 0.55);
-
-      /* Glow accents */
-      --asx-glow-emerald: 0 0 32px rgba(16, 185, 129, 0.42);
-      --asx-glow-cyan: 0 0 28px rgba(34, 211, 238, 0.35);
-
-      /* GUIX Colors - Matched to Emerald Ghost theme */
-      --bg-primary: #020617;
-      --bg-secondary: #0a0f14;
-      --bg-tertiary: #101820;
-      
-      --glass-primary: rgba(255, 255, 255, 0.08);
-      --glass-secondary: rgba(255, 255, 255, 0.06);
-      --glass-tertiary: rgba(255, 255, 255, 0.04);
-      
-      --stroke-primary: rgba(148, 163, 184, 0.35);
-      --stroke-secondary: rgba(148, 163, 184, 0.25);
-      --stroke-accent: rgba(22, 242, 170, 0.55);
-      
-      --text-primary: #e6fffa;
-      --text-secondary: #7dd3fc;
-      --text-muted: #5d8ba3;
-      
-      --accent-primary: #16f2aa;
-      --accent-secondary: #00ffa3;
-      --accent-warning: #ffd166;
-      --accent-danger: #ff3366;
-      --accent-success: #00d9a6;
-      
-      --gradient-primary: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-      --gradient-glass: linear-gradient(135deg, rgba(22, 242, 170, 0.1), rgba(34, 211, 238, 0.05));
-      
-      /* Enhanced Shadows */
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
-      --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
-      --shadow-glow: 0 0 40px rgba(22, 242, 170, 0.25);
-      
-      /* Enhanced Blur Effects */
-      --blur-sm: blur(8px);
-      --blur-md: blur(16px);
-      --blur-lg: blur(24px);
-      
-      /* Typography */
-      --font-primary: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
-      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-      
-      /* Spacing */
-      --space-xs: 4px;
-      --space-sm: 8px;
-      --space-md: 16px;
-      --space-lg: 24px;
-      --space-xl: 32px;
-      --space-2xl: 48px;
-      
-      /* Border Radius */
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --radius-xl: 20px;
-      --radius-2xl: 24px;
-      
-      /* Animations */
-      --transition-fast: 0.15s ease;
-      --transition-normal: 0.3s ease;
-      --transition-slow: 0.5s ease;
-
-      /* Radii + layout */
-      --radius-lg: 18px;
-      --radius-xl: 22px;
-      --radius-pill: 999px;
-
-      --panel-gap: 16px;
-      --panel-padding: 14px;
-      --panel-padding-lg: 18px;
-
-      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Inter", "Segoe UI", sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    body {
-      font-family: var(--font-sans);
-      color: var(--asx-text);
-      background:
-        radial-gradient(circle at 5% 0%, rgba(34, 211, 238, 0.12) 0, transparent 55%),
-        radial-gradient(circle at 95% 100%, rgba(16, 185, 129, 0.12) 0, transparent 55%),
-        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1) 0, #020617 60%);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      color-scheme: dark;
-      overflow: hidden;
-    }
-
-    /* =========================================================
-       UTILITY CLASSES (Atomic-lite)
-       ========================================================= */
-    .asx-flex       { display: flex; }
-    .asx-row        { flex-direction: row; }
-    .asx-col        { flex-direction: column; }
-    .asx-center     { align-items: center; justify-content: center; }
-    .asx-between    { justify-content: space-between; }
-    .asx-align      { align-items: center; }
-    .asx-grow       { flex: 1 1 auto; }
-    .asx-scroll-y   { overflow-y: auto; }
-    .asx-scroll-x   { overflow-x: auto; }
-
-    .asx-pill       {
-      border-radius: var(--radius-pill);
-      padding: 4px 10px;
-      font-size: 11px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    .asx-tag-soft {
-      border-radius: 999px;
-      padding: 3px 9px;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      color: #bae6fd;
-    }
-
-    .asx-chip {
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 11px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      background: linear-gradient(
-        135deg,
-        rgba(15, 23, 42, 0.95),
-        rgba(15, 23, 42, 0.75)
-      );
-      cursor: default;
-    }
-
-    .asx-chip-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: radial-gradient(circle, #22c55e 0, #22c55e 40%, transparent 70%);
-      box-shadow: var(--asx-glow-emerald);
-    }
-
-    .asx-btn {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.55);
-      background: radial-gradient(circle at 0 0, rgba(45, 212, 191, 0.18), transparent 55%),
-                  linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.88));
-      color: var(--asx-text);
-      font-size: 12px;
-      padding: 7px 14px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      outline: none;
-      transition: transform 0.12s ease, box-shadow 0.12s ease,
-                  border-color 0.12s ease, background 0.12s ease;
-      white-space: nowrap;
-    }
-
-    .asx-btn-primary {
-      border-color: var(--asx-stroke-emerald);
-      background: radial-gradient(circle at 0 0, rgba(45, 212, 191, 0.24), transparent 55%),
-                  linear-gradient(140deg, rgba(15, 23, 42, 0.98), rgba(16, 185, 129, 0.2));
-      box-shadow: var(--asx-glow-emerald);
-    }
-
-    .asx-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 0 18px rgba(15, 23, 42, 0.9), var(--asx-glow-emerald);
-      border-color: rgba(94, 234, 212, 0.9);
-    }
-
-    .asx-btn-icon {
-      width: 18px;
-      height: 18px;
-      border-radius: 999px;
-      background: radial-gradient(circle, var(--asx-emerald) 0, transparent 65%);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-    }
-
-    .asx-pill-outline {
-      border-radius: var(--radius-pill);
-      padding: 4px 10px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #bae6fd;
-      background: linear-gradient(
-        130deg,
-        rgba(15, 23, 42, 0.95),
-        rgba(15, 23, 42, 0.75)
-      );
-    }
-
-    .text-xs { font-size: 11px; }
-    .text-sm { font-size: 13px; }
-    .text-md { font-size: 14px; }
-    .text-lg { font-size: 16px; }
-    .text-xl { font-size: 20px; }
-    .text-2xl { font-size: 24px; }
-    .text-muted { color: rgba(148, 163, 184, 0.95); }
-    .text-soft  { color: rgba(148, 163, 184, 0.75); }
-
-    .badge-emerald {
-      border-radius: 999px;
-      padding: 2px 9px;
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border: 1px solid rgba(45, 212, 191, 0.9);
-      color: #bbf7d0;
-      background: linear-gradient(
-        120deg,
-        rgba(16, 185, 129, 0.2),
-        rgba(15, 23, 42, 0.95)
-      );
-      box-shadow: var(--asx-glow-emerald);
-    }
-
-    /* =========================================================
-       PANELS / GLASS CONTAINERS
-       ========================================================= */
-    .ghost-root {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      padding: 14px 18px;
-      gap: 14px;
-    }
-
-    .ghost-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      border-radius: var(--radius-xl);
-      background:
-        radial-gradient(circle at 0 0, rgba(34, 211, 238, 0.28), transparent 55%),
-        linear-gradient(120deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.86));
-      border: 1px solid rgba(148, 163, 184, 0.55);
-      box-shadow:
-        0 18px 45px rgba(15, 23, 42, 0.95),
-        var(--asx-glow-emerald);
-      backdrop-filter: blur(20px);
-    }
-
-    .ghost-header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .ghost-logo {
-      width: 32px;
-      height: 32px;
-      border-radius: 14px;
-      background:
-        radial-gradient(circle at 30% 0%, rgba(34, 211, 238, 0.8) 0, transparent 65%),
-        radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.7) 0, transparent 65%),
-        linear-gradient(145deg, #020617, #0b1120);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--asx-glow-emerald);
-      font-size: 16px;
-    }
-
-    .ghost-header-title {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .ghost-header-title span {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .ghost-header-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .ghost-main {
-      display: grid;
-      grid-template-columns: minmax(260px, 320px) minmax(380px, 1.1fr) minmax(320px, 0.9fr);
-      gap: var(--panel-gap);
-      flex: 1 1 auto;
-      min-height: 0;
-    }
-
-    .ghost-panel {
-      border-radius: var(--radius-xl);
-      padding: var(--panel-padding-lg);
-      background:
-        radial-gradient(circle at 0 0, rgba(34, 211, 238, 0.22), transparent 55%),
-        linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.88));
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(22px);
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
-
-    .ghost-panel-soft {
-      background:
-        radial-gradient(circle at 0 0, rgba(34, 211, 238, 0.14), transparent 55%),
-        linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
-    }
-
-    .panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      gap: 10px;
-    }
-
-    .panel-title {
-      font-size: 13px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: #a5f3fc;
-    }
-
-    .panel-subtitle {
-      font-size: 11px;
-      color: rgba(148, 163, 184, 0.9);
-    }
-
-    .divider-soft {
-      height: 1px;
-      border-radius: 999px;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(148, 163, 184, 0.4),
-        transparent
-      );
-      margin: 8px 0 10px 0;
-    }
-
-    /* =========================================================
-       LEFT PANEL — STUDIO (GHOST / MANIFEST / KERNEL / TAPE)
-       ========================================================= */
-    .studio-tabs {
-      display: flex;
-      border-radius: var(--radius-pill);
-      padding: 2px;
-      background: radial-gradient(circle at 0 0, rgba(34, 211, 238, 0.28), transparent 60%);
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      gap: 3px;
-    }
-
-    .studio-tab {
-      flex: 1;
-      border-radius: var(--radius-pill);
-      padding: 5px 8px;
-      font-size: 11px;
-      text-align: center;
-      cursor: pointer;
-      border: 1px solid transparent;
-      color: rgba(209, 213, 219, 0.9);
-      background: transparent;
-      white-space: nowrap;
-    }
-
-    .studio-tab.active {
-      border-color: rgba(45, 212, 191, 0.85);
-      background: radial-gradient(circle at 0 0, rgba(45, 212, 191, 0.35), transparent 60%);
-      box-shadow: var(--asx-glow-emerald);
-      color: #bbf7d0;
-    }
-
-    .studio-mode-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: rgba(148, 163, 184, 0.9);
-    }
-
-    .editor-shell {
-      margin-top: 10px;
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(148, 163, 184, 0.55);
-      background: radial-gradient(
-          circle at 0 0,
-          rgba(34, 211, 238, 0.18),
-          transparent 55%
-        ),
-        linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
-      box-shadow: 0 15px 30px rgba(15, 23, 42, 0.9);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      min-height: 0;
-      flex: 1 1 auto;
-    }
-
-    .editor-shell-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 6px 10px;
-      border-bottom: 1px solid rgba(51, 65, 85, 0.9);
-      background: linear-gradient(
-        135deg,
-        rgba(15, 23, 42, 0.98),
-        rgba(15, 23, 42, 0.82)
-      );
-    }
-
-    .editor-shell-title {
-      font-size: 11px;
-      color: rgba(226, 232, 240, 0.95);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .editor-shell-dots {
-      display: inline-flex;
-      gap: 5px;
-    }
-
-    .editor-shell-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: radial-gradient(circle, rgba(148, 163, 184, 0.8), transparent 75%);
-    }
-
-    .editor-shell-dot:nth-child(1) { background: radial-gradient(circle, #f87171, transparent 75%); }
-    .editor-shell-dot:nth-child(2) { background: radial-gradient(circle, #facc15, transparent 75%); }
-    .editor-shell-dot:nth-child(3) { background: radial-gradient(circle, #4ade80, transparent 75%); }
-
-    .editor-body {
-      flex: 1;
-      padding: 10px;
-      font-size: 11px;
-      line-height: 1.5;
-      color: rgba(226, 232, 240, 0.86);
-      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      overflow: auto;
-      background:
-        radial-gradient(circle at 0 0, rgba(45, 212, 191, 0.16), transparent 60%),
-        linear-gradient(145deg, #020617, #020617);
-    }
-
-    .editor-footer {
-      padding: 6px 9px;
-      border-top: 1px solid rgba(30, 64, 175, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 10px;
-      color: rgba(148, 163, 184, 0.95);
-      background: linear-gradient(
-        135deg,
-        rgba(15, 23, 42, 0.96),
-        rgba(15, 23, 42, 0.9)
-      );
-    }
-
-    /* GUIX Enhanced Navigation */
-    .topnav {
-      margin-bottom: var(--space-xl);
-    }
-
-    .nav-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-md);
-      padding: var(--space-md);
-      border-radius: var(--radius-xl);
-      background: var(--glass-primary);
-      border: 1px solid var(--stroke-primary);
-      backdrop-filter: var(--blur-lg);
-      box-shadow: var(--shadow-md);
-      transition: var(--transition-normal);
-    }
-
-    .nav-wrap:hover {
-      box-shadow: var(--shadow-lg), var(--shadow-glow);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: var(--space-md);
-    }
-
-    .logo {
-      width: 40px;
-      height: 40px;
-      border-radius: var(--radius-lg);
-      background: var(--gradient-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 18px;
-      box-shadow: var(--shadow-glow);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .logo::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-      animation: shimmer 3s ease-in-out infinite;
-    }
-
-    @keyframes shimmer {
-      0%, 100% { transform: translateX(-100%); }
-      50% { transform: translateX(100%); }
-    }
-
-    .brand h1 {
-      font-size: 20px;
-      font-weight: 700;
-      margin: 0;
-      background: var(--gradient-primary);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-sm);
-    }
-
-    .nav a {
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-md);
-      color: var(--text-secondary);
-      text-decoration: none;
-      border: 1px solid transparent;
-      font-weight: 500;
-      font-size: 14px;
-      transition: var(--transition-fast);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .nav a::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--gradient-primary);
-      opacity: 0;
-      transition: var(--transition-fast);
-    }
-
-    .nav a:hover {
-      color: var(--text-primary);
-      border-color: var(--stroke-accent);
-    }
-
-    .nav a:hover::before {
-      opacity: 0.1;
-    }
-
-    .nav a[aria-current="page"] {
-      color: var(--text-primary);
-      background: var(--glass-secondary);
-      border-color: var(--stroke-accent);
-    }
-
-    .status {
-      display: flex;
-      align-items: center;
-      gap: var(--space-md);
-    }
-
-    .badge {
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--stroke-primary);
-      background: var(--glass-secondary);
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    /* GUIX Enhanced Buttons */
-    .btn {
-      appearance: none;
-      border: 1px solid var(--stroke-primary);
-      background: var(--glass-primary);
-      color: var(--text-primary);
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      backdrop-filter: var(--blur-sm);
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 500;
-      transition: var(--transition-fast);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--gradient-primary);
-      opacity: 0;
-      transition: var(--transition-fast);
-    }
-
-    .btn:hover {
-      border-color: var(--stroke-accent);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .btn:hover::before {
-      opacity: 0.1;
-    }
-
-    .btn.primary {
-      border-color: transparent;
-      background: var(--gradient-primary);
-      color: var(--bg-primary);
-      font-weight: 600;
-    }
-
-    .btn.primary:hover {
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-glow);
-    }
-
-    /* GUIX Enhanced Cards */
-    .card {
-      border: 1px solid var(--stroke-primary);
-      border-radius: var(--radius-xl);
-      background: var(--glass-primary);
-      backdrop-filter: var(--blur-lg);
-      box-shadow: var(--shadow-md);
-      transition: var(--transition-normal);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--gradient-glass);
-      opacity: 0;
-      transition: var(--transition-normal);
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg), var(--shadow-glow);
-    }
-
-    .card:hover::before {
-      opacity: 1;
-    }
-
-    .card .pad {
-      padding: var(--space-xl);
-      position: relative;
-      z-index: 1;
-    }
-
-    /* GUIX Hero Section */
-    .hero {
-      margin: var(--space-2xl) auto;
-      display: grid;
-      grid-template-columns: 1.3fr 0.9fr;
-      gap: var(--space-xl);
-      align-items: start;
-    }
-
-    .kicker {
-      color: var(--accent-primary);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      margin-bottom: var(--space-md);
-    }
-
-    .hero h2 {
-      font-size: clamp(32px, 5vw, 56px);
-      font-weight: 800;
-      line-height: 1.1;
-      margin: 0 0 var(--space-lg);
-      background: linear-gradient(135deg, var(--text-primary), var(--accent-primary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero p {
-      color: var(--text-secondary);
-      font-size: 18px;
-      margin-bottom: var(--space-xl);
-      line-height: 1.6;
-    }
-
-    .cta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-md);
-    }
-
-    .callout {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: var(--space-md);
-    }
-
-    .mini {
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--stroke-secondary);
-      background: var(--glass-secondary);
-      transition: var(--transition-normal);
-    }
-
-    .mini:hover {
-      border-color: var(--stroke-accent);
-      transform: translateY(-2px);
-    }
-
-    .rowlabel {
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 600;
-      margin-bottom: var(--space-sm);
-    }
-
-    /* GUIX Enhanced Grid Sections */
-    .section {
-      margin: var(--space-2xl) auto;
-    }
-
-    .section h3 {
-      font-size: 24px;
-      font-weight: 700;
-      margin: 0 0 var(--space-xl);
-      color: var(--text-primary);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: var(--space-lg);
-    }
-
-    /* GUIX Enhanced Tiles */
-    .tile {
-      border: 1px solid var(--stroke-primary);
-      border-radius: var(--radius-lg);
-      background: var(--glass-secondary);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: var(--transition-normal);
-      position: relative;
-    }
-
-    .tile::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--gradient-glass);
-      opacity: 0;
-      transition: var(--transition-normal);
-    }
-
-    .tile:hover {
-      transform: translateY(-4px);
-      border-color: var(--stroke-accent);
-      box-shadow: var(--shadow-md), var(--shadow-glow);
-    }
-
-    .tile:hover::before {
-      opacity: 1;
-    }
-
-    .tile .thumb {
-      aspect-ratio: 16/9;
-      background: 
-        radial-gradient(circle at 30% 10%, rgba(22,242,170,.2), transparent 50%),
-        linear-gradient(0deg, rgba(255,255,255,.08), rgba(255,255,255,0));
-      position: relative;
-      overflow: hidden;
-    }
-
-    .tile .thumb::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-      animation: shimmer 3s ease-in-out infinite;
-    }
-
-    .tile .thumb .play {
-      position: absolute;
-      inset: auto auto var(--space-md) var(--space-md);
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--stroke-primary);
-      background: var(--glass-primary);
-      font-size: 12px;
-      font-weight: 600;
-      backdrop-filter: var(--blur-sm);
-      transition: var(--transition-fast);
-      z-index: 2;
-    }
-
-    .tile .thumb .play:hover {
-      background: var(--gradient-primary);
-      color: var(--bg-primary);
-      border-color: transparent;
-    }
-
-    .tile .meta {
-      padding: var(--space-lg);
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: var(--space-md);
-      align-items: center;
-      position: relative;
-      z-index: 1;
-    }
-
-    .chip {
-      font-size: 12px;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: 999px;
-      border: 1px solid var(--stroke-primary);
-      background: var(--glass-primary);
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    /* GUIX Enhanced Layouts */
-    .cols {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-lg);
-    }
-
-    .list {
-      display: grid;
-      gap: var(--space-md);
-    }
-
-    .row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-md);
-      padding: var(--space-md);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--stroke-primary);
-      background: var(--glass-secondary);
-      transition: var(--transition-fast);
-    }
-
-    .row:hover {
-      border-color: var(--stroke-accent);
-      background: var(--glass-primary);
-    }
-
-    /* GUIX Enhanced Dock */
-    .dock {
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: var(--space-lg);
-      z-index: 100;
-      display: flex;
-      gap: var(--space-sm);
-      padding: var(--space-md);
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--stroke-primary);
-      background: var(--glass-primary);
-      backdrop-filter: var(--blur-lg);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .dock .ico {
-      width: 52px;
-      height: 52px;
-      border-radius: var(--radius-lg);
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--stroke-primary);
-      background: var(--glass-secondary);
-      font-size: 20px;
-      transition: var(--transition-fast);
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .dock .ico::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--gradient-primary);
-      opacity: 0;
-      transition: var(--transition-fast);
-    }
-
-    .dock .ico:hover {
-      transform: translateY(-4px);
-      border-color: var(--stroke-accent);
-      box-shadow: var(--shadow-sm), var(--shadow-glow);
-    }
-
-    .dock .ico:hover::before {
-      opacity: 0.1;
-    }
-
-    /* Chat Interface Styles */
-    .chat-interface {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: min(900px, 90vw);
-      height: min(700px, 85vh);
-      z-index: 1000;
-      display: none;
-      border-radius: var(--radius-2xl);
-      overflow: hidden;
-      box-shadow: var(--shadow-lg), 0 0 60px rgba(22, 242, 170, 0.3);
-      border: 1px solid var(--stroke-accent);
-    }
-
-    .chat-interface.active {
-      display: flex;
-    }
-
-    .chat-sidebar {
-      width: 280px;
-      background: var(--glass-primary);
-      border-right: 1px solid var(--stroke-primary);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      backdrop-filter: var(--blur-lg);
-    }
-
-    .chat-logo {
-      padding: var(--space-lg);
-      font-size: 20px;
-      font-weight: bold;
-      color: var(--accent-primary);
-      border-bottom: 1px solid var(--stroke-primary);
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-
-    .chat-nav-tabs {
-      display: flex;
-      border-bottom: 1px solid var(--stroke-primary);
-    }
-
-    .chat-nav-tab {
-      flex: 1;
-      padding: var(--space-md);
-      text-align: center;
-      cursor: pointer;
-      transition: var(--transition-fast);
-      border-bottom: 2px solid transparent;
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .chat-nav-tab.active {
-      border-bottom: 2px solid var(--accent-primary);
-      color: var(--accent-primary);
-    }
-
-    .chat-tab-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: var(--space-md);
-    }
-
-    .chat-tab-pane {
-      display: none;
-    }
-
-    .chat-tab-pane.active {
-      display: block;
-    }
-
-    .model-list, .file-list {
-      list-style: none;
-    }
-
-    .model-item, .file-item {
-      padding: var(--space-md);
-      margin-bottom: var(--space-sm);
-      background: var(--glass-secondary);
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: var(--transition-fast);
-      border: 1px solid transparent;
-    }
-
-    .model-item:hover, .file-item:hover {
-      background: var(--glass-primary);
-      border-color: var(--stroke-accent);
-    }
-
-    .model-item.active, .file-item.active {
-      border-left: 3px solid var(--accent-primary);
-    }
-
-    .model-status {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: var(--text-muted);
-    }
-
-    .model-status.online {
-      background-color: var(--accent-success);
-    }
-
-    .chat-main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: var(--glass-primary);
-      backdrop-filter: var(--blur-lg);
-    }
-
-    .chat-header {
-      padding: var(--space-lg) var(--space-xl);
-      border-bottom: 1px solid var(--stroke-primary);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .model-info {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-
-    .model-name {
-      font-weight: bold;
-      font-size: 18px;
-    }
-
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: var(--space-xl);
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-lg);
-    }
-
-    .message {
-      max-width: 80%;
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      line-height: 1.5;
-    }
-
-    .user-message {
-      align-self: flex-end;
-      background: var(--gradient-primary);
-      color: var(--bg-primary);
-      border-bottom-right-radius: var(--radius-sm);
-    }
-
-    .ai-message {
-      align-self: flex-start;
-      background: var(--glass-secondary);
-      border-bottom-left-radius: var(--radius-sm);
-    }
-
-    .message-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: var(--space-sm);
-      font-size: 12px;
-      opacity: 0.8;
-    }
-
-    .chat-input-container {
-      padding: var(--space-xl);
-      border-top: 1px solid var(--stroke-primary);
-    }
-
-    .chat-input-wrapper {
-      display: flex;
-      gap: var(--space-md);
-    }
-
-    .chat-input {
-      flex: 1;
-      padding: var(--space-lg);
-      background: var(--glass-secondary);
-      border: 1px solid var(--stroke-primary);
-      border-radius: var(--radius-lg);
-      color: var(--text-primary);
-      resize: none;
-      height: 60px;
-      font-size: 16px;
-      font-family: inherit;
-    }
-
-    .send-btn {
-      background: var(--gradient-primary);
-      color: var(--bg-primary);
-      border: none;
-      border-radius: var(--radius-lg);
-      width: 60px;
-      cursor: pointer;
-      font-size: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-    }
-
-    .input-actions {
-      display: flex;
-      gap: var(--space-md);
-      margin-top: var(--space-md);
-    }
-
-    .action-btn {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      cursor: pointer;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      transition: var(--transition-fast);
-    }
-
-    .action-btn:hover {
-      color: var(--accent-primary);
-      background: var(--glass-secondary);
-    }
-
-    .close-chat {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 24px;
-      cursor: pointer;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--transition-fast);
-    }
-
-    .close-chat:hover {
-      background: var(--glass-secondary);
-      color: var(--text-primary);
-    }
-
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: var(--glass-primary);
-      border-radius: var(--radius-xl);
-      width: 500px;
-      max-width: 90%;
-      padding: var(--space-xl);
-      border: 1px solid var(--stroke-primary);
-      box-shadow: var(--shadow-lg), var(--shadow-glow);
-      backdrop-filter: var(--blur-lg);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--space-lg);
-      padding-bottom: var(--space-md);
-      border-bottom: 1px solid var(--stroke-primary);
-    }
-
-    .modal-title {
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .close-modal {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 24px;
-      cursor: pointer;
-    }
-
-    .github-url-input {
-      width: 100%;
-      padding: var(--space-md);
-      background: var(--glass-secondary);
-      border: 1px solid var(--stroke-primary);
-      border-radius: var(--radius-md);
-      color: var(--text-primary);
-      margin-bottom: var(--space-md);
-    }
-
-    .file-preview {
-      background: var(--glass-secondary);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      margin-top: var(--space-md);
-      max-height: 200px;
-      overflow-y: auto;
-      font-family: var(--font-mono);
-      font-size: 14px;
-      white-space: pre-wrap;
-    }
-
-    /* RIGHT PANEL — CHAT INFERENCE COLUMN */
-    .chat-panel {
-      position: relative;
-    }
-
-    .chat-header-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 6px;
-    }
-
-    .model-select-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .model-pill {
-      padding: 4px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      font-size: 10px;
-      cursor: pointer;
-      color: rgba(209, 213, 219, 0.96);
-      background: linear-gradient(
-        140deg,
-        rgba(15, 23, 42, 0.98),
-        rgba(15, 23, 42, 0.88)
-      );
-    }
-
-    .model-pill.active {
-      border-color: rgba(45, 212, 191, 0.9);
-      color: #bbf7d0;
-      box-shadow: var(--asx-glow-emerald);
-      background: radial-gradient(circle at 0 0, rgba(45, 212, 191, 0.35), transparent 60%);
-    }
-
-    .chat-tabs {
-      margin-top: 6px;
-      display: inline-flex;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      padding: 3px;
-      background: linear-gradient(
-        135deg,
-        rgba(15, 23, 42, 0.98),
-        rgba(15, 23, 42, 0.88)
-      );
-    }
-
-    .chat-tab {
-      padding: 4px 10px;
-      border-radius: var(--radius-pill);
-      font-size: 11px;
-      cursor: pointer;
-      color: rgba(209, 213, 219, 0.9);
-    }
-
-    .chat-tab.active {
-      background: radial-gradient(circle at 0 0, rgba(45, 212, 191, 0.28), transparent 60%);
-      box-shadow: var(--asx-glow-emerald);
-      color: #bbf7d0;
-    }
-
-    .chat-body {
-      margin-top: 10px;
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(148, 163, 184, 0.55);
-      background:
-        radial-gradient(circle at 0 0, rgba(34, 211, 238, 0.2), transparent 60%),
-        linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      min-height: 0;
-    }
-
-    .chat-stream {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-      font-size: 12px;
-    }
-
-    .chat-msg {
-      margin-bottom: 8px;
-      padding: 7px 9px;
-      border-radius: 12px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      background: linear-gradient(
-        140deg,
-        rgba(15, 23, 42, 0.98),
-        rgba(15, 23, 42, 0.9)
-      );
-    }
-
-    .chat-msg.system {
-      border-color: rgba(45, 212, 191, 0.8);
-      box-shadow: var(--asx-glow-emerald);
-      font-size: 11px;
-      color: rgba(226, 232, 240, 0.96);
-    }
-
-    .chat-msg.user {
-      border-style: dashed;
-      color: rgba(226, 232, 240, 0.96);
-    }
-
-    .chat-msg.assistant {
-      color: rgba(226, 232, 240, 0.96);
-    }
-
-    .chat-input-row {
-      border-top: 1px solid rgba(30, 64, 175, 0.6);
-      padding: 8px 9px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: linear-gradient(
-        135deg,
-        rgba(15, 23, 42, 0.96),
-        rgba(15, 23, 42, 0.9)
-      );
-    }
-
-    /* Loading Animation */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .card, .tile, .mini {
-      animation: fadeInUp 0.6s ease forwards;
-    }
-
-    .card:nth-child(1) { animation-delay: 0.1s; }
-    .card:nth-child(2) { animation-delay: 0.2s; }
-    .tile:nth-child(1) { animation-delay: 0.3s; }
-    .tile:nth-child(2) { animation-delay: 0.4s; }
-    .tile:nth-child(3) { animation-delay: 0.5s; }
-
-    /* =========================================================
-       RESPONSIVE (basic)
-       ========================================================= */
-    @media (max-width: 1100px) {
-      .ghost-main {
-        grid-template-columns: minmax(260px, 320px) minmax(320px, 1.2fr);
-        grid-template-rows: minmax(260px, 1fr) minmax(280px, 0.9fr);
-        grid-auto-flow: row;
-      }
-      .ghost-main > .ghost-panel:nth-child(3) {
-        grid-column: 1 / span 2;
-      }
-      
-      .hero {
-        grid-template-columns: 1fr;
-      }
-      
-      .cols {
-        grid-template-columns: 1fr;
-      }
-      
-      .chat-interface {
-        width: 95vw;
-        height: 90vh;
-      }
-    }
-
-    @media (max-width: 880px) {
-      .ghost-main {
-        display: flex;
-        flex-direction: column;
-      }
-      
-      .nav-wrap {
-        flex-direction: column;
-        gap: var(--space-lg);
-      }
-      
-      .nav {
-        justify-content: center;
-      }
-      
-      .status {
-        justify-content: center;
-      }
-      
-      .grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .dock {
-        padding: var(--space-sm);
-      }
-      
-      .dock .ico {
-        width: 44px;
-        height: 44px;
-        font-size: 18px;
-      }
-      
-      .chat-interface {
-        flex-direction: column;
-      }
-      
-      .chat-sidebar {
-        width: 100%;
-        height: 200px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .hero h2 {
-        font-size: 28px;
-      }
-      
-      .cta-row {
-        flex-direction: column;
-      }
-      
-      .btn {
-        width: 100%;
-        justify-content: center;
-      }
-      
-      .chat-messages {
-        padding: var(--space-md);
-      }
-      
-      .message {
-        max-width: 95%;
-      }
-    }
-  </style>
+  <script>
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').then(registration => {
+        console.log('ServiceWorker registration successful');
+      }, error => {
+        console.log('ServiceWorker registration failed:', error);
+      });
+    });
+  }
+</script>
+<link rel="stylesheet" href="https://mx2lm.app/atomic.css">
 </head>
 <body>
   <div id="ghost-root" class="ghost-root">
@@ -2048,6 +505,985 @@
     </div>
   </div>
 
+<!-- Theme Switcher Components to add to your existing HTML -->
+<div class="theme-toggle-btn" onclick="toggleThemeSwitcher()">
+  🎨
+</div>
+
+<div class="theme-switcher-panel" id="themeSwitcher">
+  <div class="theme-switcher-header">
+    <div class="theme-switcher-title">Theme Settings</div>
+    <button class="theme-switcher-close" onclick="toggleThemeSwitcher()">×</button>
+  </div>
+  
+  <div class="theme-category">
+    <div class="theme-category-title">Studio Environment</div>
+    <div class="theme-options">
+      <div class="theme-option active" onclick="setTheme('studio', 'quantum')">
+        <div class="theme-preview" data-type="studio-quantum"></div>
+        <div class="theme-name">Quantum</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('studio', 'foundry')">
+        <div class="theme-preview" data-type="studio-foundry"></div>
+        <div class="theme-name">Foundry</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('studio', 'forge')">
+        <div class="theme-preview" data-type="studio-forge"></div>
+        <div class="theme-name">Forge</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('studio', 'crystal')">
+        <div class="theme-preview" data-type="studio-crystal"></div>
+        <div class="theme-name">Crystal</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="theme-category">
+    <div class="theme-category-title">Ghost Interface</div>
+    <div class="theme-options">
+      <div class="theme-option active" onclick="setTheme('ghost', 'specter')">
+        <div class="theme-preview" data-type="ghost-specter"></div>
+        <div class="theme-name">Specter</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('ghost', 'synth')">
+        <div class="theme-preview" data-type="ghost-synth"></div>
+        <div class="theme-name">Synth</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('ghost', 'bio')">
+        <div class="theme-preview" data-type="ghost-bio"></div>
+        <div class="theme-name">Bio</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('ghost', 'pulse')">
+        <div class="theme-preview" data-type="ghost-pulse"></div>
+        <div class="theme-name">Pulse</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="theme-category">
+    <div class="theme-category-title">Tape Interface</div>
+    <div class="theme-options">
+      <div class="theme-option active" onclick="setTheme('tape', 'cyan')">
+        <div class="theme-preview" data-type="tape-cyan"></div>
+        <div class="theme-name">Cyan</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('tape', 'amber')">
+        <div class="theme-preview" data-type="tape-amber"></div>
+        <div class="theme-name">Amber</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('tape', 'violet')">
+        <div class="theme-preview" data-type="tape-violet"></div>
+        <div class="theme-name">Violet</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('tape', 'slate')">
+        <div class="theme-preview" data-type="tape-slate"></div>
+        <div class="theme-name">Slate</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="theme-category">
+    <div class="theme-category-title">App Interface</div>
+    <div class="theme-options">
+      <div class="theme-option active" onclick="setTheme('app', 'glass')">
+        <div class="theme-preview" data-type="app-glass"></div>
+        <div class="theme-name">Glass</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('app', 'matte')">
+        <div class="theme-preview" data-type="app-matte"></div>
+        <div class="theme-name">Matte</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('app', 'neon')">
+        <div class="theme-preview" data-type="app-neon"></div>
+        <div class="theme-name">Neon</div>
+      </div>
+      <div class="theme-option" onclick="setTheme('app', 'terminal')">
+        <div class="theme-preview" data-type="app-terminal"></div>
+        <div class="theme-name">Terminal</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="theme-category">
+    <div class="theme-category-title">Quick Presets</div>
+    <div class="theme-options">
+      <div class="theme-option" onclick="applyPreset('cyberpunk')">
+        <div class="theme-preview" style="background: linear-gradient(135deg, #16f2aa, #000000); border: 1px solid #16f2aa;"></div>
+        <div class="theme-name">Cyberpunk</div>
+      </div>
+      <div class="theme-option" onclick="applyPreset('hacker')">
+        <div class="theme-preview" style="background: linear-gradient(135deg, #f59e0b, #000000); border: 1px solid #00ff00;"></div>
+        <div class="theme-name">Hacker</div>
+      </div>
+      <div class="theme-option" onclick="applyPreset('bio-tech')">
+        <div class="theme-preview" style="background: linear-gradient(135deg, #06b6d4, #064e3b); border: 1px solid #6ee7b7;"></div>
+        <div class="theme-name">Bio-Tech</div>
+      </div>
+      <div class="theme-option" onclick="applyPreset('deep-purple')">
+        <div class="theme-preview" style="background: linear-gradient(135deg, #8b5cf6, #1e1b4b); border: 1px solid #a855f7;"></div>
+        <div class="theme-name">Deep Purple</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Theme Loading Overlay (shown briefly on page load) -->
+<div class="theme-loading" id="themeLoading">
+  <div class="theme-loading-spinner"></div>
+</div>
+
+<script>
+// Theme Switcher Manager
+const ThemeManager = {
+  current: {
+    studio: 'quantum',
+    ghost: 'specter', 
+    tape: 'cyan',
+    app: 'glass'
+  },
+  
+  presets: {
+    cyberpunk: { studio: 'quantum', ghost: 'synth', tape: 'cyan', app: 'neon' },
+    hacker: { studio: 'forge', ghost: 'specter', tape: 'terminal', app: 'terminal' },
+    'bio-tech': { studio: 'crystal', ghost: 'bio', tape: 'cyan', app: 'glass' },
+    'deep-purple': { studio: 'foundry', ghost: 'pulse', tape: 'violet', app: 'matte' }
+  },
+  
+  init() {
+    this.load();
+    this.updateUI();
+    setTimeout(() => {
+      document.getElementById('themeLoading').style.display = 'none';
+    }, 500);
+  },
+  
+  setTheme(component, theme) {
+    document.documentElement.setAttribute(`data-${component}`, theme);
+    this.current[component] = theme;
+    this.save();
+    this.updateUI();
+  },
+  
+  applyPreset(preset) {
+    if (this.presets[preset]) {
+      const themes = this.presets[preset];
+      Object.entries(themes).forEach(([component, theme]) => {
+        this.setTheme(component, theme);
+      });
+      document.documentElement.setAttribute('data-preset', preset);
+    }
+  },
+  
+  save() {
+    localStorage.setItem('ghost-os-theme', JSON.stringify(this.current));
+  },
+  
+  load() {
+    try {
+      const saved = localStorage.getItem('ghost-os-theme');
+      if (saved) {
+        this.current = JSON.parse(saved);
+        Object.entries(this.current).forEach(([component, theme]) => {
+          document.documentElement.setAttribute(`data-${component}`, theme);
+        });
+      }
+    } catch (e) {
+      console.log('No saved theme found, using defaults');
+    }
+  },
+  
+  updateUI() {
+    // Update active states in theme switcher
+    document.querySelectorAll('.theme-option').forEach(option => {
+      option.classList.remove('active');
+    });
+    
+    // Set active states based on current themes
+    Object.entries(this.current).forEach(([component, theme]) => {
+      const option = document.querySelector(`.theme-option[onclick*="setTheme('${component}', '${theme}')"]`);
+      if (option) option.classList.add('active');
+    });
+  },
+  
+  exportTheme() {
+    return JSON.stringify(this.current, null, 2);
+  },
+  
+  importTheme(themeData) {
+    try {
+      const themes = JSON.parse(themeData);
+      Object.entries(themes).forEach(([component, theme]) => {
+        this.setTheme(component, theme);
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+};
+
+// Global functions for HTML onclick handlers
+function setTheme(component, theme) {
+  ThemeManager.setTheme(component, theme);
+}
+
+function applyPreset(preset) {
+  ThemeManager.applyPreset(preset);
+}
+
+function toggleThemeSwitcher() {
+  const switcher = document.getElementById('themeSwitcher');
+  switcher.classList.toggle('active');
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+  ThemeManager.init();
+  
+  // Close theme switcher when clicking outside
+  document.addEventListener('click', (e) => {
+    const switcher = document.getElementById('themeSwitcher');
+    const toggleBtn = document.querySelector('.theme-toggle-btn');
+    
+    if (switcher.classList.contains('active') && 
+        !switcher.contains(e.target) && 
+        !toggleBtn.contains(e.target)) {
+      switcher.classList.remove('active');
+    }
+  });
+  
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Ctrl/Cmd + T to toggle theme switcher
+    if ((e.ctrlKey || e.metaKey) && e.key === 't') {
+      e.preventDefault();
+      toggleThemeSwitcher();
+    }
+    
+    // Escape to close theme switcher
+    if (e.key === 'Escape') {
+      document.getElementById('themeSwitcher').classList.remove('active');
+    }
+  });
+});
+</script>
+  
+<script>
+// ============================================================
+// MX2LM GHOST OS CLIENT BRIDGE
+// ============================================================
+
+class MX2LMClientBridge {
+  constructor() {
+    this.messageQueue = new Map();
+    this.nextRequestId = 0;
+    this.kernelReady = false;
+    this.manifest = null;
+    this.runtimeMode = 'stealth';
+    
+    // XCFE state
+    this.xcfeState = new Map();
+    
+    // Active systems
+    this.activeTape = null;
+    this.activePanels = new Set();
+    this.meshConnections = new Map();
+    
+    this.init();
+  }
+  
+  async init() {
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.register('./sw.js');
+        console.log('🚀 MX2LM Service Worker registered');
+        
+        // Setup message handlers
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          this.handleKernelMessage(event.data);
+        });
+        
+        // Initialize when service worker is ready
+        if (registration.active) {
+          await this.initializeConnection();
+        } else if (registration.installing) {
+          registration.installing.addEventListener('statechange', () => {
+            if (registration.active) {
+              this.initializeConnection();
+            }
+          });
+        }
+        
+      } catch (error) {
+        console.error('Service Worker registration failed:', error);
+        this.runInFallbackMode();
+      }
+    } else {
+      console.warn('Service Workers not supported');
+      this.runInFallbackMode();
+    }
+  }
+  
+  async initializeConnection() {
+    try {
+      // Get manifest
+      this.manifest = await this.sendToKernel('GET_MANIFEST', {});
+      
+      // Get kernel state
+      const state = await this.sendToKernel('GET_STATE', {});
+      this.kernelReady = true;
+      this.runtimeMode = state.kernel.runtimeMode;
+      
+      // Initialize UI based on manifest
+      this.initializeUI();
+      
+      console.log('🧠 MX2LM Ghost OS connected');
+      console.log('📜 Manifest:', this.manifest.name, 'v' + this.manifest['@v']);
+      console.log('⚡ Runtime mode:', this.runtimeMode);
+      
+    } catch (error) {
+      console.error('Failed to initialize connection:', error);
+    }
+  }
+  
+  runInFallbackMode() {
+    console.log('⚠️ Running in fallback mode (no Service Worker)');
+    this.kernelReady = true;
+    this.runtimeMode = 'stealth';
+    
+    // Load fallback manifest
+    this.manifest = {
+      name: 'MX2LM OS (Fallback)',
+      '@v': '3.2.1',
+      runtime_modes: { stealth: { default: true } },
+      tapes: {},
+      panels: {}
+    };
+    
+    this.initializeUI();
+  }
+  
+  initializeUI() {
+    // Update kernel indicator
+    this.updateKernelIndicator();
+    
+    // Load tapes from manifest
+    this.loadTapes();
+    
+    // Setup runtime mode constraints
+    this.applyRuntimeConstraints();
+    
+    // Initialize XCFE UI
+    this.initializeXCFE();
+    
+    // Setup event listeners
+    this.setupEventListeners();
+  }
+  
+  updateKernelIndicator() {
+    const indicator = document.querySelector('.asx-chip-dot');
+    if (indicator) {
+      if (this.kernelReady) {
+        indicator.style.background = 'radial-gradient(circle, #22c55e 0, #22c55e 40%, transparent 70%)';
+        indicator.title = 'Kernel: Ready';
+      } else {
+        indicator.style.background = 'radial-gradient(circle, #f87171 0, #f87171 40%, transparent 70%)';
+        indicator.title = 'Kernel: Offline';
+      }
+    }
+    
+    // Update version display
+    const versionSpan = document.querySelector('.text-xs[style*="color:#bbf7d0"]');
+    if (versionSpan && this.manifest) {
+      versionSpan.textContent = `MX2LM v${this.manifest['@v']}`;
+    }
+  }
+  
+  loadTapes() {
+    if (!this.manifest?.tapes) return;
+    
+    const tapes = Object.entries(this.manifest.tapes);
+    console.log('📼 Loading tapes:', tapes.length);
+    
+    // Update tape UI
+    tapes.forEach(([id, tape]) => {
+      this.createTapeElement(id, tape);
+    });
+  }
+  
+  createTapeElement(id, tape) {
+    // Find or create tape element in UI
+    const tapeContainer = document.querySelector('.model-select-row, .tape-select');
+    if (!tapeContainer) return;
+    
+    // Check if element already exists
+    const existing = document.querySelector(`[data-tape-id="${id}"]`);
+    if (existing) return;
+    
+    const element = document.createElement('div');
+    element.className = 'model-pill';
+    element.dataset.tapeId = id;
+    element.textContent = tape.label;
+    element.title = tape.description;
+    
+    element.addEventListener('click', () => {
+      this.activateTape(id);
+    });
+    
+    tapeContainer.appendChild(element);
+  }
+  
+  applyRuntimeConstraints() {
+    if (this.runtimeMode === 'stealth') {
+      // Apply stealth mode UI constraints
+      document.documentElement.dataset.runtime = 'stealth';
+      
+      // Disable certain UI elements
+      const externalElements = document.querySelectorAll('[data-external]');
+      externalElements.forEach(el => {
+        el.style.opacity = '0.5';
+        el.style.pointerEvents = 'none';
+      });
+    }
+  }
+  
+  initializeXCFE() {
+    if (!this.manifest?.xcfe) return;
+    
+    // Setup XCFE UI controls
+    const xcfeVectors = this.manifest.xcfe.control_vectors || [];
+    const variableVectors = this.manifest.xcfe.variable_vectors || [];
+    
+    console.log('🎮 XCFE vectors:', xcfeVectors.length);
+    
+    // Create XCFE control panel if it doesn't exist
+    this.createXCFEPanel(xcfeVectors, variableVectors);
+  }
+  
+  createXCFEPanel(controlVectors, variableVectors) {
+    // Check if panel exists
+    if (document.getElementById('xcfe-panel')) return;
+    
+    const panel = document.createElement('div');
+    panel.id = 'xcfe-panel';
+    panel.style.cssText = `
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      background: rgba(10, 10, 26, 0.9);
+      border: 1px solid rgba(22, 242, 170, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      z-index: 999;
+      backdrop-filter: blur(10px);
+      display: none;
+    `;
+    
+    panel.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <strong style="color: #16f2aa;">XCFE Control</strong>
+        <button onclick="this.parentElement.parentElement.style.display='none'" style="background: none; border: none; color: #7dd3fc; cursor: pointer;">×</button>
+      </div>
+      <div id="xcfe-controls"></div>
+      <div id="xcfe-state" style="margin-top: 12px; font-size: 11px; color: #7dd3fc;"></div>
+    `;
+    
+    document.body.appendChild(panel);
+    
+    // Populate controls
+    this.populateXCFEControls(controlVectors, variableVectors);
+  }
+  
+  populateXCFEControls(controlVectors, variableVectors) {
+    const controlsDiv = document.getElementById('xcfe-controls');
+    if (!controlsDiv) return;
+    
+    controlVectors.forEach(vector => {
+      const button = document.createElement('button');
+      button.className = 'asx-btn';
+      button.textContent = vector;
+      button.style.margin = '4px';
+      button.onclick = () => this.executeXCFE(vector);
+      controlsDiv.appendChild(button);
+    });
+    
+    // Update state display
+    this.updateXCFEStateDisplay();
+  }
+  
+  updateXCFEStateDisplay() {
+    const stateDiv = document.getElementById('xcfe-state');
+    if (!stateDiv) return;
+    
+    const state = Array.from(this.xcfeState.entries())
+      .map(([key, value]) => `${key}: ${value}`)
+      .join(' | ');
+    
+    stateDiv.textContent = state || 'No XCFE state';
+  }
+  
+  setupEventListeners() {
+    // Setup chat integration
+    this.setupChatIntegration();
+    
+    // Setup file editor integration
+    this.setupFileEditorIntegration();
+    
+    // Setup tape integration
+    this.setupTapeIntegration();
+    
+    // Setup mesh integration
+    this.setupMeshIntegration();
+  }
+  
+  setupChatIntegration() {
+    const chatInput = document.getElementById('chat-input');
+    const sendButton = document.getElementById('sendChat');
+    
+    if (chatInput && sendButton) {
+      sendButton.onclick = async () => {
+        const message = chatInput.value.trim();
+        if (!message) return;
+        
+        await this.sendChatMessage(message);
+        chatInput.value = '';
+      };
+      
+      chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendButton.click();
+        }
+      });
+    }
+  }
+  
+  setupFileEditorIntegration() {
+    const editorTabs = document.querySelectorAll('.studio-tab');
+    editorTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.target;
+        if (target.includes('file')) {
+          const filename = target.replace('-file', '') + 
+            (target.includes('kernel') ? '.js' : 
+             target.includes('manifest') ? '.json' : '.html');
+          
+          this.loadFileIntoEditor(filename);
+        }
+      });
+    });
+  }
+  
+  setupTapeIntegration() {
+    // Tape switching via UI
+    document.addEventListener('click', (e) => {
+      const tapeElement = e.target.closest('[data-tape-id]');
+      if (tapeElement) {
+        const tapeId = tapeElement.dataset.tapeId;
+        this.activateTape(tapeId);
+      }
+    });
+  }
+  
+  setupMeshIntegration() {
+    // Mesh connection UI
+    const meshButtons = document.querySelectorAll('[data-mesh-zone]');
+    meshButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const zone = button.dataset.meshZone;
+        this.connectToMeshZone(zone);
+      });
+    });
+  }
+  
+  // ============================================================
+  // PUBLIC API METHODS
+  // ============================================================
+  
+  async sendToKernel(type, payload) {
+    if (!this.kernelReady && type !== 'GET_STATE') {
+      throw new Error('Kernel not ready');
+    }
+    
+    return new Promise((resolve, reject) => {
+      const requestId = this.nextRequestId++;
+      this.messageQueue.set(requestId, { resolve, reject });
+      
+      if (navigator.serviceWorker?.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type,
+          payload,
+          requestId
+        });
+      } else {
+        // Fallback: simulate response
+        setTimeout(() => {
+          const result = this.simulateKernelResponse(type, payload);
+          resolve(result);
+        }, 100);
+      }
+    });
+  }
+  
+  simulateKernelResponse(type, payload) {
+    // Simulate kernel responses in fallback mode
+    switch(type) {
+      case 'GET_MANIFEST':
+        return this.manifest;
+      case 'GET_STATE':
+        return { kernel: { runtimeMode: this.runtimeMode } };
+      case 'INFERENCE':
+        return {
+          content: `Fallback response: ${payload.prompt}`,
+          model: 'fallback',
+          tokens: 0
+        };
+      default:
+        return { error: 'Kernel unavailable' };
+    }
+  }
+  
+  handleKernelMessage(data) {
+    const { type, requestId, result, error } = data;
+    
+    // Handle broadcast messages
+    if (!requestId) {
+      this.handleBroadcastMessage(type, result);
+      return;
+    }
+    
+    // Handle response to specific requests
+    const resolver = this.messageQueue.get(requestId);
+    if (resolver) {
+      if (error) {
+        resolver.reject(new Error(error));
+      } else {
+        resolver.resolve(result);
+      }
+      this.messageQueue.delete(requestId);
+    }
+  }
+  
+  handleBroadcastMessage(type, data) {
+    switch(type) {
+      case 'KERNEL_READY':
+        console.log('🧠 Kernel ready broadcast');
+        this.kernelReady = true;
+        this.updateKernelIndicator();
+        break;
+        
+      case 'KERNEL_INITIALIZED':
+        console.log('🚀 Kernel initialized:', data);
+        this.showNotification(`MX2LM OS v${data.version} ready`);
+        break;
+        
+      case 'TAPE_ACTIVATED':
+        this.handleTapeActivated(data);
+        break;
+        
+      case 'TAPE_CREATED':
+        this.createTapeElement(data.tape.id, data.tape);
+        break;
+        
+      case 'PANELS_UPDATED':
+        this.handlePanelsUpdated(data.panels);
+        break;
+        
+      case 'FILE_CHANGED':
+        this.handleFileChanged(data);
+        break;
+        
+      case 'MESH_CONNECTED':
+        this.handleMeshConnected(data);
+        break;
+        
+      case 'XCFE_STATE_UPDATE':
+        this.handleXCFEStateUpdate(data.state);
+        break;
+        
+      case 'SYNC_COMPLETE':
+        console.log('🔄 Sync complete');
+        break;
+    }
+  }
+  
+  handleTapeActivated(data) {
+    this.activeTape = data.tape;
+    
+    // Update UI
+    const tapeElements = document.querySelectorAll('[data-tape-id]');
+    tapeElements.forEach(el => {
+      if (el.dataset.tapeId === data.tape.id) {
+        el.classList.add('active');
+        el.style.borderColor = 'rgba(45, 212, 191, 0.9)';
+        el.style.boxShadow = '0 0 10px rgba(22, 242, 170, 0.3)';
+      } else {
+        el.classList.remove('active');
+        el.style.borderColor = '';
+        el.style.boxShadow = '';
+      }
+    });
+    
+    // Update tape display
+    const tapeDisplay = document.querySelector('.tape-select span:nth-child(2)');
+    if (tapeDisplay) {
+      tapeDisplay.textContent = data.tape.id;
+    }
+    
+    this.showNotification(`Activated tape: ${data.tape.label}`);
+  }
+  
+  handlePanelsUpdated(panels) {
+    this.activePanels.clear();
+    
+    panels.forEach(panel => {
+      if (panel.state === 'active') {
+        this.activePanels.add(panel.id);
+      }
+    });
+    
+    // Update panel UI
+    const panelElements = document.querySelectorAll('[data-panel-id]');
+    panelElements.forEach(el => {
+      if (this.activePanels.has(el.dataset.panelId)) {
+        el.classList.add('active');
+      } else {
+        el.classList.remove('active');
+      }
+    });
+  }
+  
+  handleFileChanged(data) {
+    // Update editor if file is open
+    const editorFilename = document.getElementById('editor-filename');
+    if (editorFilename && editorFilename.textContent.includes(data.filename)) {
+      const editorBody = document.getElementById('editor-body');
+      if (editorBody) {
+        editorBody.textContent = data.content;
+      }
+    }
+    
+    this.showNotification(`File updated: ${data.filename}`);
+  }
+  
+  handleMeshConnected(data) {
+    this.meshConnections.set(data.zone, {
+      connectionId: data.connectionId,
+      connectedAt: Date.now()
+    });
+    
+    this.showNotification(`Connected to mesh: ${data.zone}`);
+  }
+  
+  handleXCFEStateUpdate(state) {
+    Object.entries(state).forEach(([key, value]) => {
+      this.xcfeState.set(key, value);
+    });
+    
+    this.updateXCFEStateDisplay();
+  }
+  
+  // ============================================================
+  // HIGH-LEVEL OPERATIONS
+  // ============================================================
+  
+  async activateTape(tapeId) {
+    try {
+      const result = await this.sendToKernel('SET_ACTIVE_TAPE', { tapeId });
+      return result;
+    } catch (error) {
+      console.error('Failed to activate tape:', error);
+      this.showNotification(`Failed to activate tape: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  async sendChatMessage(message) {
+    try {
+      const response = await this.sendToKernel('INFERENCE', {
+        prompt: message,
+        options: {
+          model: 'mx2lm-prime',
+          temperature: 0.7
+        }
+      });
+      
+      // Update chat UI
+      this.updateChatUI(message, response);
+      
+      return response;
+    } catch (error) {
+      console.error('Chat failed:', error);
+      this.showNotification(`Chat error: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  updateChatUI(userMessage, aiResponse) {
+    const chatStream = document.getElementById('chat-stream');
+    if (!chatStream) return;
+    
+    // Add user message
+    const userMsg = document.createElement('div');
+    userMsg.className = 'chat-msg user';
+    userMsg.textContent = userMessage;
+    chatStream.appendChild(userMsg);
+    
+    // Add AI response
+    const aiMsg = document.createElement('div');
+    aiMsg.className = 'chat-msg assistant';
+    aiMsg.innerHTML = `
+      ${aiResponse.content}<br/>
+      <small style="color:#7dd3fc">
+        Model: ${aiResponse.model} · 
+        Glyphs: ${aiResponse.glyphs || 0}
+      </small>
+    `;
+    chatStream.appendChild(aiMsg);
+    
+    // Scroll to bottom
+    chatStream.scrollTop = chatStream.scrollHeight;
+  }
+  
+  async loadFileIntoEditor(filename) {
+    try {
+      const file = await this.sendToKernel('READ_FILE', { filename });
+      if (file) {
+        const editorBody = document.getElementById('editor-body');
+        const editorFilename = document.getElementById('editor-filename');
+        
+        if (editorBody) {
+          editorBody.textContent = file.content;
+        }
+        if (editorFilename) {
+          editorFilename.textContent = `${filename} · MX2LM OS`;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load file:', error);
+    }
+  }
+  
+  async saveFile(filename, content) {
+    try {
+      const success = await this.sendToKernel('WRITE_FILE', { filename, content });
+      if (success) {
+        this.showNotification(`Saved: ${filename}`);
+      }
+      return success;
+    } catch (error) {
+      console.error('Failed to save file:', error);
+      this.showNotification(`Save failed: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  async connectToMeshZone(zone) {
+    try {
+      const connectionId = await this.sendToKernel('MESH_CONNECT', { zone });
+      return connectionId;
+    } catch (error) {
+      console.error('Mesh connection failed:', error);
+      this.showNotification(`Mesh error: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  async executeXCFE(vector, data = {}) {
+    try {
+      const result = await this.sendToKernel('XCFE_DISPATCH', {
+        vector,
+        data
+      });
+      
+      this.showNotification(`XCFE ${vector} executed`);
+      return result;
+    } catch (error) {
+      console.error('XCFE execution failed:', error);
+      this.showNotification(`XCFE error: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  // ============================================================
+  // UI UTILITIES
+  // ============================================================
+  
+  showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      background: ${type === 'error' ? 'rgba(255, 51, 102, 0.9)' : 'rgba(22, 242, 170, 0.9)'};
+      color: #020617;
+      font-weight: 500;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    `;
+    
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      notification.style.animation = 'slideOut 0.3s ease';
+      setTimeout(() => notification.remove(), 300);
+    }, 3000);
+  }
+}
+
+// ============================================================
+// GLOBAL EXPORT
+// ============================================================
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  window.MX2LM = new MX2LMClientBridge();
+  
+  // Expose convenience methods
+  window.mx2lm = {
+    chat: (message) => window.MX2LM.sendChatMessage(message),
+    tape: (tapeId) => window.MX2LM.activateTape(tapeId),
+    mesh: (zone) => window.MX2LM.connectToMeshZone(zone),
+    xcfe: (vector, data) => window.MX2LM.executeXCFE(vector, data),
+    save: (filename, content) => window.MX2LM.saveFile(filename, content),
+    
+    get status() {
+      return {
+        ready: window.MX2LM.kernelReady,
+        runtime: window.MX2LM.runtimeMode,
+        tape: window.MX2LM.activeTape,
+        manifest: window.MX2LM.manifest?.name
+      };
+    }
+  };
+  
+  console.log('🤖 MX2LM Ghost OS Client Bridge initialized');
+});
+
+// Add notification animations
+if (!document.getElementById('notification-animations')) {
+  const style = document.createElement('style');
+  style.id = 'notification-animations';
+  style.textContent = `
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
+}
+</script>
+  </script>
   <!-- =========================================================
        INLINE RUNTIME HINTS (minimal, DOM-only; no kernel logic)
        ========================================================= -->
@@ -2391,4 +1827,8 @@
     }
   </script>
 </body>
+
 </html>
+
+
+
