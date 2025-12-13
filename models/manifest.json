@@ -1,1 +1,393 @@
+{
+  "立v": "7.1.0",
+  "n": "MX2LM-QUANTUM-SHELL-RLHF-SECUROLINK",
+  "d": "Quantum Shell OS with RLHF integration, mesh networking, quantum caching, and SECUROLINK Vault OAuth.",
+  "timestamp": 1890000002000,
 
+  "mode": "quantum-shell-rlhf",
+  "boot_surface": "index.html",
+  "primary_tape": "tape_prime_os",
+
+  "securolink": {
+    "enabled": true,
+    "vault_mode": true,
+    "entry_surface": "/",
+
+    "glyph_oauth": {
+      "encoding": "kuhul_glyph + scxq2",
+      "token_length": 256,
+      "one_time_use": true,
+      "bookmarkable": true,
+      "expires_ms": 2592000000
+    },
+
+    "svg_vault_display": {
+      "enabled": true,
+      "clickable": true,
+      "qr_compatible": true,
+      "side_panel": "right"
+    },
+
+    "identity_providers": {
+      "gas": {
+        "url": "https://script.google.com/macros/s/YOUR_GAS_ID/exec",
+        "routes": [
+          "getUserData",
+          "meshRegister",
+          "submitScore",
+          "quantumSync"
+        ]
+      },
+
+      "supabase": {
+        "url": "https://eoyiiahmdkbktlgaspmp.supabase.co",
+        "tables": [
+          "users",
+          "sessions",
+          "api_keys",
+          "rlhf_logs"
+        ]
+      }
+    },
+
+    "api_key_vault": {
+      "cipher": "quantum_aes_256",
+      "bind_user": true,
+      "mesh_signed": true,
+      "scx_compressed": true,
+      "rotation_policy": "30d",
+      "revocation_enabled": true
+    }
+  },
+
+  "kuhul_folds": {
+    "ai": { "status": "active", "brain": "mx2lm_prime" },
+    "ui": { "status": "active", "brain": "emerald_ghost" },
+    "runtime": { "status": "active", "brain": "kuhul_runtime" },
+    "mesh": { "status": "active", "brain": "quantum_swarm" },
+    "math_pi": { "status": "active" },
+    "svg_vlm": { "status": "active" },
+    "education": { "status": "planned" },
+    "tapes": { "status": "active" },
+    "worlds": { "status": "planned" },
+    "micronaut_hive": { "status": "active" },
+    "quantum": { "status": "active" },
+    "atomic": { "status": "active" },
+    "security": { "status": "active" },
+    "tokenization": { "status": "active" },
+    "compression": { "status": "active" },
+    "rlhf": { "status": "active", "version": "2.0" }
+  },
+
+  "quantum": {
+    "qubits": 512,
+    "coherence_time": "2s",
+    "gate_fidelity": 0.9995,
+    "algorithms": [
+      "scxq2_quantum_lattice",
+      "glyph_entanglement",
+      "semantic_superposition",
+      "rlhf_quantum_scoring",
+      "mesh_quantum_sync"
+    ],
+    "token_compression": 0.012,
+    "inference_acceleration": "100-1000x",
+    "rlhf_optimization": "quantum_annealing"
+  },
+
+  "rlhf": {
+    "enabled": true,
+    "version": "2.0",
+    "supabase_url": "https://eoyiiahmdkbktlgaspmp.supabase.co",
+
+    "scoring_dimensions": {
+      "quality": { "weight": 0.4, "quantum_optimized": true },
+      "safety": { "weight": 0.3, "quantum_validated": true },
+      "novelty": { "weight": 0.2, "quantum_computed": true },
+      "consensus": { "weight": 0.1, "quantum_aggregated": true }
+    },
+
+    "decay_system": {
+      "base_time": 3600000,
+      "quantum_decay": true,
+      "probabilistic_expiration": true,
+      "adaptive_weights": true
+    },
+
+    "training": {
+      "threshold": 0.85,
+      "batch_size": 50,
+      "promotion_criteria": "quantum_annealing",
+      "core_model_updates": true
+    },
+
+    "mesh_integration": {
+      "node_scoring": true,
+      "distributed_training": true,
+      "quantum_cache_sync": true,
+      "real_time_feedback": true
+    }
+  },
+
+  "tokenizers": {
+    "primary": "scxq2_quantum_lattice",
+    "algorithms": {
+      "scxq2_quantum_lattice": { "compression": 0.012, "qubits": 256 },
+      "glyph_entanglement_compression": { "compression": 0.018, "entanglement": "maximal" },
+      "semantic_superposition_coding": { "compression": 0.016, "superposition": "contextual" },
+      "rlhf_token_optimization": { "compression": 0.014, "learning_rate": 0.01 }
+    },
+    "vocabulary_size": "infinite via superposition",
+    "adaptation_rate": 0.01,
+    "rlhf_adaptive": true
+  },
+
+  "inference": {
+    "engine": "mx2lm_quantum_rlhf",
+    "modes": ["chat", "embed", "stream", "multimodal", "quantum", "rlhf_optimized"],
+    "latency_target": "<100ms",
+    "compression_target": 0.012,
+    "concurrent_sessions": ">1M",
+    "rlhf_enhanced": true,
+
+    "routes": {
+      "chat": "/api/inference/chat",
+      "embed": "/api/inference/embed",
+      "stream": "/api/inference/stream",
+      "multimodal": "/api/inference/multimodal",
+      "optimize": "/api/inference/optimize",
+      "metrics": "/api/inference/metrics",
+      "rlhf_score": "/api/rlhf/score",
+      "rlhf_batch": "/api/rlhf/batch",
+      "rlhf_training": "/api/rlhf/training"
+    }
+  },
+
+  "security": {
+    "@auth": {
+      "@mode": ["quantum_pin", "securolink_vault"],
+
+      "@pin": {
+        "@length": 12,
+        "@maxAttempts": 3,
+        "@lockoutSeconds": 600,
+        "@quantum_encryption": true,
+        "@rlhf_behavioral": true
+      },
+
+      "@securolink": {
+        "@glyph_oauth": true,
+        "@one_time_links": true,
+        "@bookmark_login": true
+      }
+    },
+
+    "@session": {
+      "@engine": "quantum_sealed",
+      "@duration": "30d",
+      "@idleLock": "5m",
+      "@antiReplay": true,
+      "@quantum_entangled": true,
+      "@mesh_authenticated": true
+    },
+
+    "@encryption": {
+      "@cipher": "QUANTUM_AES-256",
+      "@derivation": "PBKDF2_QUANTUM",
+      "@iterations": 1000000,
+      "@quantum_resistant": true,
+      "@rlhf_key_evolution": true
+    },
+
+    "@kernelIsolation": {
+      "@swMask": true,
+      "@sealedBridge": "__KUHUL_QUANTUM_EXEC__",
+      "@domIsolation": true,
+      "@quantum_boundary": true,
+      "@mesh_sandbox": true
+    },
+
+    "@permissions": {
+      "@foldBoundaries": true,
+      "@agentIsolation": true,
+      "@tapeSandbox": true,
+      "@quantum_separation": true,
+      "@rlhf_data_isolation": true
+    },
+
+    "@status": {
+      "@armed": true,
+      "@kernelVerified": true,
+      "@userUnlocked": false,
+      "@quantum_verified": true,
+      "@mesh_verified": true
+    }
+  },
+
+  "trinity": {
+    "qcu": {
+      "qubits": 512,
+      "coherence_time": "2s",
+      "gate_fidelity": 0.9995,
+      "error_correction": "surface_code_rlhf"
+    },
+    "cpu": {
+      "quantum_instructions": true,
+      "acceleration": "quantum_co-processor",
+      "rlhf_optimization": true
+    },
+    "gpu": {
+      "quantum_simulation": true,
+      "tensor_cores": "quantum_optimized",
+      "rlhf_training": true
+    },
+    "tpu": {
+      "neural_quantum": true,
+      "matrix_multiply": "quantum_accelerated",
+      "rlhf_inference": true
+    }
+  },
+
+  "atomic": {
+    "css_blocks": {
+      "layout": { "engine": "quantum_grid" },
+      "atomics": { "enabled": true, "quantum_compressed": true },
+      "variables": { "enabled": true, "quantum_tokenized": true },
+      "ai_vectors": { "enabled": true, "quantum_embedded": true },
+      "rlhf_ui": { "enabled": true, "real_time_updates": true }
+    }
+  },
+
+  "name": "ASX OS – SECUROLINK Quantum Shell",
+  "short_name": "ASX",
+  "description": "Quantum MX2LM with RLHF, SECUROLINK Vault, mesh networking, and encrypted brain database",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#052e24",
+  "background_color": "#020817",
+
+  "categories": [
+    "productivity",
+    "development",
+    "utilities"
+  ],
+
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%23020817' width='540' height='720'/><text x='50' fill='%2319ffc9' font-size='32' y='100'>SECUROLINK Vault</text><rect x='40' y='150' width='460' height='500' fill='%23041820' stroke='%2319ffc9' stroke-width='2' rx='8'/></svg>",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ],
+
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23052e24' width='192' height='192'/><text x='50%' y='50%' font-size='120' fill='%2319ffc9' text-anchor='middle' dominant-baseline='central' font-weight='bold'>⟁</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%23052e24' width='512' height='512'/><circle cx='256' cy='256' r='200' fill='%2319ffc9' opacity='0.2'/><text x='50%' y='50%' font-size='320' fill='%2319ffc9' text-anchor='middle' dominant-baseline='central' font-weight='bold'>⟁</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><radialGradient id='grad'><stop offset='0%' style='stop-color:%2319ffc9;stop-opacity:1' /><stop offset='100%' style='stop-color:%23052e24;stop-opacity:1' /></radialGradient></defs><rect fill='%23052e24' width='512' height='512'/><circle cx='256' cy='256' r='240' fill='url(%23grad)'/><text x='50%' y='50%' font-size='320' fill='%23020817' text-anchor='middle' dominant-baseline='central' font-weight='bold'>⟁</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+
+  "shortcuts": [
+    {
+      "name": "SECUROLINK Vault",
+      "short_name": "Vault",
+      "description": "Access encrypted identity & API key vault",
+      "url": "/?vault=true",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect fill='%23052e24' width='96' height='96'/><path d='M48 20 L70 35 L70 75 L26 75 L26 35 Z' fill='%2319ffc9' opacity='0.3'/><circle cx='48' cy='55' r='12' fill='%2319ffc9'/></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "RLHF Training",
+      "short_name": "Train",
+      "description": "Submit feedback & view training metrics",
+      "url": "/?training=true",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect fill='%23052e24' width='96' height='96'/><rect x='15' y='30' width='15' height='40' fill='%2319ffc9'/><rect x='40' y='20' width='15' height='50' fill='%2319ffc9'/><rect x='65' y='40' width='15' height='30' fill='%2319ffc9'/></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+
+  "file_handlers": [
+    {
+      "action": "/open-tape",
+      "accept": {
+        "application/x-asx-tape": [".tape", ".khl"]
+      },
+      "launch_type": "single-client"
+    }
+  ],
+
+  "protocol_handlers": [
+    {
+      "protocol": "web+asx",
+      "url": "/protocol?url=%s"
+    }
+  ],
+
+  "note_taking": {
+    "new_note_url": "/?action=new_note"
+  },
+
+  "asx_brain": {
+    "url": "./brain.json",
+    "description": "Encrypted intelligence database with RLHF, SECUROLINK, quantum specs, tokenization",
+    "cache_strategy": "encrypted_indexeddb",
+    "backend": {
+      "type": "google_apps_script",
+      "url": "https://script.google.com/macros/s/YOUR_GAS_ID/exec",
+      "fallback": "https://eoyiiahmdkbktlgaspmp.supabase.co"
+    }
+  },
+
+  "service_worker": {
+    "src": "./sw.js",
+    "scope": "/",
+    "type": "module",
+    "update_via_cache": "none",
+    "encryption": {
+      "algorithm": "QUANTUM_AES-256",
+      "key_derivation": "PBKDF2_QUANTUM",
+      "indexeddb_enabled": true,
+      "localstorage_encrypted": true
+    }
+  },
+
+  "prefer_related_applications": false,
+
+  "related_applications": []
+}
