@@ -1,211 +1,845 @@
 /* ============================================================
-   ATOMIC.CSS v∞
-   Canonical Mesh-Cached Edition
-   ASX • PRIME • XJSON • K’UHUL • SCXQ2
-   Deterministic / Offline-Safe / SCX-Compressible
+   🚀 GHOST OS THEME SWITCHER SYSTEM
+   Emerald Glass Base + Multi-Skin Architecture
    ============================================================ */
 
-/* ------------------------------------------------------------
-   1) ROOT COLOR SYSTEM — BLACK CODEX MATRIX
-   ------------------------------------------------------------ */
+/* ============================================================
+   🔷 EMERALD GLASS BASE SYSTEM (REQUIRED)
+   This must be loaded for all themes to work properly
+   ============================================================ */
 
 :root {
-  --bg: #020409;
-  --bg-1: #05070d;
-  --bg-2: #0a0f14;
-  --bg-3: #0f1620;
-
-  --panel: #070b12;
-  --panel-alt: #0b1018;
-  --panel-deep: #111a24;
-
-  --text: #e6f7ff;
-  --text-soft: #9bb3c9;
-  --text-muted: #4f6780;
-
-  --accent: #16f2aa;
-  --accent-soft: rgba(22,242,170,0.18);
-  --accent-glow: rgba(22,242,170,0.35);
-
-  --haz: #f5c542;
-  --haz-soft: rgba(245,197,66,0.22);
-  --haz-glow: rgba(245,197,66,0.45);
-
-  --border: rgba(255,255,255,0.12);
-  --border-strong: rgba(255,255,255,0.22);
-  --border-accent: rgba(22,242,170,0.55);
-  --border-haz: rgba(245,197,66,0.55);
-
-  --code-keyword: #ff7b72;
-  --code-fn: #61d6ff;
-  --code-str: #a5ff90;
-  --code-num: #ffca85;
-  --code-obj: #4fd1ff;
-  --code-atom: #16f2aa;
+  /* 🔥 EMERALD CORE - REQUIRED FOR ALL THEMES */
+  --emerald-accent: #16f2aa;
+  --emerald-accent2: #00ffa3;
+  --emerald-glass: rgba(22,242,170,0.13);
+  --emerald-glass-strong: rgba(22,242,170,0.22);
+  --emerald-stroke: rgba(22,242,170,0.55);
+  --emerald-glow: 0 0 32px rgba(22,242,170,0.42);
+  
+  /* 🌙 DARK CORE - REQUIRED FOR ALL THEMES */
+  --dark-bg: #020617;
+  --dark-bg2: #0a0f14;
+  --dark-bg3: #101820;
+  --dark-surface: #020b16;
+  
+  /* 📝 TEXT CORE - REQUIRED FOR ALL THEMES */
+  --text-primary: #e6fffa;
+  --text-secondary: #7dd3fc;
+  --text-muted: #5d8ba3;
+  
+  /* 🛡️ SYSTEM CORE - REQUIRED FOR ALL THEMES */
+  --system-glass: rgba(255,255,255,0.08);
+  --system-glass2: rgba(255,255,255,0.06);
+  --system-stroke: rgba(148,163,184,0.35);
+  --system-radius-lg: 18px;
+  --system-radius-xl: 22px;
+  --system-radius-pill: 999px;
+  --system-blur: blur(20px);
+  --system-font: system-ui, -apple-system, sans-serif;
+  
+  /* ⚡ FUNCTIONALITY CORE - REQUIRED FOR ALL THEMES */
+  --function-success: #00d9a6;
+  --function-warning: #ffd166;
+  --function-danger: #ff3366;
+  --function-info: #22d3ee;
 }
 
-/* ------------------------------------------------------------
-   2) ATOMIC LAYOUT PRIMITIVES
-   ------------------------------------------------------------ */
+/* ============================================================
+   🎮 STUDIO SKINS (Different Development Environments)
+   ============================================================ */
 
-[⟁flex] { display:flex; }
-[⟁row] { flex-direction:row; }
-[⟁col] { flex-direction:column; }
-
-[⟁center] { align-items:center; justify-content:center; }
-[⟁between] { justify-content:space-between; }
-[⟁around] { justify-content:space-around; }
-[⟁wrap] { flex-wrap:wrap; }
-[⟁nowrap] { flex-wrap:nowrap; }
-
-[⟁grid] { display:grid; }
-[⟁grid-auto] { grid-auto-flow:row; }
-[⟁grid-fit] { grid-template-columns:repeat(auto-fit,minmax(0,1fr)); }
-[⟁grid-fill] { grid-template-columns:repeat(auto-fill,minmax(0,1fr)); }
-
-/* ------------------------------------------------------------
-   3) SPACING UTILITIES
-   ------------------------------------------------------------ */
-
-[class*="⟁p-"] { padding:var(--p,0); }
-[class*="⟁m-"] { margin:var(--m,0); }
-
-/* ------------------------------------------------------------
-   4) POSITION PRIMITIVES
-   ------------------------------------------------------------ */
-
-[⟁abs] { position:absolute; }
-[⟁rel] { position:relative; }
-[⟁fixed] { position:fixed; }
-[⟁sticky] { position:sticky; }
-
-/* ------------------------------------------------------------
-   5) VISIBILITY + SCROLLING
-   ------------------------------------------------------------ */
-
-[⟁scroll] {
-  overflow-y:auto;
-  scrollbar-width:none;
+/* 🏢 STUDIO: QUANTUM (Default) */
+[data-studio="quantum"] {
+  --studio-name: "quantum";
+  --studio-bg: radial-gradient(circle at 5% 0%, rgba(34,211,238,0.12) 0, transparent 55%),
+               radial-gradient(circle at 95% 100%, rgba(16,185,129,0.12) 0, transparent 55%),
+               radial-gradient(circle at 50% 50%, rgba(15,23,42,1) 0, #020617 60%);
+  --studio-panel-bg: radial-gradient(circle at 0 0, rgba(34,211,238,0.28), transparent 55%),
+                     linear-gradient(120deg, rgba(15,23,42,0.96), rgba(15,23,42,0.86));
+  --studio-accent: var(--emerald-accent);
+  --studio-accent2: var(--emerald-accent2);
+  --studio-glow: var(--emerald-glow);
 }
 
-[⟁scroll]::-webkit-scrollbar { display:none; }
-
-/* ------------------------------------------------------------
-   6) EDITOR + PANEL BLOCKS
-   ------------------------------------------------------------ */
-
-[⟁editor] {
-  background:var(--panel);
-  color:var(--text);
-  border:1px solid var(--border);
-  padding:16px;
-  border-radius:8px;
-  font-family:"JetBrains Mono", monospace;
-  font-size:14px;
-  line-height:1.5;
+/* 🏭 STUDIO: FOUNDRY */
+[data-studio="foundry"] {
+  --studio-name: "foundry";
+  --studio-bg: radial-gradient(circle at 20% 20%, rgba(139,92,246,0.15) 0, transparent 45%),
+               radial-gradient(circle at 80% 80%, rgba(99,102,241,0.15) 0, transparent 45%),
+               linear-gradient(135deg, #0f0f1f, #1a1a2e);
+  --studio-panel-bg: radial-gradient(circle at 0 0, rgba(139,92,246,0.25), transparent 55%),
+                     linear-gradient(120deg, rgba(26,26,46,0.96), rgba(15,15,31,0.86));
+  --studio-accent: #8b5cf6;
+  --studio-accent2: #6366f1;
+  --studio-glow: 0 0 32px rgba(139,92,246,0.42);
 }
 
-[⟁panel] {
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:12px;
+/* 🔥 STUDIO: FORGE */
+[data-studio="forge"] {
+  --studio-name: "forge";
+  --studio-bg: radial-gradient(circle at 10% 10%, rgba(245,158,11,0.15) 0, transparent 45%),
+               radial-gradient(circle at 90% 90%, rgba(234,88,12,0.15) 0, transparent 45%),
+               linear-gradient(135deg, #1c1917, #292524);
+  --studio-panel-bg: radial-gradient(circle at 0 0, rgba(245,158,11,0.25), transparent 55%),
+                     linear-gradient(120deg, rgba(41,37,36,0.96), rgba(28,25,23,0.86));
+  --studio-accent: #f59e0b;
+  --studio-accent2: #ea580c;
+  --studio-glow: 0 0 32px rgba(245,158,11,0.42);
 }
 
-[⟁panel-deep] {
-  background:var(--panel-deep);
-  border:1px solid var(--border-strong);
+/* ❄️ STUDIO: CRYSTAL */
+[data-studio="crystal"] {
+  --studio-name: "crystal";
+  --studio-bg: radial-gradient(circle at 30% 20%, rgba(6,182,212,0.15) 0, transparent 45%),
+               radial-gradient(circle at 70% 80%, rgba(14,165,233,0.15) 0, transparent 45%),
+               linear-gradient(135deg, #0c4a6e, #164e63);
+  --studio-panel-bg: radial-gradient(circle at 0 0, rgba(6,182,212,0.25), transparent 55%),
+                     linear-gradient(120deg, rgba(22,78,99,0.96), rgba(12,74,110,0.86));
+  --studio-accent: #06b6d4;
+  --studio-accent2: #0ea5e9;
+  --studio-glow: 0 0 32px rgba(6,182,212,0.42);
 }
 
-/* ------------------------------------------------------------
-   7) CODE SYNTAX HIGHLIGHTING
-   ------------------------------------------------------------ */
+/* ============================================================
+   👻 GHOST SHELLS (Different Interface Personas)
+   ============================================================ */
 
-[⟁kw]   { color:var(--code-keyword); }
-[⟁fn]   { color:var(--code-fn); }
-[⟁str]  { color:var(--code-str); }
-[⟁num]  { color:var(--code-num); }
-[⟁obj]  { color:var(--code-obj); }
-[⟁atom] { color:var(--code-atom); font-weight:600; }
-
-/* ------------------------------------------------------------
-   8) ACTIVE / HOVER / FOCUS STATES (Hazard Mode)
-   ------------------------------------------------------------ */
-
-[⟁active],
-[⟁hover]:hover,
-[⟁focus]:focus {
-  outline:1px solid var(--haz);
-  box-shadow:0 0 12px var(--haz-glow);
-  background:var(--haz-soft);
-  color:var(--haz);
+/* 👻 GHOST: SPECTER (Default) */
+[data-ghost="specter"] {
+  --ghost-name: "specter";
+  --ghost-glass: var(--system-glass);
+  --ghost-glass2: var(--system-glass2);
+  --ghost-border: rgba(148,163,184,0.55);
+  --ghost-border-accent: var(--emerald-stroke);
+  --ghost-shadow: 0 18px 45px rgba(15,23,42,0.95);
+  --ghost-header-bg: radial-gradient(circle at 0 0, rgba(34,211,238,0.28), transparent 55%),
+                     linear-gradient(120deg, rgba(15,23,42,0.96), rgba(15,23,42,0.86));
+  --ghost-panel-bg: radial-gradient(circle at 0 0, rgba(34,211,238,0.22), transparent 55%),
+                    linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.88));
 }
 
-/* ------------------------------------------------------------
-   9) INPUTS + BUTTONS
-   ------------------------------------------------------------ */
-
-[⟁input] {
-  background:var(--panel-alt);
-  color:var(--text);
-  border:1px solid var(--border);
-  padding:8px 10px;
-  border-radius:6px;
+/* 🤖 GHOST: SYNTH */
+[data-ghost="synth"] {
+  --ghost-name: "synth";
+  --ghost-glass: rgba(0,255,157,0.08);
+  --ghost-glass2: rgba(0,255,157,0.06);
+  --ghost-border: rgba(0,255,157,0.3);
+  --ghost-border-accent: rgba(0,255,157,0.8);
+  --ghost-shadow: 0 18px 45px rgba(0,0,0,0.8);
+  --ghost-header-bg: linear-gradient(90deg, 
+                     rgba(0,255,157,0.15) 0%,
+                     rgba(0,0,0,0.8) 50%,
+                     rgba(0,255,157,0.15) 100%);
+  --ghost-panel-bg: linear-gradient(135deg,
+                    rgba(0,255,157,0.1),
+                    rgba(0,0,0,0.9));
 }
 
-[⟁input]:focus {
-  border-color:var(--accent);
-  box-shadow:0 0 8px var(--accent-glow);
+/* 🧬 GHOST: BIO */
+[data-ghost="bio"] {
+  --ghost-name: "bio";
+  --ghost-glass: rgba(110,231,183,0.1);
+  --ghost-glass2: rgba(110,231,183,0.07);
+  --ghost-border: rgba(110,231,183,0.4);
+  --ghost-border-accent: rgba(110,231,183,0.8);
+  --ghost-shadow: 0 18px 45px rgba(6,78,59,0.8);
+  --ghost-header-bg: radial-gradient(circle at 0 0, rgba(110,231,183,0.3), transparent 55%),
+                     linear-gradient(120deg, rgba(6,78,59,0.9), rgba(4,47,46,0.9));
+  --ghost-panel-bg: radial-gradient(circle at 0 0, rgba(110,231,183,0.25), transparent 55%),
+                    linear-gradient(145deg, rgba(6,78,59,0.95), rgba(4,47,46,0.9));
 }
 
-[⟁btn] {
-  background:var(--panel-deep);
-  border:1px solid var(--border);
-  color:var(--text);
-  padding:8px 12px;
-  border-radius:6px;
+/* ⚡ GHOST: PULSE */
+[data-ghost="pulse"] {
+  --ghost-name: "pulse";
+  --ghost-glass: rgba(168,85,247,0.1);
+  --ghost-glass2: rgba(168,85,247,0.07);
+  --ghost-border: rgba(168,85,247,0.4);
+  --ghost-border-accent: rgba(168,85,247,0.8);
+  --ghost-shadow: 0 18px 45px rgba(76,29,149,0.8);
+  --ghost-header-bg: linear-gradient(90deg,
+                     rgba(168,85,247,0.2) 0%,
+                     rgba(76,29,149,0.8) 50%,
+                     rgba(168,85,247,0.2) 100%);
+  --ghost-panel-bg: radial-gradient(circle at 50% 50%,
+                    rgba(168,85,247,0.2),
+                    rgba(76,29,149,0.9));
 }
 
-[⟁btn]:hover {
-  border-color:var(--haz);
-  color:var(--haz);
-  box-shadow:0 0 8px var(--haz-glow);
+/* ============================================================
+   📼 TAPE SKINS (Different Tape/File Interfaces)
+   ============================================================ */
+
+/* 📼 TAPE: CYAN (Default) */
+[data-tape="cyan"] {
+  --tape-name: "cyan";
+  --tape-bg: radial-gradient(circle at 0 0, rgba(34,211,238,0.18), transparent 55%),
+             linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
+  --tape-border: rgba(148,163,184,0.55);
+  --tape-header-bg: linear-gradient(135deg,
+                  rgba(15,23,42,0.98),
+                  rgba(15,23,42,0.82));
+  --tape-text: rgba(226,232,240,0.86);
+  --tape-accent: rgba(45,212,191,0.16);
+  --tape-dot-1: #f87171;
+  --tape-dot-2: #facc15;
+  --tape-dot-3: #4ade80;
 }
 
-/* ------------------------------------------------------------
-   🔟 TERMINAL / BASHER STYLE
-   ------------------------------------------------------------ */
-
-[⟁terminal] {
-  background:#000;
-  color:var(--accent);
-  font-family:"JetBrains Mono", monospace;
-  padding:12px;
-  border-radius:6px;
-  border:1px solid var(--border-strong);
+/* 📼 TAPE: AMBER */
+[data-tape="amber"] {
+  --tape-name: "amber";
+  --tape-bg: radial-gradient(circle at 0 0, rgba(245,158,11,0.18), transparent 55%),
+             linear-gradient(145deg, rgba(28,25,23,0.98), rgba(41,37,36,0.9));
+  --tape-border: rgba(245,158,11,0.4);
+  --tape-header-bg: linear-gradient(135deg,
+                  rgba(41,37,36,0.98),
+                  rgba(28,25,23,0.82));
+  --tape-text: rgba(253,230,138,0.9);
+  --tape-accent: rgba(245,158,11,0.16);
+  --tape-dot-1: #ef4444;
+  --tape-dot-2: #f59e0b;
+  --tape-dot-3: #10b981;
 }
 
-[⟁terminal-haz] {
-  color:var(--haz);
+/* 📼 TAPE: VIOLET */
+[data-tape="violet"] {
+  --tape-name: "violet";
+  --tape-bg: radial-gradient(circle at 0 0, rgba(139,92,246,0.18), transparent 55%),
+             linear-gradient(145deg, rgba(30,27,75,0.98), rgba(46,16,101,0.9));
+  --tape-border: rgba(139,92,246,0.4);
+  --tape-header-bg: linear-gradient(135deg,
+                  rgba(46,16,101,0.98),
+                  rgba(30,27,75,0.82));
+  --tape-text: rgba(221,214,254,0.9);
+  --tape-accent: rgba(139,92,246,0.16);
+  --tape-dot-1: #f472b6;
+  --tape-dot-2: #c084fc;
+  --tape-dot-3: #60a5fa;
 }
 
-/* ------------------------------------------------------------
-   11) CARET / CURSOR
-   ------------------------------------------------------------ */
-
-[⟁cursor] { caret-color:var(--accent); }
-
-/* ------------------------------------------------------------
-   12) GLASS EFFECTS (Ghost Shell)
-   ------------------------------------------------------------ */
-
-[⟁glass] {
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(8px);
-  border:1px solid var(--border-soft);
+/* 📼 TAPE: SLATE */
+[data-tape="slate"] {
+  --tape-name: "slate";
+  --tape-bg: radial-gradient(circle at 0 0, rgba(100,116,139,0.18), transparent 55%),
+             linear-gradient(145deg, rgba(30,41,59,0.98), rgba(15,23,42,0.9));
+  --tape-border: rgba(100,116,139,0.5);
+  --tape-header-bg: linear-gradient(135deg,
+                  rgba(30,41,59,0.98),
+                  rgba(15,23,42,0.82));
+  --tape-text: rgba(226,232,240,0.9);
+  --tape-accent: rgba(100,116,139,0.16);
+  --tape-dot-1: #94a3b8;
+  --tape-dot-2: #64748b;
+  --tape-dot-3: #475569;
 }
 
-[⟁glass-accent] {
-  background:rgba(22,242,170,0.08);
-  border:1px solid var(--accent);
+/* ============================================================
+   📱 APP UI SKINS (Different Application Interfaces)
+   ============================================================ */
+
+/* 📱 APP: GLASS (Default) */
+[data-app="glass"] {
+  --app-name: "glass";
+  --app-bg: var(--system-glass);
+  --app-bg2: var(--system-glass2);
+  --app-border: var(--system-stroke);
+  --app-accent: var(--emerald-accent);
+  --app-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  --app-blur: var(--system-blur);
+  --app-radius: var(--system-radius-lg);
+  --app-text: var(--text-primary);
 }
+
+/* 📱 APP: MATTE */
+[data-app="matte"] {
+  --app-name: "matte";
+  --app-bg: rgba(30,41,59,0.95);
+  --app-bg2: rgba(15,23,42,0.95);
+  --app-border: rgba(71,85,105,0.5);
+  --app-accent: var(--emerald-accent);
+  --app-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --app-blur: none;
+  --app-radius: 12px;
+  --app-text: var(--text-primary);
+}
+
+/* 📱 APP: NEON */
+[data-app="neon"] {
+  --app-name: "neon";
+  --app-bg: rgba(0,0,0,0.9);
+  --app-bg2: rgba(0,0,0,0.95);
+  --app-border: var(--emerald-stroke);
+  --app-accent: var(--emerald-accent);
+  --app-shadow: 0 0 30px var(--emerald-accent),
+                inset 0 0 20px rgba(22,242,170,0.3);
+  --app-blur: none;
+  --app-radius: 16px;
+  --app-text: var(--emerald-accent);
+}
+
+/* 📱 APP: TERMINAL */
+[data-app="terminal"] {
+  --app-name: "terminal";
+  --app-bg: rgba(0,0,0,0.95);
+  --app-bg2: rgba(0,20,0,0.9);
+  --app-border: rgba(0,255,0,0.5);
+  --app-accent: #00ff00;
+  --app-shadow: 0 0 20px rgba(0,255,0,0.3);
+  --app-blur: none;
+  --app-radius: 0;
+  --app-text: #00ff00;
+  --app-font: 'Courier New', monospace;
+}
+
+/* ============================================================
+   🎨 COMPOSITE THEME APPLICATIONS
+   ============================================================ */
+
+/* Apply Studio Theme */
+[data-studio] body {
+  background: var(--studio-bg);
+}
+
+[data-studio] .ghost-header {
+  background: var(--studio-panel-bg);
+  border-color: var(--studio-accent);
+  box-shadow: var(--studio-glow);
+}
+
+/* Apply Ghost Shell */
+[data-ghost] .ghost-panel {
+  background: var(--ghost-panel-bg);
+  border-color: var(--ghost-border);
+  box-shadow: var(--ghost-shadow);
+  backdrop-filter: var(--ghost-blur, var(--system-blur));
+}
+
+[data-ghost] .ghost-header {
+  background: var(--ghost-header-bg);
+  border-color: var(--ghost-border);
+}
+
+/* Apply Tape Skin */
+[data-tape] .editor-shell {
+  background: var(--tape-bg);
+  border-color: var(--tape-border);
+}
+
+[data-tape] .editor-shell-header {
+  background: var(--tape-header-bg);
+}
+
+[data-tape] .editor-body {
+  background: radial-gradient(circle at 0 0, var(--tape-accent), transparent 60%),
+              linear-gradient(145deg, #020617, #020617);
+  color: var(--tape-text);
+}
+
+[data-tape] .editor-shell-dot:nth-child(1) { background: radial-gradient(circle, var(--tape-dot-1), transparent 75%); }
+[data-tape] .editor-shell-dot:nth-child(2) { background: radial-gradient(circle, var(--tape-dot-2), transparent 75%); }
+[data-tape] .editor-shell-dot:nth-child(3) { background: radial-gradient(circle, var(--tape-dot-3), transparent 75%); }
+
+/* Apply App UI */
+[data-app] .card,
+[data-app] .tile,
+[data-app] .mini {
+  background: var(--app-bg);
+  border-color: var(--app-border);
+  border-radius: var(--app-radius);
+  box-shadow: var(--app-shadow);
+  backdrop-filter: var(--app-blur);
+  color: var(--app-text);
+}
+
+[data-app] .btn {
+  background: var(--app-bg2);
+  border-color: var(--app-border);
+  color: var(--app-text);
+}
+
+[data-app] .btn.primary {
+  background: var(--app-accent);
+  border-color: transparent;
+  color: var(--dark-bg);
+}
+
+[data-app] .nav a,
+[data-app] .badge {
+  background: var(--app-bg);
+  border-color: var(--app-border);
+  color: var(--app-text);
+}
+
+/* ============================================================
+   🎯 THEME SWITCHER COMPONENTS
+   ============================================================ */
+
+/* Theme Switcher Panel */
+.theme-switcher-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: var(--system-glass);
+  backdrop-filter: var(--system-blur);
+  border: 1px solid var(--system-stroke);
+  border-radius: var(--system-radius-lg);
+  padding: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  display: none;
+  min-width: 280px;
+}
+
+.theme-switcher-panel.active {
+  display: block;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.theme-switcher-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--system-stroke);
+}
+
+.theme-switcher-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.theme-switcher-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 20px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.theme-switcher-close:hover {
+  background: var(--system-glass2);
+}
+
+.theme-category {
+  margin-bottom: 16px;
+}
+
+.theme-category-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.theme-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--system-stroke);
+  background: var(--system-glass2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-option:hover {
+  border-color: var(--emerald-accent);
+  transform: translateY(-2px);
+}
+
+.theme-option.active {
+  border-color: var(--emerald-accent);
+  background: var(--emerald-glass);
+  box-shadow: var(--emerald-glow);
+}
+
+.theme-preview {
+  width: 40px;
+  height: 20px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+/* Studio Previews */
+.theme-preview[data-type="studio-quantum"] {
+  background: var(--studio-bg);
+}
+.theme-preview[data-type="studio-foundry"] {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+}
+.theme-preview[data-type="studio-forge"] {
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
+}
+.theme-preview[data-type="studio-crystal"] {
+  background: linear-gradient(135deg, #06b6d4, #0ea5e9);
+}
+
+/* Ghost Previews */
+.theme-preview[data-type="ghost-specter"] {
+  background: linear-gradient(135deg, rgba(34,211,238,0.2), rgba(15,23,42,0.9));
+  border: 1px solid rgba(148,163,184,0.5);
+}
+.theme-preview[data-type="ghost-synth"] {
+  background: linear-gradient(135deg, rgba(0,255,157,0.2), rgba(0,0,0,0.9));
+  border: 1px solid rgba(0,255,157,0.3);
+}
+.theme-preview[data-type="ghost-bio"] {
+  background: linear-gradient(135deg, rgba(110,231,183,0.2), rgba(6,78,59,0.9));
+  border: 1px solid rgba(110,231,183,0.4);
+}
+.theme-preview[data-type="ghost-pulse"] {
+  background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(76,29,149,0.9));
+  border: 1px solid rgba(168,85,247,0.4);
+}
+
+/* Tape Previews */
+.theme-preview[data-type="tape-cyan"] {
+  background: linear-gradient(135deg, rgba(34,211,238,0.2), rgba(15,23,42,0.9));
+  border: 1px solid rgba(148,163,184,0.5);
+}
+.theme-preview[data-type="tape-amber"] {
+  background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(28,25,23,0.9));
+  border: 1px solid rgba(245,158,11,0.4);
+}
+.theme-preview[data-type="tape-violet"] {
+  background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(30,27,75,0.9));
+  border: 1px solid rgba(139,92,246,0.4);
+}
+.theme-preview[data-type="tape-slate"] {
+  background: linear-gradient(135deg, rgba(100,116,139,0.2), rgba(30,41,59,0.9));
+  border: 1px solid rgba(100,116,139,0.5);
+}
+
+/* App Previews */
+.theme-preview[data-type="app-glass"] {
+  background: var(--system-glass);
+  border: 1px solid var(--system-stroke);
+}
+.theme-preview[data-type="app-matte"] {
+  background: rgba(30,41,59,0.95);
+  border: 1px solid rgba(71,85,105,0.5);
+}
+.theme-preview[data-type="app-neon"] {
+  background: rgba(0,0,0,0.9);
+  border: 1px solid var(--emerald-stroke);
+}
+.theme-preview[data-type="app-terminal"] {
+  background: rgba(0,0,0,0.95);
+  border: 1px solid rgba(0,255,0,0.5);
+}
+
+.theme-name {
+  font-size: 11px;
+  color: var(--text-primary);
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 999;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--emerald-accent);
+  border: none;
+  color: var(--dark-bg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: var(--emerald-glow);
+  transition: all 0.3s ease;
+}
+
+.theme-toggle-btn:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 0 40px rgba(22,242,170,0.6);
+}
+
+/* ============================================================
+   📱 RESPONSIVE THEME SWITCHER
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .theme-switcher-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 320px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .theme-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .theme-toggle-btn {
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+}
+
+/* ============================================================
+   🎯 THEME PRESETS (Quick Apply Combinations)
+   ============================================================ */
+
+/* PRESET: CYBERPUNK */
+[data-preset="cyberpunk"] {
+  --studio: "quantum";
+  --ghost: "synth";
+  --tape: "cyan";
+  --app: "neon";
+}
+
+/* PRESET: HACKER */
+[data-preset="hacker"] {
+  --studio: "forge";
+  --ghost: "specter";
+  --tape: "terminal";
+  --app: "terminal";
+}
+
+/* PRESET: BIO-TECH */
+[data-preset="bio-tech"] {
+  --studio: "crystal";
+  --ghost: "bio";
+  --tape: "cyan";
+  --app: "glass";
+}
+
+/* PRESET: DEEP PURPLE */
+[data-preset="deep-purple"] {
+  --studio: "foundry";
+  --ghost: "pulse";
+  --tape: "violet";
+  --app: "matte";
+}
+
+/* Apply Preset */
+[data-preset] {
+  --active-studio: var(--studio, "quantum");
+  --active-ghost: var(--ghost, "specter");
+  --active-tape: var(--tape, "cyan");
+  --active-app: var(--app, "glass");
+}
+
+/* ============================================================
+   💾 THEME PERSISTENCE
+   ============================================================ */
+
+/* Theme loading animation */
+.theme-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--dark-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.theme-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--system-stroke);
+  border-top-color: var(--emerald-accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   🎨 CUSTOM THEME OVERRIDES
+   ============================================================ */
+
+/* Custom theme variables for user customization */
+.custom-theme-vars {
+  display: none;
+}
+
+/* Theme export/import panel */
+.theme-export-panel {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  background: var(--system-glass);
+  backdrop-filter: var(--system-blur);
+  border: 1px solid var(--system-stroke);
+  border-radius: var(--system-radius-lg);
+  padding: 20px;
+  min-width: 400px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+.theme-export-panel.active {
+  display: block;
+}
+
+.theme-code {
+  width: 100%;
+  height: 200px;
+  background: var(--dark-bg2);
+  border: 1px solid var(--system-stroke);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--text-primary);
+  font-family: monospace;
+  font-size: 12px;
+  resize: none;
+  margin-bottom: 16px;
+}
+
+/* ============================================================
+   🚀 THEME SWITCHER JAVASCRIPT INTEGRATION
+   ============================================================ */
+
+/* This CSS works with the following JS structure:
+
+// Theme switcher functionality
+const themeSwitcher = {
+  // Current theme state
+  current: {
+    studio: 'quantum',
+    ghost: 'specter',
+    tape: 'cyan',
+    app: 'glass'
+  },
+  
+  // Apply theme
+  apply(component, theme) {
+    document.documentElement.setAttribute(`data-${component}`, theme);
+    this.current[component] = theme;
+    this.save();
+  },
+  
+  // Apply preset
+  applyPreset(preset) {
+    document.documentElement.setAttribute('data-preset', preset);
+    this.loadPreset(preset);
+    this.save();
+  },
+  
+  // Save to localStorage
+  save() {
+    localStorage.setItem('ghost-os-theme', JSON.stringify(this.current));
+  },
+  
+  // Load from localStorage
+  load() {
+    const saved = localStorage.getItem('ghost-os-theme');
+    if (saved) {
+      this.current = JSON.parse(saved);
+      Object.entries(this.current).forEach(([component, theme]) => {
+        this.apply(component, theme);
+      });
+    }
+  }
+};
+
+// Initialize
+themeSwitcher.load();
+*/
+
+/* ============================================================
+   🏁 THEME SWITCHER SYSTEM COMPLETE
+   ============================================================ */
+
+/* Ensure Emerald base is always available */
+body:not([data-emerald-base]) {
+  /* Apply default Emerald Glass theme if not set */
+  --emerald-base: true;
+}
+
+/* Theme transition animations */
+* {
+  transition: background-color 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease,
+              color 0.3s ease;
+}
+
+/* Exclude certain elements from transitions */
+button,
+input,
+.theme-toggle-btn,
+.theme-switcher-close {
+  transition: all 0.2s ease !important;
+}
+
+/* Print styles for themes */
+@media print {
+  [data-studio],
+  [data-ghost],
+  [data-tape],
+  [data-app],
+  [data-preset] {
+    --studio-bg: #ffffff !important;
+    --ghost-panel-bg: #ffffff !important;
+    --tape-bg: #ffffff !important;
+    --app-bg: #ffffff !important;
+    --app-text: #000000 !important;
+    --app-border: #cccccc !important;
+    --app-shadow: none !important;
+    --app-blur: none !important;
+  }
+  
+  .theme-toggle-btn,
+  .theme-switcher-panel {
+    display: none !important;
+  }
+}
+
+/* ============================================================
+   🎯 END OF THEME SWITCHER SYSTEM
+   Total size: ~8KB
+   Adds complete theme switching to existing 90KB framework
+   ============================================================ */
