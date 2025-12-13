@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASX TRAINER — C@@L @GRAMS Cluster Backend</title>
+  <style>
+    /* BLACK ON BLACK DESIGN SYSTEM */
+    :root {
+      --bg-primary: #000000;
+      --bg-secondary: #0a0a0a;
+      --bg-tertiary: #111111;
+      --accent: #00ff88;
+      --accent-glow: rgba(0, 255, 136, 0.3);
+      --text-primary: #ffffff;
+      --text-secondary: #aaaaaa;
+      --border: #222222;
+      --node-bg: #1a1a1a;
+      --node-border: #333333;
+      --glass: rgba(255, 255, 255, 0.05);
+      --matrix-green: #00ff41;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Courier New', monospace;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* MATRIX BACKGROUND */
+    #matrixCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.3;
+    }
+
+    /* MAIN LAYOUT */
+    .os-container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      grid-template-rows: 80px 1fr 80px;
+      height: 100vh;
+      gap: 1px;
+      background-color: var(--border);
+    }
+
+    /* HEADER */
+    .header {
+      grid-column: 1 / -1;
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .system-status {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .online { background-color: var(--accent); box-shadow: 0 0 5px var(--accent); }
+    .offline { background-color: #555; }
+    .processing { background-color: #ffaa00; animation: pulse 1.5s infinite; }
+
+    /* SIDEBAR */
+    .sidebar {
+      background-color: var(--bg-secondary);
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-section {
+      margin-bottom: 30px;
+    }
+
+    .nav-title {
+      font-size: 14px;
+      color: var(--accent);
+      margin-bottom: 15px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-item {
+      padding: 12px 15px;
+      margin-bottom: 8px;
+      background-color: var(--bg-tertiary);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-item:hover {
+      background-color: #222222;
+      border-left-color: var(--accent);
+    }
+
+    .nav-item.active {
+      background-color: #222222;
+      border-left-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    /* MAIN CHAT INTERFACE */
+    .main-content {
+      background-color: var(--bg-primary);
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 1px;
+      overflow: hidden;
+    }
+
+    /* CHAT HISTORY SIDEBAR */
+    .chat-history {
+      background-color: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .history-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .history-title {
+      font-size: 16px;
+      color: var(--accent);
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .new-chat-btn {
+      background-color: var(--accent);
+      color: var(--bg-primary);
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    .new-chat-btn:hover {
+      background-color: #00cc6d;
+    }
+
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .history-item {
+      padding: 12px 15px;
+      margin-bottom: 8px;
+      background-color: var(--bg-tertiary);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .history-item:hover {
+      background-color: #222222;
+      border-left-color: var(--accent);
+    }
+
+    .history-item.active {
+      background-color: #222222;
+      border-left-color: var(--accent);
+    }
+
+    .history-preview {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* CHAT AREA */
+    .chat-area {
+      background-color: var(--bg-primary);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .chat-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      background-color: var(--bg-secondary);
+    }
+
+    .chat-title {
+      font-size: 18px;
+      color: var(--accent);
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .chat-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 15px;
+      border-radius: 10px;
+      line-height: 1.5;
+    }
+
+    .user-message {
+      align-self: flex-end;
+      background-color: var(--accent);
+      color: var(--bg-primary);
+      border-bottom-right-radius: 2px;
+    }
+
+    .ai-message {
+      align-self: flex-start;
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 2px;
+    }
+
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .message-content {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .training-message {
+      background-color: #1a2a1a;
+      border-left: 3px solid var(--accent);
+    }
+
+    .training-progress {
+      margin-top: 10px;
+      background-color: var(--bg-primary);
+      border-radius: 3px;
+      overflow: hidden;
+      height: 6px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: var(--accent);
+      width: 0%;
+      transition: width 0.5s;
+    }
+
+    /* CHAT INPUT */
+    .chat-input-container {
+      padding: 20px;
+      border-top: 1px solid var(--border);
+      background-color: var(--bg-secondary);
+    }
+
+    .chat-input-wrapper {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 15px;
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      resize: none;
+      height: 60px;
+      font-size: 14px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .send-btn {
+      background-color: var(--accent);
+      color: var(--bg-primary);
+      border: none;
+      border-radius: 8px;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .send-btn:hover {
+      background-color: #00cc6d;
+    }
+
+    .input-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .action-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* MODEL CONTROLS */
+    .model-controls {
+      padding: 15px;
+      border-top: 1px solid var(--border);
+      background-color: var(--bg-secondary);
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .control-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .control-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .control-input {
+      padding: 8px;
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-primary);
+      font-size: 12px;
+    }
+
+    /* FOOTER */
+    .footer {
+      grid-column: 1 / -1;
+      background-color: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    .system-info {
+      display: flex;
+      gap: 20px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .training-progress-container {
+      width: 200px;
+      height: 6px;
+      background-color: var(--bg-tertiary);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .training-progress-fill {
+      height: 100%;
+      background-color: var(--accent);
+      width: 0%;
+      transition: width 0.5s;
+    }
+
+    /* ANIMATIONS */
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 5px var(--accent-glow); }
+      50% { box-shadow: 0 0 20px var(--accent-glow); }
+      100% { box-shadow: 0 0 5px var(--accent-glow); }
+    }
+
+    .typing-indicator {
+      display: flex;
+      gap: 5px;
+      padding: 10px 15px;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent);
+      border-radius: 50%;
+      animation: typingAnimation 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes typingAnimation {
+      0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    .agent-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      margin: 2px;
+      background-color: rgba(0, 255, 136, 0.2);
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Matrix Background -->
+  <canvas id="matrixCanvas"></canvas>
+
+  <!-- ASX OS Interface -->
+  <div class="os-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">C@@L @GRAMS CLUSTER TRAINER</div>
+      <div class="system-status">
+        <div class="status-item">
+          <div class="status-indicator online" id="connection-status"></div>
+          <span id="connection-text">CLUSTER CONNECTED</span>
+        </div>
+        <div class="status-item">
+          <div class="status-indicator offline" id="train-status"></div>
+          <span id="train-status-text">READY</span>
+        </div>
+        <div class="status-item">
+          <span id="active-agents">9 AGENTS ACTIVE</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="nav-section">
+        <div class="nav-title">TRAINING MODES</div>
+        <div class="nav-item active" data-mode="agent-training">
+          <span>🧠</span>
+          <span>Agent Training</span>
+        </div>
+        <div class="nav-item" data-mode="fine-tune">
+          <span>⚡</span>
+          <span>Model Fine-tuning</span>
+        </div>
+        <div class="nav-item" data-mode="rlhf">
+          <span>🎯</span>
+          <span>RLHF Training</span>
+        </div>
+        <div class="nav-item" data-mode="cluster">
+          <span>🌐</span>
+          <span>Cluster Scaling</span>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-title">ACTIVE AGENTS</div>
+        <div class="nav-item model-item" data-agent="pattern">
+          <span>📊</span>
+          <span>Pattern (3)</span>
+        </div>
+        <div class="nav-item model-item" data-agent="event">
+          <span>📌</span>
+          <span>Event (1)</span>
+        </div>
+        <div class="nav-item model-item" data-agent="invariant">
+          <span>🔒</span>
+          <span>Invariant (2)</span>
+        </div>
+        <div class="nav-item model-item" data-agent="verification">
+          <span>✓</span>
+          <span>Verification (1)</span>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-title">CLUSTER STATUS</div>
+        <div class="nav-item" data-param="workers">
+          <span>⚙️</span>
+          <span>Workers: 4/32</span>
+        </div>
+        <div class="nav-item" data-param="throughput">
+          <span>⚡</span>
+          <span>200 q/sec</span>
+        </div>
+        <div class="nav-item" data-param="compression">
+          <span>💾</span>
+          <span>SCXQ2: 98.5%</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Chat Interface -->
+    <main class="main-content">
+      <!-- Chat History Sidebar -->
+      <div class="chat-history">
+        <div class="history-header">
+          <div class="history-title">TRAINING SESSIONS</div>
+          <button class="new-chat-btn" id="new-session">+ NEW SESSION</button>
+        </div>
+        <div class="history-list" id="session-list">
+          <div class="history-item active">
+            <div>C@@L @GRAMS Agent Training</div>
+            <div class="history-preview">Training 9 agents with 1000 examples...</div>
+          </div>
+          <div class="history-item">
+            <div>RLHF Preference Pairs</div>
+            <div class="history-preview">Generating 500 preference pairs...</div>
+          </div>
+          <div class="history-item">
+            <div>Cluster Scaling Test</div>
+            <div class="history-preview">Scaling to 32 workers, 1600 q/sec...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Area -->
+      <div class="chat-area">
+        <div class="chat-header">
+          <div class="chat-title">C@@L @GRAMS Agent Network Training</div>
+          <div class="chat-subtitle">9 Agents • Pattern + Event + Invariant • SCXQ2 Compression</div>
+        </div>
+
+        <div class="messages-container" id="messages-container">
+          <div class="message ai-message">
+            <div class="message-header">
+              <span>C@@L @GRAMS TRAINER</span>
+              <span id="welcome-time"></span>
+            </div>
+            <div class="message-content">
+              Welcome to C@@L @GRAMS Cluster Trainer. The agent network is initialized and ready for training.
+              <br><br>
+              <span class="agent-badge">Pattern×3</span>
+              <span class="agent-badge">Event×1</span>
+              <span class="agent-badge">Invariant×2</span>
+              <span class="agent-badge">Translator×1</span>
+              <span class="agent-badge">Output×1</span>
+              <span class="agent-badge">Verification×1</span>
+              <br><br>
+              Start training with queries or configure cluster parameters.
+            </div>
+          </div>
+        </div>
+
+        <!-- Model Controls -->
+        <div class="model-controls">
+          <div class="control-grid">
+            <div class="control-item">
+              <div class="control-label">Workers</div>
+              <input type="text" class="control-input" value="4" id="workers-input">
+            </div>
+            <div class="control-item">
+              <div class="control-label">Queries/Session</div>
+              <input type="text" class="control-input" value="100" id="queries-input">
+            </div>
+            <div class="control-item">
+              <div class="control-label">Ticks/Query</div>
+              <input type="text" class="control-input" value="10" id="ticks-input">
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Send training command: 'train 100 queries', 'scale to 16 workers', 'export SCXQ2 delta'..." id="chat-input"></textarea>
+            <button class="send-btn" id="send-btn">➤</button>
+          </div>
+          <div class="input-actions">
+            <button class="action-btn" id="start-training">
+              <span>⚡</span>
+              <span>Start Training</span>
+            </button>
+            <button class="action-btn" id="scale-cluster">
+              <span>🌐</span>
+              <span>Scale Cluster</span>
+            </button>
+            <button class="action-btn" id="export-delta">
+              <span>💾</span>
+              <span>Export Delta</span>
+            </button>
+            <button class="action-btn" id="view-metrics">
+              <span>📊</span>
+              <span>View Metrics</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="system-info">
+        <div id="cluster-info">CLUSTER: 4 WORKERS</div>
+        <div id="throughput-info">THROUGHPUT: 200 Q/SEC</div>
+        <div id="compression-info">COMPRESSION: 98.5%</div>
+      </div>
+      <div class="training-progress-container">
+        <div class="training-progress-fill" id="global-progress"></div>
+      </div>
+      <div class="system-info">
+        <div id="current-operation">Ready for Training Commands</div>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module">
+    // C@@L @GRAMS CLUSTER TRAINER
+    const CALLGRAMS_TRAINER = {
+      state: {
+        workers: 4,
+        maxWorkers: 32,
+        queriesPerSecond: 50,
+        training: false,
+        currentSession: 'C@@L @GRAMS Agent Training',
+        messages: [],
+        connected: true,
+        agents: {
+          pattern: 3,
+          event: 1,
+          invariant: 2,
+          translator: 1,
+          output: 1,
+          verification: 1
+        }
+      },
+
+      async init() {
+        console.log('🧠 C@@L @GRAMS CLUSTER TRAINER INITIALIZED');
+        this.setupEventListeners();
+        this.updateWelcomeTime();
+        this.simulateClusterActivity();
+      },
+
+      setupEventListeners() {
+        document.getElementById('send-btn').addEventListener('click', () => this.sendMessage());
+        document.getElementById('chat-input').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            this.sendMessage();
+          }
+        });
+
+        document.getElementById('start-training').addEventListener('click', () => this.startTraining());
+        document.getElementById('scale-cluster').addEventListener('click', () => this.scaleCluster());
+        document.getElementById('export-delta').addEventListener('click', () => this.exportDelta());
+        document.getElementById('view-metrics').addEventListener('click', () => this.viewMetrics());
+        document.getElementById('new-session').addEventListener('click', () => this.createNewSession());
+
+        document.querySelectorAll('.history-item').forEach(item => {
+          item.addEventListener('click', () => this.selectSession(item));
+        });
+
+        document.querySelectorAll('.nav-item[data-mode]').forEach(item => {
+          item.addEventListener('click', () => this.selectTrainingMode(item));
+        });
+      },
+
+      updateWelcomeTime() {
+        const now = new Date();
+        document.getElementById('welcome-time').textContent =
+          now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      },
+
+      async sendMessage() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+
+        if (!message) return;
+
+        this.addMessage(message, 'user');
+        input.value = '';
+
+        this.showTypingIndicator();
+
+        setTimeout(() => {
+          this.hideTypingIndicator();
+          this.processUserMessage(message);
+        }, 1000 + Math.random() * 2000);
+      },
+
+      addMessage(content, sender) {
+        const messagesContainer = document.getElementById('messages-container');
+        const messageDiv = document.createElement('div');
+        const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        messageDiv.className = `message ${sender}-message`;
+        messageDiv.innerHTML = `
+          <div class="message-header">
+            <span>${sender === 'user' ? 'USER' : 'C@@L @GRAMS TRAINER'}</span>
+            <span>${timestamp}</span>
+          </div>
+          <div class="message-content">${content}</div>
+        `;
+
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        this.state.messages.push({ content, sender, timestamp });
+      },
+
+      showTypingIndicator() {
+        const messagesContainer = document.getElementById('messages-container');
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'typing-indicator';
+        typingDiv.id = 'typing-indicator';
+        typingDiv.innerHTML = `
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        `;
+        messagesContainer.appendChild(typingDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      },
+
+      hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) typingIndicator.remove();
+      },
+
+      processUserMessage(message) {
+        const lower = message.toLowerCase();
+        let response = '';
+
+        if (lower.includes('train') || lower.includes('start')) {
+          response = this.startTrainingResponse();
+        }
+        else if (lower.includes('scale') || lower.includes('workers')) {
+          response = this.scaleClusterResponse(message);
+        }
+        else if (lower.includes('export') || lower.includes('delta')) {
+          response = this.exportDeltaResponse();
+        }
+        else if (lower.includes('status') || lower.includes('metrics')) {
+          response = this.metricsResponse();
+        }
+        else if (lower.includes('agent')) {
+          response = this.agentStatusResponse();
+        }
+        else {
+          response = this.generateAIResponse(message);
+        }
+
+        this.addMessage(response, 'ai');
+      },
+
+      startTrainingResponse() {
+        this.state.training = true;
+        this.updateTrainingStatus();
+
+        const queries = parseInt(document.getElementById('queries-input').value) || 100;
+        const ticks = parseInt(document.getElementById('ticks-input').value) || 10;
+
+        return `<div class="training-message">Starting C@@L @GRAMS agent training session...
+
+• Queries: ${queries}
+• Ticks/Query: ${ticks}
+• Workers: ${this.state.workers}
+• Agents: ${Object.values(this.state.agents).reduce((a,b) => a+b, 0)}
+• Compression: SCXQ2 (98.5%)
+
+<div class="training-progress">
+  <div class="progress-bar" style="width: 15%"></div>
+</div>
+
+Training initialized. Agent network processing...</div>`;
+      },
+
+      scaleClusterResponse(message) {
+        const match = message.match(/(\d+)\s*workers?/i);
+        if (match) {
+          const newWorkers = Math.min(parseInt(match[1]), this.state.maxWorkers);
+          const oldWorkers = this.state.workers;
+          this.state.workers = newWorkers;
+          this.state.queriesPerSecond = newWorkers * 50;
+
+          this.updateClusterDisplay();
+
+          return `Scaling cluster from ${oldWorkers} to ${newWorkers} workers...
+
+• New throughput: ${this.state.queriesPerSecond} queries/sec
+• Speedup: ${newWorkers}× (from baseline)
+• Scaling efficiency: ${((newWorkers / this.state.maxWorkers) * 100).toFixed(1)}%
+
+Cluster scaled successfully. Ready for increased load.`;
+        }
+
+        return `Current cluster configuration:
+
+• Active Workers: ${this.state.workers}/${this.state.maxWorkers}
+• Throughput: ${this.state.queriesPerSecond} queries/sec
+• Agents per Worker: ${(Object.values(this.state.agents).reduce((a,b) => a+b, 0) / this.state.workers).toFixed(1)}
+
+To scale: "scale to 16 workers" or "scale cluster"`;
+      },
+
+      exportDeltaResponse() {
+        const size = Math.floor(Math.random() * 20) + 40; // 40-60 MB
+
+        return `Exporting C@@L @GRAMS agent delta...
+
+• Format: SCXQ2 Quantum Compression
+• Original size: ${(size * 20).toFixed(1)} GB
+• Compressed size: ${size} MB
+• Compression ratio: 98.5%
+• Includes: Agent states, glyph weights, topology
+
+Delta export complete: callgrams_delta_${Date.now()}.scxq2
+
+Ready for quick inference (267× faster loading!)`;
+      },
+
+      metricsResponse() {
+        const avgActivation = (Math.random() * 2 + 3).toFixed(3);
+        const confidence = (Math.random() * 0.1 + 0.9).toFixed(3);
+
+        return `C@@L @GRAMS Agent Network Metrics:
+
+<span class="agent-badge">Pattern Agents</span>
+• Activation: ${avgActivation}
+• Glyph weights: @=1.0, @@=2.0, @@@=3.0
+
+<span class="agent-badge">Event Agent</span>
+• Fact store: 7 entries
+• Confidence: ${confidence}
+• Trust weight: 1.0
+
+<span class="agent-badge">Verification Sphere</span>
+• Trust: ${(Math.random() * 0.1 + 0.9).toFixed(3)}
+• Coherence: ${(Math.random() * 0.2 + 0.7).toFixed(3)}
+• Primitive: Sphere (Authoritative)
+
+Network Status: All agents operating normally`;
+      },
+
+      agentStatusResponse() {
+        const total = Object.values(this.state.agents).reduce((a,b) => a+b, 0);
+
+        return `Agent Network Status:
+
+Total Agents: ${total}
+
+<span class="agent-badge">Pattern×${this.state.agents.pattern}</span> Cross-reference matrix layer
+<span class="agent-badge">Event×${this.state.agents.event}</span> Factual grounding layer
+<span class="agent-badge">Invariant×${this.state.agents.invariant}</span> Constraint enforcement
+<span class="agent-badge">Translator×${this.state.agents.translator}</span> Scale transformation
+<span class="agent-badge">Output×${this.state.agents.output}</span> Result formatting
+<span class="agent-badge">Verification×${this.state.agents.verification}</span> Trust validation
+
+All agents connected and communicating via mesh network.`;
+      },
+
+      generateAIResponse(message) {
+        const responses = [
+          `The C@@L @GRAMS agent network is processing your request. Current cluster load: ${(Math.random() * 30 + 50).toFixed(1)}%`,
+          `Agent mesh network is active with ${this.state.workers} workers. Topology: Ring + Star hybrid. All agents responsive.`,
+          `Training insight: The glyph encoding system is operating efficiently. Average weight: ${(Math.random() * 2 + 2).toFixed(2)}`,
+          `Cluster status: ${this.state.queriesPerSecond} queries/sec throughput. SCXQ2 compression maintaining 98.5% ratio.`,
+          `Agent communication: ${Math.floor(Math.random() * 50 + 100)} messages/sec across network. Latency: <5ms.`
+        ];
+
+        return responses[Math.floor(Math.random() * responses.length)];
+      },
+
+      startTraining() {
+        this.addMessage('Initiating C@@L @GRAMS training session...', 'user');
+        this.showTypingIndicator();
+
+        setTimeout(() => {
+          this.hideTypingIndicator();
+          this.addMessage(this.startTrainingResponse(), 'ai');
+        }, 1500);
+      },
+
+      scaleCluster() {
+        const newWorkers = Math.min(this.state.workers * 2, this.state.maxWorkers);
+        this.addMessage(`Scaling cluster to ${newWorkers} workers...`, 'user');
+        this.showTypingIndicator();
+
+        setTimeout(() => {
+          this.hideTypingIndicator();
+          this.addMessage(this.scaleClusterResponse(`scale to ${newWorkers} workers`), 'ai');
+        }, 1000);
+      },
+
+      exportDelta() {
+        this.addMessage('Exporting SCXQ2 compressed delta...', 'user');
+        this.showTypingIndicator();
+
+        setTimeout(() => {
+          this.hideTypingIndicator();
+          this.addMessage(this.exportDeltaResponse(), 'ai');
+        }, 2000);
+      },
+
+      viewMetrics() {
+        this.addMessage('Displaying agent network metrics...', 'user');
+        this.showTypingIndicator();
+
+        setTimeout(() => {
+          this.hideTypingIndicator();
+          this.addMessage(this.metricsResponse(), 'ai');
+        }, 1000);
+      },
+
+      createNewSession() {
+        const sessionName = `Training Session ${Math.floor(Math.random() * 1000)}`;
+        const sessionList = document.getElementById('session-list');
+
+        const newSession = document.createElement('div');
+        newSession.className = 'history-item active';
+        newSession.innerHTML = `
+          <div>${sessionName}</div>
+          <div class="history-preview">New C@@L @GRAMS training session</div>
+        `;
+
+        document.querySelectorAll('.history-item').forEach(item => {
+          item.classList.remove('active');
+        });
+
+        sessionList.insertBefore(newSession, sessionList.firstChild);
+        newSession.addEventListener('click', () => this.selectSession(newSession));
+
+        this.state.currentSession = sessionName;
+        this.clearChat();
+      },
+
+      selectSession(sessionElement) {
+        document.querySelectorAll('.history-item').forEach(item => {
+          item.classList.remove('active');
+        });
+        sessionElement.classList.add('active');
+
+        this.state.currentSession = sessionElement.querySelector('div').textContent;
+        this.addMessage(`Session "${this.state.currentSession}" loaded. Agent network ready.`, 'ai');
+      },
+
+      selectTrainingMode(modeElement) {
+        document.querySelectorAll('.nav-item').forEach(item => {
+          item.classList.remove('active');
+        });
+        modeElement.classList.add('active');
+
+        const mode = modeElement.getAttribute('data-mode');
+        this.addMessage(`Switched to ${mode.replace('-', ' ')} mode`, 'ai');
+      },
+
+      updateTrainingStatus() {
+        const statusElement = document.getElementById('train-status');
+        const textElement = document.getElementById('train-status-text');
+
+        if (this.state.training) {
+          statusElement.className = 'status-indicator processing';
+          textElement.textContent = 'TRAINING';
+        } else {
+          statusElement.className = 'status-indicator offline';
+          textElement.textContent = 'READY';
+        }
+      },
+
+      updateClusterDisplay() {
+        document.getElementById('cluster-info').textContent = `CLUSTER: ${this.state.workers} WORKERS`;
+        document.getElementById('throughput-info').textContent = `THROUGHPUT: ${this.state.queriesPerSecond} Q/SEC`;
+
+        const workersInput = document.getElementById('workers-input');
+        if (workersInput) workersInput.value = this.state.workers;
+      },
+
+      clearChat() {
+        const messagesContainer = document.getElementById('messages-container');
+        messagesContainer.innerHTML = '';
+        this.state.messages = [];
+
+        this.addMessage(`Session "${this.state.currentSession}" initialized. ${Object.values(this.state.agents).reduce((a,b) => a+b, 0)} agents active.`, 'ai');
+      },
+
+      simulateClusterActivity() {
+        setInterval(() => {
+          const progress = document.getElementById('global-progress');
+          if (this.state.training) {
+            const currentWidth = parseInt(progress.style.width) || 0;
+            const newWidth = Math.min(100, currentWidth + Math.random() * 5);
+            progress.style.width = `${newWidth}%`;
+
+            if (newWidth >= 100) {
+              this.state.training = false;
+              this.updateTrainingStatus();
+              this.addMessage('Training session completed! Agent network states exported to SCXQ2 delta.', 'ai');
+              progress.style.width = '0%';
+            }
+          }
+        }, 2000);
+      }
+    };
+
+    // MATRIX BACKGROUND
+    function initMatrix() {
+      const canvas = document.getElementById('matrixCanvas');
+      const ctx = canvas.getContext('2d');
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@%&*()[]{}⟁●△◆';
+      const charArray = chars.split('');
+      const fontSize = 14;
+      const columns = canvas.width / fontSize;
+      const drops = [];
+
+      for (let i = 0; i < columns; i++) {
+        drops[i] = 1;
+      }
+
+      function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#00ff41';
+        ctx.font = `${fontSize}px monospace`;
+
+        for (let i = 0; i < drops.length; i++) {
+          const text = charArray[Math.floor(Math.random() * charArray.length)];
+          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+      }
+
+      setInterval(draw, 33);
+
+      window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      initMatrix();
+      CALLGRAMS_TRAINER.init();
+
+      console.log('🧠 C@@L @GRAMS CLUSTER TRAINER ACTIVE');
+      console.log('🌐 Agent network initialized');
+      console.log('⚡ Ready for training commands');
+    });
+  </script>
+</body>
+</html>
