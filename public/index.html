@@ -2059,18 +2059,27 @@
       </div>
     </div>
   </div>
-// Add this script to your HTML file (before closing </body>)
+// Add this to your HTML before closing </body>
 <script>
 // ============================================================
-// K'UHUL π CLIENT BRIDGE
+// MX2LM GHOST OS CLIENT BRIDGE
 // ============================================================
 
-class KuhulClientBridge {
+class MX2LMClientBridge {
   constructor() {
     this.messageQueue = new Map();
     this.nextRequestId = 0;
-    this.isKernelReady = false;
-    this.kernelVersion = null;
+    this.kernelReady = false;
+    this.manifest = null;
+    this.runtimeMode = 'stealth';
+    
+    // XCFE state
+    this.xcfeState = new Map();
+    
+    // Active systems
+    this.activeTape = null;
+    this.activePanels = new Set();
+    this.meshConnections = new Map();
     
     this.init();
   }
@@ -2080,42 +2089,351 @@ class KuhulClientBridge {
     if ('serviceWorker' in navigator) {
       try {
         const registration = await navigator.serviceWorker.register('./sw.js');
-        console.log('🚀 Service Worker registered:', registration);
+        console.log('🚀 MX2LM Service Worker registered');
         
-        // Wait for service worker to be ready
-        if (registration.active) {
-          this.setupMessageHandlers();
-        } else if (registration.installing) {
-          registration.installing.addEventListener('statechange', () => {
-            if (registration.active) {
-              this.setupMessageHandlers();
-            }
-          });
-        }
-        
-        // Listen for kernel messages
+        // Setup message handlers
         navigator.serviceWorker.addEventListener('message', (event) => {
           this.handleKernelMessage(event.data);
         });
         
+        // Initialize when service worker is ready
+        if (registration.active) {
+          await this.initializeConnection();
+        } else if (registration.installing) {
+          registration.installing.addEventListener('statechange', () => {
+            if (registration.active) {
+              this.initializeConnection();
+            }
+          });
+        }
+        
       } catch (error) {
         console.error('Service Worker registration failed:', error);
+        this.runInFallbackMode();
       }
     } else {
-      console.warn('Service Workers not supported, running in fallback mode');
+      console.warn('Service Workers not supported');
+      this.runInFallbackMode();
     }
   }
   
-  setupMessageHandlers() {
-    // Send initial ping to check kernel status
-    this.sendToKernel('PING', {}).then(response => {
-      console.log('🧠 Kernel responded:', response);
-      this.isKernelReady = true;
-      this.kernelVersion = response.result?.version;
+  async initializeConnection() {
+    try {
+      // Get manifest
+      this.manifest = await this.sendToKernel('GET_MANIFEST', {});
       
-      // Initialize kernel
-      this.sendToKernel('INITIALIZE_KERNEL', {});
+      // Get kernel state
+      const state = await this.sendToKernel('GET_STATE', {});
+      this.kernelReady = true;
+      this.runtimeMode = state.kernel.runtimeMode;
+      
+      // Initialize UI based on manifest
+      this.initializeUI();
+      
+      console.log('🧠 MX2LM Ghost OS connected');
+      console.log('📜 Manifest:', this.manifest.name, 'v' + this.manifest['@v']);
+      console.log('⚡ Runtime mode:', this.runtimeMode);
+      
+    } catch (error) {
+      console.error('Failed to initialize connection:', error);
+    }
+  }
+  
+  runInFallbackMode() {
+    console.log('⚠️ Running in fallback mode (no Service Worker)');
+    this.kernelReady = true;
+    this.runtimeMode = 'stealth';
+    
+    // Load fallback manifest
+    this.manifest = {
+      name: 'MX2LM OS (Fallback)',
+      '@v': '3.2.1',
+      runtime_modes: { stealth: { default: true } },
+      tapes: {},
+      panels: {}
+    };
+    
+    this.initializeUI();
+  }
+  
+  initializeUI() {
+    // Update kernel indicator
+    this.updateKernelIndicator();
+    
+    // Load tapes from manifest
+    this.loadTapes();
+    
+    // Setup runtime mode constraints
+    this.applyRuntimeConstraints();
+    
+    // Initialize XCFE UI
+    this.initializeXCFE();
+    
+    // Setup event listeners
+    this.setupEventListeners();
+  }
+  
+  updateKernelIndicator() {
+    const indicator = document.querySelector('.asx-chip-dot');
+    if (indicator) {
+      if (this.kernelReady) {
+        indicator.style.background = 'radial-gradient(circle, #22c55e 0, #22c55e 40%, transparent 70%)';
+        indicator.title = 'Kernel: Ready';
+      } else {
+        indicator.style.background = 'radial-gradient(circle, #f87171 0, #f87171 40%, transparent 70%)';
+        indicator.title = 'Kernel: Offline';
+      }
+    }
+    
+    // Update version display
+    const versionSpan = document.querySelector('.text-xs[style*="color:#bbf7d0"]');
+    if (versionSpan && this.manifest) {
+      versionSpan.textContent = `MX2LM v${this.manifest['@v']}`;
+    }
+  }
+  
+  loadTapes() {
+    if (!this.manifest?.tapes) return;
+    
+    const tapes = Object.entries(this.manifest.tapes);
+    console.log('📼 Loading tapes:', tapes.length);
+    
+    // Update tape UI
+    tapes.forEach(([id, tape]) => {
+      this.createTapeElement(id, tape);
     });
+  }
+  
+  createTapeElement(id, tape) {
+    // Find or create tape element in UI
+    const tapeContainer = document.querySelector('.model-select-row, .tape-select');
+    if (!tapeContainer) return;
+    
+    // Check if element already exists
+    const existing = document.querySelector(`[data-tape-id="${id}"]`);
+    if (existing) return;
+    
+    const element = document.createElement('div');
+    element.className = 'model-pill';
+    element.dataset.tapeId = id;
+    element.textContent = tape.label;
+    element.title = tape.description;
+    
+    element.addEventListener('click', () => {
+      this.activateTape(id);
+    });
+    
+    tapeContainer.appendChild(element);
+  }
+  
+  applyRuntimeConstraints() {
+    if (this.runtimeMode === 'stealth') {
+      // Apply stealth mode UI constraints
+      document.documentElement.dataset.runtime = 'stealth';
+      
+      // Disable certain UI elements
+      const externalElements = document.querySelectorAll('[data-external]');
+      externalElements.forEach(el => {
+        el.style.opacity = '0.5';
+        el.style.pointerEvents = 'none';
+      });
+    }
+  }
+  
+  initializeXCFE() {
+    if (!this.manifest?.xcfe) return;
+    
+    // Setup XCFE UI controls
+    const xcfeVectors = this.manifest.xcfe.control_vectors || [];
+    const variableVectors = this.manifest.xcfe.variable_vectors || [];
+    
+    console.log('🎮 XCFE vectors:', xcfeVectors.length);
+    
+    // Create XCFE control panel if it doesn't exist
+    this.createXCFEPanel(xcfeVectors, variableVectors);
+  }
+  
+  createXCFEPanel(controlVectors, variableVectors) {
+    // Check if panel exists
+    if (document.getElementById('xcfe-panel')) return;
+    
+    const panel = document.createElement('div');
+    panel.id = 'xcfe-panel';
+    panel.style.cssText = `
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      background: rgba(10, 10, 26, 0.9);
+      border: 1px solid rgba(22, 242, 170, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      z-index: 999;
+      backdrop-filter: blur(10px);
+      display: none;
+    `;
+    
+    panel.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <strong style="color: #16f2aa;">XCFE Control</strong>
+        <button onclick="this.parentElement.parentElement.style.display='none'" style="background: none; border: none; color: #7dd3fc; cursor: pointer;">×</button>
+      </div>
+      <div id="xcfe-controls"></div>
+      <div id="xcfe-state" style="margin-top: 12px; font-size: 11px; color: #7dd3fc;"></div>
+    `;
+    
+    document.body.appendChild(panel);
+    
+    // Populate controls
+    this.populateXCFEControls(controlVectors, variableVectors);
+  }
+  
+  populateXCFEControls(controlVectors, variableVectors) {
+    const controlsDiv = document.getElementById('xcfe-controls');
+    if (!controlsDiv) return;
+    
+    controlVectors.forEach(vector => {
+      const button = document.createElement('button');
+      button.className = 'asx-btn';
+      button.textContent = vector;
+      button.style.margin = '4px';
+      button.onclick = () => this.executeXCFE(vector);
+      controlsDiv.appendChild(button);
+    });
+    
+    // Update state display
+    this.updateXCFEStateDisplay();
+  }
+  
+  updateXCFEStateDisplay() {
+    const stateDiv = document.getElementById('xcfe-state');
+    if (!stateDiv) return;
+    
+    const state = Array.from(this.xcfeState.entries())
+      .map(([key, value]) => `${key}: ${value}`)
+      .join(' | ');
+    
+    stateDiv.textContent = state || 'No XCFE state';
+  }
+  
+  setupEventListeners() {
+    // Setup chat integration
+    this.setupChatIntegration();
+    
+    // Setup file editor integration
+    this.setupFileEditorIntegration();
+    
+    // Setup tape integration
+    this.setupTapeIntegration();
+    
+    // Setup mesh integration
+    this.setupMeshIntegration();
+  }
+  
+  setupChatIntegration() {
+    const chatInput = document.getElementById('chat-input');
+    const sendButton = document.getElementById('sendChat');
+    
+    if (chatInput && sendButton) {
+      sendButton.onclick = async () => {
+        const message = chatInput.value.trim();
+        if (!message) return;
+        
+        await this.sendChatMessage(message);
+        chatInput.value = '';
+      };
+      
+      chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendButton.click();
+        }
+      });
+    }
+  }
+  
+  setupFileEditorIntegration() {
+    const editorTabs = document.querySelectorAll('.studio-tab');
+    editorTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.target;
+        if (target.includes('file')) {
+          const filename = target.replace('-file', '') + 
+            (target.includes('kernel') ? '.js' : 
+             target.includes('manifest') ? '.json' : '.html');
+          
+          this.loadFileIntoEditor(filename);
+        }
+      });
+    });
+  }
+  
+  setupTapeIntegration() {
+    // Tape switching via UI
+    document.addEventListener('click', (e) => {
+      const tapeElement = e.target.closest('[data-tape-id]');
+      if (tapeElement) {
+        const tapeId = tapeElement.dataset.tapeId;
+        this.activateTape(tapeId);
+      }
+    });
+  }
+  
+  setupMeshIntegration() {
+    // Mesh connection UI
+    const meshButtons = document.querySelectorAll('[data-mesh-zone]');
+    meshButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const zone = button.dataset.meshZone;
+        this.connectToMeshZone(zone);
+      });
+    });
+  }
+  
+  // ============================================================
+  // PUBLIC API METHODS
+  // ============================================================
+  
+  async sendToKernel(type, payload) {
+    if (!this.kernelReady && type !== 'GET_STATE') {
+      throw new Error('Kernel not ready');
+    }
+    
+    return new Promise((resolve, reject) => {
+      const requestId = this.nextRequestId++;
+      this.messageQueue.set(requestId, { resolve, reject });
+      
+      if (navigator.serviceWorker?.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type,
+          payload,
+          requestId
+        });
+      } else {
+        // Fallback: simulate response
+        setTimeout(() => {
+          const result = this.simulateKernelResponse(type, payload);
+          resolve(result);
+        }, 100);
+      }
+    });
+  }
+  
+  simulateKernelResponse(type, payload) {
+    // Simulate kernel responses in fallback mode
+    switch(type) {
+      case 'GET_MANIFEST':
+        return this.manifest;
+      case 'GET_STATE':
+        return { kernel: { runtimeMode: this.runtimeMode } };
+      case 'INFERENCE':
+        return {
+          content: `Fallback response: ${payload.prompt}`,
+          model: 'fallback',
+          tokens: 0
+        };
+      default:
+        return { error: 'Kernel unavailable' };
+    }
   }
   
   handleKernelMessage(data) {
@@ -2123,34 +2441,7 @@ class KuhulClientBridge {
     
     // Handle broadcast messages
     if (!requestId) {
-      switch (type) {
-        case 'KERNEL_READY':
-          console.log('🧠 Kernel ready:', result);
-          this.isKernelReady = true;
-          this.kernelVersion = result.version;
-          break;
-          
-        case 'KERNEL_INITIALIZED':
-          console.log('🚀 Kernel fully initialized');
-          this.updateUIState();
-          break;
-          
-        case 'INFERENCE_RESULT':
-          this.handleInferenceResult(result);
-          break;
-          
-        case 'FILE_CHANGED':
-          this.handleFileChanged(result);
-          break;
-          
-        case 'TAPE_ACTIVATED':
-          this.handleTapeActivated(result);
-          break;
-          
-        case 'SYNC_COMPLETE':
-          console.log('🔄 Kernel sync complete');
-          break;
-      }
+      this.handleBroadcastMessage(type, result);
       return;
     }
     
@@ -2166,188 +2457,265 @@ class KuhulClientBridge {
     }
   }
   
-  async sendToKernel(type, payload) {
-    return new Promise((resolve, reject) => {
-      const requestId = this.nextRequestId++;
-      this.messageQueue.set(requestId, { resolve, reject });
-      
-      if (navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({
-          type,
-          payload,
-          requestId
-        });
-      } else {
-        reject(new Error('Service Worker not ready'));
-      }
-    });
-  }
-  
-  // ============================================================
-  // PUBLIC API METHODS
-  // ============================================================
-  
-  // Inference
-  async chat(model, prompt, options = {}) {
-    return this.sendToKernel('INFERENCE_REQUEST', {
-      model,
-      prompt,
-      options
-    });
-  }
-  
-  async chatStream(model, prompt, options = {}) {
-    return this.sendToKernel('INFERENCE_STREAM', {
-      model,
-      prompt,
-      options
-    });
-  }
-  
-  // Files
-  async readFile(filename) {
-    return this.sendToKernel('READ_FILE', { filename });
-  }
-  
-  async writeFile(filename, content) {
-    return this.sendToKernel('WRITE_FILE', { filename, content });
-  }
-  
-  async listFiles() {
-    return this.sendToKernel('LIST_FILES', {});
-  }
-  
-  // Tapes
-  async getTapes() {
-    return this.sendToKernel('GET_TAPES', {});
-  }
-  
-  async getActiveTape() {
-    return this.sendToKernel('GET_ACTIVE_TAPE', {});
-  }
-  
-  async setActiveTape(tapeId) {
-    return this.sendToKernel('SET_ACTIVE_TAPE', { tapeId });
-  }
-  
-  // Sessions
-  async getSessions() {
-    return this.sendToKernel('GET_SESSIONS', {});
-  }
-  
-  async clearSession(sessionId) {
-    return this.sendToKernel('CLEAR_SESSION', { sessionId });
-  }
-  
-  // Storage
-  async store(key, value) {
-    return this.sendToKernel('STORAGE_SET', { key, value });
-  }
-  
-  async retrieve(key) {
-    return this.sendToKernel('STORAGE_GET', { key });
-  }
-  
-  // ============================================================
-  // UI INTEGRATION METHODS
-  // ============================================================
-  
-  updateUIState() {
-    // Update kernel status in UI
-    const kernelIndicator = document.querySelector('.asx-chip-dot');
-    if (kernelIndicator) {
-      kernelIndicator.style.background = 'radial-gradient(circle, #22c55e 0, #22c55e 40%, transparent 70%)';
+  handleBroadcastMessage(type, data) {
+    switch(type) {
+      case 'KERNEL_READY':
+        console.log('🧠 Kernel ready broadcast');
+        this.kernelReady = true;
+        this.updateKernelIndicator();
+        break;
+        
+      case 'KERNEL_INITIALIZED':
+        console.log('🚀 Kernel initialized:', data);
+        this.showNotification(`MX2LM OS v${data.version} ready`);
+        break;
+        
+      case 'TAPE_ACTIVATED':
+        this.handleTapeActivated(data);
+        break;
+        
+      case 'TAPE_CREATED':
+        this.createTapeElement(data.tape.id, data.tape);
+        break;
+        
+      case 'PANELS_UPDATED':
+        this.handlePanelsUpdated(data.panels);
+        break;
+        
+      case 'FILE_CHANGED':
+        this.handleFileChanged(data);
+        break;
+        
+      case 'MESH_CONNECTED':
+        this.handleMeshConnected(data);
+        break;
+        
+      case 'XCFE_STATE_UPDATE':
+        this.handleXCFEStateUpdate(data.state);
+        break;
+        
+      case 'SYNC_COMPLETE':
+        console.log('🔄 Sync complete');
+        break;
     }
+  }
+  
+  handleTapeActivated(data) {
+    this.activeTape = data.tape;
     
-    // Update version display
-    const versionSpan = document.querySelector('.text-xs[style*="color:#bbf7d0"]');
-    if (versionSpan && this.kernelVersion) {
-      versionSpan.textContent = `K'UHUL sw.khl v${this.kernelVersion}`;
-    }
-  }
-  
-  handleInferenceResult(result) {
-    // Update chat stream in right panel
-    const chatStream = document.getElementById('chat-stream');
-    if (chatStream) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = 'chat-msg assistant';
-      msgDiv.innerHTML = `
-        <strong>${result.model}</strong><br/>
-        ${result.response.content}<br/>
-        <small style="color:#7dd3fc">
-          Tokens: ${result.response.tokens} · 
-          Glyphs: ${result.response.glyphs} · 
-          Time: ${result.response.processing_time}ms
-        </small>
-      `;
-      chatStream.appendChild(msgDiv);
-      chatStream.scrollTop = chatStream.scrollHeight;
-    }
-    
-    // Update inference stats
-    this.updateInferenceStats(result);
-  }
-  
-  handleFileChanged(result) {
-    // Update editor if this file is currently open
-    const editorFilename = document.getElementById('editor-filename');
-    if (editorFilename && editorFilename.textContent.includes(result.filename)) {
-      const editorBody = document.getElementById('editor-body');
-      if (editorBody) {
-        editorBody.textContent = result.content;
-      }
-    }
-    
-    // Show notification
-    this.showNotification(`File updated: ${result.filename}`);
-  }
-  
-  handleTapeActivated(result) {
-    // Update tape selection in UI
-    const tapeElements = document.querySelectorAll('.tape-tile, .model-pill');
+    // Update UI
+    const tapeElements = document.querySelectorAll('[data-tape-id]');
     tapeElements.forEach(el => {
-      if (el.textContent.includes(result.tape.name)) {
-        el.classList.add('active', 'active-tape');
+      if (el.dataset.tapeId === data.tape.id) {
+        el.classList.add('active');
+        el.style.borderColor = 'rgba(45, 212, 191, 0.9)';
+        el.style.boxShadow = '0 0 10px rgba(22, 242, 170, 0.3)';
       } else {
-        el.classList.remove('active', 'active-tape');
+        el.classList.remove('active');
+        el.style.borderColor = '';
+        el.style.boxShadow = '';
       }
     });
     
-    // Update active tape display
+    // Update tape display
     const tapeDisplay = document.querySelector('.tape-select span:nth-child(2)');
     if (tapeDisplay) {
-      tapeDisplay.textContent = result.tape.id;
-      tapeDisplay.style.color = '#a5f3fc';
+      tapeDisplay.textContent = data.tape.id;
+    }
+    
+    this.showNotification(`Activated tape: ${data.tape.label}`);
+  }
+  
+  handlePanelsUpdated(panels) {
+    this.activePanels.clear();
+    
+    panels.forEach(panel => {
+      if (panel.state === 'active') {
+        this.activePanels.add(panel.id);
+      }
+    });
+    
+    // Update panel UI
+    const panelElements = document.querySelectorAll('[data-panel-id]');
+    panelElements.forEach(el => {
+      if (this.activePanels.has(el.dataset.panelId)) {
+        el.classList.add('active');
+      } else {
+        el.classList.remove('active');
+      }
+    });
+  }
+  
+  handleFileChanged(data) {
+    // Update editor if file is open
+    const editorFilename = document.getElementById('editor-filename');
+    if (editorFilename && editorFilename.textContent.includes(data.filename)) {
+      const editorBody = document.getElementById('editor-body');
+      if (editorBody) {
+        editorBody.textContent = data.content;
+      }
+    }
+    
+    this.showNotification(`File updated: ${data.filename}`);
+  }
+  
+  handleMeshConnected(data) {
+    this.meshConnections.set(data.zone, {
+      connectionId: data.connectionId,
+      connectedAt: Date.now()
+    });
+    
+    this.showNotification(`Connected to mesh: ${data.zone}`);
+  }
+  
+  handleXCFEStateUpdate(state) {
+    Object.entries(state).forEach(([key, value]) => {
+      this.xcfeState.set(key, value);
+    });
+    
+    this.updateXCFEStateDisplay();
+  }
+  
+  // ============================================================
+  // HIGH-LEVEL OPERATIONS
+  // ============================================================
+  
+  async activateTape(tapeId) {
+    try {
+      const result = await this.sendToKernel('SET_ACTIVE_TAPE', { tapeId });
+      return result;
+    } catch (error) {
+      console.error('Failed to activate tape:', error);
+      this.showNotification(`Failed to activate tape: ${error.message}`);
+      throw error;
     }
   }
   
-  updateInferenceStats(result) {
-    const statsElement = document.querySelector('.text-xs.text-soft');
-    if (statsElement) {
-      statsElement.innerHTML = `
-        Mode: <span style="color:#a5f3fc;">One-on-One · 
-        Model: ${result.model} · 
-        Tokens: ${result.session?.tokensUsed || 0}
-        </span>
-      `;
+  async sendChatMessage(message) {
+    try {
+      const response = await this.sendToKernel('INFERENCE', {
+        prompt: message,
+        options: {
+          model: 'mx2lm-prime',
+          temperature: 0.7
+        }
+      });
+      
+      // Update chat UI
+      this.updateChatUI(message, response);
+      
+      return response;
+    } catch (error) {
+      console.error('Chat failed:', error);
+      this.showNotification(`Chat error: ${error.message}`);
+      throw error;
     }
   }
   
-  showNotification(message) {
-    // Create notification element
+  updateChatUI(userMessage, aiResponse) {
+    const chatStream = document.getElementById('chat-stream');
+    if (!chatStream) return;
+    
+    // Add user message
+    const userMsg = document.createElement('div');
+    userMsg.className = 'chat-msg user';
+    userMsg.textContent = userMessage;
+    chatStream.appendChild(userMsg);
+    
+    // Add AI response
+    const aiMsg = document.createElement('div');
+    aiMsg.className = 'chat-msg assistant';
+    aiMsg.innerHTML = `
+      ${aiResponse.content}<br/>
+      <small style="color:#7dd3fc">
+        Model: ${aiResponse.model} · 
+        Glyphs: ${aiResponse.glyphs || 0}
+      </small>
+    `;
+    chatStream.appendChild(aiMsg);
+    
+    // Scroll to bottom
+    chatStream.scrollTop = chatStream.scrollHeight;
+  }
+  
+  async loadFileIntoEditor(filename) {
+    try {
+      const file = await this.sendToKernel('READ_FILE', { filename });
+      if (file) {
+        const editorBody = document.getElementById('editor-body');
+        const editorFilename = document.getElementById('editor-filename');
+        
+        if (editorBody) {
+          editorBody.textContent = file.content;
+        }
+        if (editorFilename) {
+          editorFilename.textContent = `${filename} · MX2LM OS`;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load file:', error);
+    }
+  }
+  
+  async saveFile(filename, content) {
+    try {
+      const success = await this.sendToKernel('WRITE_FILE', { filename, content });
+      if (success) {
+        this.showNotification(`Saved: ${filename}`);
+      }
+      return success;
+    } catch (error) {
+      console.error('Failed to save file:', error);
+      this.showNotification(`Save failed: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  async connectToMeshZone(zone) {
+    try {
+      const connectionId = await this.sendToKernel('MESH_CONNECT', { zone });
+      return connectionId;
+    } catch (error) {
+      console.error('Mesh connection failed:', error);
+      this.showNotification(`Mesh error: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  async executeXCFE(vector, data = {}) {
+    try {
+      const result = await this.sendToKernel('XCFE_DISPATCH', {
+        vector,
+        data
+      });
+      
+      this.showNotification(`XCFE ${vector} executed`);
+      return result;
+    } catch (error) {
+      console.error('XCFE execution failed:', error);
+      this.showNotification(`XCFE error: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  // ============================================================
+  // UI UTILITIES
+  // ============================================================
+  
+  showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.style.cssText = `
       position: fixed;
       top: 20px;
       right: 20px;
-      background: linear-gradient(135deg, rgba(22, 242, 170, 0.9), rgba(0, 170, 255, 0.9));
-      color: #020617;
-      padding: 10px 20px;
+      padding: 12px 20px;
       border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      background: ${type === 'error' ? 'rgba(255, 51, 102, 0.9)' : 'rgba(22, 242, 170, 0.9)'};
+      color: #020617;
+      font-weight: 500;
       z-index: 1000;
       animation: slideIn 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     `;
     
     notification.textContent = message;
@@ -2358,246 +2726,55 @@ class KuhulClientBridge {
       notification.style.animation = 'slideOut 0.3s ease';
       setTimeout(() => notification.remove(), 300);
     }, 3000);
-    
-    // Add animations
-    if (!document.getElementById('notification-animations')) {
-      const style = document.createElement('style');
-      style.id = 'notification-animations';
-      style.textContent = `
-        @keyframes slideIn {
-          from { transform: translateX(100%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes slideOut {
-          from { transform: translateX(0); opacity: 1; }
-          to { transform: translateX(100%); opacity: 0; }
-        }
-      `;
-      document.head.appendChild(style);
-    }
-  }
-  
-  // ============================================================
-  // CONVENIENCE METHODS
-  // ============================================================
-  
-  async quickChat(prompt, model = 'mx2lm-prime') {
-    try {
-      const response = await this.chat(model, prompt);
-      
-      // Also update the main chat input/display
-      const chatInput = document.getElementById('chat-input');
-      const sendButton = document.getElementById('sendChat');
-      
-      if (chatInput && sendButton) {
-        chatInput.value = prompt;
-        sendButton.click();
-      }
-      
-      return response;
-    } catch (error) {
-      console.error('Quick chat failed:', error);
-      throw error;
-    }
-  }
-  
-  async editFile(filename, newContent) {
-    try {
-      const success = await this.writeFile(filename, newContent);
-      if (success) {
-        this.showNotification(`${filename} updated successfully`);
-      }
-      return success;
-    } catch (error) {
-      console.error('File edit failed:', error);
-      this.showNotification(`Failed to edit ${filename}`);
-      throw error;
-    }
-  }
-  
-  async switchTape(tapeId) {
-    try {
-      const success = await this.setActiveTape(tapeId);
-      if (success) {
-        this.showNotification(`Switched to tape: ${tapeId}`);
-      }
-      return success;
-    } catch (error) {
-      console.error('Tape switch failed:', error);
-      throw error;
-    }
   }
 }
 
 // ============================================================
-// INITIALIZE AND ATTACH TO WINDOW
+// GLOBAL EXPORT
 // ============================================================
 
-// Wait for DOM to be ready
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize the bridge
-  window.kuhulBridge = new KuhulClientBridge();
+  window.MX2LM = new MX2LMClientBridge();
   
-  // Attach bridge to existing chat functionality
-  const chatInput = document.getElementById('chat-input');
-  const sendButton = document.getElementById('sendChat');
-  const chatStream = document.getElementById('chat-stream');
-  
-  if (sendButton && chatInput && chatStream) {
-    // Override the existing send functionality
-    const originalSend = sendButton.onclick;
-    sendButton.onclick = async () => {
-      const message = chatInput.value.trim();
-      if (!message || !window.kuhulBridge.isKernelReady) return;
-      
-      // Add user message
-      const userMsg = document.createElement('div');
-      userMsg.className = 'chat-msg user';
-      userMsg.textContent = message;
-      chatStream.appendChild(userMsg);
-      
-      // Clear input
-      chatInput.value = '';
-      
-      try {
-        // Send to kernel
-        const response = await window.kuhulBridge.chat('mx2lm-prime', message);
-        
-        // Add assistant response
-        const aiMsg = document.createElement('div');
-        aiMsg.className = 'chat-msg assistant';
-        aiMsg.innerHTML = `
-          ${response.response.content}<br/>
-          <small style="color:#7dd3fc">
-            Model: ${response.model} · 
-            Session: ${response.sessionId.substr(0, 8)}...
-          </small>
-        `;
-        chatStream.appendChild(aiMsg);
-        
-        // Scroll to bottom
-        chatStream.scrollTop = chatStream.scrollHeight;
-        
-      } catch (error) {
-        console.error('Chat failed:', error);
-        const errorMsg = document.createElement('div');
-        errorMsg.className = 'chat-msg system';
-        errorMsg.textContent = `Error: ${error.message}`;
-        chatStream.appendChild(errorMsg);
-      }
-    };
-  }
-  
-  // Enhance studio tabs with kernel integration
-  const studioTabs = document.querySelectorAll('.studio-tab');
-  studioTabs.forEach(tab => {
-    tab.addEventListener('click', async () => {
-      const target = tab.getAttribute('data-target');
-      
-      // If it's a file tab, load content from kernel
-      if (target.includes('file')) {
-        const filename = target.replace('-file', '') + (target.includes('kernel') ? '.js' : target.includes('manifest') ? '.json' : '.html');
-        
-        try {
-          if (window.kuhulBridge.isKernelReady) {
-            const file = await window.kuhulBridge.readFile(filename);
-            if (file) {
-              const editorBody = document.getElementById('editor-body');
-              if (editorBody) {
-                editorBody.textContent = file.content;
-              }
-            }
-          }
-        } catch (error) {
-          console.error('Failed to load file:', error);
-        }
-      }
-    });
-  });
-  
-  // Enhance tape/model pills
-  const modelPills = document.querySelectorAll('.model-pill');
-  modelPills.forEach(pill => {
-    pill.addEventListener('click', async () => {
-      const modelName = pill.textContent.toLowerCase().replace(/[^a-z0-9]/g, '-');
-      
-      try {
-        if (window.kuhulBridge.isKernelReady) {
-          // You could load model-specific settings here
-          window.kuhulBridge.showNotification(`Model selected: ${pill.textContent}`);
-        }
-      } catch (error) {
-        console.error('Model switch failed:', error);
-      }
-    });
-  });
-  
-  // Auto-initialize chat on page load
-  setTimeout(() => {
-    if (window.kuhulBridge.isKernelReady) {
-      // Send welcome message
-      const welcomeMsg = document.createElement('div');
-      welcomeMsg.className = 'chat-msg system';
-      welcomeMsg.innerHTML = `
-        <strong>K'UHUL π Kernel Online</strong><br/>
-        Kernel Version: ${window.kuhulBridge.kernelVersion || '3.0'}<br/>
-        Ready for inference and file operations.
-      `;
-      if (chatStream) {
-        chatStream.appendChild(welcomeMsg);
-      }
+  // Expose convenience methods
+  window.mx2lm = {
+    chat: (message) => window.MX2LM.sendChatMessage(message),
+    tape: (tapeId) => window.MX2LM.activateTape(tapeId),
+    mesh: (zone) => window.MX2LM.connectToMeshZone(zone),
+    xcfe: (vector, data) => window.MX2LM.executeXCFE(vector, data),
+    save: (filename, content) => window.MX2LM.saveFile(filename, content),
+    
+    get status() {
+      return {
+        ready: window.MX2LM.kernelReady,
+        runtime: window.MX2LM.runtimeMode,
+        tape: window.MX2LM.activeTape,
+        manifest: window.MX2LM.manifest?.name
+      };
     }
-  }, 2000);
+  };
+  
+  console.log('🤖 MX2LM Ghost OS Client Bridge initialized');
 });
 
-// ============================================================
-// EXPOSE GLOBAL HELPERS
-// ============================================================
-
-// Global helper functions for easy access
-window.Kuhul = {
-  // Quick chat
-  async ask(prompt, model = 'mx2lm-prime') {
-    if (!window.kuhulBridge) {
-      console.error('Kuhul bridge not initialized');
-      return null;
+// Add notification animations
+if (!document.getElementById('notification-animations')) {
+  const style = document.createElement('style');
+  style.id = 'notification-animations';
+  style.textContent = `
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
     }
-    return window.kuhulBridge.quickChat(prompt, model);
-  },
-  
-  // File operations
-  async edit(filename, content) {
-    if (!window.kuhulBridge) return false;
-    return window.kuhulBridge.editFile(filename, content);
-  },
-  
-  async read(filename) {
-    if (!window.kuhulBridge) return null;
-    return window.kuhulBridge.readFile(filename);
-  },
-  
-  // Tape operations
-  async useTape(tapeId) {
-    if (!window.kuhulBridge) return false;
-    return window.kuhulBridge.switchTape(tapeId);
-  },
-  
-  // System info
-  getStatus() {
-    if (!window.kuhulBridge) return { ready: false };
-    return {
-      ready: window.kuhulBridge.isKernelReady,
-      version: window.kuhulBridge.kernelVersion
-    };
-  },
-  
-  // Direct kernel access (advanced)
-  get kernel() {
-    return window.kuhulBridge;
-  }
-};
-
-console.log('🤖 K\'UHUL π Client Bridge initialized');
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
+}
+</script>
   </script>
   <!-- =========================================================
        INLINE RUNTIME HINTS (minimal, DOM-only; no kernel logic)
@@ -2944,4 +3121,5 @@ console.log('🤖 K\'UHUL π Client Bridge initialized');
 </body>
 
 </html>
+
 
