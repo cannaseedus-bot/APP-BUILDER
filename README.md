@@ -463,165 +463,268 @@ Pure command wiring.
 
 ## ⚛️ `config.json` — **MICRO-ASXR COMMAND AST**
 
+Below is a **single canonical `config.json`** that formally defines:
+
+* **IDB (IndexedDB) as the user-environment store**
+* **Guest vs Auth vs Project scopes**
+* **Atomic / Glyph / XCFE mappings**
+* **DOM-mask control surface**
+* **MX2LEX translation layer**
+* **SCXQ2 compression metadata**
+* **API + Supabase + MX2DB coexistence**
+* **Hard vs soft constraints encoded as law**
+
+This is **not XJSON** and **not runtime code** —
+it is a **command / control configuration AST**, analogous to `config.php`, but **client-sovereign**.
+
+You can embed it:
+
+* inline in HTML
+* as `/config.json`
+* or injected into IDB on first boot
+
+---
+
+## 🧠 `config.json` — ⟁ATOMIC_USER_ENVIRONMENT_CONFIG_Ω
+
 ```json
 {
-  "@meta": {
-    "name": "MICRO_ASXR_COMMAND_CONFIG",
-    "version": "1.0.0",
-    "role": "command_ast",
-    "law": "DOM_IS_DEVICE • JSON_IS_COMMAND • JS_IS_MASK",
-    "consumed_by": "dom_mask.js"
+  "@config_id": "⟁ATOMIC_USER_ENVIRONMENT_CONFIG_Ω",
+  "@version": "1.0.0",
+  "@law": "ONE_ATOMIC_TRUTH_MULTI_SURFACE_EXECUTION",
+  "@description": "Client-sovereign configuration defining user environment, storage, glyph semantics, DOM control, and data boundaries.",
+
+  /* ============================================================
+     🔐 USER ENVIRONMENT MODEL
+     ============================================================ */
+
+  "@environment": {
+    "@modes": ["guest", "authenticated", "project"],
+    "@default": "guest",
+
+    "@guest": {
+      "@permissions": ["read_public", "render_ui"],
+      "@storage_scope": "memory",
+      "@data_visibility": "public_only"
+    },
+
+    "@authenticated": {
+      "@permissions": ["read", "write", "execute"],
+      "@storage_scope": "idb",
+      "@data_visibility": "user_scoped"
+    },
+
+    "@project": {
+      "@permissions": ["read", "write", "execute", "export"],
+      "@storage_scope": "idb+cloud",
+      "@data_visibility": "project_scoped"
+    }
   },
+
+  /* ============================================================
+     🗄️ INDEXEDDB — USER-SOVEREIGN STORAGE
+     ============================================================ */
+
+  "@idb": {
+    "@db_name": "MX2_USER_ENV",
+    "@version": 1,
+
+    "@stores": {
+      "env": {
+        "@key": "env_id",
+        "@purpose": "Active user environment state",
+        "@encrypted": false
+      },
+
+      "secrets": {
+        "@key": "secret_id",
+        "@purpose": "User-provided .env keys / tokens",
+        "@encrypted": true,
+        "@encryption": "user_key_only"
+      },
+
+      "projects": {
+        "@key": "project_id",
+        "@purpose": "User projects, tapes, apps",
+        "@encrypted": false
+      },
+
+      "ast": {
+        "@key": "ast_id",
+        "@purpose": "JSON AST blocks (commands, control)",
+        "@encrypted": false
+      },
+
+      "lexicon": {
+        "@key": "lex_id",
+        "@purpose": "MX2LEX learned mappings",
+        "@encrypted": false
+      }
+    }
+  },
+
+  /* ============================================================
+     🧬 ATOMIC / GLYPH / XCFE LAW
+     ============================================================ */
+
+  "@atomic": {
+    "@prefix": "⟁",
+    "@aliases": ["@", "::", "$"],
+    "@role": "control_prefix",
+
+    "@domains": [
+      "layout",
+      "flow",
+      "agent",
+      "physics",
+      "ui",
+      "game",
+      "system"
+    ],
+
+    "@rule": "GLYPH_CSS_XCFE_AST_MUST_MATCH"
+  },
+
+  "@atoms": {
+    "layout.flex": {
+      "@glyph": "⟁flex",
+      "@css": "[⟁flex], .b-f",
+      "@xcfe": "@Pop.flex",
+      "@ast": {
+        "layout": { "type": "flex" }
+      }
+    },
+
+    "control.if": {
+      "@glyph": "@if_then_else",
+      "@css": "[atomic-block='@if_then_else']",
+      "@xcfe": "@if",
+      "@ast": {
+        "control": {
+          "if": {
+            "condition": true,
+            "then": "render",
+            "else": "skip"
+          }
+        }
+      }
+    }
+  },
+
+  /* ============================================================
+     🔤 GLYPH CODEX (UI / RPG / STATUS)
+     ============================================================ */
+
+  "@glyphs": {
+    "❤": {
+      "@semantic": "health",
+      "@domain": "ui",
+      "@channels": ["status", "rpg"],
+      "@css_var": "--g-health"
+    },
+
+    "⚡": {
+      "@semantic": "energy",
+      "@domain": "system",
+      "@channels": ["power", "speed"],
+      "@css_var": "--g-energy"
+    }
+  },
+
+  /* ============================================================
+     🔁 MX2LEX TRANSLATION LAYER
+     ============================================================ */
+
+  "@mx2lex": {
+    "@enabled": true,
+    "@direction": ["glyph", "word", "ast", "api"],
+    "@learning": "local_only",
+
+    "@maps": {
+      "flex": ["layout.flex", "⟁flex"],
+      "if": ["control.if", "@if"]
+    }
+  },
+
+  /* ============================================================
+     🧠 DOM MASK — CLIENT CONTROL SURFACE
+     ============================================================ */
 
   "@dom_mask": {
-    "inject": "head",
-    "script": "/asxr/dom-mask.js",
-    "mode": "authoritative",
-    "scope": "document"
-  },
-
-  "@symbols": {
-    "+": {
-      "type": "operator",
-      "meaning": "add / expand / open",
-      "glyph": "plus",
-      "class": "OpAdd"
-    },
-    "⟁": {
-      "type": "control",
-      "meaning": "execute / atomic",
-      "glyph": "atomic",
-      "class": "ExecBlock"
-    },
-    "@": {
-      "type": "control",
-      "meaning": "directive",
-      "glyph": "directive",
-      "class": "Directive"
+    "@authority": "ast_only",
+    "@js_role": "projection_layer",
+    "@rules": {
+      "js_cannot_define_semantics": true,
+      "dom_changes_require_ast": true
     }
   },
 
-  "@words": {
-    "show": {
-      "intent": "dom.show",
-      "targets": ["#id", ".class"],
-      "class": "ShowElement"
-    },
-    "hide": {
-      "intent": "dom.hide",
-      "targets": ["#id", ".class"],
-      "class": "HideElement"
-    },
-    "toggle": {
-      "intent": "dom.toggle",
-      "targets": ["#id", ".class"],
-      "class": "ToggleElement"
-    },
-    "fetch": {
-      "intent": "api.fetch",
-      "class": "ApiFetch"
-    },
-    "bind": {
-      "intent": "data.bind",
-      "class": "DataBind"
-    }
-  },
+  /* ============================================================
+     📡 DATA SOURCES (HYBRID BACKUP MODEL)
+     ============================================================ */
 
-  "@dom_commands": {
-    "dom.show": {
-      "action": "style.display",
-      "value": "block"
-    },
-    "dom.hide": {
-      "action": "style.display",
-      "value": "none"
-    },
-    "dom.toggle": {
-      "action": "style.display",
-      "value": ["none", "block"]
-    },
-    "dom.text": {
-      "action": "textContent",
-      "value": "@data"
-    },
-    "dom.html": {
-      "action": "innerHTML",
-      "value": "@data"
-    }
-  },
+  "@data_sources": {
+    "@local": "indexeddb",
 
-  "@api_commands": {
-    "api.fetch": {
-      "method": "GET",
-      "headers": {
-        "Accept": "application/json"
+    "@cloud": {
+      "supabase": {
+        "@role": "backup+sync",
+        "@contains": ["projects", "public_assets"],
+        "@never_contains": ["secrets"]
       },
-      "bind_response_to": "@data"
-    },
-    "api.post": {
-      "method": "POST",
-      "headers": {
-        "Content-Type": "application/json"
-      },
-      "bind_response_to": "@data"
+
+      "mx2db": {
+        "@role": "mirror+archive",
+        "@contains": ["projects", "ast", "lexicon"]
+      }
     }
   },
 
-  "@data_bindings": {
-    "@data": {
-      "source": "api | local | memory",
-      "scope": "component",
-      "mutable": true
-    },
-    "@state": {
-      "source": "memory",
-      "scope": "page",
-      "mutable": true
-    }
+  /* ============================================================
+     🗜️ SCXQ2 COMPRESSION METADATA
+     ============================================================ */
+
+  "@scxq2": {
+    "@enabled": true,
+    "@targets": ["ast", "lexicon", "glyph_maps"],
+    "@ratio_target": 0.01,
+    "@lossless": true
   },
 
-  "@dom_routes": {
-    "[data-cmd]": {
-      "read": "dataset.cmd",
-      "parse_as": "command_string",
-      "execute": "command_pipeline"
-    },
-    "[atomic]": {
-      "read": "attribute",
-      "parse_as": "atomic_block",
-      "execute": "atomic_pipeline"
-    }
-  },
+  /* ============================================================
+     📜 HARD vs SOFT CONSTRAINTS
+     ============================================================ */
 
-  "@pipelines": {
-    "command_pipeline": [
-      "parse",
-      "resolve_word",
-      "resolve_target",
-      "execute_dom_or_api",
-      "bind_data"
+  "@constraints": {
+    "@hard": [
+      "ONE_ATOMIC_TRUTH",
+      "AST_IS_AUTHORITY",
+      "SECRETS_NEVER_IN_HTML",
+      "IDB_IS_USER_SOVEREIGN"
     ],
-    "atomic_pipeline": [
-      "read_atomic",
-      "map_symbol",
-      "execute_control",
-      "update_state"
+
+    "@soft": [
+      "js_helpers_allowed",
+      "css_aliases_allowed",
+      "alternate_glyph_sets_allowed"
     ]
-  },
-
-  "@translators": {
-    "enabled": false,
-    "modes": ["natural", "symbolic"],
-    "note": "Can be linked externally or injected later"
-  },
-
-  "@security": {
-    "allow_eval": false,
-    "allow_inline_js": false,
-    "allowed_actions": ["dom.*", "api.*", "data.*"]
   }
 }
 ```
+
+---
+
+## 🧩 What this gives you (plain English)
+
+* **IDB = user `.env`**
+* **HTML = public shell**
+* **JS = mask / projector**
+* **AST = law**
+* **Glyphs = syntax**
+* **Supabase/MX2DB = backup, not authority**
+
+
+> “JavaScript becomes a mask and users get superpowers.”
 
 ---
 
@@ -637,6 +740,616 @@ This file is:
 * ✅ **language-agnostic**
 * ✅ **AST-shaped**
 * ✅ **Micro-ASXR friendly**
+
+
+
+Below are **both artifacts** you asked for:
+
+1. **`config.schema.json`** — JSON Schema validator for your `config.json`
+2. **`dom-mask.js`** — a DOM-mask runtime that **treats AST as authority**, loads config, initializes **IDB stores**, and only applies DOM changes via **AST actions**.
+
+---
+
+## 1) `config.schema.json`
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mx2lm.app/schemas/config.schema.json",
+  "title": "MX2 Atomic User Environment Config Schema",
+  "type": "object",
+  "additionalProperties": true,
+
+  "required": [
+    "@config_id",
+    "@version",
+    "@law",
+    "@environment",
+    "@idb",
+    "@atomic",
+    "@mx2lex",
+    "@dom_mask",
+    "@data_sources",
+    "@scxq2",
+    "@constraints"
+  ],
+
+  "properties": {
+    "@config_id": { "type": "string", "minLength": 1 },
+    "@version": { "type": "string", "minLength": 1 },
+    "@law": { "type": "string", "minLength": 1 },
+    "@description": { "type": "string" },
+
+    "@environment": {
+      "type": "object",
+      "required": ["@modes", "@default", "@guest", "@authenticated", "@project"],
+      "properties": {
+        "@modes": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["guest", "authenticated", "project"] },
+          "minItems": 1
+        },
+        "@default": { "type": "string", "enum": ["guest", "authenticated", "project"] },
+        "@guest": { "$ref": "#/$defs/envMode" },
+        "@authenticated": { "$ref": "#/$defs/envMode" },
+        "@project": { "$ref": "#/$defs/envMode" }
+      },
+      "additionalProperties": true
+    },
+
+    "@idb": {
+      "type": "object",
+      "required": ["@db_name", "@version", "@stores"],
+      "properties": {
+        "@db_name": { "type": "string", "minLength": 1 },
+        "@version": { "type": "integer", "minimum": 1 },
+        "@stores": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "$ref": "#/$defs/idbStore" }
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "@atomic": {
+      "type": "object",
+      "required": ["@prefix", "@aliases", "@role", "@domains", "@rule"],
+      "properties": {
+        "@prefix": { "type": "string", "minLength": 1 },
+        "@aliases": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "@role": { "type": "string" },
+        "@domains": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "@rule": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+
+    "@atoms": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["@glyph", "@css", "@xcfe", "@ast"],
+        "properties": {
+          "@glyph": { "type": "string", "minLength": 1 },
+          "@css": { "type": "string", "minLength": 1 },
+          "@xcfe": { "type": "string", "minLength": 1 },
+          "@ast": { "type": "object" }
+        },
+        "additionalProperties": true
+      }
+    },
+
+    "@glyphs": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["@semantic", "@domain", "@channels", "@css_var"],
+        "properties": {
+          "@semantic": { "type": "string", "minLength": 1 },
+          "@domain": { "type": "string", "minLength": 1 },
+          "@channels": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+          "@css_var": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": true
+      }
+    },
+
+    "@mx2lex": {
+      "type": "object",
+      "required": ["@enabled", "@direction", "@learning", "@maps"],
+      "properties": {
+        "@enabled": { "type": "boolean" },
+        "@direction": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["glyph", "word", "ast", "api"] },
+          "minItems": 1
+        },
+        "@learning": { "type": "string" },
+        "@maps": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "@dom_mask": {
+      "type": "object",
+      "required": ["@authority", "@js_role", "@rules"],
+      "properties": {
+        "@authority": { "type": "string", "enum": ["ast_only"] },
+        "@js_role": { "type": "string" },
+        "@rules": {
+          "type": "object",
+          "required": ["js_cannot_define_semantics", "dom_changes_require_ast"],
+          "properties": {
+            "js_cannot_define_semantics": { "type": "boolean" },
+            "dom_changes_require_ast": { "type": "boolean" }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "@data_sources": {
+      "type": "object",
+      "required": ["@local", "@cloud"],
+      "properties": {
+        "@local": { "type": "string" },
+        "@cloud": {
+          "type": "object",
+          "properties": {
+            "supabase": { "$ref": "#/$defs/cloudSource" },
+            "mx2db": { "$ref": "#/$defs/cloudSource" }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "@scxq2": {
+      "type": "object",
+      "required": ["@enabled", "@targets", "@ratio_target", "@lossless"],
+      "properties": {
+        "@enabled": { "type": "boolean" },
+        "@targets": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["ast", "lexicon", "glyph_maps"] },
+          "minItems": 1
+        },
+        "@ratio_target": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+        "@lossless": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+
+    "@constraints": {
+      "type": "object",
+      "required": ["@hard", "@soft"],
+      "properties": {
+        "@hard": { "type": "array", "items": { "type": "string" } },
+        "@soft": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    }
+  },
+
+  "$defs": {
+    "envMode": {
+      "type": "object",
+      "required": ["@permissions", "@storage_scope", "@data_visibility"],
+      "properties": {
+        "@permissions": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "@storage_scope": { "type": "string" },
+        "@data_visibility": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+
+    "idbStore": {
+      "type": "object",
+      "required": ["@key", "@purpose", "@encrypted"],
+      "properties": {
+        "@key": { "type": "string", "minLength": 1 },
+        "@purpose": { "type": "string", "minLength": 1 },
+        "@encrypted": { "type": "boolean" },
+        "@encryption": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+
+    "cloudSource": {
+      "type": "object",
+      "required": ["@role", "@contains"],
+      "properties": {
+        "@role": { "type": "string" },
+        "@contains": { "type": "array", "items": { "type": "string" } },
+        "@never_contains": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    }
+  }
+}
+```
+
+---
+
+## 2) `dom-mask.js` (obeys config: AST-only authority + IDB bootstrap)
+
+This is **framework-free** and works in any modern browser.
+It provides:
+
+* `loadConfig()` from inline `<script type="application/json" id="config-json">` OR `fetch('/config.json')`
+* `validateConfig(config, schema)` minimal schema validation (no external libs)
+* `openIDB(config)` creates stores defined in config
+* `applyAST(ast)` only applies known AST ops to DOM
+* `dispatch(action)` requires AST action envelopes
+
+```js
+/* dom-mask.js — AST Authority DOM Mask (v1.0.0)
+   Rules enforced:
+   - JS cannot define semantics (only projects AST to DOM)
+   - DOM changes require AST action envelope
+*/
+
+export const DomMask = (() => {
+  const STATE = {
+    config: null,
+    schema: null,
+    db: null,
+    envMode: "guest"
+  };
+
+  /* -----------------------------
+     Load Config
+  ------------------------------*/
+  async function loadConfig({ inlineId = "config-json", url = "/config.json" } = {}) {
+    const inline = document.getElementById(inlineId);
+    if (inline && inline.textContent.trim()) {
+      return JSON.parse(inline.textContent);
+    }
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`config fetch failed: ${res.status}`);
+    return await res.json();
+  }
+
+  async function loadSchema({ inlineId = "config-schema-json", url = "/config.schema.json" } = {}) {
+    const inline = document.getElementById(inlineId);
+    if (inline && inline.textContent.trim()) {
+      return JSON.parse(inline.textContent);
+    }
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`schema fetch failed: ${res.status}`);
+    return await res.json();
+  }
+
+  /* -----------------------------
+     Minimal Schema Validation
+     (not a full JSON-Schema engine)
+     - Validates required fields + basic types used by our config
+  ------------------------------*/
+  function validateConfig(cfg, schema) {
+    const err = (msg) => ({ ok: false, error: msg });
+
+    if (!schema || schema.type !== "object") return err("Invalid schema root");
+    if (typeof cfg !== "object" || !cfg) return err("Config must be an object");
+
+    // required keys
+    const required = schema.required || [];
+    for (const k of required) {
+      if (!(k in cfg)) return err(`Missing required key: ${k}`);
+    }
+
+    // basic key type checks (only for top-level properties we care about)
+    if (typeof cfg["@config_id"] !== "string") return err("@config_id must be string");
+    if (typeof cfg["@version"] !== "string") return err("@version must be string");
+    if (typeof cfg["@environment"] !== "object") return err("@environment must be object");
+    if (typeof cfg["@idb"] !== "object") return err("@idb must be object");
+    if (typeof cfg["@dom_mask"] !== "object") return err("@dom_mask must be object");
+
+    // dom mask rule enforcement
+    const dm = cfg["@dom_mask"];
+    if (dm["@authority"] !== "ast_only") return err("@dom_mask.@authority must be ast_only");
+    if (!dm["@rules"] || dm["@rules"].dom_changes_require_ast !== true) {
+      return err("dom_changes_require_ast must be true");
+    }
+
+    // IDB store sanity
+    const idb = cfg["@idb"];
+    if (typeof idb["@db_name"] !== "string" || !idb["@db_name"]) return err("@idb.@db_name invalid");
+    if (!Number.isInteger(idb["@version"]) || idb["@version"] < 1) return err("@idb.@version invalid");
+    if (typeof idb["@stores"] !== "object" || !idb["@stores"]) return err("@idb.@stores invalid");
+
+    for (const [storeName, def] of Object.entries(idb["@stores"])) {
+      if (!def || typeof def !== "object") return err(`store ${storeName} must be object`);
+      if (typeof def["@key"] !== "string" || !def["@key"]) return err(`store ${storeName} missing @key`);
+      if (typeof def["@purpose"] !== "string") return err(`store ${storeName} missing @purpose`);
+      if (typeof def["@encrypted"] !== "boolean") return err(`store ${storeName} missing @encrypted boolean`);
+    }
+
+    return { ok: true };
+  }
+
+  /* -----------------------------
+     IndexedDB Bootstrap
+  ------------------------------*/
+  function openIDB(cfg) {
+    const { "@db_name": name, "@version": version, "@stores": stores } = cfg["@idb"];
+
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(name, version);
+
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        for (const [storeName, def] of Object.entries(stores)) {
+          if (!db.objectStoreNames.contains(storeName)) {
+            db.createObjectStore(storeName, { keyPath: def["@key"] });
+          }
+        }
+      };
+
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error || new Error("IDB open failed"));
+    });
+  }
+
+  function idbTx(storeName, mode = "readonly") {
+    if (!STATE.db) throw new Error("IDB not ready");
+    const tx = STATE.db.transaction(storeName, mode);
+    return tx.objectStore(storeName);
+  }
+
+  async function idbPut(storeName, value) {
+    const store = idbTx(storeName, "readwrite");
+    return new Promise((resolve, reject) => {
+      const req = store.put(value);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function idbGet(storeName, key) {
+    const store = idbTx(storeName, "readonly");
+    return new Promise((resolve, reject) => {
+      const req = store.get(key);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  /* -----------------------------
+     Environment Mode
+  ------------------------------*/
+  async function setEnvMode(mode) {
+    const modes = STATE.config?.["@environment"]?.["@modes"] || [];
+    if (!modes.includes(mode)) throw new Error(`Invalid env mode: ${mode}`);
+    STATE.envMode = mode;
+
+    // persist environment state (non-secret)
+    if (STATE.db && STATE.config["@idb"]?.["@stores"]?.env) {
+      await idbPut("env", {
+        env_id: "active",
+        mode,
+        updated_at: Date.now()
+      });
+    }
+
+    document.documentElement.setAttribute("data-env", mode);
+  }
+
+  /* -----------------------------
+     AST Authority: Only these ops mutate DOM.
+     Anything else is rejected.
+  ------------------------------*/
+  function applyAST(ast) {
+    if (!ast || typeof ast !== "object") throw new Error("AST must be object");
+
+    // Example allowed shapes:
+    // { dom: [{ op:"setAttr", q:"#id", k:"data-x", v:"1" }, ...] }
+    // { layout: { type:"flex", q:"#panel" } }
+
+    if (ast.dom && Array.isArray(ast.dom)) {
+      for (const cmd of ast.dom) applyDomCmd(cmd);
+    }
+
+    if (ast.layout && typeof ast.layout === "object") {
+      applyLayout(ast.layout);
+    }
+
+    if (ast.control && typeof ast.control === "object") {
+      applyControl(ast.control);
+    }
+  }
+
+  function applyDomCmd(cmd) {
+    if (!cmd || typeof cmd !== "object") throw new Error("dom cmd invalid");
+    const { op, q } = cmd;
+    if (typeof op !== "string" || typeof q !== "string") throw new Error("dom cmd requires op,q");
+
+    const el = document.querySelector(q);
+    if (!el) return;
+
+    switch (op) {
+      case "setAttr": {
+        if (typeof cmd.k !== "string") throw new Error("setAttr requires k");
+        el.setAttribute(cmd.k, String(cmd.v ?? ""));
+        break;
+      }
+      case "removeAttr": {
+        if (typeof cmd.k !== "string") throw new Error("removeAttr requires k");
+        el.removeAttribute(cmd.k);
+        break;
+      }
+      case "setText": {
+        el.textContent = String(cmd.v ?? "");
+        break;
+      }
+      case "setHTML": {
+        // Keep strict: only allow if explicitly flagged (you can tie this to policy later)
+        if (cmd.trusted !== true) throw new Error("setHTML requires trusted:true");
+        el.innerHTML = String(cmd.v ?? "");
+        break;
+      }
+      case "addClass": {
+        if (typeof cmd.k !== "string") throw new Error("addClass requires k");
+        el.classList.add(cmd.k);
+        break;
+      }
+      case "removeClass": {
+        if (typeof cmd.k !== "string") throw new Error("removeClass requires k");
+        el.classList.remove(cmd.k);
+        break;
+      }
+      case "setStyle": {
+        if (typeof cmd.k !== "string") throw new Error("setStyle requires k");
+        el.style.setProperty(cmd.k, String(cmd.v ?? ""));
+        break;
+      }
+      default:
+        throw new Error(`DOM op not allowed: ${op}`);
+    }
+  }
+
+  function applyLayout(layout) {
+    // Minimal: map layout.type to atomic glyph/class from config atoms
+    // Example: { type:"flex", q:"#panel" }
+    const q = layout.q;
+    const type = layout.type;
+    if (typeof q !== "string" || typeof type !== "string") return;
+
+    const el = document.querySelector(q);
+    if (!el) return;
+
+    if (type === "flex") {
+      // Use glyph attribute if possible; fallback to class alias
+      el.setAttribute("⟁flex", "");
+      el.classList.add("b-f");
+    }
+  }
+
+  function applyControl(control) {
+    // Minimal @if bridge example:
+    // { if: { q:"#section", condition:true } }
+    if (control.if && typeof control.if === "object") {
+      const q = control.if.q || control.if.selector;
+      const condition = !!control.if.condition;
+      if (typeof q === "string") {
+        const el = document.querySelector(q);
+        if (el) el.setAttribute("data-condition", condition ? "true" : "false");
+      }
+    }
+  }
+
+  /* -----------------------------
+     Dispatch: requires AST envelope
+     action = { ast: {...}, meta?: {...} }
+  ------------------------------*/
+  function dispatch(action) {
+    if (!STATE.config) throw new Error("DomMask not initialized");
+    const dm = STATE.config["@dom_mask"];
+    if (dm["@rules"]?.dom_changes_require_ast !== true) throw new Error("Policy mismatch");
+
+    if (!action || typeof action !== "object" || typeof action.ast !== "object") {
+      throw new Error("dispatch requires { ast: {...} }");
+    }
+
+    applyAST(action.ast);
+  }
+
+  /* -----------------------------
+     Boot
+  ------------------------------*/
+  async function boot({
+    configUrl = "/config.json",
+    schemaUrl = "/config.schema.json",
+    inlineConfigId = "config-json",
+    inlineSchemaId = "config-schema-json"
+  } = {}) {
+    const cfg = await loadConfig({ inlineId: inlineConfigId, url: configUrl });
+    const schema = await loadSchema({ inlineId: inlineSchemaId, url: schemaUrl });
+
+    const vr = validateConfig(cfg, schema);
+    if (!vr.ok) throw new Error(`Config validation failed: ${vr.error}`);
+
+    STATE.config = cfg;
+    STATE.schema = schema;
+    STATE.db = await openIDB(cfg);
+
+    // Restore env if exists
+    const prior = await idbGet("env", "active").catch(() => null);
+    const startMode = prior?.mode || cfg["@environment"]["@default"] || "guest";
+    await setEnvMode(startMode);
+
+    // expose sealed exec bridge (optional)
+    // You can rename this to your kernel-mask bridge later.
+    Object.defineProperty(window, "__DOM_MASK_DISPATCH__", {
+      value: (payload) => dispatch(payload),
+      writable: false,
+      configurable: false
+    });
+
+    return {
+      ok: true,
+      mode: STATE.envMode,
+      db: cfg["@idb"]["@db_name"],
+      version: cfg["@idb"]["@version"]
+    };
+  }
+
+  return {
+    boot,
+    dispatch,
+    applyAST,
+    setEnvMode,
+    idbGet,
+    idbPut,
+    get state() {
+      return { envMode: STATE.envMode, hasDB: !!STATE.db, configId: STATE.config?.["@config_id"] || null };
+    }
+  };
+})();
+```
+
+---
+
+## Quick wiring example (in `index.html`)
+
+```html
+<script type="application/json" id="config-json">
+{ /* paste config.json here */ }
+</script>
+
+<script type="application/json" id="config-schema-json">
+{ /* paste config.schema.json here */ }
+</script>
+
+<script type="module">
+  import { DomMask } from "./dom-mask.js";
+
+  DomMask.boot().then(console.log);
+
+  // Example: only AST can change DOM
+  window.__DOM_MASK_DISPATCH__({
+    ast: {
+      dom: [{ op: "setText", q: "#status", v: "BOOT OK" }],
+      layout: { type: "flex", q: "#panel" }
+    }
+  });
+</script>
+```
+
+---
+
+
+
+
 
 ### Example usage in HTML (no JS needed in page)
 
