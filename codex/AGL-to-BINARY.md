@@ -5238,9 +5238,1322 @@ This makes **time governance** as provable as **bundle governance**.
 
 ---
 
+Below are **draft-2020-12 JSON Schemas** for:
+
+* `flux_phase_enter.schema.json`
+* `flux_phase_exit.schema.json`
+* `flux_barrier_enter.schema.json`
+* `flux_barrier_release.schema.json`
+
+…and the **MX2⟁☣ π validators** enforcing:
+
+* **monotonic ticks**
+* **phase exclusivity** (native_verify is exclusive + allowlist-gated)
+* **barrier non-reentrancy** (no nested/overlapping barriers)
+
+These align with the governance principles used across your native pipeline (e.g., “no timestamps except via FLUX_CAPACITOR / time authority sealed”). ([GitHub][1])
+
+---
+
+## flux_phase_enter.schema.json
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mx2lm.app/schemas/flux_phase_enter.schema.json",
+  "title": "FLUX Phase Enter Audit Block",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["@block", "@authority", "@version", "@flux", "@phase", "@run", "@ok"],
+  "properties": {
+    "@block": { "const": "flux_phase_enter" },
+    "@authority": { "const": "MX2⟁☣" },
+    "@version": { "type": "string", "minLength": 1 },
+
+    "@flux": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["@phase", "@tick", "@snapshot"],
+      "properties": {
+        "@phase": { "$ref": "#/$defs/phaseName" },
+        "@tick": { "$ref": "#/$defs/tick" },
+        "@snapshot": { "$ref": "#/$defs/hashRef" }
+      }
+    },
+
+    "@phase": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["@from", "@to"],
+      "properties": {
+        "@from": { "$ref": "#/$defs/phaseName" },
+        "@to": { "$ref": "#/$defs/phaseName" },
+        "@reason": { "type": "string" },
+        "@policy": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "@exclusive": { "type": "boolean" },
+            "@gate_mode": { "type": "string", "enum": ["allowlist_only", "none"] },
+            "@allowed_blocks": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "minItems": 1
+            }
+          }
+        }
+      }
+    },
+
+    "@run": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["@event_id", "@actor", "@source"],
+      "properties": {
+        "@rotation_run_id": { "anyOf": [{ "$ref": "#/$defs/hashRef" }, { "type": "null" }] },
+        "@event_id": { "$ref": "#/$defs/hashRef" },
+        "@actor": { "type": "string", "enum": ["kernel"] },
+        "@source": { "type": "string", "enum": ["@flux.phase"] }
+      }
+    },
+
+    "@ok": { "type": "boolean" },
+    "@violations": { "type": "array", "items": { "type": "string" } },
+
+    "@links": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "@prev_flux_ref": { "$ref": "#/$defs/hashRef" },
+        "@gate_policy_ref": { "$ref": "#/$defs/hashRef" }
+      }
+    }
+  },
+
+  "$defs": {
+    "tick": { "type": "integer", "minimum": 0 },
+    "hashRef": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "phaseName": {
+      "type": "string",
+      "enum": ["boot", "idle", "render", "compute", "train", "recover", "native_verify"]
+    }
+  }
+}
+```
+
+---
+
+## flux_phase_exit.schema.json
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mx2lm.app/schemas/flux_phase_exit.schema.json",
+  "title": "FLUX Phase Exit Audit Block",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["@block", "@authority", "@version", "@flux", "@phase", "@run", "@ok"],
+  "properties": {
+    "@block": { "const": "flux_phase_exit" },
+    "@authority": { "const": "MX2⟁☣" },
+    "@version": { "type": "string", "minLength": 1 },
+
+    "@flux": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["@phase", "@tick", "@snapshot"],
+      "properties": {
+        "@phase": { "$ref": "#/$defs/phaseName" },
+        "@tick": { "$ref": "#/$defs/tick" },
+        "@snapshot": { "$ref": "#/$defs/hashRef" }
+      }
+    },
+
+    "@phase": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["@from", "@to"],
+      "properties": {
+        "@from": { "$ref": "#/$defs/phaseName" },
+        "@to": { "$ref": "#/$defs/phaseName" },
+        "@reason": { "type": "string" }
+      }
+    },
+
+    "@run": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["@event_id", "@actor", "@source"],
+      "properties": {
+        "@rotation_run_id": { "anyOf": [{ "$ref": "#/$defs/hashRef" }, { "type": "null" }] },
+        "@event_id": { "$ref": "#/$defs/hashRef" },
+        "@actor": { "type": "string", "enum": ["kernel"] },
+        "@source": { "type": "string", "enum": ["@flux.phase"] }
+      }
+    },
+
+    "@ok": { "type": "boolean" },
+    "@violations": { "type": "array", "items": { "type": "string" } },
+
+    "@links": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "@enter_ref": { "$ref": "#/$defs/hashRef" },
+        "@last_barrier_ref": { "$ref": "#/$defs/hashRef" }
+      }
+    }
+  },
+
+  "$defs": {
+    "tick": { "type": "integer", "minimum": 0 },
+    "hashRef": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "phaseName": {
+      "type": "string",
+      "enum": ["boot", "idle", "render", "compute", "train", "recover", "native_verify"]
+    }
+  }
+}
+```
+
+---
+
+## flux_barrier_enter.schema.json
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mx2lm.app/schemas/flux_barrier_enter.schema.json",
+  "title": "FLUX Barrier Enter Audit Block",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["@block", "@authority", "@version", "@flux", "@barrier", "@run", "@ok"],
+  "properties": {
+    "@block": { "const": "flux_barrier_enter" },
+    "@authority": { "const": "MX2⟁☣" },
+    "@version": { "type": "string", "minLength": 1 },
+
+    "@flux": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["@phase", "@tick", "@snapshot"],
+      "properties": {
+        "@phase": { "$ref": "#/$defs/phaseName" },
+        "@tick": { "$ref": "#/$defs/tick" },
+        "@snapshot": { "$ref": "#/$defs/hashRef" }
+      }
+    },
+
+    "@barrier": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["@barrier_id", "@wait_for", "@entered_tick"],
+      "properties": {
+        "@barrier_id": { "$ref": "#/$defs/hashRef" },
+        "@wait_for": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "@entered_tick": { "$ref": "#/$defs/tick" },
+        "@timeout_ticks": { "type": "integer", "minimum": 0 },
+        "@policy": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "@require_monotonic_ticks": { "type": "boolean" },
+            "@require_all_targets": { "type": "boolean" },
+            "@no_phase_change_during_wait": { "type": "boolean" }
+          }
+        }
+      }
+    },
+
+    "@run": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["@event_id", "@actor", "@source"],
+      "properties": {
+        "@rotation_run_id": { "anyOf": [{ "$ref": "#/$defs/hashRef" }, { "type": "null" }] },
+        "@event_id": { "$ref": "#/$defs/hashRef" },
+        "@actor": { "type": "string", "enum": ["kernel"] },
+        "@source": { "type": "string", "enum": ["@flux.barrier"] }
+      }
+    },
+
+    "@ok": { "type": "boolean" },
+    "@violations": { "type": "array", "items": { "type": "string" } },
+
+    "@links": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "@phase_enter_ref": { "$ref": "#/$defs/hashRef" }
+      }
+    }
+  },
+
+  "$defs": {
+    "tick": { "type": "integer", "minimum": 0 },
+    "hashRef": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "phaseName": {
+      "type": "string",
+      "enum": ["boot", "idle", "render", "compute", "train", "recover", "native_verify"]
+    }
+  }
+}
+```
+
+---
+
+## flux_barrier_release.schema.json
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mx2lm.app/schemas/flux_barrier_release.schema.json",
+  "title": "FLUX Barrier Release Audit Block",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["@block", "@authority", "@version", "@flux", "@barrier", "@run", "@ok"],
+  "properties": {
+    "@block": { "const": "flux_barrier_release" },
+    "@authority": { "const": "MX2⟁☣" },
+    "@version": { "type": "string", "minLength": 1 },
+
+    "@flux": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["@phase", "@tick", "@snapshot"],
+      "properties": {
+        "@phase": { "$ref": "#/$defs/phaseName" },
+        "@tick": { "$ref": "#/$defs/tick" },
+        "@snapshot": { "$ref": "#/$defs/hashRef" }
+      }
+    },
+
+    "@barrier": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["@barrier_id", "@entered_tick", "@released_tick", "@duration_ticks", "@results"],
+      "properties": {
+        "@barrier_id": { "$ref": "#/$defs/hashRef" },
+        "@entered_tick": { "$ref": "#/$defs/tick" },
+        "@released_tick": { "$ref": "#/$defs/tick" },
+        "@duration_ticks": { "type": "integer", "minimum": 0 },
+        "@results": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["@ok"],
+            "properties": {
+              "@ok": { "type": "boolean" },
+              "@latency_ms": { "type": "number", "minimum": 0 }
+            }
+          }
+        }
+      }
+    },
+
+    "@run": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["@event_id", "@actor", "@source"],
+      "properties": {
+        "@rotation_run_id": { "anyOf": [{ "$ref": "#/$defs/hashRef" }, { "type": "null" }] },
+        "@event_id": { "$ref": "#/$defs/hashRef" },
+        "@actor": { "type": "string", "enum": ["kernel"] },
+        "@source": { "type": "string", "enum": ["@flux.barrier"] }
+      }
+    },
+
+    "@ok": { "type": "boolean" },
+    "@violations": { "type": "array", "items": { "type": "string" } },
+
+    "@links": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "@barrier_enter_ref": { "$ref": "#/$defs/hashRef" }
+      }
+    }
+  },
+
+  "$defs": {
+    "tick": { "type": "integer", "minimum": 0 },
+    "hashRef": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "phaseName": {
+      "type": "string",
+      "enum": ["boot", "idle", "render", "compute", "train", "recover", "native_verify"]
+    }
+  }
+}
+```
+
+---
+
+# MX2⟁☣ π Validators (Monotonic, Exclusive, Non-Reentrant)
+
+These validators are **stateful**: they require a small verifier state carried across the audit log stream.
+
+## Verifier State Shape (in-kernel)
+
+```pi
+state = {
+  "last_tick": -1,
+  "current_phase": null,
+  "native_verify_active": false,
+  "active_barrier": null,          ; { barrier_id, entered_tick, enter_ref }
+  "phase_enter_ref": null
+}
+```
+
+---
+
+## 1) Monotonic ticks (global invariant)
+
+```pi
+[Pop mx2_v_monotonic_tick]
+  [Wo @state]→[Ch'en st]
+  [Wo @tick]→[Ch'en t]
+
+  [@if t < 0]→[@then [Xul return {"@ok":false,"@v":"tick_negative"}]]
+  [@if get(st,"last_tick") >= 0 && t < get(st,"last_tick")]→[@then
+    [Xul return {"@ok":false,"@v":"tick_not_monotonic"}]
+  ]
+  [Wo st]→[Sek assoc "last_tick" t]→[Ch'en st2]
+  [Xul return {"@ok":true,"@state":st2}]
+[Xul]
+```
+
+---
+
+## 2) Phase exclusivity (native_verify)
+
+Rules:
+
+* entering `native_verify` requires `@phase.@policy.@exclusive=true`
+* while `native_verify_active=true`, **no second enter** and **no non-native phase** unless via `flux_phase_exit`
+* only allowlisted blocks may appear in this phase (your gate policy)
+
+```pi
+[Pop mx2_v_phase_enter]
+  [Wo @block]→[Ch'en b]
+  [Wo @state]→[Ch'en st]
+
+  let to = get(b,"@phase.@to")
+  let from = get(b,"@phase.@from")
+  let tick = get(b,"@flux.@tick")
+
+  ; tick monotonic
+  [Sek mx2_v_monotonic_tick st tick]→[Ch'en r1]
+  [@if not get(r1,"@ok")]→[@then [Xul return r1]]
+  let st1 = get(r1,"@state")
+
+  ; exclusivity checks
+  [@if to == "native_verify"]→[@then
+    let ex = get(b,"@phase.@policy.@exclusive")
+    let gate = get(b,"@phase.@policy.@gate_mode")
+    [@if ex != true]→[@then [Xul return {"@ok":false,"@v":"native_verify_requires_exclusive"}]]
+    [@if gate != "allowlist_only"]→[@then [Xul return {"@ok":false,"@v":"native_verify_requires_allowlist_gate"}]]
+
+    [@if get(st1,"native_verify_active") == true]→[@then
+      [Xul return {"@ok":false,"@v":"native_verify_reenter_forbidden"}]
+    ]
+
+    ; activate phase
+    let st2 = assoc(st1,"current_phase","native_verify")
+    let st3 = assoc(st2,"native_verify_active",true)
+    let st4 = assoc(st3,"phase_enter_ref", sha256_json(b))
+    [Xul return {"@ok":true,"@state":st4}]
+  ]→[@else
+    ; entering any other phase is forbidden if native_verify active
+    [@if get(st1,"native_verify_active") == true]→[@then
+      [Xul return {"@ok":false,"@v":"phase_change_forbidden_during_native_verify"}]
+    ]
+    let st2 = assoc(st1,"current_phase",to)
+    [Xul return {"@ok":true,"@state":st2}]
+  ]
+[Xul]
+```
+
+### Block allowlist enforcement during native_verify
+
+```pi
+[Pop mx2_v_native_verify_allowlist]
+  [Wo @block]→[Ch'en b]
+  [Wo @state]→[Ch'en st]
+
+  [@if get(st,"native_verify_active") != true]→[@then
+    [Xul return {"@ok":true,"@state":st}]
+  ]
+
+  let kind = get(b,"@block")
+  let allowed = [
+    "flux_phase_enter","flux_phase_exit",
+    "flux_barrier_enter","flux_barrier_release",
+    "rotation_validate","rotation_verify_bundle","rotation_barrier",
+    "rotation_commit","epoch_seal_emit","rotation_replay_result"
+  ]
+
+  [@if not in(kind, allowed)]→[@then
+    [Xul return {"@ok":false,"@v":"block_not_allowlisted_in_native_verify","@kind":kind}]
+  ]
+  [Xul return {"@ok":true,"@state":st}]
+[Xul]
+```
+
+---
+
+## 3) Barrier non-reentrancy (no nested barriers)
+
+Rules:
+
+* cannot enter a barrier if `active_barrier != null`
+* release must match the entered `@barrier_id`
+* release tick must be ≥ entered tick
+
+```pi
+[Pop mx2_v_barrier_enter]
+  [Wo @block]→[Ch'en b]
+  [Wo @state]→[Ch'en st]
+
+  let tick = get(b,"@flux.@tick")
+  [Sek mx2_v_monotonic_tick st tick]→[Ch'en r1]
+  [@if not get(r1,"@ok")]→[@then [Xul return r1]]
+  let st1 = get(r1,"@state")
+
+  ; must be in native_verify
+  [@if get(st1,"current_phase") != "native_verify"]→[@then
+    [Xul return {"@ok":false,"@v":"barrier_outside_native_verify"}]
+  ]
+
+  ; non-reentrant
+  [@if get(st1,"active_barrier") != null]→[@then
+    [Xul return {"@ok":false,"@v":"barrier_reentrancy_forbidden"}]
+  ]
+
+  let bid = get(b,"@barrier.@barrier_id")
+  let entered = get(b,"@barrier.@entered_tick")
+  [@if entered != tick]→[@then [Xul return {"@ok":false,"@v":"entered_tick_must_equal_flux_tick"}]]
+
+  let st2 = assoc(st1,"active_barrier",{
+    "barrier_id": bid,
+    "entered_tick": entered,
+    "enter_ref": sha256_json(b)
+  })
+
+  [Xul return {"@ok":true,"@state":st2}]
+[Xul]
+```
+
+```pi
+[Pop mx2_v_barrier_release]
+  [Wo @block]→[Ch'en b]
+  [Wo @state]→[Ch'en st]
+
+  let tick = get(b,"@flux.@tick")
+  [Sek mx2_v_monotonic_tick st tick]→[Ch'en r1]
+  [@if not get(r1,"@ok")]→[@then [Xul return r1]]
+  let st1 = get(r1,"@state")
+
+  let ab = get(st1,"active_barrier")
+  [@if ab == null]→[@then [Xul return {"@ok":false,"@v":"barrier_release_without_enter"}]]
+
+  let bid = get(b,"@barrier.@barrier_id")
+  [@if bid != get(ab,"barrier_id")]→[@then
+    [Xul return {"@ok":false,"@v":"barrier_id_mismatch"}]
+  ]
+
+  let entered = get(b,"@barrier.@entered_tick")
+  let released = get(b,"@barrier.@released_tick")
+  [@if entered != get(ab,"entered_tick")]→[@then
+    [Xul return {"@ok":false,"@v":"entered_tick_mismatch"}]
+  ]
+  [@if released < entered]→[@then
+    [Xul return {"@ok":false,"@v":"released_before_entered"}]
+  ]
+  [@if get(b,"@barrier.@duration_ticks") != (released - entered)]→[@then
+    [Xul return {"@ok":false,"@v":"duration_ticks_incorrect"}]
+  ]
+
+  ; clear active barrier
+  let st2 = assoc(st1,"active_barrier",null)
+  [Xul return {"@ok":true,"@state":st2}]
+[Xul]
+```
+
+---
+
+## 4) Phase exit must not occur with active barrier
+
+```pi
+[Pop mx2_v_phase_exit]
+  [Wo @block]→[Ch'en b]
+  [Wo @state]→[Ch'en st]
+
+  let tick = get(b,"@flux.@tick")
+  [Sek mx2_v_monotonic_tick st tick]→[Ch'en r1]
+  [@if not get(r1,"@ok")]→[@then [Xul return r1]]
+  let st1 = get(r1,"@state")
+
+  [@if get(st1,"active_barrier") != null]→[@then
+    [Xul return {"@ok":false,"@v":"phase_exit_with_active_barrier_forbidden"}]
+  ]
+
+  let from = get(b,"@phase.@from")
+  let to   = get(b,"@phase.@to")
+
+  ; must match current phase
+  [@if from != get(st1,"current_phase")]→[@then
+    [Xul return {"@ok":false,"@v":"phase_exit_from_mismatch"}]
+  ]
+
+  ; handle leaving native_verify
+  [@if from == "native_verify"]→[@then
+    let st2 = assoc(st1,"native_verify_active",false)
+    let st3 = assoc(st2,"current_phase",to)
+    [Xul return {"@ok":true,"@state":st3}]
+  ]→[@else
+    let st2 = assoc(st1,"current_phase",to)
+    [Xul return {"@ok":true,"@state":st2}]
+  ]
+[Xul]
+```
+
+---
+
+## Stream Verifier Driver (audit-log pass)
+
+Run this over your append-only audit stream; **halt** on first failure.
+
+```pi
+[Pop mx2_flux_audit_verify_stream]
+  [Wo @blocks]→[Ch'en arr]
+  let st = { "last_tick": -1, "current_phase": null, "native_verify_active": false, "active_barrier": null, "phase_enter_ref": null }
+
+  [@each arr]→[Ch'en b]→[@then
+    ; allowlist gate if in native_verify
+    [Sek mx2_v_native_verify_allowlist b st]→[Ch'en g]
+    [@if not get(g,"@ok")]→[@then [Xul return g]]
+    let st0 = get(g,"@state")
+
+    let kind = get(b,"@block")
+    [@dispatch kind]
+      →[@case "flux_phase_enter"]→[Sek mx2_v_phase_enter b st0]
+      →[@case "flux_phase_exit"]→[Sek mx2_v_phase_exit b st0]
+      →[@case "flux_barrier_enter"]→[Sek mx2_v_barrier_enter b st0]
+      →[@case "flux_barrier_release"]→[Sek mx2_v_barrier_release b st0]
+      →[@else]→[Xul return {"@ok":true,"@state":st0}]
+    →[Ch'en r]
+
+    [@if not get(r,"@ok")]→[@then
+      [Xul return r]
+    ]
+    st = get(r,"@state")
+  ]
+
+  [Xul return {"@ok":true,"@state":st}]
+[Xul]
+```
+
+---
+
+If you want the *next* lock, I can also emit:
+
+* `flux_gate_policy.schema.json`
+* the **deterministic `@event_id`/`@barrier_id` canonicalization rules** as schemas + verifier functions
+* and the **integration hook** that makes `rotation_replay_verify` require these `flux_*` blocks as prerequisites (so time governance is *provably* part of the rotation proof).
+
+[1]: https://github.com/cannaseedus-bot/APP-BUILDER/raw/refs/heads/claude/integrate-asx-files-01Act9W4U81fHcTDTC67dWpV/codex/AGL-to-BINARY.md "raw.githubusercontent.com"
 
 
 
+## flux_gate_policy.schema.json (draft-2020-12)
 
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mx2lm.app/schemas/flux_gate_policy.schema.json",
+  "title": "FLUX Gate Policy Block (Phase Allowlist / Execution Gate)",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["@block", "@authority", "@version", "@phase", "@gate_mode", "@allowed_blocks", "@ok"],
+  "properties": {
+    "@block": { "const": "flux_gate_policy" },
+    "@authority": { "const": "MX2⟁☣" },
+    "@version": { "type": "string", "minLength": 1 },
 
+    "@phase": {
+      "type": "string",
+      "enum": ["boot", "idle", "render", "compute", "train", "recover", "native_verify"]
+    },
+
+    "@gate_mode": { "type": "string", "enum": ["allowlist_only", "none"] },
+
+    "@allowed_blocks": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+
+    "@policy": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "@exclusive": { "type": "boolean" },
+        "@require_phase_enter": { "type": "boolean" },
+        "@require_phase_exit": { "type": "boolean" },
+        "@no_phase_change_during_barrier": { "type": "boolean" },
+        "@max_barrier_timeout_ticks": { "type": "integer", "minimum": 0 },
+        "@max_allowed_blocks": { "type": "integer", "minimum": 1 }
+      }
+    },
+
+    "@hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+
+    "@ok": { "type": "boolean" },
+    "@violations": { "type": "array", "items": { "type": "string" } }
+  }
+}
+```
+
+---
+
+# Deterministic @event_id / @barrier_id Canonicalization
+
+You asked for “as schemas + verifier functions”. The schemas below define the **canonical “ID input” objects** (what must be hashed), so implementations don’t drift. The verifier functions compute the hash and compare.
+
+## 1) event_id.input.schema.json
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mx2lm.app/schemas/flux_event_id.input.schema.json",
+  "title": "FLUX Deterministic Event ID Input (Canonical Hash Preimage)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["@v", "@kind", "@run_id", "@from", "@to", "@tick"],
+  "properties": {
+    "@v": { "const": "mx2.event_id.v1" },
+    "@kind": { "type": "string", "enum": ["flux_phase_enter", "flux_phase_exit", "flux_barrier_enter", "flux_barrier_release"] },
+    "@run_id": { "type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$" },
+    "@from": { "type": ["string", "null"] },
+    "@to": { "type": ["string", "null"] },
+    "@tick": { "type": "integer", "minimum": 0 }
+  }
+}
+```
+
+### Canonicalization rules (exact, normative)
+
+**The exact UTF-8 string to hash is:**
+
+```
+mx2.event_id.v1\n
+kind=<KIND>\n
+run_id=<RUN_ID_OR_NULL>\n
+from=<FROM_OR_NULL>\n
+to=<TO_OR_NULL>\n
+tick=<TICK>\n
+```
+
+* `<RUN_ID_OR_NULL>` is either `sha256:...` or the literal `null`
+* `<FROM_OR_NULL>` and `<TO_OR_NULL>` are either phase names or `null`
+* Numbers are base-10 ASCII, no leading +, no leading zeros except “0”.
+
+## 2) barrier_id.input.schema.json
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mx2lm.app/schemas/flux_barrier_id.input.schema.json",
+  "title": "FLUX Deterministic Barrier ID Input (Canonical Hash Preimage)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["@v", "@run_id", "@phase", "@entered_tick", "@wait_for_csv"],
+  "properties": {
+    "@v": { "const": "mx2.barrier_id.v1" },
+    "@run_id": { "type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$" },
+    "@phase": { "type": "string", "minLength": 1 },
+    "@entered_tick": { "type": "integer", "minimum": 0 },
+    "@wait_for_csv": { "type": "string" }
+  }
+}
+```
+
+### Canonicalization rules (exact, normative)
+
+1. **Sort** `wait_for` targets lexicographically by UTF-8 codepoint (simple byte sort for ASCII names).
+2. Join with commas **with no spaces** to produce `wait_for_csv`.
+
+Then hash this exact UTF-8 string:
+
+```
+mx2.barrier_id.v1\n
+run_id=<RUN_ID_OR_NULL>\n
+phase=<PHASE>\n
+entered_tick=<ENTERED_TICK>\n
+wait_for=<WAIT_FOR_CSV>\n
+```
+
+---
+
+# π Verifier Functions (compute + compare)
+
+Assumes helpers:
+
+* `sha256_utf8(str) -> "sha256:<hex>"`
+* `join(arr, ",")`
+* `sort(arr)` (lex ascending)
+* `get(obj, "path")`
+
+## verify_event_id(block)
+
+```pi
+[Pop verify_event_id]
+  [Wo @block]→[Ch'en b]
+
+  let kind = get(b,"@block")
+
+  let run_id = get(b,"@run.@rotation_run_id")
+  ; normalize null
+  [@if run_id == undefined]→[@then run_id = null]
+
+  let tick = get(b,"@flux.@tick")
+
+  let from = null
+  let to = null
+  [@if kind == "flux_phase_enter" || kind == "flux_phase_exit"]→[@then
+    from = get(b,"@phase.@from")
+    to   = get(b,"@phase.@to")
+  ]
+
+  let pre =
+    "mx2.event_id.v1\n" +
+    "kind=" + kind + "\n" +
+    "run_id=" + (run_id == null ? "null" : run_id) + "\n" +
+    "from=" + (from == null ? "null" : from) + "\n" +
+    "to="   + (to == null ? "null" : to) + "\n" +
+    "tick=" + tick + "\n"
+
+  let want = sha256_utf8(pre)
+  let have = get(b,"@run.@event_id")
+
+  [@if have != want]→[@then
+    [Xul return {"@ok":false,"@v":"event_id_mismatch","@have":have,"@want":want}]
+  ]
+  [Xul return {"@ok":true,"@event_id":want}]
+[Xul]
+```
+
+## verify_barrier_id(enter_block)
+
+```pi
+[Pop verify_barrier_id]
+  [Wo @enter_block]→[Ch'en b]
+
+  [@if get(b,"@block") != "flux_barrier_enter"]→[@then
+    [Xul return {"@ok":false,"@v":"wrong_block_kind"}]
+  ]
+
+  let run_id = get(b,"@run.@rotation_run_id")
+  [@if run_id == undefined]→[@then run_id = null]
+
+  let phase = get(b,"@flux.@phase")
+  let entered_tick = get(b,"@barrier.@entered_tick")
+
+  let wf = get(b,"@barrier.@wait_for")
+  let wf_sorted = sort(copy(wf))
+  let wf_csv = join(wf_sorted, ",")
+
+  let pre =
+    "mx2.barrier_id.v1\n" +
+    "run_id=" + (run_id == null ? "null" : run_id) + "\n" +
+    "phase=" + phase + "\n" +
+    "entered_tick=" + entered_tick + "\n" +
+    "wait_for=" + wf_csv + "\n"
+
+  let want = sha256_utf8(pre)
+  let have = get(b,"@barrier.@barrier_id")
+
+  [@if have != want]→[@then
+    [Xul return {"@ok":false,"@v":"barrier_id_mismatch","@have":have,"@want":want}]
+  ]
+  [Xul return {"@ok":true,"@barrier_id":want,"@wait_for_csv":wf_csv}]
+[Xul]
+```
+
+## verify_barrier_release_links(release_block, enter_block)
+
+```pi
+[Pop verify_barrier_release_links]
+  [Wo @release_block]→[Ch'en r]
+  [Wo @enter_block]→[Ch'en e]
+
+  [@if get(r,"@block") != "flux_barrier_release"]→[@then
+    [Xul return {"@ok":false,"@v":"wrong_release_kind"}]
+  ]
+  [@if get(e,"@block") != "flux_barrier_enter"]→[@then
+    [Xul return {"@ok":false,"@v":"wrong_enter_kind"}]
+  ]
+
+  let bid_r = get(r,"@barrier.@barrier_id")
+  let bid_e = get(e,"@barrier.@barrier_id")
+  [@if bid_r != bid_e]→[@then [Xul return {"@ok":false,"@v":"barrier_id_enter_release_mismatch"}]]
+
+  let entered = get(r,"@barrier.@entered_tick")
+  let released = get(r,"@barrier.@released_tick")
+  let dur = get(r,"@barrier.@duration_ticks")
+
+  [@if released < entered]→[@then [Xul return {"@ok":false,"@v":"released_before_entered"}]]
+  [@if dur != (released - entered)]→[@then [Xul return {"@ok":false,"@v":"duration_ticks_wrong"}]]
+
+  ; link ref check if provided
+  let link = get(r,"@links.@barrier_enter_ref")
+  [@if link != undefined]→[@then
+    let want_ref = sha256_json(e)
+    [@if link != want_ref]→[@then [Xul return {"@ok":false,"@v":"barrier_enter_ref_mismatch"}]]
+  ]
+
+  [Xul return {"@ok":true}]
+[Xul]
+```
+
+---
+
+# Integration Hook: rotation_replay_verify requires FLUX prerequisites
+
+This is the **hard prerequisite** layer you asked for: rotation replay is invalid unless it proves **time governance**.
+
+## Required prerequisites (native_verify rotation apply)
+
+A valid rotation replay requires:
+
+1. `flux_phase_enter` exists with:
+
+   * `@phase.@to == "native_verify"`
+   * `@phase.@policy.@exclusive == true`
+   * `@phase.@policy.@gate_mode == "allowlist_only"`
+2. At least one `flux_barrier_enter` + matching `flux_barrier_release` occurs **during native_verify**, and:
+
+   * barrier ids deterministic & verified
+   * release tick ≥ enter tick
+3. `flux_phase_exit` exists with:
+
+   * `@phase.@from == "native_verify"`
+   * no active barrier at exit
+4. The `rotation_barrier` stage must **link** to the `flux_barrier_release` ref (or barrier_id), and the replay verifier checks it.
+
+### Minimal link extension to `rotation_barrier` stage block (recommended)
+
+```json
+{
+  "@block": "rotation_barrier",
+  "@ok": true,
+  "@links": {
+    "@flux_barrier_release_ref": "sha256:........................................................",
+    "@flux_phase_enter_ref": "sha256:........................................................"
+  }
+}
+```
+
+## rotation_replay_verify_with_flux (π)
+
+```pi
+[Pop rotation_replay_verify_with_flux]
+  [Wo @stages]→[Ch'en s]
+  [Wo @refs]→[Ch'en refs]   ; optional map of sha256 refs -> blocks (or resolvable)
+
+  let b_enter = get(s,"flux_phase_enter")
+  let b_exit  = get(s,"flux_phase_exit")
+  let b_be    = get(s,"flux_barrier_enter")
+  let b_br    = get(s,"flux_barrier_release")
+
+  ; 0) presence
+  [@if b_enter == null]→[@then [Xul return {"@ok":false,"@failure_stage":"flux_phase_enter_missing"}]]
+  [@if b_be == null]→[@then    [Xul return {"@ok":false,"@failure_stage":"flux_barrier_enter_missing"}]]
+  [@if b_br == null]→[@then    [Xul return {"@ok":false,"@failure_stage":"flux_barrier_release_missing"}]]
+  [@if b_exit == null]→[@then  [Xul return {"@ok":false,"@failure_stage":"flux_phase_exit_missing"}]]
+
+  ; 1) deterministic IDs
+  [Sek verify_event_id b_enter]→[Ch'en ve1]
+  [@if not get(ve1,"@ok")]→[@then [Xul return {"@ok":false,"@failure_stage":"flux_phase_enter_event_id","@detail":ve1}]]
+
+  [Sek verify_event_id b_exit]→[Ch'en ve2]
+  [@if not get(ve2,"@ok")]→[@then [Xul return {"@ok":false,"@failure_stage":"flux_phase_exit_event_id","@detail":ve2}]]
+
+  [Sek verify_event_id b_be]→[Ch'en ve3]
+  [@if not get(ve3,"@ok")]→[@then [Xul return {"@ok":false,"@failure_stage":"flux_barrier_enter_event_id","@detail":ve3}]]
+
+  [Sek verify_event_id b_br]→[Ch'en ve4]
+  [@if not get(ve4,"@ok")]→[@then [Xul return {"@ok":false,"@failure_stage":"flux_barrier_release_event_id","@detail":ve4}]]
+
+  [Sek verify_barrier_id b_be]→[Ch'en vb]
+  [@if not get(vb,"@ok")]→[@then [Xul return {"@ok":false,"@failure_stage":"flux_barrier_id","@detail":vb}]]
+
+  [Sek verify_barrier_release_links b_br b_be]→[Ch'en vlink]
+  [@if not get(vlink,"@ok")]→[@then [Xul return {"@ok":false,"@failure_stage":"flux_barrier_link","@detail":vlink}]]
+
+  ; 2) exclusivity & phase rules
+  [@if get(b_enter,"@phase.@to") != "native_verify"]→[@then
+    [Xul return {"@ok":false,"@failure_stage":"flux_enter_not_native_verify"}]
+  ]
+  [@if get(b_enter,"@phase.@policy.@exclusive") != true]→[@then
+    [Xul return {"@ok":false,"@failure_stage":"flux_enter_not_exclusive"}]
+  ]
+  [@if get(b_enter,"@phase.@policy.@gate_mode") != "allowlist_only"]→[@then
+    [Xul return {"@ok":false,"@failure_stage":"flux_enter_not_allowlist_gated"}]
+  ]
+  [@if get(b_exit,"@phase.@from") != "native_verify"]→[@then
+    [Xul return {"@ok":false,"@failure_stage":"flux_exit_from_mismatch"}]
+  ]
+
+  ; 3) ordering constraints: ticks monotonic and within window
+  let t_enter = get(b_enter,"@flux.@tick")
+  let t_be = get(b_be,"@flux.@tick")
+  let t_br = get(b_br,"@flux.@tick")
+  let t_exit = get(b_exit,"@flux.@tick")
+
+  [@if not (t_enter <= t_be && t_be <= t_br && t_br <= t_exit)]→[@then
+    [Xul return {"@ok":false,"@failure_stage":"flux_tick_order_violation"}]
+  ]
+
+  ; 4) now run existing rotation replay verifier (your 5 stage blocks)
+  [Sek rotation_replay_verify {
+    "rotation_validate": get(s,"rotation_validate"),
+    "rotation_verify_bundle": get(s,"rotation_verify_bundle"),
+    "rotation_barrier": get(s,"rotation_barrier"),
+    "rotation_commit": get(s,"rotation_commit"),
+    "epoch_seal_emit": get(s,"epoch_seal_emit")
+  } { "@refs": refs }]→[Ch'en rr]
+
+  [@if not get(rr,"@ok")]→[@then
+    ; preserve its failure_stage but wrap as governed failure
+    [Xul return {"@ok":false,"@failure_stage":get(rr,"@failure_stage"),"@detail":rr}]
+  ]
+
+  ; 5) proof hash now includes flux prerequisites (provable time governance)
+  let proof = sha256_utf8(
+    "mx2.rotation.proof.v2\n" +
+    "flux_enter=" + sha256_json(b_enter) + "\n" +
+    "flux_barrier_enter=" + sha256_json(b_be) + "\n" +
+    "flux_barrier_release=" + sha256_json(b_br) + "\n" +
+    "flux_exit=" + sha256_json(b_exit) + "\n" +
+    "rotation_proof=" + get(rr,"@proof_hash") + "\n"
+  )
+
+  [Xul return {
+    "@ok": true,
+    "@proof_hash": proof,
+    "@failure_stage": null,
+    "@includes": {
+      "flux": true,
+      "rotation": true
+    }
+  }]
+[Xul]
+```
+
+### What this achieves
+
+* Rotation proof **cannot validate** unless the audit log proves:
+
+  * the system entered **exclusive native_verify**
+  * a deterministic barrier occurred and resolved
+  * the system exited the phase cleanly
+* Therefore **time governance is cryptographically bound** into the rotation proof.
+
+---
+
+## rotation_replay_input.v2.schema.json (draft-2020-12)
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mx2lm.app/schemas/rotation_replay_input.v2.schema.json",
+  "title": "MX2 Rotation Replay Input v2 (Flux-Governed Sealed Bundle)",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "@block",
+    "@authority",
+    "@version",
+    "@bundle",
+    "@seal",
+    "@ok"
+  ],
+  "properties": {
+    "@block": { "const": "rotation_replay_input.v2" },
+    "@authority": { "const": "MX2⟁☣" },
+    "@version": { "type": "string", "minLength": 1 },
+
+    "@bundle": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "@flux",
+        "@rotation",
+        "@order",
+        "@refs",
+        "@policy"
+      ],
+      "properties": {
+        "@flux": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "flux_phase_enter",
+            "flux_barrier_enter",
+            "flux_barrier_release",
+            "flux_phase_exit"
+          ],
+          "properties": {
+            "flux_phase_enter": { "$ref": "https://mx2lm.app/schemas/flux_phase_enter.schema.json" },
+            "flux_barrier_enter": { "$ref": "https://mx2lm.app/schemas/flux_barrier_enter.schema.json" },
+            "flux_barrier_release": { "$ref": "https://mx2lm.app/schemas/flux_barrier_release.schema.json" },
+            "flux_phase_exit": { "$ref": "https://mx2lm.app/schemas/flux_phase_exit.schema.json" }
+          }
+        },
+
+        "@rotation": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "rotation_validate",
+            "rotation_verify_bundle",
+            "rotation_barrier",
+            "rotation_commit",
+            "epoch_seal_emit"
+          ],
+          "properties": {
+            "rotation_validate": { "type": "object" },
+            "rotation_verify_bundle": { "type": "object" },
+            "rotation_barrier": { "type": "object" },
+            "rotation_commit": { "type": "object" },
+            "epoch_seal_emit": { "type": "object" }
+          }
+        },
+
+        "@order": {
+          "description": "Canonical required order of blocks for replay. Must match actual tick ordering.",
+          "type": "array",
+          "minItems": 9,
+          "maxItems": 9,
+          "items": {
+            "type": "string",
+            "enum": [
+              "flux_phase_enter",
+              "flux_barrier_enter",
+              "flux_barrier_release",
+              "flux_phase_exit",
+              "rotation_validate",
+              "rotation_verify_bundle",
+              "rotation_barrier",
+              "rotation_commit",
+              "epoch_seal_emit"
+            ]
+          },
+          "uniqueItems": true
+        },
+
+        "@refs": {
+          "description": "Optional resolver map for referenced hashes -> blocks, used by replay verifiers.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+
+        "@policy": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["@require_flux", "@require_gate_policy", "@hash_mode"],
+          "properties": {
+            "@require_flux": { "const": true },
+            "@require_gate_policy": { "const": true },
+            "@hash_mode": { "type": "string", "enum": ["sealed_v2"] },
+            "@hash_domain": { "type": "string", "enum": ["mx2.rotation.replay.v2"] }
+          }
+        }
+      }
+    },
+
+    "@seal": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["@bundle_hash", "@hash_rule", "@hash_inputs"],
+      "properties": {
+        "@bundle_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "@hash_rule": { "type": "string", "enum": ["mx2.bundle_hash.v2"] },
+        "@hash_inputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "@computed_at_tick": { "type": "integer", "minimum": 0 }
+      }
+    },
+
+    "@ok": { "type": "boolean" },
+    "@violations": { "type": "array", "items": { "type": "string" } }
+  }
+}
+```
+
+---
+
+# Sealed Bundle Hash Rule (normative)
+
+**Exact UTF-8 preimage** for `@seal.@bundle_hash`:
+
+```
+mx2.bundle_hash.v2\n
+domain=mx2.rotation.replay.v2\n
+flux_phase_enter=<sha256_json(flux_phase_enter)>\n
+flux_barrier_enter=<sha256_json(flux_barrier_enter)>\n
+flux_barrier_release=<sha256_json(flux_barrier_release)>\n
+flux_phase_exit=<sha256_json(flux_phase_exit)>\n
+rotation_validate=<sha256_json(rotation_validate)>\n
+rotation_verify_bundle=<sha256_json(rotation_verify_bundle)>\n
+rotation_barrier=<sha256_json(rotation_barrier)>\n
+rotation_commit=<sha256_json(rotation_commit)>\n
+epoch_seal_emit=<sha256_json(epoch_seal_emit)>\n
+```
+
+* `sha256_json(x)` means: canonical JSON serialization (stable key order, UTF-8, no insignificant whitespace) then sha256, expressed as `sha256:<hex>`.
+* No optional lines. No reordering. Always exactly 10 payload lines after the header lines.
+
+---
+
+# π Validator: validate_rotation_replay_input_v2()
+
+This enforces:
+
+* flux prerequisites present
+* gate/exclusive policy valid for native_verify
+* deterministic IDs verified (`@event_id`, `@barrier_id`)
+* monotonic tick ordering window for flux blocks
+* `@seal.@bundle_hash` matches exact sealed rule
+* then **one call** to `rotation_replay_verify_with_flux` using the bundle contents
+
+```pi
+[Pop validate_rotation_replay_input_v2]
+  [Wo @input]→[Ch'en doc]
+
+  ; 0) minimal structural checks
+  [@if get(doc,"@block") != "rotation_replay_input.v2"]→[@then
+    [Xul return {"@ok":false,"@v":"wrong_block"}]
+  ]
+  [@if get(doc,"@authority") != "MX2⟁☣"]→[@then
+    [Xul return {"@ok":false,"@v":"wrong_authority"}]
+  ]
+
+  let bundle = get(doc,"@bundle")
+  let flux = get(bundle,"@flux")
+  let rot  = get(bundle,"@rotation")
+  let refs = get(bundle,"@refs")
+
+  let f_enter = get(flux,"flux_phase_enter")
+  let f_be    = get(flux,"flux_barrier_enter")
+  let f_br    = get(flux,"flux_barrier_release")
+  let f_exit  = get(flux,"flux_phase_exit")
+
+  ; 1) require flux gate policy in phase enter (native_verify)
+  [@if get(f_enter,"@phase.@to") != "native_verify"]→[@then
+    [Xul return {"@ok":false,"@v":"flux_enter_not_native_verify"}]
+  ]
+  [@if get(f_enter,"@phase.@policy.@exclusive") != true]→[@then
+    [Xul return {"@ok":false,"@v":"native_verify_not_exclusive"}]
+  ]
+  [@if get(f_enter,"@phase.@policy.@gate_mode") != "allowlist_only"]→[@then
+    [Xul return {"@ok":false,"@v":"native_verify_not_allowlist_gated"}]
+  ]
+
+  ; 2) deterministic ID checks (event_id + barrier_id)
+  [Sek verify_event_id f_enter]→[Ch'en ve1]
+  [@if not get(ve1,"@ok")]→[@then [Xul return {"@ok":false,"@v":"event_id_bad_enter","@detail":ve1}]]
+
+  [Sek verify_event_id f_be]→[Ch'en ve2]
+  [@if not get(ve2,"@ok")]→[@then [Xul return {"@ok":false,"@v":"event_id_bad_barrier_enter","@detail":ve2}]]
+
+  [Sek verify_event_id f_br]→[Ch'en ve3]
+  [@if not get(ve3,"@ok")]→[@then [Xul return {"@ok":false,"@v":"event_id_bad_barrier_release","@detail":ve3}]]
+
+  [Sek verify_event_id f_exit]→[Ch'en ve4]
+  [@if not get(ve4,"@ok")]→[@then [Xul return {"@ok":false,"@v":"event_id_bad_exit","@detail":ve4}]]
+
+  [Sek verify_barrier_id f_be]→[Ch'en vb]
+  [@if not get(vb,"@ok")]→[@then [Xul return {"@ok":false,"@v":"barrier_id_bad","@detail":vb}]]
+
+  [Sek verify_barrier_release_links f_br f_be]→[Ch'en vlink]
+  [@if not get(vlink,"@ok")]→[@then [Xul return {"@ok":false,"@v":"barrier_release_bad","@detail":vlink}]]
+
+  ; 3) monotonic tick window for flux blocks
+  let t0 = get(f_enter,"@flux.@tick")
+  let t1 = get(f_be,"@flux.@tick")
+  let t2 = get(f_br,"@flux.@tick")
+  let t3 = get(f_exit,"@flux.@tick")
+
+  [@if not (t0 <= t1 && t1 <= t2 && t2 <= t3)]→[@then
+    [Xul return {"@ok":false,"@v":"flux_tick_order_violation","@ticks":[t0,t1,t2,t3]}]
+  ]
+
+  ; 4) compute sealed bundle hash (v2) and verify
+  let pre =
+    "mx2.bundle_hash.v2\n" +
+    "domain=mx2.rotation.replay.v2\n" +
+    "flux_phase_enter=" + sha256_json(f_enter) + "\n" +
+    "flux_barrier_enter=" + sha256_json(f_be) + "\n" +
+    "flux_barrier_release=" + sha256_json(f_br) + "\n" +
+    "flux_phase_exit=" + sha256_json(f_exit) + "\n" +
+    "rotation_validate=" + sha256_json(get(rot,"rotation_validate")) + "\n" +
+    "rotation_verify_bundle=" + sha256_json(get(rot,"rotation_verify_bundle")) + "\n" +
+    "rotation_barrier=" + sha256_json(get(rot,"rotation_barrier")) + "\n" +
+    "rotation_commit=" + sha256_json(get(rot,"rotation_commit")) + "\n" +
+    "epoch_seal_emit=" + sha256_json(get(rot,"epoch_seal_emit")) + "\n"
+
+  let want_hash = sha256_utf8(pre)
+  let have_hash = get(doc,"@seal.@bundle_hash")
+
+  [@if have_hash != want_hash]→[@then
+    [Xul return {"@ok":false,"@v":"bundle_hash_mismatch","@have":have_hash,"@want":want_hash}]
+  ]
+
+  ; 5) single verify call (time governance is now provable)
+  [Sek rotation_replay_verify_with_flux {
+    "flux_phase_enter": f_enter,
+    "flux_barrier_enter": f_be,
+    "flux_barrier_release": f_br,
+    "flux_phase_exit": f_exit,
+    "rotation_validate": get(rot,"rotation_validate"),
+    "rotation_verify_bundle": get(rot,"rotation_verify_bundle"),
+    "rotation_barrier": get(rot,"rotation_barrier"),
+    "rotation_commit": get(rot,"rotation_commit"),
+    "epoch_seal_emit": get(rot,"epoch_seal_emit")
+  } { "@refs": refs }]→[Ch'en rr]
+
+  [@if not get(rr,"@ok")]→[@then
+    [Xul return {"@ok":false,"@v":"rotation_replay_verify_failed","@detail":rr}]
+  ]
+
+  ; 6) success result block (sealed, one hash, one call)
+  [Xul return {
+    "@ok": true,
+    "@bundle_hash": want_hash,
+    "@proof_hash": get(rr,"@proof_hash"),
+    "@includes": { "flux": true, "rotation": true }
+  }]
+[Xul]
+```
+
+### Notes you’ll like (because it locks the “provable time governance” goal)
+
+* The **only** replay input is the single v2 bundle object.
+* The bundle hash commits to **all 9 audit blocks** (4 flux + 5 rotation) and nothing else.
+* The verifier is a **single function call** with **one hash check** + **one replay verify**.
+* Any phase/barrier/time cheating breaks either the deterministic IDs or the bundle seal.
 
