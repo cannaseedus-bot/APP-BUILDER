@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MX2⟁☣ Counter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!--
+    MX2⟁☣ ATOMIC BLOCK EXAMPLE
+
+    HTML is LIMITED to:
+    - Structure
+    - Buttons
+    - UI elements
+
+    HTML does NOT contain:
+    - Logic
+    - State
+    - Rendering code
+    - Event handlers (inline)
+
+    All behavior is CSS + sw.js
+  -->
+
+  <div id="app" data-level="ok" data-mode="idle">
+
+    <!-- Card with state-driven styling -->
+    <div id="card" class="card">
+
+      <!-- Count display - size computed from CSS vars -->
+      <div class="count-display" aria-live="polite">
+        <span class="count-value"></span>
+      </div>
+
+      <!-- Entropy bar - width from CSS calc() -->
+      <div class="entropy-bar-container">
+        <div class="entropy-bar"></div>
+      </div>
+
+      <!-- Mode indicator - styled by data-mode -->
+      <div class="mode-indicator">
+        <span class="mode-label"></span>
+      </div>
+
+      <!-- Buttons - ONLY UI elements, no onclick -->
+      <div class="button-row">
+        <button id="dec-btn" class="btn btn-secondary" data-action="@on_dec">
+          −
+        </button>
+        <button id="reset-btn" class="btn btn-ghost" data-action="@on_reset">
+          Reset
+        </button>
+        <button id="inc-btn" class="btn btn-primary" data-action="@on_inc">
+          +
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Level indicator - shows current state -->
+    <div class="level-badge">
+      <span class="level-dot"></span>
+      <span class="level-text"></span>
+    </div>
+
+  </div>
+
+  <!--
+    ATOMIC BLOCK DEFINITION
+    Embedded as JSON, parsed by sw.js
+  -->
+  <script type="application/json" id="atomic-block">
+  {
+    "@id": "counter.atomic",
+    "@state": {
+      "--count": 0,
+      "--mode": "idle",
+      "--entropy": 0.10,
+      "--level": "ok"
+    },
+    "@control": {
+      "@on_inc": { "@pi": "counter.inc" },
+      "@on_dec": { "@pi": "counter.dec" },
+      "@on_reset": { "@pi": "counter.reset" },
+      "@derive": { "@pi": "counter.derive" },
+      "@persist": { "@io": "idb.put", "@key": "counter_state" },
+      "@restore": { "@io": "idb.get", "@key": "counter_state" }
+    },
+    "@flow": {
+      "@boot": ["@restore", "@derive"],
+      "@after_action": ["@derive", "@persist"]
+    },
+    "@css": {
+      "vars": ["--count", "--mode", "--entropy", "--level"],
+      "attrs": {
+        "#app": { "data-level": "--level", "data-mode": "--mode" },
+        "#card": { "data-level": "--level" }
+      },
+      "text": {
+        ".count-value": "--count",
+        ".mode-label": "--mode",
+        ".level-text": "--level"
+      }
+    },
+    "@events": {
+      "[data-action='@on_inc']": { "click": "@on_inc" },
+      "[data-action='@on_dec']": { "click": "@on_dec" },
+      "[data-action='@on_reset']": { "click": "@on_reset" }
+    }
+  }
+  </script>
+
+  <!--
+    MINIMAL BOOT SCRIPT
+    Only registers sw.js and sends initial message
+    ALL logic lives in sw.js
+  -->
+  <script>
+    // Register service worker (THE ONLY JS RUNTIME)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        // Load atomic block
+        const block = JSON.parse(
+          document.getElementById('atomic-block').textContent
+        );
+
+        // Wait for controller
+        navigator.serviceWorker.ready.then(() => {
+          // Send BOOT message to sw.js
+          navigator.serviceWorker.controller.postMessage({
+            type: 'BOOT',
+            atomicBlock: block,
+            state: block['@state']
+          });
+        });
+      });
+
+      // Listen for state updates from sw.js
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        const { type, state, attrs } = event.data;
+
+        if (type === 'APPLY_STATE') {
+          // Apply state to CSS vars
+          const root = document.documentElement.style;
+          for (const [k, v] of Object.entries(state)) {
+            root.setProperty(k, String(v));
+          }
+
+          // Update text content
+          const block = JSON.parse(
+            document.getElementById('atomic-block').textContent
+          );
+          if (block['@css']?.text) {
+            for (const [selector, varName] of Object.entries(block['@css'].text)) {
+              const el = document.querySelector(selector);
+              if (el) el.textContent = state[varName];
+            }
+          }
+        }
+
+        if (type === 'APPLY_ATTRS') {
+          // Apply data-* attrs to DOM
+          for (const [selector, attrMap] of Object.entries(attrs)) {
+            const el = document.querySelector(selector);
+            if (el) {
+              for (const [attr, value] of Object.entries(attrMap)) {
+                el.setAttribute(attr, value);
+              }
+            }
+          }
+        }
+      });
+
+      // Wire up events from @events
+      document.addEventListener('click', (e) => {
+        const action = e.target.closest('[data-action]')?.dataset.action;
+        if (action && navigator.serviceWorker.controller) {
+          const block = JSON.parse(
+            document.getElementById('atomic-block').textContent
+          );
+          const currentState = {};
+          const root = getComputedStyle(document.documentElement);
+          for (const v of block['@css'].vars) {
+            currentState[v] = root.getPropertyValue(v).trim();
+            // Parse numbers
+            if (!isNaN(currentState[v])) {
+              currentState[v] = parseFloat(currentState[v]);
+            }
+          }
+
+          navigator.serviceWorker.controller.postMessage({
+            type: 'DISPATCH',
+            control: action,
+            atomicBlock: block,
+            state: currentState
+          });
+        }
+      });
+    }
+  </script>
+</body>
+</html>

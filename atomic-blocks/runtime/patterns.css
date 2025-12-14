@@ -1,0 +1,328 @@
+/**
+ * MX2⟁☣ CSS Runtime Patterns
+ *
+ * CSS IS THE RUNTIME - NOT STYLING
+ *
+ * This file demonstrates:
+ * - State as CSS variables
+ * - Rendering driven by vars/attrs
+ * - Computed values via calc()
+ * - Transitions as physics
+ * - No JavaScript for UI behavior
+ */
+
+/* ============================================
+   BLOCK 1: STATE VARIABLES
+   These are set by the Service Worker
+   ============================================ */
+
+:root {
+  /* Counter state */
+  --count: 0;
+  --mode: idle;
+  --entropy: 0.10;
+  --level: ok;
+
+  /* Form state */
+  --form-state: idle;
+  --submit-enabled: 0;
+  --email-valid: 0;
+  --password-valid: 0;
+
+  /* Dashboard state */
+  --active-tape: overview;
+  --sidebar-collapsed: 0;
+  --theme: dark-glass;
+  --mesh-status: connecting;
+
+  /* Theme tokens (derived from --theme) */
+  --bg: #020409;
+  --panel: #050a14;
+  --accent: #00ffd0;
+  --text: #f7fafc;
+  --text-soft: #a0aec0;
+  --border: #16f2aa;
+  --danger: #ff4c6a;
+  --warn: #ffd700;
+}
+
+
+/* ============================================
+   BLOCK 2: STATE-DRIVEN RENDERING
+   UI behavior from vars and data-* attrs
+   ============================================ */
+
+/* Level-based styling */
+[data-level="ok"] {
+  --state-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(0, 255, 208, 0.15);
+}
+
+[data-level="warn"] {
+  --state-color: var(--warn);
+  box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.18);
+}
+
+[data-level="danger"] {
+  --state-color: var(--danger);
+  box-shadow: 0 0 0 1px rgba(255, 76, 106, 0.25);
+}
+
+/* Mode-based behavior */
+[data-mode="idle"] {
+  opacity: 0.9;
+}
+
+[data-mode="acting"] {
+  opacity: 1;
+  animation: pulse 300ms ease-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+
+/* ============================================
+   BLOCK 3: COMPUTED VALUES VIA calc()
+   Math without JavaScript
+   ============================================ */
+
+/* Entropy bar width from state */
+.entropy-bar {
+  width: calc(var(--entropy) * 100%);
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--state-color));
+  transition: width 220ms ease;
+}
+
+/* Count display scaling */
+.count-display {
+  font-size: calc(24px + var(--count) * 2px);
+  transform: scale(calc(1 + var(--entropy) * 0.1));
+  transition: all 200ms ease;
+}
+
+/* Sidebar width based on collapsed state */
+.sidebar {
+  width: calc(280px * (1 - var(--sidebar-collapsed)) + 60px * var(--sidebar-collapsed));
+  transition: width 250ms ease;
+}
+
+
+/* ============================================
+   BLOCK 4: FORM VALIDATION STATES
+   No JS validation feedback
+   ============================================ */
+
+/* Field validity styling */
+[data-valid="1"] {
+  border-color: var(--accent);
+}
+
+[data-valid="0"]:not(:placeholder-shown) {
+  border-color: var(--danger);
+}
+
+/* Submit button enabled state */
+[data-enabled="0"] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+[data-enabled="1"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Form state transitions */
+[data-state="idle"] {
+  /* Default state */
+}
+
+[data-state="submitting"] {
+  pointer-events: none;
+}
+
+[data-state="submitting"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  animation: fade-in 200ms ease;
+}
+
+
+/* ============================================
+   BLOCK 5: TAPE/TAB SYSTEM
+   Active tape selection without JS
+   ============================================ */
+
+/* Hide all tapes by default */
+.tape {
+  display: none;
+}
+
+/* Show active tape based on data-tape attr */
+[data-tape="overview"] .tape[data-id="overview"],
+[data-tape="shards"] .tape[data-id="shards"],
+[data-tape="metrics"] .tape[data-id="metrics"],
+[data-tape="settings"] .tape[data-id="settings"] {
+  display: block;
+}
+
+/* Tab button active state */
+.tape-btn {
+  opacity: 0.6;
+  border-bottom: 2px solid transparent;
+}
+
+[data-tape="overview"] .tape-btn[data-target="overview"],
+[data-tape="shards"] .tape-btn[data-target="shards"],
+[data-tape="metrics"] .tape-btn[data-target="metrics"],
+[data-tape="settings"] .tape-btn[data-target="settings"] {
+  opacity: 1;
+  border-bottom-color: var(--accent);
+}
+
+
+/* ============================================
+   BLOCK 6: MESH STATUS INDICATORS
+   Connection state without polling JS
+   ============================================ */
+
+[data-status="connecting"] .status-dot {
+  background: var(--warn);
+  animation: blink 1s infinite;
+}
+
+[data-status="online"] .status-dot {
+  background: var(--accent);
+}
+
+[data-status="offline"] .status-dot {
+  background: var(--danger);
+}
+
+[data-status="error"] .status-dot {
+  background: var(--danger);
+  animation: pulse-error 500ms infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes pulse-error {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+
+/* ============================================
+   BLOCK 7: THEME SWITCHING
+   Theme tokens applied via data-theme
+   ============================================ */
+
+[data-theme="dark-glass"] {
+  --bg: #020409;
+  --panel: #050a14;
+  --accent: #00ffd0;
+  --text: #f7fafc;
+  --border: #16f2aa;
+}
+
+[data-theme="light-clean"] {
+  --bg: #f5f7ff;
+  --panel: #ffffff;
+  --accent: #2563eb;
+  --text: #020617;
+  --border: #3b82f6;
+}
+
+[data-theme="neon-purple"] {
+  --bg: #0a0014;
+  --panel: #120024;
+  --accent: #a855f7;
+  --text: #faf5ff;
+  --border: #9333ea;
+}
+
+
+/* ============================================
+   BLOCK 8: RESPONSIVE WITHOUT MEDIA JS
+   Container queries for component-level
+   ============================================ */
+
+@container (max-width: 600px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@container (min-width: 601px) and (max-width: 900px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container (min-width: 901px) {
+  .card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+
+/* ============================================
+   BLOCK 9: LOADING STATES
+   Skeleton UI via CSS only
+   ============================================ */
+
+[data-loaded="0"] {
+  background: linear-gradient(
+    90deg,
+    var(--panel) 25%,
+    rgba(255, 255, 255, 0.05) 50%,
+    var(--panel) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+
+/* ============================================
+   BLOCK 10: TRANSITIONS AS PHYSICS
+   Timing functions as physical behavior
+   ============================================ */
+
+:root {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-circ: cubic-bezier(0.85, 0, 0.15, 1);
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --bounce: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+}
+
+.card {
+  transition:
+    transform 300ms var(--spring),
+    box-shadow 200ms ease,
+    opacity 150ms ease;
+}
+
+.btn {
+  transition:
+    transform 100ms var(--ease-out-expo),
+    background 150ms ease;
+}
+
+.btn:active {
+  transform: scale(0.96);
+}

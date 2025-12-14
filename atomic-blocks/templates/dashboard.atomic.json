@@ -1,0 +1,107 @@
+{
+  "@id": "dashboard.atomic",
+  "@version": "1.0.0",
+  "@description": "Multi-tape dashboard with shard status and metrics",
+
+  "@state": {
+    "--active-tape": "overview",
+    "--sidebar-collapsed": 0,
+    "--theme": "dark-glass",
+    "--mesh-status": "connecting",
+    "--shard-count": 0,
+    "--online-count": 0,
+    "--entropy": 0.15
+  },
+
+  "@tapes": {
+    "overview": {
+      "--tape-id": "overview",
+      "--tape-loaded": 0
+    },
+    "shards": {
+      "--tape-id": "shards",
+      "--tape-loaded": 0
+    },
+    "metrics": {
+      "--tape-id": "metrics",
+      "--tape-loaded": 0
+    },
+    "settings": {
+      "--tape-id": "settings",
+      "--tape-loaded": 0
+    }
+  },
+
+  "@control": {
+    "@select_tape": {
+      "@pi": "dashboard.select_tape",
+      "@param": "tape_id",
+      "@description": "Switch active tape"
+    },
+    "@toggle_sidebar": {
+      "@pi": "dashboard.toggle_sidebar",
+      "@description": "Collapse/expand sidebar"
+    },
+    "@refresh_mesh": {
+      "@gas": "mesh.health",
+      "@description": "Fetch mesh status from GAS shard"
+    },
+    "@load_tape_data": {
+      "@gas": "tape.load",
+      "@param": "tape_id",
+      "@description": "Load tape content from shard"
+    },
+    "@apply_theme": {
+      "@pi": "dashboard.apply_theme",
+      "@param": "theme_id",
+      "@description": "Apply theme to CSS vars"
+    },
+    "@derive": {
+      "@pi": "dashboard.derive",
+      "@description": "Compute derived state"
+    },
+    "@persist": {
+      "@io": "idb.put",
+      "@key": "dashboard_state"
+    },
+    "@restore": {
+      "@io": "idb.get",
+      "@key": "dashboard_state"
+    }
+  },
+
+  "@flow": {
+    "@boot": ["@restore", "@refresh_mesh", "@derive"],
+    "@after_tape_select": ["@load_tape_data", "@derive", "@persist"]
+  },
+
+  "@css": {
+    "vars": [
+      "--active-tape",
+      "--sidebar-collapsed",
+      "--theme",
+      "--mesh-status",
+      "--shard-count",
+      "--online-count",
+      "--entropy"
+    ],
+    "attrs": {
+      "#dashboard": {
+        "data-tape": "--active-tape",
+        "data-theme": "--theme"
+      },
+      "#sidebar": {
+        "data-collapsed": "--sidebar-collapsed"
+      },
+      "#mesh-indicator": {
+        "data-status": "--mesh-status"
+      }
+    }
+  },
+
+  "@events": {
+    ".tape-btn": { "click": "@select_tape" },
+    "#sidebar-toggle": { "click": "@toggle_sidebar" },
+    "#refresh-mesh": { "click": "@refresh_mesh" }
+  }
+}

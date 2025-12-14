@@ -1,0 +1,245 @@
+# Atomic Blocks (MX2⟁☣)
+
+> **The fundamental unit of computation in the MX2LM operating system.**
+
+---
+
+## What Are Atomic Blocks?
+
+An **Atomic Block** is the smallest meaningful unit of a system that can be:
+- Reasoned about
+- Executed
+- Visualized
+- Evolved
+- Trained against
+
+```
+Atomic Block = (vectors, states, flows)
+```
+
+| Part | Symbol | Purpose |
+|------|--------|---------|
+| **@control** | ⟁ | Intent & control vectors |
+| **@state** | ☣ | Mutable reality (CSS vars) |
+| **@flow** | → | Transitions & causality |
+
+---
+
+## Why Atomic Blocks?
+
+Traditional web stacks have no clean answer to:
+
+> "What is the smallest unit of a system?"
+
+| Approach | Unit | Problems |
+|----------|------|----------|
+| React | Component | Implicit state, render coupling |
+| Vue | Component | Same |
+| Vanilla JS | Function | No structure, no visibility |
+| **Atomic Block** | Causal block | Explicit, serializable, trainable |
+
+---
+
+## Atomic Block Structure
+
+```json
+{
+  "@id": "block.atomic",
+  "@state": {
+    "--var-name": "value"
+  },
+  "@control": {
+    "@action_name": { "@pi": "function.name" }
+  },
+  "@flow": ["@init", "@derive", "@render"]
+}
+```
+
+### @state
+
+CSS variables that represent mutable state. Automatically reflected in CSS runtime.
+
+```json
+"@state": {
+  "--count": 0,
+  "--mode": "idle",
+  "--entropy": 0.42,
+  "--level": "ok"
+}
+```
+
+### @control
+
+Named control vectors that map to K'UHUL π functions or I/O operations.
+
+```json
+"@control": {
+  "@increment": { "@pi": "counter.inc" },
+  "@decrement": { "@pi": "counter.dec" },
+  "@persist": { "@io": "idb.put", "@key": "state" },
+  "@restore": { "@io": "idb.get", "@key": "state" }
+}
+```
+
+### @flow
+
+Ordered sequence of control vectors executed on state transitions.
+
+```json
+"@flow": ["@restore", "@derive", "@render"]
+```
+
+---
+
+## Execution Model
+
+```
+┌─────────────────────────────────────────┐
+│         ATOMIC BLOCK (MX2⟁☣)            │
+│  { @state, @control, @flow }            │
+└──────────────────┬──────────────────────┘
+                   │
+       ┌───────────┴───────────┐
+       │                       │
+┌──────▼──────┐         ┌──────▼──────┐
+│ CSS RUNTIME │         │  K'UHUL π   │
+│ Render from │         │ Compute     │
+│ vars/attrs  │         │ deltas      │
+└─────────────┘         └─────────────┘
+```
+
+1. **Atomic Block** holds state as CSS variables
+2. **CSS Runtime** renders UI from vars (no JS rendering)
+3. **K'UHUL π** computes state deltas
+4. **JavaScript** only bridges I/O (events, fetch, IDB)
+
+---
+
+## Folder Structure
+
+```
+atomic-blocks/
+├── README.md           # This file
+├── templates/          # Reusable atomic block templates
+│   ├── counter.atomic.json
+│   ├── form.atomic.json
+│   └── dashboard.atomic.json
+├── runtime/            # K'UHUL π functions
+│   ├── core.pi
+│   └── math.pi
+└── examples/           # Complete working examples
+    ├── counter-app/
+    └── dashboard-app/
+```
+
+---
+
+## CSS Runtime Integration
+
+Atomic state maps directly to CSS:
+
+```css
+:root {
+  /* State from @state */
+  --count: 0;
+  --mode: idle;
+  --entropy: 0.42;
+  --level: ok;
+}
+
+/* Rendering driven by state */
+.card[data-level="ok"]     { border-color: var(--accent); }
+.card[data-level="warn"]   { border-color: orange; }
+.card[data-level="danger"] { border-color: red; }
+
+/* Computed values */
+.progress-bar {
+  width: calc(var(--entropy) * 100%);
+  transition: width 200ms ease;
+}
+```
+
+No JavaScript rendering. CSS is the runtime.
+
+---
+
+## K'UHUL π Functions
+
+Pure functions that compute state deltas:
+
+```pi
+fn counter.derive(state):
+  let e = clamp(state["--entropy"], 0, 1)
+  state["--level"] = match e:
+    > 0.7  => "danger"
+    > 0.35 => "warn"
+    _      => "ok"
+  return state
+
+fn counter.inc(state):
+  state["--count"] += 1
+  state["--entropy"] = clamp(state["--entropy"] + 0.05, 0, 1)
+  return counter.derive(state)
+```
+
+---
+
+## JavaScript (I/O Only)
+
+JS is demoted to I/O bridge:
+
+```javascript
+// Apply atomic state to CSS vars
+function applyState(state) {
+  const root = document.documentElement.style;
+  for (const [k, v] of Object.entries(state)) {
+    root.setProperty(k, String(v));
+  }
+}
+
+// Dispatch control vector
+async function dispatch(vector) {
+  state = await KUHUL_PI.run(vector, state);
+  applyState(state);
+}
+
+// Event → Control vector (that's it)
+btn.onclick = () => dispatch("@increment");
+```
+
+---
+
+## Why This Matters
+
+### Serializable
+Atomic blocks are JSON. Save, load, sync, version.
+
+### Trainable
+RLHF, n-grams, agent learning work on structured blocks.
+
+### Visualizable
+State is explicit. Debug by inspection.
+
+### Compressible
+SCXQ2 compression works on JSON AST.
+
+### AI-Ready
+Unlike JS apps, atomic systems can be understood structurally.
+
+---
+
+## Related Files
+
+| File | Purpose |
+|------|---------|
+| `mx2lm-guide.md` | Complete system architecture |
+| `SHARD-INTEGRATION.md` | GAS shard mesh |
+| `GAS-INFRASTRUCTURE-LAYERS.md` | Remote execution |
+
+---
+
+```
+STATUS: CANONICAL
+VERSION: 1.0.0
+GLYPH: MX2⟁☣
+```
