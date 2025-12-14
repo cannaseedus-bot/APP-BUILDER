@@ -121,6 +121,7 @@ Ordered sequence of control vectors executed on state transitions.
 atomic-blocks/
 ├── README.md              # This file
 ├── agl-registry.json      # Atomic Glyph Language registry
+├── api-runtime.json       # Glyph → API endpoint mappings
 ├── templates/             # Reusable atomic block templates
 │   ├── counter.atomic.json
 │   ├── form.atomic.json
@@ -137,7 +138,10 @@ atomic-blocks/
 └── examples/              # Complete working examples & studio templates
     ├── counter-app/
     ├── black-code-editor/      # CANONICAL REFERENCE
-    └── quantum-fusion-engine/  # K'UHUL ⇄ C@@L ⇄ MX2LM Unification
+    ├── quantum-fusion-engine/  # K'UHUL ⇄ C@@L ⇄ MX2LM Unification
+    ├── entropy-processor/      # Entropy visualization UI
+    ├── css-runtime/            # CSS Runtime controller
+    └── atomic-portal/          # API command portal
 ```
 
 ---
@@ -258,6 +262,121 @@ The **Quantum Fusion Engine** (`examples/quantum-fusion-engine/`) demonstrates t
 quantum-fusion-engine/
 └── index.html         # Complete quantum visualization
 ```
+
+---
+
+## 🌀 Entropy Processor UI Kit
+
+The **Entropy Processor** (`examples/entropy-processor/`) demonstrates CSS-driven entropy visualization:
+
+| Feature | Implementation |
+|---------|----------------|
+| **CSS Variables** | `--entropy` drives all visual properties |
+| **Derived Properties** | `--energy`, `--pulse`, `--glow`, `--hue`, `--scale` |
+| **Entropy Meter** | Animated progress bar with gradient fill |
+| **Particle System** | Dynamic particles based on entropy level |
+| **Grid Visualization** | 10×10 grid showing active entropy cells |
+| **State Classes** | `.state-low`, `.state-medium`, `.state-high` |
+| **Interactive Controls** | Increase, Decrease, Randomize, Stabilize |
+
+### Entropy-Driven CSS
+
+```css
+:root {
+  --entropy: 0.6;
+  --glow: calc(var(--entropy) * 0.7);
+  --hue: calc(var(--entropy) * 360);
+  --scale: calc(1 + var(--entropy) * 0.15);
+}
+```
+
+---
+
+## 🎨 CSS Runtime UI Kit
+
+The **CSS Runtime** (`examples/css-runtime/`) showcases the complete atomic CSS system:
+
+| Feature | Implementation |
+|---------|----------------|
+| **Glyph API Endpoints** | ⟁ SCX, ⚡ Control, 🌀 State, 🧬 Execution, 🎨 Render |
+| **Runtime Controls** | Entropy, Velocity, Signal, Glow, Blur, Hazard sliders |
+| **Physics Simulation** | CSS-driven box with force application |
+| **XCFE Control Flow** | Perception, Representation, Reasoning, Decision, Action |
+| **API State Visualization** | Real-time response display |
+| **Atomic Attributes** | `[⟁flex]`, `[⟁grid]`, `[⟁ghost]`, etc. |
+
+### XCFE State Classes
+
+```css
+.xcfe-perception { filter: blur(calc(var(--blur)*1px)); }
+.xcfe-representation { transform: scale(calc(1 + var(--entropy)*0.1)); }
+.xcfe-reasoning { border-left: 3px solid var(--accent); }
+.xcfe-decision { color: var(--accent); font-weight: 600; }
+.xcfe-action { background: var(--accent-soft); }
+```
+
+---
+
+## ⚡ Atomic Portal UI Kit
+
+The **Atomic Portal** (`examples/atomic-portal/`) is a complete API command interface:
+
+| Feature | Implementation |
+|---------|----------------|
+| **JSON API Commander** | Execute `@control` commands via textarea |
+| **Quick Commands** | Pre-built buttons for common operations |
+| **State Visualizer** | Real-time entropy, innovation, stability bars |
+| **Render Zone** | Dynamic content rendering from API |
+| **API Log** | Command execution history |
+| **Live Feed** | Real-time event stream |
+| **Embedded API Schema** | `<script type="application/json">` definition |
+
+### API Command Format
+
+```json
+{
+  "@control": "@render",
+  "@data": {
+    "type": "welcome",
+    "message": "Portal Active",
+    "energy": 0.9
+  }
+}
+```
+
+### Available Endpoints
+
+| Command | Handler | Description |
+|---------|---------|-------------|
+| `@render` | `renderHandler` | Render templates to DOM |
+| `@update_energy` | `energyHandler` | Update CSS variables |
+| `@animate` | `animateHandler` | Apply animations |
+| `@render_block` | `blockHandler` | Render atomic blocks |
+| `@execute_sequence` | `sequenceHandler` | Run command sequences |
+
+---
+
+## 🔌 API Runtime Specification
+
+The **API Runtime** (`api-runtime.json`) defines the glyph → API endpoint mapping:
+
+| Glyph | Endpoint | Method | Description |
+|-------|----------|--------|-------------|
+| ⟁ | `/scx/execute` | POST | SCX Atomic CSS operations |
+| ⚡ | `/control/flow` | POST | Control flow and logic |
+| 🌀 | `/state/variable` | PUT | State variable management |
+| 🧬 | `/execution/engine` | POST | Execution engine operations |
+| 🎨 | `/render/engine` | POST | Rendering and visualization |
+
+### K'UHUL Phase Endpoints
+
+| Phase | Endpoint | Description |
+|-------|----------|-------------|
+| `[Pop]` | `/phase/activate` | Activation - system boot |
+| `[Wo]` | `/phase/intention` | Intention - planning |
+| `[Sek]` | `/phase/execute` | Execution - doing work |
+| `[Xul]` | `/phase/transform` | Transformation - changing form |
+| `[Ch'en]` | `/phase/render` | Render - making visible |
 
 ---
 
