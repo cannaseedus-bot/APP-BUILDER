@@ -124,12 +124,50 @@ atomic-blocks/
 │   ├── counter.atomic.json
 │   ├── form.atomic.json
 │   └── dashboard.atomic.json
-├── runtime/            # K'UHUL π functions
+├── runtime/            # K'UHUL π functions & sw.js
 │   ├── core.pi
-│   └── math.pi
-└── examples/           # Complete working examples
+│   ├── sw.js
+│   └── patterns.css
+└── examples/           # Complete working examples & studio templates
     ├── counter-app/
-    └── dashboard-app/
+    └── black-code-editor/   # CANONICAL REFERENCE
+```
+
+---
+
+## Canonical Example: Black Code Editor
+
+The **Black Code Editor** (`examples/black-code-editor/`) is the canonical reference implementation demonstrating:
+
+| Feature | Implementation |
+|---------|----------------|
+| **Atomic Block** | Complete `@state`, `@control`, `@flow`, `@css`, `@events` |
+| **CSS Runtime** | `atomic-glyph.css` - state-driven rendering |
+| **Glyphs** | `glyphs.css` - base64 SVG icons via `data-g` |
+| **K'UHUL π** | `core.pi` - pure computation functions |
+| **Service Worker** | `sw.js` - THE ONLY JavaScript |
+| **XCFE Patterns** | `@if_then_else`, `@dispatch` control flow |
+| **Tape System** | Multi-tape navigation without page changes |
+| **Theme System** | CSS variable-based theming |
+
+### Studio Base Template
+
+This example also serves as a **studio base template** for building:
+- Code editors
+- Design tools
+- Dashboard applications
+- Canvas-based applications
+- Any three-panel workspace
+
+### Files
+
+```
+black-code-editor/
+├── index.html         # Structure + embedded Atomic Block
+├── atomic-glyph.css   # CSS Runtime (state → rendering)
+├── glyphs.css         # Base64 SVG icon system
+├── sw.js              # Service Worker (I/O only)
+└── core.pi            # K'UHUL π functions
 ```
 
 ---

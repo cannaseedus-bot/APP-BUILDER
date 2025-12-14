@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark-glass" data-mode="idle">
+<head>
+  <meta charset="UTF-8">
+  <title>MX2 Black Code Editor - Forge Suite</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="atomic-glyph.css">
+  <link rel="stylesheet" href="glyphs.css">
+</head>
+<body>
+  <!--
+    MX2 BLACK CODE EDITOR
+    CANONICAL REFERENCE IMPLEMENTATION
+
+    DEMONSTRATES:
+    - ATOMIC+GLYPH CSS with operators
+    - XCFE control flow patterns
+    - Physics state as CSS vars
+    - MX2LEX 4-language binding
+    - Glyphs as base64 SVGs
+    - Service Worker as ONLY JS runtime
+
+    HTML IS LIMITED TO:
+    - Structure (semantic containers)
+    - Buttons (user interaction points)
+    - Data attributes (state binding)
+
+    HTML DOES NOT CONTAIN:
+    - Logic
+    - Event handlers (inline)
+    - Rendering code
+    - State management
+  -->
+
+  <div id="app" class="forge-shell" data-level="ok" data-mode="idle">
+
+    <!-- HEADER BAR -->
+    <header class="forge-header" atomic-block="header">
+      <div class="forge-brand">
+        <span data-g="mx2-logo"></span>
+        <span class="brand-text">Black Code Editor</span>
+      </div>
+
+      <!-- Mode indicator - styled by data-mode -->
+      <div class="mode-badge">
+        <span class="mode-dot"></span>
+        <span class="mode-label"></span>
+      </div>
+
+      <!-- Entropy bar -->
+      <div class="entropy-display">
+        <div class="entropy-bar-container">
+          <div class="entropy-bar"></div>
+        </div>
+        <span class="entropy-value"></span>
+      </div>
+
+      <!-- Theme switcher -->
+      <div class="theme-switcher">
+        <button class="btn btn-ghost" data-action="@theme_cycle" data-g="sun"></button>
+      </div>
+    </header>
+
+    <!-- MAIN WORKSPACE -->
+    <main class="forge-workspace">
+
+      <!-- SIDEBAR - Tape Navigation -->
+      <aside class="forge-sidebar" data-collapsed="0">
+        <nav class="tape-nav">
+          <button class="tape-btn" data-target="editor" data-action="@select_tape" data-g="code">
+            <span class="tape-label">Editor</span>
+          </button>
+          <button class="tape-btn" data-target="preview" data-action="@select_tape" data-g="eye">
+            <span class="tape-label">Preview</span>
+          </button>
+          <button class="tape-btn" data-target="ast" data-action="@select_tape" data-g="tree">
+            <span class="tape-label">AST View</span>
+          </button>
+          <button class="tape-btn" data-target="terminal" data-action="@select_tape" data-g="terminal">
+            <span class="tape-label">Terminal</span>
+          </button>
+          <button class="tape-btn" data-target="settings" data-action="@select_tape" data-g="gear">
+            <span class="tape-label">Settings</span>
+          </button>
+        </nav>
+
+        <button class="sidebar-toggle btn btn-ghost" data-action="@toggle_sidebar" data-g="chevron-left"></button>
+      </aside>
+
+      <!-- TAPE CONTAINER -->
+      <div class="tape-container" data-tape="editor">
+
+        <!-- EDITOR TAPE -->
+        <section class="tape" data-id="editor" atomic-block="editor-tape">
+          <div class="editor-toolbar">
+            <div class="file-tabs">
+              <button class="file-tab active" data-file="main.pi" data-action="@select_file">
+                <span data-g="file-code"></span>
+                <span>main.pi</span>
+              </button>
+              <button class="file-tab" data-file="style.css" data-action="@select_file">
+                <span data-g="file-css"></span>
+                <span>style.css</span>
+              </button>
+              <button class="file-tab" data-file="block.json" data-action="@select_file">
+                <span data-g="file-json"></span>
+                <span>block.json</span>
+              </button>
+            </div>
+            <div class="toolbar-actions">
+              <button class="btn btn-ghost" data-action="@format" data-g="wand"></button>
+              <button class="btn btn-ghost" data-action="@save" data-g="save"></button>
+              <button class="btn btn-primary" data-action="@run" data-g="play"></button>
+            </div>
+          </div>
+
+          <!-- Code editor area - content injected by sw.js -->
+          <div class="editor-content" contenteditable="false">
+            <div class="line-numbers"></div>
+            <pre class="code-area"><code class="code-text"></code></pre>
+          </div>
+
+          <!-- Minimap -->
+          <div class="editor-minimap">
+            <canvas class="minimap-canvas"></canvas>
+          </div>
+        </section>
+
+        <!-- PREVIEW TAPE -->
+        <section class="tape" data-id="preview" atomic-block="preview-tape">
+          <div class="preview-toolbar">
+            <div class="preview-controls">
+              <button class="btn btn-ghost" data-action="@refresh_preview" data-g="refresh"></button>
+              <button class="btn btn-ghost" data-action="@toggle_responsive" data-g="smartphone"></button>
+            </div>
+            <div class="preview-dimensions">
+              <span class="dim-value"></span>
+            </div>
+          </div>
+          <div class="preview-frame">
+            <iframe class="preview-iframe" sandbox="allow-scripts"></iframe>
+          </div>
+        </section>
+
+        <!-- AST VIEW TAPE -->
+        <section class="tape" data-id="ast" atomic-block="ast-tape">
+          <div class="ast-toolbar">
+            <div class="ast-mode-toggle">
+              <button class="btn btn-ghost active" data-ast-mode="tree" data-action="@set_ast_mode">Tree</button>
+              <button class="btn btn-ghost" data-ast-mode="json" data-action="@set_ast_mode">JSON</button>
+              <button class="btn btn-ghost" data-ast-mode="graph" data-action="@set_ast_mode">Graph</button>
+            </div>
+          </div>
+          <div class="ast-view" data-ast-mode="tree">
+            <div class="ast-tree"></div>
+            <div class="ast-json"></div>
+            <div class="ast-graph">
+              <canvas class="graph-canvas"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- TERMINAL TAPE -->
+        <section class="tape" data-id="terminal" atomic-block="terminal-tape">
+          <div class="terminal-header">
+            <span class="terminal-title">K'UHUL REPL</span>
+            <div class="terminal-status">
+              <span class="status-dot"></span>
+              <span class="status-text"></span>
+            </div>
+          </div>
+          <div class="terminal-output">
+            <div class="terminal-history"></div>
+          </div>
+          <div class="terminal-input-area">
+            <span class="terminal-prompt" data-g="chevron-right"></span>
+            <input type="text" class="terminal-input" placeholder="Enter command..." data-action="@terminal_exec">
+          </div>
+        </section>
+
+        <!-- SETTINGS TAPE -->
+        <section class="tape" data-id="settings" atomic-block="settings-tape">
+          <div class="settings-grid">
+            <!-- Theme Settings -->
+            <div class="settings-card">
+              <h3 class="settings-title">
+                <span data-g="palette"></span>
+                Theme
+              </h3>
+              <div class="settings-options">
+                <button class="theme-option" data-theme="dark-glass" data-action="@apply_theme">
+                  <span class="theme-preview dark-glass"></span>
+                  <span>Dark Glass</span>
+                </button>
+                <button class="theme-option" data-theme="light-clean" data-action="@apply_theme">
+                  <span class="theme-preview light-clean"></span>
+                  <span>Light Clean</span>
+                </button>
+                <button class="theme-option" data-theme="neon-purple" data-action="@apply_theme">
+                  <span class="theme-preview neon-purple"></span>
+                  <span>Neon Purple</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Editor Settings -->
+            <div class="settings-card">
+              <h3 class="settings-title">
+                <span data-g="sliders"></span>
+                Editor
+              </h3>
+              <div class="settings-row">
+                <label>Font Size</label>
+                <input type="range" min="12" max="24" value="14" data-setting="font-size" data-action="@update_setting">
+                <span class="setting-value"></span>
+              </div>
+              <div class="settings-row">
+                <label>Tab Size</label>
+                <input type="range" min="2" max="8" value="2" data-setting="tab-size" data-action="@update_setting">
+                <span class="setting-value"></span>
+              </div>
+              <div class="settings-row">
+                <label>Line Numbers</label>
+                <button class="toggle-btn" data-setting="line-numbers" data-action="@toggle_setting" data-enabled="1">
+                  <span class="toggle-track"></span>
+                  <span class="toggle-thumb"></span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Shard Status -->
+            <div class="settings-card">
+              <h3 class="settings-title">
+                <span data-g="server"></span>
+                Shard Status
+              </h3>
+              <div class="shard-list">
+                <div class="shard-item" data-shard="foreman">
+                  <span class="shard-dot"></span>
+                  <span class="shard-name">Foreman</span>
+                  <span class="shard-status"></span>
+                </div>
+                <div class="shard-item" data-shard="frontend">
+                  <span class="shard-dot"></span>
+                  <span class="shard-name">Frontend</span>
+                  <span class="shard-status"></span>
+                </div>
+                <div class="shard-item" data-shard="inference">
+                  <span class="shard-dot"></span>
+                  <span class="shard-name">Inference</span>
+                  <span class="shard-status"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- STATUS BAR -->
+    <footer class="forge-statusbar">
+      <div class="status-left">
+        <span class="status-item" data-g="git-branch">
+          <span class="branch-name"></span>
+        </span>
+        <span class="status-item">
+          <span class="file-status"></span>
+        </span>
+      </div>
+      <div class="status-center">
+        <span class="status-item level-indicator">
+          <span class="level-dot"></span>
+          <span class="level-text"></span>
+        </span>
+      </div>
+      <div class="status-right">
+        <span class="status-item cursor-position">
+          Ln <span class="line-num"></span>, Col <span class="col-num"></span>
+        </span>
+        <span class="status-item file-type"></span>
+        <span class="status-item encoding">UTF-8</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!--
+    ATOMIC BLOCK DEFINITION
+    Embedded as JSON, parsed by sw.js
+    This is THE canonical state definition
+  -->
+  <script type="application/json" id="atomic-block">
+  {
+    "@id": "black-code-editor.atomic",
+    "@version": "1.0.0",
+
+    "@state": {
+      "--mode": "idle",
+      "--level": "ok",
+      "--entropy": 0.10,
+      "--active-tape": "editor",
+      "--active-file": "main.pi",
+      "--theme": "dark-glass",
+      "--sidebar-collapsed": 0,
+      "--cursor-line": 1,
+      "--cursor-col": 1,
+      "--file-modified": 0,
+      "--ast-mode": "tree",
+      "--font-size": 14,
+      "--tab-size": 2,
+      "--line-numbers": 1,
+      "--shard-foreman": "connecting",
+      "--shard-frontend": "offline",
+      "--shard-inference": "offline",
+      "--branch": "main"
+    },
+
+    "@control": {
+      "@select_tape": { "@pi": "editor.select_tape" },
+      "@select_file": { "@pi": "editor.select_file" },
+      "@toggle_sidebar": { "@pi": "editor.toggle_sidebar" },
+      "@theme_cycle": { "@pi": "editor.theme_cycle" },
+      "@apply_theme": { "@pi": "editor.apply_theme" },
+      "@save": { "@pi": "editor.save", "@then": "@persist" },
+      "@run": { "@pi": "editor.run", "@gas": "inference.execute" },
+      "@format": { "@pi": "editor.format" },
+      "@refresh_preview": { "@pi": "preview.refresh" },
+      "@toggle_responsive": { "@pi": "preview.toggle_responsive" },
+      "@set_ast_mode": { "@pi": "ast.set_mode" },
+      "@terminal_exec": { "@pi": "terminal.exec" },
+      "@update_setting": { "@pi": "settings.update" },
+      "@toggle_setting": { "@pi": "settings.toggle" },
+      "@derive": { "@pi": "editor.derive" },
+      "@persist": { "@io": "idb.put", "@key": "editor_state" },
+      "@restore": { "@io": "idb.get", "@key": "editor_state" },
+      "@check_shards": { "@gas": "foreman.health", "@then": "@update_shard_status" },
+      "@update_shard_status": { "@pi": "shards.update_status" }
+    },
+
+    "@flow": {
+      "@boot": ["@restore", "@derive", "@check_shards"],
+      "@after_action": ["@derive"],
+      "@on_save": ["@persist"],
+      "@heartbeat": ["@check_shards"]
+    },
+
+    "@css": {
+      "vars": [
+        "--mode", "--level", "--entropy", "--active-tape",
+        "--theme", "--sidebar-collapsed", "--cursor-line",
+        "--cursor-col", "--font-size", "--tab-size"
+      ],
+      "attrs": {
+        "#app": {
+          "data-level": "--level",
+          "data-mode": "--mode",
+          "data-theme": "--theme"
+        },
+        ".tape-container": { "data-tape": "--active-tape" },
+        ".forge-sidebar": { "data-collapsed": "--sidebar-collapsed" },
+        ".ast-view": { "data-ast-mode": "--ast-mode" }
+      },
+      "text": {
+        ".mode-label": "--mode",
+        ".level-text": "--level",
+        ".entropy-value": "--entropy",
+        ".line-num": "--cursor-line",
+        ".col-num": "--cursor-col",
+        ".branch-name": "--branch"
+      }
+    },
+
+    "@events": {
+      "[data-action='@select_tape']": { "click": "@select_tape" },
+      "[data-action='@select_file']": { "click": "@select_file" },
+      "[data-action='@toggle_sidebar']": { "click": "@toggle_sidebar" },
+      "[data-action='@theme_cycle']": { "click": "@theme_cycle" },
+      "[data-action='@apply_theme']": { "click": "@apply_theme" },
+      "[data-action='@save']": { "click": "@save" },
+      "[data-action='@run']": { "click": "@run" },
+      "[data-action='@format']": { "click": "@format" },
+      "[data-action='@refresh_preview']": { "click": "@refresh_preview" },
+      "[data-action='@toggle_responsive']": { "click": "@toggle_responsive" },
+      "[data-action='@set_ast_mode']": { "click": "@set_ast_mode" },
+      "[data-action='@terminal_exec']": { "keydown.enter": "@terminal_exec" },
+      "[data-action='@update_setting']": { "input": "@update_setting" },
+      "[data-action='@toggle_setting']": { "click": "@toggle_setting" }
+    },
+
+    "@xcfe": {
+      "editor-tape": {
+        "@if_then_else": {
+          "@if": { "--file-modified": 1 },
+          "@then": { "@class": "modified" },
+          "@else": { "@class": "saved" }
+        }
+      },
+      "terminal-tape": {
+        "@dispatch": {
+          "@on": "command",
+          "@routes": {
+            "help": "@show_help",
+            "clear": "@clear_terminal",
+            "run": "@run"
+          }
+        }
+      }
+    },
+
+    "@mx2lex": {
+      "css": "atomic-glyph.css",
+      "grams": "@control",
+      "xcfe": "@xcfe",
+      "api": {
+        "foreman": "/api/foreman",
+        "frontend": "/api/frontend",
+        "inference": "/api/inference"
+      }
+    }
+  }
+  </script>
+
+  <!--
+    MINIMAL BOOT SCRIPT
+    Registers sw.js and sends initial message
+    ALL logic lives in sw.js - this is just I/O
+  -->
+  <script>
+    // Service Worker registration (THE ONLY JS RUNTIME)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        // Parse atomic block
+        const block = JSON.parse(
+          document.getElementById('atomic-block').textContent
+        );
+
+        // Wait for controller
+        navigator.serviceWorker.ready.then(() => {
+          // Send BOOT message to sw.js
+          navigator.serviceWorker.controller?.postMessage({
+            type: 'BOOT',
+            atomicBlock: block,
+            state: block['@state']
+          });
+        });
+      });
+
+      // Listen for state updates from sw.js
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        const { type, state, attrs, text } = event.data;
+
+        if (type === 'APPLY_STATE') {
+          // Apply state to CSS vars
+          const root = document.documentElement.style;
+          for (const [k, v] of Object.entries(state)) {
+            root.setProperty(k, String(v));
+          }
+        }
+
+        if (type === 'APPLY_ATTRS') {
+          // Apply data-* attrs to DOM
+          for (const [selector, attrMap] of Object.entries(attrs)) {
+            const el = document.querySelector(selector);
+            if (el) {
+              for (const [attr, value] of Object.entries(attrMap)) {
+                el.setAttribute(attr, value);
+              }
+            }
+          }
+        }
+
+        if (type === 'APPLY_TEXT') {
+          // Apply text content
+          for (const [selector, value] of Object.entries(text)) {
+            const el = document.querySelector(selector);
+            if (el) el.textContent = value;
+          }
+        }
+      });
+
+      // Wire up events from atomic block @events
+      document.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-action]');
+        if (!target || !navigator.serviceWorker.controller) return;
+
+        const action = target.dataset.action;
+        const block = JSON.parse(
+          document.getElementById('atomic-block').textContent
+        );
+
+        // Gather current state from CSS vars
+        const currentState = {};
+        const root = getComputedStyle(document.documentElement);
+        for (const v of block['@css'].vars) {
+          let val = root.getPropertyValue(v).trim();
+          if (!isNaN(val) && val !== '') {
+            val = parseFloat(val);
+          }
+          currentState[v] = val;
+        }
+
+        // Include element-specific params
+        const params = {};
+        if (target.dataset.target) params.target = target.dataset.target;
+        if (target.dataset.file) params.file = target.dataset.file;
+        if (target.dataset.theme) params.theme = target.dataset.theme;
+        if (target.dataset.setting) {
+          params.setting = target.dataset.setting;
+          params.value = target.value || target.dataset.enabled;
+        }
+        if (target.dataset.astMode) params.astMode = target.dataset.astMode;
+
+        navigator.serviceWorker.controller.postMessage({
+          type: 'DISPATCH',
+          control: action,
+          atomicBlock: block,
+          state: currentState,
+          params: params
+        });
+      });
+
+      // Handle input events for settings
+      document.addEventListener('input', (e) => {
+        const target = e.target.closest('[data-action]');
+        if (!target || !navigator.serviceWorker.controller) return;
+        if (target.dataset.action !== '@update_setting') return;
+
+        const block = JSON.parse(
+          document.getElementById('atomic-block').textContent
+        );
+
+        navigator.serviceWorker.controller.postMessage({
+          type: 'DISPATCH',
+          control: '@update_setting',
+          atomicBlock: block,
+          state: {},
+          params: {
+            setting: target.dataset.setting,
+            value: target.value
+          }
+        });
+      });
+
+      // Handle terminal input
+      document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        const target = e.target.closest('.terminal-input');
+        if (!target || !navigator.serviceWorker.controller) return;
+
+        const block = JSON.parse(
+          document.getElementById('atomic-block').textContent
+        );
+
+        navigator.serviceWorker.controller.postMessage({
+          type: 'DISPATCH',
+          control: '@terminal_exec',
+          atomicBlock: block,
+          state: {},
+          params: { command: target.value }
+        });
+
+        target.value = '';
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,943 @@
+/**
+ * MX2 ATOMIC+GLYPH CSS Runtime
+ * BLACK CODE EDITOR - Forge Suite
+ *
+ * CSS IS THE RUNTIME - NOT STYLING
+ *
+ * This file demonstrates:
+ * - State as CSS variables
+ * - Rendering driven by vars/attrs
+ * - Computed values via calc()
+ * - Transitions as physics
+ * - Universal layout operators
+ */
+
+/* ============================================
+   BLOCK 1: STATE VARIABLES (set by sw.js)
+   ============================================ */
+
+:root {
+  /* Editor State */
+  --mode: idle;
+  --level: ok;
+  --entropy: 0.10;
+  --active-tape: editor;
+  --active-file: main.pi;
+  --cursor-line: 1;
+  --cursor-col: 1;
+  --file-modified: 0;
+
+  /* UI State */
+  --sidebar-collapsed: 0;
+  --ast-mode: tree;
+  --font-size: 14;
+  --tab-size: 2;
+  --line-numbers: 1;
+
+  /* Shard State */
+  --shard-foreman: connecting;
+  --shard-frontend: offline;
+  --shard-inference: offline;
+
+  /* Theme Tokens (dark-glass default) */
+  --bg: #020409;
+  --bg-alt: #05080f;
+  --panel: #050a14;
+  --panel-hover: #0a1020;
+  --accent: #00ffd0;
+  --accent-soft: rgba(0, 255, 208, 0.15);
+  --text: #f7fafc;
+  --text-soft: #a0aec0;
+  --text-muted: #64748b;
+  --border: rgba(22, 242, 170, 0.25);
+  --border-strong: rgba(22, 242, 170, 0.5);
+  --danger: #ff4c6a;
+  --warn: #ffd700;
+  --success: #10b981;
+
+  /* Derived state color */
+  --state-color: var(--accent);
+
+  /* Physics */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-circ: cubic-bezier(0.85, 0, 0.15, 1);
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --header-height: 48px;
+  --statusbar-height: 24px;
+  --radius: 8px;
+  --radius-sm: 4px;
+}
+
+
+/* ============================================
+   BLOCK 2: THEME SWITCHING (data-theme)
+   ============================================ */
+
+[data-theme="dark-glass"] {
+  --bg: #020409;
+  --bg-alt: #05080f;
+  --panel: #050a14;
+  --panel-hover: #0a1020;
+  --accent: #00ffd0;
+  --accent-soft: rgba(0, 255, 208, 0.15);
+  --text: #f7fafc;
+  --text-soft: #a0aec0;
+  --border: rgba(22, 242, 170, 0.25);
+}
+
+[data-theme="light-clean"] {
+  --bg: #f5f7ff;
+  --bg-alt: #e8ecf4;
+  --panel: #ffffff;
+  --panel-hover: #f0f4f8;
+  --accent: #2563eb;
+  --accent-soft: rgba(37, 99, 235, 0.1);
+  --text: #020617;
+  --text-soft: #475569;
+  --border: rgba(37, 99, 235, 0.2);
+}
+
+[data-theme="neon-purple"] {
+  --bg: #0a0014;
+  --bg-alt: #100020;
+  --panel: #120024;
+  --panel-hover: #1a0030;
+  --accent: #a855f7;
+  --accent-soft: rgba(168, 85, 247, 0.15);
+  --text: #faf5ff;
+  --text-soft: #c4b5fd;
+  --border: rgba(147, 51, 234, 0.3);
+}
+
+
+/* ============================================
+   BLOCK 3: LEVEL-BASED STYLING (data-level)
+   ============================================ */
+
+[data-level="ok"] {
+  --state-color: var(--accent);
+}
+
+[data-level="warn"] {
+  --state-color: var(--warn);
+}
+
+[data-level="danger"] {
+  --state-color: var(--danger);
+}
+
+
+/* ============================================
+   BLOCK 4: MODE-BASED BEHAVIOR (data-mode)
+   ============================================ */
+
+[data-mode="idle"] {
+  /* Default state */
+}
+
+[data-mode="acting"] {
+  animation: pulse-mode 300ms ease-out;
+}
+
+[data-mode="saving"] .file-status::after {
+  content: "Saving...";
+  color: var(--warn);
+}
+
+[data-mode="running"] .mode-badge {
+  animation: pulse-run 800ms infinite;
+}
+
+@keyframes pulse-mode {
+  0% { opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
+
+@keyframes pulse-run {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 208, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(0, 255, 208, 0); }
+}
+
+
+/* ============================================
+   BLOCK 5: BASE RESET & LAYOUT
+   ============================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+
+/* ============================================
+   BLOCK 6: FORGE SHELL LAYOUT
+   ============================================ */
+
+.forge-shell {
+  display: grid;
+  grid-template-rows: var(--header-height) 1fr var(--statusbar-height);
+  height: 100vh;
+  overflow: hidden;
+}
+
+.forge-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+.forge-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.forge-workspace {
+  display: flex;
+  overflow: hidden;
+}
+
+
+/* ============================================
+   BLOCK 7: SIDEBAR - WIDTH FROM calc()
+   ============================================ */
+
+.forge-sidebar {
+  width: calc(var(--sidebar-width) * (1 - var(--sidebar-collapsed)) + 60px * var(--sidebar-collapsed));
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: width 250ms var(--ease-out-expo);
+  overflow: hidden;
+}
+
+[data-collapsed="1"] .forge-sidebar {
+  width: 60px;
+}
+
+[data-collapsed="1"] .tape-label {
+  opacity: 0;
+  width: 0;
+}
+
+.tape-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 4px;
+}
+
+.tape-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius);
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: all 150ms ease;
+  text-align: left;
+}
+
+.tape-btn:hover {
+  background: var(--panel-hover);
+  color: var(--text);
+}
+
+.tape-label {
+  white-space: nowrap;
+  transition: opacity 200ms ease, width 200ms ease;
+}
+
+.sidebar-toggle {
+  margin: 8px;
+  transition: transform 200ms ease;
+}
+
+[data-collapsed="1"] .sidebar-toggle {
+  transform: rotate(180deg);
+}
+
+
+/* ============================================
+   BLOCK 8: TAPE SYSTEM - ACTIVE TAPE SELECTION
+   ============================================ */
+
+.tape-container {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Hide all tapes by default */
+.tape {
+  display: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Show active tape based on data-tape attr */
+[data-tape="editor"] .tape[data-id="editor"],
+[data-tape="preview"] .tape[data-id="preview"],
+[data-tape="ast"] .tape[data-id="ast"],
+[data-tape="terminal"] .tape[data-id="terminal"],
+[data-tape="settings"] .tape[data-id="settings"] {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tab button active state */
+[data-tape="editor"] .tape-btn[data-target="editor"],
+[data-tape="preview"] .tape-btn[data-target="preview"],
+[data-tape="ast"] .tape-btn[data-target="ast"],
+[data-tape="terminal"] .tape-btn[data-target="terminal"],
+[data-tape="settings"] .tape-btn[data-target="settings"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-left: 3px solid var(--accent);
+}
+
+
+/* ============================================
+   BLOCK 9: EDITOR TAPE
+   ============================================ */
+
+.editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+}
+
+.file-tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.file-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  color: var(--text-soft);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.file-tab:hover {
+  background: var(--panel);
+  color: var(--text);
+}
+
+.file-tab.active {
+  background: var(--panel);
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.editor-content {
+  flex: 1;
+  display: flex;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.line-numbers {
+  width: 50px;
+  padding: 12px 8px;
+  text-align: right;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: calc(var(--font-size) * 1px);
+  line-height: 1.6;
+  user-select: none;
+  border-right: 1px solid var(--border);
+}
+
+.code-area {
+  flex: 1;
+  padding: 12px;
+  overflow: auto;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: calc(var(--font-size) * 1px);
+  line-height: 1.6;
+  tab-size: var(--tab-size);
+}
+
+.code-text {
+  display: block;
+  white-space: pre;
+  color: var(--text);
+}
+
+.editor-minimap {
+  width: 100px;
+  background: var(--bg-alt);
+  border-left: 1px solid var(--border);
+}
+
+
+/* ============================================
+   BLOCK 10: PREVIEW TAPE
+   ============================================ */
+
+.preview-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+}
+
+.preview-frame {
+  flex: 1;
+  padding: 16px;
+  background: var(--bg);
+}
+
+.preview-iframe {
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: white;
+}
+
+
+/* ============================================
+   BLOCK 11: AST VIEW TAPE
+   ============================================ */
+
+.ast-toolbar {
+  display: flex;
+  padding: 8px 12px;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+}
+
+.ast-mode-toggle {
+  display: flex;
+  gap: 4px;
+}
+
+.ast-view {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+}
+
+.ast-tree,
+.ast-json,
+.ast-graph {
+  display: none;
+}
+
+[data-ast-mode="tree"] .ast-tree,
+[data-ast-mode="json"] .ast-json,
+[data-ast-mode="graph"] .ast-graph {
+  display: block;
+}
+
+
+/* ============================================
+   BLOCK 12: TERMINAL TAPE
+   ============================================ */
+
+.terminal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+}
+
+.terminal-title {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.terminal-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.terminal-output {
+  flex: 1;
+  padding: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  overflow: auto;
+  background: var(--bg);
+}
+
+.terminal-input-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-alt);
+  border-top: 1px solid var(--border);
+}
+
+.terminal-prompt {
+  color: var(--accent);
+}
+
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  outline: none;
+}
+
+.terminal-input::placeholder {
+  color: var(--text-muted);
+}
+
+
+/* ============================================
+   BLOCK 13: SETTINGS TAPE
+   ============================================ */
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  overflow: auto;
+}
+
+.settings-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.settings-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.settings-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.theme-option:hover {
+  border-color: var(--accent);
+}
+
+.theme-preview {
+  width: 60px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+}
+
+.theme-preview.dark-glass {
+  background: linear-gradient(135deg, #020409, #050a14);
+  border: 1px solid rgba(0, 255, 208, 0.2);
+}
+
+.theme-preview.light-clean {
+  background: linear-gradient(135deg, #f5f7ff, #ffffff);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+.theme-preview.neon-purple {
+  background: linear-gradient(135deg, #0a0014, #120024);
+  border: 1px solid rgba(147, 51, 234, 0.3);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.settings-row label {
+  flex: 1;
+  color: var(--text-soft);
+}
+
+.settings-row input[type="range"] {
+  width: 120px;
+  accent-color: var(--accent);
+}
+
+.toggle-btn {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.toggle-btn[data-enabled="1"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.toggle-track {
+  position: absolute;
+  inset: 2px;
+  border-radius: 10px;
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: var(--text-soft);
+  border-radius: 50%;
+  transition: all 150ms ease;
+}
+
+.toggle-btn[data-enabled="1"] .toggle-thumb {
+  left: 22px;
+  background: var(--accent);
+}
+
+.shard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shard-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+}
+
+.shard-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+[data-status="online"] .shard-dot,
+.shard-item[data-shard-status="online"] .shard-dot {
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+}
+
+[data-status="connecting"] .shard-dot,
+.shard-item[data-shard-status="connecting"] .shard-dot {
+  background: var(--warn);
+  animation: blink 1s infinite;
+}
+
+[data-status="offline"] .shard-dot,
+.shard-item[data-shard-status="offline"] .shard-dot {
+  background: var(--danger);
+}
+
+
+/* ============================================
+   BLOCK 14: STATUS BAR
+   ============================================ */
+
+.forge-statusbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.status-left,
+.status-center,
+.status-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.level-indicator {
+  color: var(--state-color);
+}
+
+.level-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--state-color);
+}
+
+[data-level="danger"] .level-dot {
+  animation: pulse-danger 800ms infinite;
+}
+
+
+/* ============================================
+   BLOCK 15: MODE BADGE & ENTROPY BAR
+   ============================================ */
+
+.mode-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--accent-soft);
+  border-radius: 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mode-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--state-color);
+}
+
+.mode-label {
+  color: var(--state-color);
+  font-weight: 500;
+}
+
+.entropy-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.entropy-bar-container {
+  width: 100px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.entropy-bar {
+  height: 100%;
+  width: calc(var(--entropy) * 100%);
+  background: linear-gradient(90deg, var(--accent), var(--state-color));
+  border-radius: 2px;
+  transition: width 220ms ease, background 200ms ease;
+}
+
+.entropy-value {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-soft);
+  min-width: 32px;
+}
+
+
+/* ============================================
+   BLOCK 16: BUTTONS
+   ============================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    transform 100ms var(--ease-out-expo),
+    background 150ms ease,
+    border-color 150ms ease;
+}
+
+.btn:hover {
+  background: var(--panel-hover);
+  border-color: var(--accent);
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+.btn-primary {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-primary:hover {
+  background: rgba(0, 255, 208, 0.25);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-soft);
+}
+
+.btn-ghost:hover {
+  background: var(--panel-hover);
+  color: var(--text);
+}
+
+
+/* ============================================
+   BLOCK 17: ANIMATIONS
+   ============================================ */
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes pulse-danger {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+
+/* ============================================
+   BLOCK 18: LOADING STATES
+   ============================================ */
+
+[data-loaded="0"] {
+  background: linear-gradient(
+    90deg,
+    var(--panel) 25%,
+    rgba(255, 255, 255, 0.05) 50%,
+    var(--panel) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+
+/* ============================================
+   BLOCK 19: SCROLLBARS
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+
+/* ============================================
+   BLOCK 20: FOCUS STATES
+   ============================================ */
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
