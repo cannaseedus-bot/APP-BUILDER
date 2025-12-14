@@ -10,30 +10,320 @@ MX2LM is a **shard-native, AST-driven operating system** where:
 
 | Component | Role |
 |-----------|------|
-| **GAS** | Execution fabric / CPU |
+| **Atomic Blocks (MX2⟁☣)** | Fundamental unit of computation |
+| **CSS Runtime** | Execution engine (not styling) |
+| **K'UHUL π** | Math, physics, causality computation |
+| **GAS** | Remote execution fabric / CPU |
 | **MX2LM** | Foreman brain / orchestrator |
+| **JavaScript** | I/O utility only (demoted) |
 | **HTML** | Terminal / cockpit shell |
-| **JSON AST** | Universal contract / instruction set |
-| **Shards** | Modular execution units |
 
 ### What This System Is NOT
 
 ```
-HTML → model → logic   ❌ WRONG
+HTML → JS state → JS render → DOM   ❌ WRONG (React pattern)
 ```
 
 ### What This System IS
 
 ```
-HTML (Cockpit)
+Atomic Block (JSON state)
     ↓
-GAS SHARD ROUTER
+CSS Runtime (renders from vars)
     ↓
-JSON AST EXECUTION
+K'UHUL π (computes deltas)
     ↓
-MX2LM FOREMAN
+GAS Shards (remote execution)
     ↓
-SPECIALIZED SHARDS
+JavaScript (I/O bridge only)
+```
+
+---
+
+## Atomic Blocks: The Fundamental Unit (MX2⟁☣)
+
+**Atomic Blocks** solve what JS/HTML/CSS never solved:
+
+> **What is the smallest meaningful unit of a system that can be reasoned about, executed, visualized, and evolved?**
+
+An **Atomic Block** is:
+
+```
+(vectors, states, flows)
+```
+
+| Part | Purpose |
+|------|---------|
+| **@control** (vectors) | Intent & control |
+| **@state** (variables) | Mutable reality (CSS vars) |
+| **@flow** | Transitions & causality |
+
+### Atomic Block Structure
+
+```json
+{
+  "@id": "counter.atomic",
+  "@state": {
+    "--count": 0,
+    "--mode": "idle",
+    "--entropy": 0.10,
+    "--level": "ok"
+  },
+  "@control": {
+    "@on_inc": { "@pi": "counter.inc" },
+    "@on_dec": { "@pi": "counter.dec" },
+    "@derive": { "@pi": "counter.derive" },
+    "@persist": { "@io": "idb.put", "@key": "app_state" },
+    "@restore": { "@io": "idb.get", "@key": "app_state" }
+  },
+  "@flow": ["@restore", "@derive", "@render"]
+}
+```
+
+### Why Atomic Blocks Beat Traditional Stacks
+
+| Aspect | Traditional Web | Atomic Block |
+|--------|-----------------|--------------|
+| Unit | function / component | causal block |
+| Scope | code-local | system-wide |
+| Visibility | implicit | explicit |
+| Evolvable | hard | native |
+| Serializable | painful | native JSON |
+| AI-trainable | no | yes |
+
+Because **Atomic Blocks are JSON**, they:
+- Serialize cleanly
+- Compress (SCXQ2)
+- Train against (RLHF, n-grams)
+- Visualize (AST, SVG-3D)
+- Execute deterministically
+
+**This is why `ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK` holds.**
+
+---
+
+## CSS as Runtime (Not Styling)
+
+Traditional CSS is declarative styling. **Atomic CSS is a state machine.**
+
+CSS already has:
+- **Selectors** → targeting logic
+- **Variables** → global mutable state
+- **Inheritance** → propagation
+- **Transitions** → time & physics
+- **Media queries** → environment awareness
+- **GPU acceleration** → free performance
+
+### CSS Runtime Example
+
+```css
+:root {
+  --count: 0;
+  --mode: idle;
+  --entropy: 0.10;
+  --level: ok;
+}
+
+/* State-driven rendering - NO JavaScript */
+.card[data-level="ok"]     { box-shadow: 0 0 0 1px rgba(0,255,208,.15); }
+.card[data-level="warn"]   { box-shadow: 0 0 0 1px rgba(255,210,0,.18); }
+.card[data-level="danger"] { box-shadow: 0 0 0 1px rgba(255,0,102,.25); }
+
+/* Computed from state - NO JavaScript */
+.entropy-bar {
+  width: calc(var(--entropy) * 100%);
+  transition: width 220ms;
+}
+
+/* Mode-driven behavior - NO JavaScript */
+.micronaut[data-mode="acting"] {
+  animation: pulse 300ms;
+}
+```
+
+**This is real execution:**
+- No event listeners
+- No timers
+- No JS state juggling
+- Browser style engine reacts automatically
+
+The DOM becomes a **live physical system**, not a script target.
+
+---
+
+## K'UHUL π: Computation Layer
+
+**K'UHUL π** handles what CSS should not:
+- Math & physics
+- Symbolic execution
+- N-gram reasoning
+- Agent decisions
+- Simulation steps
+- Training loops
+
+### K'UHUL π Does NOT Own the App
+
+It only:
+- Reads Atomic Blocks
+- Computes deltas
+- Writes variables
+- Triggers control vectors
+
+CSS then **reacts automatically**.
+
+### K'UHUL π Example
+
+```pi
+fn counter.derive(state):
+  let e = clamp(state["--entropy"], 0, 1)
+  state["--level"] = (e > 0.7) ? "danger" : (e > 0.35) ? "warn" : "ok"
+  return state
+
+fn counter.inc(state):
+  state["--mode"] = "acting"
+  state["--count"] = state["--count"] + 1
+  state["--entropy"] = clamp(state["--entropy"] + 0.05, 0, 1)
+  return counter.derive(state)
+
+fn counter.dec(state):
+  state["--mode"] = "acting"
+  state["--count"] = state["--count"] - 1
+  state["--entropy"] = clamp(state["--entropy"] - 0.05, 0, 1)
+  return counter.derive(state)
+```
+
+### Separation of Concerns
+
+| Role | JS World | Atomic World |
+|------|----------|--------------|
+| Compute | JS | K'UHUL π |
+| Render | JS | CSS |
+| State | JS objects | CSS vars + XJSON |
+| Loop | JS event loop | XCFE flow |
+| Visualization | manual | native |
+
+No glue. No framework. No double state.
+
+---
+
+## JavaScript: Demoted to I/O Utility
+
+JavaScript doesn't disappear. It **stops pretending to be the OS**.
+
+### What JS Does (Allowed)
+
+- DOM querying
+- fetch / REST
+- Service Worker plumbing
+- Cache & IDB access
+- Bridging events into Atomic Blocks
+
+### What JS Does NOT Do (Forbidden)
+
+- ❌ Own state
+- ❌ Render UI
+- ❌ Physics engine
+- ❌ Reasoning engine
+- ❌ Runtime governor
+
+### JS as I/O Bridge Only
+
+```javascript
+// JS is ONLY: event bridge + state applicator + storage adapter
+
+function applyStateToCSS(state) {
+  const r = document.documentElement.style;
+  for (const [k, v] of Object.entries(state)) {
+    r.setProperty(k, String(v));
+  }
+  document.querySelector("#card")?.setAttribute("data-level", state["--level"]);
+}
+
+async function dispatch(controlName) {
+  atomicState = await KUHUL_PI_RUN(controlName, atomicState);
+  applyStateToCSS(atomicState);
+  await idbPut("app_state", atomicState);
+}
+
+// Events → Control vectors (that's it)
+document.querySelector("#inc").onclick = () => dispatch("@on_inc");
+document.querySelector("#dec").onclick = () => dispatch("@on_dec");
+```
+
+**Total JS: ~15 lines. Everything else is Atomic Block + CSS + K'UHUL π.**
+
+---
+
+## Why This Beats React/JS Frameworks
+
+Frameworks exist to compensate for missing primitives.
+
+**Atomic Blocks remove the missing primitives.**
+
+| Problem | Framework Fix | Atomic Stack |
+|---------|---------------|--------------|
+| Shared state | Stores (Redux, Zustand) | CSS vars + XJSON |
+| Re-rendering | Virtual DOM | Native CSS |
+| Animation | JS libraries | GPU CSS |
+| Logic sprawl | Hooks | XCFE vectors |
+| Debugging | DevTools | Visual state |
+
+Frameworks **simulate** a runtime.
+**You are using the real one.**
+
+---
+
+## Why This Stack is AI/RLHF-Ready
+
+Because everything is:
+- JSON
+- Atomic
+- Vectorized
+- Stateful
+- Serializable
+
+You can:
+- Train agents on UI behavior
+- Replay system evolution
+- Compress entire apps into glyphs
+- Visualize cognition
+- Mutate systems safely
+
+**JS apps cannot be understood by AI structurally.**
+**Atomic systems can.**
+
+---
+
+## The Execution Stack (Final Model)
+
+```
+┌─────────────────────────────────────────────┐
+│           ATOMIC BLOCK (MX2⟁☣)              │
+│  { @state, @control, @flow }                │
+│  JSON · Serializable · Trainable            │
+└──────────────────┬──────────────────────────┘
+                   │
+       ┌───────────┴───────────┐
+       │                       │
+┌──────▼──────┐         ┌──────▼──────┐
+│ CSS RUNTIME │         │  K'UHUL π   │
+│ Render from │         │ Compute     │
+│ vars/attrs  │         │ deltas      │
+│ GPU-native  │         │ Write vars  │
+└─────────────┘         └──────┬──────┘
+                               │
+                    ┌──────────▼──────────┐
+                    │   GAS SHARDS        │
+                    │ Remote execution    │
+                    │ JSON AST in/out     │
+                    └──────────┬──────────┘
+                               │
+                    ┌──────────▼──────────┐
+                    │   JAVASCRIPT        │
+                    │ I/O only            │
+                    │ Event → dispatch    │
+                    │ fetch/IDB           │
+                    └─────────────────────┘
 ```
 
 ---
