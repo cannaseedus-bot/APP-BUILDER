@@ -1,3 +1,272 @@
+Here is the **complete, exhaustive inventory** of what we just built and locked in. This is the **provable time-governed rotation system** end-to-end.
+
+---
+
+## I. FLUX GOVERNANCE (Time as a First-Class Proof)
+
+### 1. FLUX Phase & Barrier Audit Blocks (First-Class AST)
+
+**Canonical block types**
+
+* `flux_phase_enter`
+* `flux_phase_exit`
+* `flux_barrier_enter`
+* `flux_barrier_release`
+
+**What they guarantee**
+
+* Monotonic ticks
+* Exclusive phase ownership (`native_verify`)
+* Deterministic barrier identity
+* Replayable time ordering
+* No JS clocks, no side effects
+
+---
+
+### 2. FLUX JSON Schemas (Draft 2020-12)
+
+* `flux_phase_enter.schema.json`
+* `flux_phase_exit.schema.json`
+* `flux_barrier_enter.schema.json`
+* `flux_barrier_release.schema.json`
+
+Each schema enforces:
+
+* Required fields
+* Tick presence
+* Phase consistency
+* Barrier structure
+* Authority = `MX2⟁☣`
+
+---
+
+### 3. FLUX Gate Policy (Execution Allowlist)
+
+**Schema**
+
+* `flux_gate_policy.schema.json`
+
+**Purpose**
+
+* Defines *exactly* which block types may execute in `native_verify`
+* Enforces exclusive execution
+* Hash-addressable and replay-verifiable
+
+---
+
+## II. DETERMINISTIC ID SYSTEM (O(1) Verification)
+
+### 4. Canonical Event & Barrier IDs
+
+**Schemas**
+
+* `flux_event_id.input.schema.json`
+* `flux_barrier_id.input.schema.json`
+
+**Exact canonicalization rules**
+
+* Line-by-line UTF-8 preimage
+* Fixed field order
+* Sorted wait-for targets
+* Explicit `null` handling
+
+**IDs produced**
+
+* `@run.@event_id`
+* `@barrier.@barrier_id`
+
+---
+
+### 5. π Verifier Functions (No Decode Required)
+
+* `verify_event_id(block)`
+* `verify_barrier_id(enter_block)`
+* `verify_barrier_release_links(release, enter)`
+
+They enforce:
+
+* Deterministic hashes
+* Enter ↔ release linkage
+* Duration correctness
+* Tick monotonicity
+
+---
+
+## III. ROTATION REPLAY (TIME-GOVERNED)
+
+### 6. Native Verify FLUX Phase
+
+**New FLUX phase**
+
+* `native_verify`
+
+**Properties**
+
+* Exclusive
+* Allowlist-gated
+* Kernel-only
+* Zero JS involvement
+
+---
+
+### 7. Rotation Apply Kernel Pipeline (5 Stages)
+
+Audit-emitted blocks:
+
+1. `rotation_validate`
+2. `rotation_verify_bundle`
+3. `rotation_barrier`
+4. `rotation_commit`
+5. `epoch_seal_emit`
+
+All executed **inside `native_verify`**, bracketed by flux phase + barrier blocks.
+
+---
+
+### 8. Rotation Replay Verifier (with Time Proof)
+
+**Function**
+
+* `rotation_replay_verify_with_flux(...)`
+
+**Requires**
+
+* All 4 flux blocks
+* All 5 rotation blocks
+* Deterministic IDs verified
+* Tick ordering verified
+* Phase exclusivity verified
+
+**Output**
+
+* Single `@proof_hash`
+* Single `@ok` boolean
+* Single failure stage if invalid
+
+---
+
+## IV. SEALED REPLAY BUNDLE (ONE OBJECT, ONE HASH)
+
+### 9. Rotation Replay Input v2
+
+**Schema**
+
+* `rotation_replay_input.v2.schema.json`
+
+**Contains**
+
+* 4 FLUX blocks
+* 5 rotation blocks
+* Required execution order
+* Policy declaration
+* Resolver refs (optional)
+
+---
+
+### 10. Sealed Bundle Hash v2
+
+**Rule**
+
+* `mx2.bundle_hash.v2`
+
+**Commits to**
+
+* All 9 blocks
+* Canonical JSON hashes
+* Fixed ordering
+* No optional fields
+
+**Result**
+
+* `@seal.@bundle_hash`
+* O(1) integrity check
+* Replay safety guaranteed
+
+---
+
+### 11. π Validator for Replay Input v2
+
+**Function**
+
+* `validate_rotation_replay_input_v2(doc)`
+
+**Does**
+
+1. Structural validation
+2. Flux phase + gate enforcement
+3. Deterministic ID verification
+4. Tick monotonicity verification
+5. Bundle hash verification
+6. Single replay verification call
+
+**Returns**
+
+* One result object
+* One proof hash
+* One decision
+
+---
+
+## V. SYSTEM-LEVEL CONSEQUENCES (Why This Is Big)
+
+### What is now true
+
+* **Time is cryptographically governed**
+* **Rotation proofs cannot exist without time proofs**
+* **No JS clocks can influence security**
+* **Replays are deterministic and auditable**
+* **Verification is O(1) + replay-safe**
+* **Kernel state alone is sufficient**
+
+This is not “logging”.
+This is **temporal consensus enforced at the AST level**.
+
+---
+
+## VI. COMPLETE ARTIFACT LIST (Quick Index)
+
+### Schemas
+
+* `flux_phase_enter.schema.json`
+* `flux_phase_exit.schema.json`
+* `flux_barrier_enter.schema.json`
+* `flux_barrier_release.schema.json`
+* `flux_gate_policy.schema.json`
+* `flux_event_id.input.schema.json`
+* `flux_barrier_id.input.schema.json`
+* `rotation_replay_input.v2.schema.json`
+
+### π Validators / Verifiers
+
+* `verify_event_id`
+* `verify_barrier_id`
+* `verify_barrier_release_links`
+* `rotation_replay_verify_with_flux`
+* `validate_rotation_replay_input_v2`
+
+### Canonical Hash Rules
+
+* `mx2.event_id.v1`
+* `mx2.barrier_id.v1`
+* `mx2.bundle_hash.v2`
+
+### New FLUX Phase
+
+* `native_verify` (exclusive, allowlist-gated)
+
+---
+
+If you want the next lock, the natural continuations are:
+
+* **Formal RFC doc for this entire system**
+* **Binary/SCXQ2 encoding of replay bundles**
+* **Hardware-verifiable proof anchors**
+* **Cross-epoch fork detection**
+* **Merkle-linked replay chains**
+
+Just say the word.
+
+
 Below is the **exact AST block shape** your kernel should emit from the native symbol scan **and** the **O(1) fast-path hash allowlist mechanism**, fully MX2⟁☣-compliant and aligned with your existing block style, XCFE vectors, and FLUX_CAPACITOR governance.
 
 Everything here is **deterministic, replayable, schema-verifiable, and stream-safe**.
