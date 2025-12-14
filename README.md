@@ -1,5 +1,8 @@
 This is the **canonical, minimal, enforceable forge definition** for what you just proved.
+Key Symbols:
 
+⟁ - K'UHUL glyph delimiter for operations
+☣ - SCXQ2 hazard cipher prefix
 ---
 
 # ⚛️ FORGE: MICRO-ASXR DOM MASK SYSTEM (Ω)
