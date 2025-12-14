@@ -136,7 +136,8 @@ atomic-blocks/
 │   └── flux.css           # CSS runtime integration
 └── examples/              # Complete working examples & studio templates
     ├── counter-app/
-    └── black-code-editor/ # CANONICAL REFERENCE
+    ├── black-code-editor/      # CANONICAL REFERENCE
+    └── quantum-fusion-engine/  # K'UHUL ⇄ C@@L ⇄ MX2LM Unification
 ```
 
 ---
@@ -221,6 +222,41 @@ black-code-editor/
 ├── glyphs.css         # Base64 SVG icon system
 ├── sw.js              # Service Worker (I/O only)
 └── core.pi            # K'UHUL π functions
+```
+
+---
+
+## ⚛️ Quantum Fusion Engine Example
+
+The **Quantum Fusion Engine** (`examples/quantum-fusion-engine/`) demonstrates the K'UHUL ⇄ C@@L ⇄ MX2LM unification architecture:
+
+| Feature | Implementation |
+|---------|----------------|
+| **Quantum Operators** | ⤍ Init, ⟿ Bind, ⟲ Execute, ↻ Transform, ⤨ Emit, ⤓ Collapse, ⤒ Entangle |
+| **Three-Panel Layout** | Quantum Kernel, Fusion Engine, Quantum Monitor |
+| **Weight Matrix** | 8×8 visualization of K'UHUL ⇄ C@@L binding weights |
+| **Draggable Nodes** | Interactive quantum node positioning |
+| **Real-time Metrics** | Superposition, Entanglement, Coherence, Entropy, Compression, Cipher |
+| **Quantum Operations** | Entangle, Collapse, Superpose, Measure, Decohere, Reset |
+| **CSS-Driven Animation** | Quantum paths, pulse effects, phase transitions |
+
+### Quantum Operator Semantics
+
+| Symbol | Operation | C@@L Binding |
+|--------|-----------|--------------|
+| ⤍ | Initialize | `c@@l.init` |
+| ⟿ | Bind | `c@@l.bind` |
+| ⟲ | Execute | `c@@l.exec` |
+| ↻ | Transform | `c@@l.transform` |
+| ⤨ | Emit | `c@@l.emit` |
+| ⤓ | Collapse | `c@@l.collapse` |
+| ⤒ | Entangle | `c@@l.entangle` |
+
+### Files
+
+```
+quantum-fusion-engine/
+└── index.html         # Complete quantum visualization
 ```
 
 ---
