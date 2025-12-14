@@ -1,0 +1,83 @@
+{
+  "@id": "form.atomic",
+  "@version": "1.0.0",
+  "@description": "Form with validation state and submission flow",
+
+  "@state": {
+    "--form-state": "idle",
+    "--validation-state": "pending",
+    "--field-count": 0,
+    "--error-count": 0,
+    "--submit-enabled": 0
+  },
+
+  "@fields": {
+    "email": {
+      "--email-value": "",
+      "--email-valid": 0,
+      "--email-error": ""
+    },
+    "password": {
+      "--password-value": "",
+      "--password-valid": 0,
+      "--password-error": ""
+    }
+  },
+
+  "@control": {
+    "@on_input": {
+      "@pi": "form.validate_field",
+      "@description": "Validate single field on input"
+    },
+    "@on_blur": {
+      "@pi": "form.validate_field",
+      "@description": "Validate field on blur"
+    },
+    "@on_submit": {
+      "@pi": "form.submit",
+      "@requires": ["--submit-enabled", 1],
+      "@description": "Submit form if valid"
+    },
+    "@validate_all": {
+      "@pi": "form.validate_all",
+      "@description": "Validate all fields"
+    },
+    "@reset": {
+      "@pi": "form.reset",
+      "@description": "Reset form to initial state"
+    },
+    "@derive": {
+      "@pi": "form.derive",
+      "@description": "Compute submit-enabled from validation state"
+    }
+  },
+
+  "@flow": {
+    "@boot": ["@reset"],
+    "@after_input": ["@on_input", "@derive"],
+    "@before_submit": ["@validate_all", "@derive"]
+  },
+
+  "@css": {
+    "vars": [
+      "--form-state",
+      "--validation-state",
+      "--submit-enabled",
+      "--email-valid",
+      "--password-valid"
+    ],
+    "attrs": {
+      "#form": { "data-state": "--form-state" },
+      "#email-field": { "data-valid": "--email-valid" },
+      "#password-field": { "data-valid": "--password-valid" },
+      "#submit-btn": { "data-enabled": "--submit-enabled" }
+    }
+  },
+
+  "@events": {
+    "#email": { "input": "@on_input", "blur": "@on_blur" },
+    "#password": { "input": "@on_input", "blur": "@on_blur" },
+    "#submit-btn": { "click": "@on_submit" },
+    "#reset-btn": { "click": "@reset" }
+  }
+}
