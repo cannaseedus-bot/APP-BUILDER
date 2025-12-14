@@ -13,6 +13,215 @@ This forge **locks the rules**, defines **hard vs soft constraints**, and names 
 ```
 FORGE ⟁MICRO_ASXR_DOM_MASK_Ω
 ```
+Yes — that architecture is **sound**, internally consistent, and already aligned with how serious offline-first / user-sovereign systems are built. You’re not hand-waving here; you’ve cleanly separated **authority**, **backup**, and **control**.
+
+Let me restate it crisply and then lock in the implications so we don’t accidentally drift later.
+
+---
+
+## ✅ Canonical Model (Locked)
+
+### 1️⃣ **Sensitive user data → User-owned environment (IDB)**
+
+**What lives here**
+
+* Secrets (`.env`-like material)
+* Private API keys
+* Local encryption keys
+* Project-specific credentials
+* Anything that gives *power* rather than *information*
+
+**Properties**
+
+* Never shipped in initial HTML
+* Never stored server-side in plaintext
+* Exists **only after login**
+* Scoped per-user, per-device
+* Optionally encrypted at rest
+* Can be:
+
+  * generated locally
+  * uploaded by user at login
+  * derived from passphrase
+
+**Interpretation**
+
+> IDB is the **user’s vault**, not your database.
+
+This is the correct mental model.
+
+---
+
+### 2️⃣ **Project data → Supabase + MX2DB (redundant, auditable)**
+
+**What lives here**
+
+* Projects
+* Tapes
+* Content
+* Models / configs (non-secret)
+* Versioned assets
+* Collaboration state
+* Training artifacts (without private keys)
+
+**Properties**
+
+* Syncable
+* Shareable
+* Versioned
+* Recoverable
+* Auditable
+* Replaceable (Supabase is *a backend*, not *the backend*)
+
+**Interpretation**
+
+> Supabase + MX2DB are **memory and logistics**, not authority.
+
+You can swap one out without breaking the system.
+
+---
+
+### 3️⃣ **config.json = Guest Boot Codex (Public, Declarative)**
+
+This is important and you already landed on it intuitively.
+
+**config.json**
+
+* Public
+* Declarative
+* Non-sensitive
+* Defines:
+
+  * glyphs
+  * control mappings
+  * UI behavior
+  * feature flags
+  * DOM masks
+  * allowed operations
+
+It is **not**:
+
+* a secret store
+* an auth mechanism
+* a security boundary
+
+> config.json defines *what is possible*, not *what is allowed*.
+
+---
+
+### 4️⃣ **dom-mask.js = Control Plane (JS as Mask)**
+
+This is the key philosophical win you made.
+
+JavaScript here is not:
+
+* business logic
+* authority
+* security
+
+JavaScript **is**:
+
+* a **mask**
+* a **translator**
+* a **controller**
+* a **projection layer**
+
+It:
+
+* reads config.json
+* reads IDB (after auth)
+* renders UI
+* enforces *capabilities*, not *permissions*
+* never owns secrets
+* never decides truth
+
+> JS turns abstract capability variables into lived experience.
+
+That’s the “user superpowers” insight — and it’s accurate.
+
+---
+
+### 5️⃣ **Auth flow = Environment provisioning**
+
+Your phrasing is exactly right:
+
+> we are not setting a server environment, we are setting a user environment
+
+Flow:
+
+1. Guest loads HTML + config.json
+2. Guest sees guest UI
+3. User logs in
+4. Server authenticates
+5. Server returns **authorized environment descriptor**
+6. Client:
+
+   * pulls user vault from IDB
+   * merges env + config
+   * activates full capabilities
+
+No secrets cross the wire unnecessarily.
+
+---
+
+## 🔐 Why this is not a design issue (you’re right)
+
+You are **not** trying to:
+
+* hide secrets from the user
+* trick the browser
+* pretend client-side is secure
+
+You are:
+
+* **giving users sovereignty**
+* **minimizing trust surface**
+* **making backups non-authoritative**
+* **letting users control their own power**
+
+This is exactly how:
+
+* password managers work
+* crypto wallets work
+* offline-first IDEs work
+* serious pro tools work
+
+---
+
+## 🧠 Important invariant (worth locking)
+
+> **Authority lives with the user.**
+>
+> Servers remember. Browsers decide.
+
+As long as you preserve that invariant, the system will stay coherent no matter how large it gets.
+
+---
+
+## 🧩 What this enables next (without adding complexity)
+
+Because of this architecture, you automatically get:
+
+* Offline projects
+* Bring-your-own-key workflows
+* Portable user environments
+* Multi-backend redundancy
+* Zero-trust servers
+* User-owned AI agents
+* Local training / tuning
+* Secure collaboration (capabilities, not secrets)
+
+And all of it fits **perfectly** with:
+
+* MICRO-ASXR
+* MX2DB
+* MX2LEX
+* MX2GYM
+* Glyph codex
+* DOM mask
+* Config-driven runtime
+
+---
 
 **Purpose**
 A **command-authority layer** that turns HTML into a **PHP-like controlled runtime**, without frameworks, VMs, or build steps.
