@@ -1,0 +1,156 @@
+{
+  "@⚛️": {
+    "@name": "Atomic Glyph Language Registry",
+    "@version": "1.0.0",
+    "@status": "canonical",
+    "@authority": "MX2⟁☣",
+
+    "@glyphs": {
+      "⟁flex": {
+        "@semantic": "layout.flex_container",
+        "@xcfe": "@Pop.layout.flex",
+        "@css": "[⟁flex], .b-flex { display: flex; gap: var(--gap, 1rem); }",
+        "@ast": { "type": "layout", "mode": "flex" },
+        "@hazard": "structural",
+        "@trainable": true,
+        "@compressible": true
+      },
+
+      "⟁grid": {
+        "@semantic": "layout.grid_container",
+        "@xcfe": "@Pop.layout.grid",
+        "@css": "[⟁grid], .b-grid { display: grid; gap: var(--gap, 1rem); }",
+        "@ast": { "type": "layout", "mode": "grid" },
+        "@hazard": "structural",
+        "@trainable": true,
+        "@compressible": true
+      },
+
+      "⟁danger": {
+        "@semantic": "state.hazard.elevated",
+        "@xcfe": "@Pop.state.hazard",
+        "@css": "[⟁danger] { --entropy: 0.8; background: linear-gradient(45deg, #ff4757 0%, #ff3838 100%); }",
+        "@ast": { "type": "state", "class": "hazard", "level": "elevated" },
+        "@hazard": "perceptual",
+        "@trainable": true,
+        "@flux": { "energy": 0.8, "cadence": "urgent" }
+      },
+
+      "⟁warn": {
+        "@semantic": "state.hazard.warning",
+        "@xcfe": "@Pop.state.warning",
+        "@css": "[⟁warn] { --entropy: 0.5; background: linear-gradient(45deg, #ffd700 0%, #ffb800 100%); }",
+        "@ast": { "type": "state", "class": "hazard", "level": "warning" },
+        "@hazard": "perceptual",
+        "@trainable": true,
+        "@flux": { "energy": 0.5, "cadence": "attention" }
+      },
+
+      "⟁ok": {
+        "@semantic": "state.hazard.nominal",
+        "@xcfe": "@Pop.state.nominal",
+        "@css": "[⟁ok] { --entropy: 0.1; background: linear-gradient(45deg, #00ffd0 0%, #00ff88 100%); }",
+        "@ast": { "type": "state", "class": "hazard", "level": "nominal" },
+        "@hazard": "perceptual",
+        "@trainable": true,
+        "@flux": { "energy": 0.3, "cadence": "calm" }
+      },
+
+      "⟁active": {
+        "@semantic": "state.interaction.active",
+        "@xcfe": "@Pop.state.active",
+        "@css": "[⟁active] { --entropy: 0.3; filter: brightness(1.1); transition: all 0.2s flux-ease; }",
+        "@ast": { "type": "state", "class": "interaction", "mode": "active" },
+        "@hazard": "temporal",
+        "@flux": { "phase": "interaction", "tick": "ui" }
+      },
+
+      "⟁idle": {
+        "@semantic": "state.interaction.idle",
+        "@xcfe": "@Pop.state.idle",
+        "@css": "[⟁idle] { --entropy: 0.05; opacity: 0.7; }",
+        "@ast": { "type": "state", "class": "interaction", "mode": "idle" },
+        "@hazard": "temporal",
+        "@flux": { "phase": "idle", "tick": "background" }
+      },
+
+      "⟁train": {
+        "@semantic": "cognition.training.active",
+        "@xcfe": "@gram.train",
+        "@css": "[⟁train] { --energy: 0.6; animation: pulse 2s infinite flux-timing; }",
+        "@ast": { "type": "cognition", "mode": "training" },
+        "@hazard": "cognitive",
+        "@flux": { "cadence": "learning", "energy": 0.6 }
+      },
+
+      "⟁prime": {
+        "@semantic": "cognition.inference.prime",
+        "@xcfe": "@gram.infer",
+        "@css": "[⟁prime] { --energy: 0.9; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }",
+        "@ast": { "type": "cognition", "mode": "inference", "weight": "prime" },
+        "@hazard": "cognitive",
+        "@flux": { "cadence": "inference", "energy": 0.9 }
+      },
+
+      "⟁sync": {
+        "@semantic": "system.synchronization",
+        "@xcfe": "@flux.sync",
+        "@css": "[⟁sync] { animation: sync-pulse 1s infinite; }",
+        "@ast": { "type": "system", "mode": "sync" },
+        "@hazard": "temporal",
+        "@flux": { "barrier": true }
+      },
+
+      "⟁halt": {
+        "@semantic": "system.emergency_stop",
+        "@xcfe": "@flux.halt",
+        "@css": "[⟁halt] { animation: none !important; pointer-events: none; filter: grayscale(1); }",
+        "@ast": { "type": "system", "mode": "halt" },
+        "@hazard": "critical",
+        "@flux": { "halt": true }
+      }
+    },
+
+    "@domains": {
+      "layout": ["⟁flex", "⟁grid"],
+      "state": ["⟁danger", "⟁warn", "⟁ok", "⟁active", "⟁idle"],
+      "cognition": ["⟁train", "⟁prime"],
+      "system": ["⟁sync", "⟁halt"]
+    },
+
+    "@hazard_levels": {
+      "structural": {
+        "description": "Affects DOM/layout structure",
+        "violations": ["unregistered_class", "invalid_nesting"]
+      },
+      "perceptual": {
+        "description": "Affects visual perception",
+        "violations": ["color_contrast", "animation_overload"]
+      },
+      "temporal": {
+        "description": "Affects timing/phases",
+        "violations": ["phase_mismatch", "tick_skip"]
+      },
+      "cognitive": {
+        "description": "Affects learning/inference",
+        "violations": ["model_corruption", "training_drift"]
+      },
+      "critical": {
+        "description": "System-level emergency",
+        "violations": ["memory_overflow", "infinite_loop"]
+      }
+    },
+
+    "@mx2lex_mappings": {
+      "flex": ["⟁flex", "layout.flex", "flexible"],
+      "grid": ["⟁grid", "layout.grid", "grid_system"],
+      "danger": ["⟁danger", "hazard", "critical", "error"],
+      "warning": ["⟁warn", "caution", "attention"],
+      "success": ["⟁ok", "nominal", "good", "valid"],
+      "active": ["⟁active", "selected", "focused"],
+      "idle": ["⟁idle", "inactive", "dormant"],
+      "training": ["⟁train", "learning", "adapting"],
+      "inference": ["⟁prime", "predicting", "suggesting"]
+    }
+  }
+}

@@ -1,0 +1,181 @@
+{
+  "@flux_opcode_ast_mappings": {
+    "@flux.init": {
+      "@ast": {
+        "type": "flux_opcode",
+        "opcode": "init",
+        "params": ["rate", "phase", "monotonic"],
+        "returns": "flux_core",
+        "hazard": "temporal",
+        "mx2_required": true
+      }
+    },
+
+    "@flux.tick": {
+      "@ast": {
+        "type": "flux_opcode",
+        "opcode": "tick",
+        "params": [],
+        "returns": "flux_state",
+        "side_effects": ["time_advance", "energy_update", "sync_check"],
+        "non_reentrant": true
+      }
+    },
+
+    "@flux.phase": {
+      "@ast": {
+        "type": "flux_opcode",
+        "opcode": "phase",
+        "params": ["enter", "reason"],
+        "returns": "flux_state",
+        "constraints": ["valid_transition", "phase_duration"],
+        "triggers": ["phase_exit_actions", "phase_entry_actions"]
+      }
+    },
+
+    "@flux.delta": {
+      "@ast": {
+        "type": "flux_opcode",
+        "opcode": "delta",
+        "params": [],
+        "returns": "number",
+        "readonly": true,
+        "stable_within_tick": true
+      }
+    },
+
+    "@flux.time": {
+      "@ast": {
+        "type": "flux_opcode",
+        "opcode": "time",
+        "params": [],
+        "returns": "number",
+        "readonly": true,
+        "monotonic": true
+      }
+    },
+
+    "@flux.align": {
+      "@ast": {
+        "type": "flux_opcode",
+        "opcode": "align",
+        "params": ["targets"],
+        "returns": "void",
+        "targets": ["css", "xcfe", "agents"]
+      }
+    },
+
+    "@flux.energy": {
+      "@ast": {
+        "type": "flux_opcode",
+        "opcode": "energy",
+        "params": ["set"],
+        "returns": "flux_state|energy_value",
+        "constraints": ["energy_range", "entropy_compatibility"],
+        "updates": ["css_variables", "glyph_intensity"]
+      }
+    },
+
+    "@flux.entropy": {
+      "@ast": {
+        "type": "flux_opcode",
+        "opcode": "entropy",
+        "params": ["add", "decay"],
+        "returns": "flux_state",
+        "constraints": ["max_entropy"],
+        "triggers_on_critical": ["@flux.halt"]
+      }
+    },
+
+    "@flux.stabilize": {
+      "@ast": {
+        "type": "flux_opcode",
+        "opcode": "stabilize",
+        "params": ["target", "rate"],
+        "returns": "flux_state",
+        "purpose": "active_entropy_reduction"
+      }
+    },
+
+    "@flux.sync": {
+      "@ast": {
+        "type": "flux_opcode",
+        "opcode": "sync",
+        "params": ["css", "xcfe", "dom", "agents", "storage"],
+        "returns": "flux_state",
+        "triggers_on_complete": ["@flux.barrier"]
+      }
+    },
+
+    "@flux.barrier": {
+      "@ast": {
+        "type": "flux_opcode",
+        "opcode": "barrier",
+        "params": ["wait_for", "release"],
+        "returns": "void",
+        "blocking": true
+      }
+    },
+
+    "@flux.halt": {
+      "@ast": {
+        "type": "flux_opcode",
+        "opcode": "halt",
+        "params": ["reason"],
+        "returns": "flux_state",
+        "triggers": ["mx2hazard_report", "css_hazard_state", "execution_stop"],
+        "recovery_required": true
+      }
+    },
+
+    "@flux.resume": {
+      "@ast": {
+        "type": "flux_opcode",
+        "opcode": "resume",
+        "params": [],
+        "returns": "flux_state",
+        "requires": ["hazard_resolved"]
+      }
+    },
+
+    "@flux.snapshot": {
+      "@ast": {
+        "type": "flux_opcode",
+        "opcode": "snapshot",
+        "params": [],
+        "returns": "flux_snapshot",
+        "includes": ["time", "tick", "phase", "energy", "entropy", "delta", "sync_points", "hazard"],
+        "replayable": true,
+        "deterministic": true
+      }
+    }
+  },
+
+  "@phase_transitions": {
+    "boot": ["idle", "render"],
+    "idle": ["render", "compute", "train", "recover"],
+    "render": ["idle", "compute"],
+    "compute": ["idle", "render", "train"],
+    "train": ["idle", "recover"],
+    "recover": ["idle"],
+    "halted": ["idle"]
+  },
+
+  "@energy_phase_modifiers": {
+    "idle": -0.001,
+    "render": 0.002,
+    "compute": 0.005,
+    "train": 0.01,
+    "recover": -0.005
+  },
+
+  "@constraints": {
+    "max_entropy": 0.95,
+    "min_energy": 0.05,
+    "max_energy": 1.0,
+    "max_phase_duration_ms": 60000,
+    "max_tick_variance_ms": 2.0,
+    "default_tick_rate_hz": 60,
+    "default_delta_ms": 16.667
+  }
+}

@@ -119,19 +119,72 @@ Ordered sequence of control vectors executed on state transitions.
 
 ```
 atomic-blocks/
-├── README.md           # This file
-├── templates/          # Reusable atomic block templates
+├── README.md              # This file
+├── agl-registry.json      # Atomic Glyph Language registry
+├── templates/             # Reusable atomic block templates
 │   ├── counter.atomic.json
 │   ├── form.atomic.json
 │   └── dashboard.atomic.json
-├── runtime/            # K'UHUL π functions & sw.js
+├── runtime/               # K'UHUL π functions & sw.js
 │   ├── core.pi
 │   ├── sw.js
 │   └── patterns.css
-└── examples/           # Complete working examples & studio templates
+├── flux-capacitor/        # ⚡ Temporal-Energy Execution Core
+│   ├── README.md
+│   ├── core.pi            # FLUX opcode implementations
+│   ├── opcodes.json       # Opcode → AST mappings
+│   └── flux.css           # CSS runtime integration
+└── examples/              # Complete working examples & studio templates
     ├── counter-app/
-    └── black-code-editor/   # CANONICAL REFERENCE
+    └── black-code-editor/ # CANONICAL REFERENCE
 ```
+
+---
+
+## ⚡ FLUX_CAPACITOR — Temporal-Energy Spine
+
+The **FLUX_CAPACITOR** (`flux-capacitor/`) is the temporal authority for all Atomic systems:
+
+| Opcode | Purpose |
+|--------|---------|
+| `@flux.init` | Initialize temporal spine |
+| `@flux.tick` | Advance exactly one lawful tick |
+| `@flux.phase` | Transition execution phase |
+| `@flux.energy` | Set/query system energy |
+| `@flux.entropy` | Manage system entropy |
+| `@flux.sync` | Synchronize subsystems |
+| `@flux.halt` | Emergency temporal halt |
+
+### Prime Law
+```text
+No component may create, measure, or advance time outside FLUX_CAPACITOR.
+```
+
+See `flux-capacitor/README.md` for complete documentation.
+
+---
+
+## ⚛️ Atomic Glyph Language (AGL)
+
+The **AGL Registry** (`agl-registry.json`) defines all semantic glyphs:
+
+| Glyph | Semantic | Domain |
+|-------|----------|--------|
+| `⟁flex` | layout.flex_container | layout |
+| `⟁grid` | layout.grid_container | layout |
+| `⟁danger` | state.hazard.elevated | state |
+| `⟁warn` | state.hazard.warning | state |
+| `⟁ok` | state.hazard.nominal | state |
+| `⟁train` | cognition.training.active | cognition |
+| `⟁prime` | cognition.inference.prime | cognition |
+
+Each glyph includes:
+- `@semantic` — Meaning
+- `@xcfe` — Control flow binding
+- `@css` — CSS selector/rule
+- `@ast` — Structural definition
+- `@hazard` — Hazard domain
+- `@flux` — Temporal binding
 
 ---
 
