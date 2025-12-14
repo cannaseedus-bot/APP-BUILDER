@@ -252,6 +252,560 @@ Your JSON brain is just the **tape directory**.
 
 ---
 
+## Config.json: The Control Surface
+
+The `config.json` is the **command authority layer** that defines:
+
+- Page API routes
+- Tape display settings
+- Themes and skins
+- User session preferences
+- Domain branding (white-label)
+
+### Config Architecture
+
+```json
+{
+  "@config_id": "mx2lm_app_config",
+  "@version": "1.0.0",
+
+  "tapes": {
+    "registry": {
+      "dashboard": { "route": "/", "title": "Dashboard", "icon": "grid" },
+      "chat": { "route": "/chat", "title": "AI Chat", "icon": "message" },
+      "settings": { "route": "/settings", "title": "Settings", "icon": "gear" },
+      "models": { "route": "/models", "title": "Models", "icon": "brain" }
+    },
+    "default": "dashboard",
+    "display": {
+      "sidebar": true,
+      "tabs": false,
+      "breadcrumbs": true
+    }
+  },
+
+  "routes": {
+    "/api/chat": { "shard": "inference", "intent": "inference.run" },
+    "/api/save": { "shard": "storage", "intent": "storage.set" },
+    "/api/load": { "shard": "storage", "intent": "storage.get" },
+    "/api/feedback": { "shard": "rlhf", "intent": "rlhf.feedback" }
+  },
+
+  "themes": {
+    "default": "dark-glass",
+    "available": {
+      "dark-glass": {
+        "bg": "#020409",
+        "panel": "#050a14",
+        "accent": "#00ffd0",
+        "text": "#f7fafc",
+        "border": "#16f2aa"
+      },
+      "light-clean": {
+        "bg": "#f5f7ff",
+        "panel": "#ffffff",
+        "accent": "#2563eb",
+        "text": "#020617",
+        "border": "#3b82f6"
+      },
+      "neon-purple": {
+        "bg": "#0a0014",
+        "panel": "#120024",
+        "accent": "#a855f7",
+        "text": "#faf5ff",
+        "border": "#9333ea"
+      }
+    }
+  },
+
+  "skins": {
+    "default": "standard",
+    "available": {
+      "standard": { "radius": "12px", "shadow": "soft", "font": "system-ui" },
+      "rounded": { "radius": "24px", "shadow": "glow", "font": "system-ui" },
+      "sharp": { "radius": "0", "shadow": "hard", "font": "monospace" },
+      "glass": { "radius": "16px", "shadow": "glass", "font": "system-ui", "blur": "12px" }
+    }
+  },
+
+  "user_session": {
+    "storage": "idb",
+    "keys": {
+      "theme": "mx2_user_theme",
+      "skin": "mx2_user_skin",
+      "default_tape": "mx2_user_default_tape",
+      "preferences": "mx2_user_prefs"
+    },
+    "sync_to_server": true
+  },
+
+  "white_label": {
+    "enabled": false,
+    "domain_overrides": {}
+  }
+}
+```
+
+---
+
+### Tape Display Configuration
+
+When a tape is selected, the Ghost Shell renders it based on config:
+
+```json
+{
+  "tapes": {
+    "registry": {
+      "dashboard": {
+        "route": "/",
+        "title": "Dashboard",
+        "icon": "grid",
+        "layout": "grid-3col",
+        "components": ["stats", "activity", "quick-actions"],
+        "api_on_load": "/api/dashboard/init"
+      },
+      "chat": {
+        "route": "/chat",
+        "title": "AI Chat",
+        "icon": "message",
+        "layout": "split-panel",
+        "components": ["chat-history", "chat-input", "model-selector"],
+        "api_on_load": "/api/chat/history"
+      }
+    },
+    "default": "dashboard",
+    "display": {
+      "sidebar": true,
+      "sidebar_position": "left",
+      "sidebar_width": "280px",
+      "tabs": false,
+      "breadcrumbs": true,
+      "header": true,
+      "footer": false
+    }
+  }
+}
+```
+
+**Key concepts:**
+- `default` — The tape that loads on boot
+- `api_on_load` — API route called when tape is selected
+- `layout` — How components are arranged
+- `components` — What renders inside the tape
+
+---
+
+### API Routes in Config
+
+Define all your page API routes in config, not in code:
+
+```json
+{
+  "routes": {
+    "/api/chat": {
+      "shard": "inference",
+      "intent": "inference.run",
+      "method": "POST",
+      "auth": "required"
+    },
+    "/api/save": {
+      "shard": "storage",
+      "intent": "storage.set",
+      "method": "POST",
+      "auth": "required"
+    },
+    "/api/load/:id": {
+      "shard": "storage",
+      "intent": "storage.get",
+      "method": "GET",
+      "auth": "optional"
+    },
+    "/api/public/models": {
+      "shard": "inference",
+      "intent": "inference.list",
+      "method": "GET",
+      "auth": "none",
+      "cache": 3600
+    }
+  }
+}
+```
+
+The cockpit runtime reads this and routes requests:
+
+```javascript
+async function routeAPI(path, method, body) {
+  const config = await getConfig();
+  const route = config.routes[path];
+
+  if (!route) {
+    return { "@ok": false, "@error": { "code": "ROUTE_NOT_FOUND" } };
+  }
+
+  return MX2LM.send(route.intent, body);
+}
+```
+
+---
+
+### User Session & Preferences
+
+All customization is **user session-based** and stored in IDB:
+
+```json
+{
+  "user_session": {
+    "storage": "idb",
+    "keys": {
+      "theme": "mx2_user_theme",
+      "skin": "mx2_user_skin",
+      "default_tape": "mx2_user_default_tape",
+      "sidebar_collapsed": "mx2_user_sidebar",
+      "preferences": "mx2_user_prefs"
+    },
+    "sync_to_server": true,
+    "sync_endpoint": "/api/user/sync"
+  }
+}
+```
+
+**User preference runtime:**
+
+```javascript
+const UserPrefs = {
+  async load() {
+    const db = await openIDB("mx2_user", 1);
+    return {
+      theme: await db.get("mx2_user_theme") || config.themes.default,
+      skin: await db.get("mx2_user_skin") || config.skins.default,
+      defaultTape: await db.get("mx2_user_default_tape") || config.tapes.default
+    };
+  },
+
+  async save(key, value) {
+    const db = await openIDB("mx2_user", 1);
+    await db.put(key, value);
+
+    // Sync to server if enabled
+    if (config.user_session.sync_to_server) {
+      await MX2LM.send("user.sync", { [key]: value });
+    }
+  },
+
+  applyTheme(themeId) {
+    const theme = config.themes.available[themeId];
+    if (!theme) return;
+
+    const root = document.documentElement;
+    root.style.setProperty("--bg", theme.bg);
+    root.style.setProperty("--panel", theme.panel);
+    root.style.setProperty("--accent", theme.accent);
+    root.style.setProperty("--text", theme.text);
+    root.style.setProperty("--border", theme.border);
+  },
+
+  applySkin(skinId) {
+    const skin = config.skins.available[skinId];
+    if (!skin) return;
+
+    const root = document.documentElement;
+    root.style.setProperty("--radius", skin.radius);
+    root.style.setProperty("--font", skin.font);
+    if (skin.blur) root.style.setProperty("--blur", skin.blur);
+  }
+};
+```
+
+---
+
+### White-Label: Host Your Own App
+
+Users can deploy their own branded version with custom domain theming:
+
+```json
+{
+  "white_label": {
+    "enabled": true,
+    "allow_custom_domains": true,
+    "domain_overrides": {
+      "app.mybrand.com": {
+        "brand_name": "MyBrand AI",
+        "logo_url": "https://mybrand.com/logo.svg",
+        "favicon": "https://mybrand.com/favicon.ico",
+        "theme": "mybrand-theme",
+        "default_tape": "chat",
+        "hide_powered_by": true,
+        "custom_css": "https://mybrand.com/custom.css"
+      },
+      "dashboard.clientco.io": {
+        "brand_name": "ClientCo Dashboard",
+        "logo_url": "https://clientco.io/assets/logo.png",
+        "theme": "light-clean",
+        "default_tape": "dashboard",
+        "features": {
+          "chat": false,
+          "models": false,
+          "settings": true
+        }
+      }
+    },
+    "custom_themes": {
+      "mybrand-theme": {
+        "bg": "#1a1a2e",
+        "panel": "#16213e",
+        "accent": "#e94560",
+        "text": "#eaeaea",
+        "border": "#e94560"
+      }
+    }
+  }
+}
+```
+
+**White-label boot sequence:**
+
+```javascript
+async function bootWhiteLabel() {
+  const config = await getConfig();
+  const hostname = window.location.hostname;
+
+  // Check for domain override
+  if (config.white_label.enabled && config.white_label.domain_overrides[hostname]) {
+    const override = config.white_label.domain_overrides[hostname];
+
+    // Apply brand
+    document.title = override.brand_name;
+    if (override.favicon) {
+      document.querySelector("link[rel='icon']").href = override.favicon;
+    }
+    if (override.logo_url) {
+      document.getElementById("logo").src = override.logo_url;
+    }
+
+    // Apply theme
+    if (override.theme) {
+      const theme = config.white_label.custom_themes[override.theme]
+                 || config.themes.available[override.theme];
+      UserPrefs.applyTheme(override.theme);
+    }
+
+    // Set default tape
+    if (override.default_tape) {
+      config.tapes.default = override.default_tape;
+    }
+
+    // Load custom CSS
+    if (override.custom_css) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = override.custom_css;
+      document.head.appendChild(link);
+    }
+
+    // Hide/show features
+    if (override.features) {
+      Object.entries(override.features).forEach(([tape, enabled]) => {
+        if (!enabled) {
+          delete config.tapes.registry[tape];
+        }
+      });
+    }
+
+    // Hide powered-by
+    if (override.hide_powered_by) {
+      document.querySelector(".powered-by")?.remove();
+    }
+  }
+
+  // Continue normal boot
+  return boot();
+}
+```
+
+---
+
+### Complete Config Template
+
+```json
+{
+  "@config_id": "mx2lm_app_config",
+  "@version": "1.0.0",
+  "@law": "CONFIG_IS_AUTHORITY",
+
+  "tapes": {
+    "registry": {
+      "dashboard": {
+        "route": "/",
+        "title": "Dashboard",
+        "icon": "grid",
+        "layout": "grid-3col",
+        "components": ["stats", "activity", "quick-actions"],
+        "api_on_load": "/api/dashboard/init"
+      },
+      "chat": {
+        "route": "/chat",
+        "title": "AI Chat",
+        "icon": "message",
+        "layout": "split-panel",
+        "components": ["chat-history", "chat-input", "model-selector"],
+        "api_on_load": "/api/chat/history"
+      },
+      "models": {
+        "route": "/models",
+        "title": "Models",
+        "icon": "brain",
+        "layout": "card-grid",
+        "components": ["model-cards", "model-details"],
+        "api_on_load": "/api/models/list"
+      },
+      "settings": {
+        "route": "/settings",
+        "title": "Settings",
+        "icon": "gear",
+        "layout": "sidebar-detail",
+        "components": ["settings-nav", "settings-panel"],
+        "api_on_load": null
+      }
+    },
+    "default": "dashboard",
+    "display": {
+      "sidebar": true,
+      "sidebar_position": "left",
+      "sidebar_width": "280px",
+      "sidebar_collapsible": true,
+      "tabs": false,
+      "breadcrumbs": true,
+      "header": true,
+      "header_height": "60px",
+      "footer": false
+    }
+  },
+
+  "routes": {
+    "/api/dashboard/init": { "shard": "frontend", "intent": "frontend.dashboard" },
+    "/api/chat/history": { "shard": "storage", "intent": "storage.list", "params": { "type": "chat" } },
+    "/api/chat/send": { "shard": "inference", "intent": "inference.run", "method": "POST" },
+    "/api/models/list": { "shard": "inference", "intent": "inference.models" },
+    "/api/user/sync": { "shard": "storage", "intent": "storage.set", "method": "POST" }
+  },
+
+  "themes": {
+    "default": "dark-glass",
+    "user_selectable": true,
+    "available": {
+      "dark-glass": {
+        "name": "Dark Glass",
+        "bg": "#020409",
+        "panel": "#050a14",
+        "accent": "#00ffd0",
+        "text": "#f7fafc",
+        "text_soft": "#a0aec0",
+        "border": "#16f2aa"
+      },
+      "light-clean": {
+        "name": "Light Clean",
+        "bg": "#f5f7ff",
+        "panel": "#ffffff",
+        "accent": "#2563eb",
+        "text": "#020617",
+        "text_soft": "#64748b",
+        "border": "#3b82f6"
+      },
+      "neon-purple": {
+        "name": "Neon Purple",
+        "bg": "#0a0014",
+        "panel": "#120024",
+        "accent": "#a855f7",
+        "text": "#faf5ff",
+        "text_soft": "#c4b5fd",
+        "border": "#9333ea"
+      },
+      "forest-green": {
+        "name": "Forest Green",
+        "bg": "#0a1410",
+        "panel": "#0f1f1a",
+        "accent": "#10b981",
+        "text": "#ecfdf5",
+        "text_soft": "#6ee7b7",
+        "border": "#059669"
+      }
+    }
+  },
+
+  "skins": {
+    "default": "standard",
+    "user_selectable": true,
+    "available": {
+      "standard": {
+        "name": "Standard",
+        "radius": "12px",
+        "radius_sm": "8px",
+        "shadow": "0 4px 20px rgba(0,0,0,0.3)",
+        "font": "system-ui, -apple-system, sans-serif"
+      },
+      "rounded": {
+        "name": "Rounded",
+        "radius": "24px",
+        "radius_sm": "16px",
+        "shadow": "0 8px 32px rgba(0,0,0,0.4)",
+        "font": "system-ui, -apple-system, sans-serif"
+      },
+      "sharp": {
+        "name": "Sharp",
+        "radius": "0",
+        "radius_sm": "0",
+        "shadow": "4px 4px 0 rgba(0,0,0,0.5)",
+        "font": "'JetBrains Mono', monospace"
+      },
+      "glass": {
+        "name": "Glassmorphism",
+        "radius": "16px",
+        "radius_sm": "10px",
+        "shadow": "0 8px 32px rgba(0,0,0,0.2)",
+        "font": "system-ui, -apple-system, sans-serif",
+        "blur": "12px",
+        "panel_opacity": "0.7"
+      }
+    }
+  },
+
+  "user_session": {
+    "storage": "idb",
+    "db_name": "mx2_user_prefs",
+    "db_version": 1,
+    "keys": {
+      "theme": "mx2_user_theme",
+      "skin": "mx2_user_skin",
+      "default_tape": "mx2_user_default_tape",
+      "sidebar_collapsed": "mx2_user_sidebar_collapsed",
+      "preferences": "mx2_user_prefs",
+      "recent_chats": "mx2_user_recent_chats"
+    },
+    "sync_to_server": true,
+    "sync_endpoint": "/api/user/sync",
+    "sync_interval": 30000
+  },
+
+  "white_label": {
+    "enabled": false,
+    "allow_custom_domains": true,
+    "domain_overrides": {},
+    "custom_themes": {}
+  },
+
+  "features": {
+    "chat": true,
+    "models": true,
+    "settings": true,
+    "rlhf": true,
+    "export": true,
+    "import": true
+  }
+}
+```
+
+---
+
 ## Building Your Own MX2LM System
 
 ### Step 1: Create Your Foreman Shard
