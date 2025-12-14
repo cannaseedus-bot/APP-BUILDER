@@ -1,3 +1,444 @@
+Below is the **full, explicit inventory** of **everything built in this conversation that belongs to / is implied by**
+**`codex/AGL-to-RUST.md`** — i.e. the **AGL → Rust / Native backend pipeline**, governance, and verification stack.
+
+This is written as a **clean checklist** you can directly compare against the repo and codex file.
+
+---
+
+# ✅ COMPLETE BUILD LIST — AGL → RUST / NATIVE PIPELINE
+
+---
+
+## I. AGL → NATIVE EXECUTION FOUNDATION
+
+### 1. **AGL → AST lowering (native-aware)**
+
+* Formal AGL → AST lowering rules
+* Native blocks treated as first-class AST nodes
+* Deterministic, schema-validated lowering
+* No runtime reflection, no JS involvement
+
+---
+
+### 2. **Native Execution Phases (FLUX-integrated)**
+
+New FLUX lifecycle phases added:
+
+* `native_verify`
+* `compile`
+* `link`
+* `run`
+* `harvest`
+
+Each phase:
+
+* Enforced by FLUX_CAPACITOR
+* Monotonic tick governed
+* Audit-logged
+* Replayable
+
+---
+
+## II. NATIVE JOB / PLAN / HARVEST BLOCKS
+
+### 3. **Canonical Native AST Block Shapes**
+
+* `native_job`
+* `native_plan`
+* `native_harvest`
+
+Each block:
+
+* Deterministic fields
+* Toolchain-pinned
+* Sandbox-scoped
+* Hash-addressable
+* MX2⟁☣ governed
+
+---
+
+### 4. **Schemas (Draft 2020-12)**
+
+* `native_job.schema.json`
+* `native_plan.schema.json`
+* `native_harvest.schema.json`
+
+---
+
+### 5. **π Validators for Native Blocks**
+
+* Toolchain pin enforcement
+* Compiler/linker allowlists
+* Sandbox boundary enforcement
+* No network / filesystem escape
+* Deterministic output enforcement
+
+---
+
+## III. SCXQ2 NATIVE BACKEND (CODEC / GRAPH)
+
+### 6. **AGL → C / Rust Lowering Tables**
+
+Specifically for:
+
+* SCXQ2 fieldmaps
+* Node streams
+* Edge streams
+* Graph adjacency
+
+These tables define:
+
+* Which AGL constructs lower to native codec ops
+* Which stay in π
+* Which become Rust/C acceleration targets
+
+---
+
+### 7. **C Runtime Interface (for Rust/C backends)**
+
+* `agl_runtime.h`
+* Bounded memory
+* Deterministic behavior
+* No syscalls beyond allowlist
+* No dynamic allocation without caps
+
+Implements primitives for:
+
+* Fieldmap encode/decode
+* Node stream encode/decode
+* Edge batch encode/decode
+* CSR adjacency construction
+
+---
+
+## IV. EDGES STREAMING SYSTEM
+
+### 8. **EDGES Batch Framing**
+
+* Batch header
+* Count patching
+* Repeatable E-sections
+* Stream-safe layout
+
+---
+
+### 9. **META Index Sidecar**
+
+* Final META block
+* Byte offsets per batch
+* Seek-safe
+* Streaming-compatible
+
+---
+
+### 10. **Schema for META Index**
+
+* `scx2.stream.index.schema.json`
+
+Includes validation rules:
+
+* Monotonic offsets
+* Batch count sanity
+* Payload bounds
+* Offset range safety
+
+---
+
+### 11. **π Validator for META Index**
+
+* Offset monotonicity
+* Batch alignment
+* Payload length bounds
+* No overlap
+* No backward seeks
+
+---
+
+## V. SCXQ2 COMPRESSION LAYER
+
+### 12. **Field-ID DICT System**
+
+* Sorted table / perfect-hash compatible
+* Deterministic lookup
+* Shared by encoder & decoder
+* Zero allocation lookup path
+
+---
+
+### 13. **SCXQ2 Encode / Decode (π)**
+
+* Streaming encoder
+* Streaming decoder
+* Node-by-node yield
+* Edge-by-edge yield
+* Resume-safe
+
+---
+
+### 14. **Streaming Encoder / Decoder**
+
+* Node stream
+* Edge stream
+* Incremental decode
+* Incremental encode
+
+---
+
+### 15. **Fused Lane Design**
+
+* Raw fieldmap lane
+* ANS / Huffman symbol lane
+* Single-pass decode
+* Cursor-driven
+
+---
+
+### 16. **ANS / Huffman Layer**
+
+* Table build
+* Symbol decode
+* Symbol encode
+* Deterministic bitstreams
+
+---
+
+## VI. BINARY VERIFICATION & GOVERNANCE
+
+### 17. **Forbidden Import / Symbol Scan Contract**
+
+* No decode required
+* Works on ELF / PE / Mach-O
+* O(1) allowlist fast-path
+* Hash-first verification
+
+---
+
+### 18. **Single-File Native Binary Scanner**
+
+(C / Rust equivalent)
+
+* ELF parser
+* PE parser
+* Mach-O parser
+* Symbol table extraction
+* Forbidden symbol detection
+
+---
+
+### 19. **Incremental Hash Streaming**
+
+* Large binary support
+* Chunked hashing
+* No full memory load
+* Deterministic
+
+---
+
+### 20. **Unified Verify Pipeline**
+
+* Hash verification
+* Symbol scan
+* Single AST result
+* No JS
+* Kernel-only
+
+---
+
+## VII. NATIVE VERIFY AST SYSTEM
+
+### 21. **Native Verify AST Blocks**
+
+* `native_verify_plan`
+* `native_verify_state`
+* `native_verify_step`
+* `native_verify_result`
+
+---
+
+### 22. **Schemas**
+
+* `native_verify_plan.schema.json`
+* `native_verify_state.schema.json`
+* `native_verify_step.schema.json`
+* `native_verify_result.schema.json`
+
+---
+
+### 23. **π Validator**
+
+* Enforces:
+
+  * Toolchain pins
+  * Sandbox boundaries
+  * Forbidden symbols
+  * Hash correctness
+  * Phase correctness
+
+---
+
+## VIII. ALLOWLIST GOVERNANCE (MERKLE-SEALED)
+
+### 24. **Forbidden Symbol Set Schema**
+
+* `mx2.forbidden_symbols.v1.schema.json`
+
+---
+
+### 25. **Fast-Path Allowlist Bundle**
+
+* Merkle tree
+* Canonical leaf rules
+* Signature block
+* O(1) verification
+
+---
+
+### 26. **Merkle Canonicalization Rules**
+
+* Exact string to hash
+* Stable ordering
+* Versioned domain
+
+---
+
+### 27. **π Signature Verifier**
+
+* Signature validation
+* Optional bundle_hash check
+* MX2⟁☣ enforced
+
+---
+
+## IX. EPOCH / ROTATION SYSTEM
+
+### 28. **Epoch + Bundle Rotation Formalization**
+
+* Epoch pinning
+* Bundle rotation rules
+* Governance enforcement
+
+---
+
+### 29. **Schemas**
+
+* `mx2_epoch_state.schema.json`
+* `mx2_bundle_rotation_plan.schema.json`
+* `mx2_bundle_rotation_result.schema.json`
+* `mx2_epoch_seal.schema.json`
+
+---
+
+### 30. **π Validators**
+
+* Epoch monotonicity
+* No rollback
+* Correct pin transitions
+* Seal integrity
+
+---
+
+## X. FLUX-GOVERNED ROTATION PROOF
+
+### 31. **Rotation Apply Kernel Stages**
+
+* `rotation_validate`
+* `rotation_verify_bundle`
+* `rotation_barrier`
+* `rotation_commit`
+* `epoch_seal_emit`
+
+Each stage:
+
+* Emits AST
+* Append-only
+* Hash-addressable
+
+---
+
+### 32. **FLUX Time Governance Blocks**
+
+* `flux_phase_enter`
+* `flux_barrier_enter`
+* `flux_barrier_release`
+* `flux_phase_exit`
+
+---
+
+### 33. **Schemas**
+
+* `flux_phase_enter.schema.json`
+* `flux_phase_exit.schema.json`
+* `flux_barrier_enter.schema.json`
+* `flux_barrier_release.schema.json`
+* `flux_gate_policy.schema.json`
+
+---
+
+### 34. **Deterministic ID System**
+
+* `@event_id`
+* `@barrier_id`
+* Canonical hash preimage schemas
+* π verifiers
+
+---
+
+### 35. **Rotation Replay Input v2**
+
+* `rotation_replay_input.v2.schema.json`
+* Single sealed object
+* Includes:
+
+  * 4 FLUX blocks
+  * 5 rotation blocks
+
+---
+
+### 36. **Sealed Bundle Hash v2**
+
+* `mx2.bundle_hash.v2`
+* Commits to all 9 blocks
+* O(1) integrity check
+
+---
+
+### 37. **Rotation Replay Verifier (Time-Governed)**
+
+* Requires flux proofs
+* Requires phase exclusivity
+* Requires barrier correctness
+* Single proof hash output
+
+---
+
+## XI. RESULTING SYSTEM CAPABILITIES
+
+You now have:
+
+* AGL → Rust/C native acceleration
+* Deterministic streaming codecs
+* Graph-safe adjacency builds
+* Binary-verifiable native artifacts
+* Time-governed execution proofs
+* Replay-safe rotation governance
+* Zero-JS trusted execution
+
+---
+
+### 🧠 In one sentence:
+
+**AGL is now a provable, time-governed, native-accelerated execution language with cryptographic replay guarantees.**
+
+If you want, next we can:
+
+* Collapse this into a **formal RFC**
+* Emit **reference Rust crates**
+* Generate **CI invariants**
+* Or map this directly into **K’uhul π opcode tables**
+
+Just say the next move.
+
+
 Below is a **complete, practical, MX2⟁☣-compliant native symbol scanner** covering **ELF, PE, and Mach-O**, written in **Rust**.
 It is designed to be:
 
