@@ -122,6 +122,8 @@ atomic-blocks/
 ├── README.md              # This file
 ├── agl-registry.json      # Atomic Glyph Language registry
 ├── api-runtime.json       # Glyph → API endpoint mappings
+├── gram-kernel.pi         # SCX-Enhanced @GRAM Learning Kernel
+├── gram-kernel-full.pi    # Complete Self-Learning @GRAM Kernel
 ├── templates/             # Reusable atomic block templates
 │   ├── counter.atomic.json
 │   ├── form.atomic.json
@@ -377,6 +379,70 @@ The **API Runtime** (`api-runtime.json`) defines the glyph → API endpoint mapp
 | `[Sek]` | `/phase/execute` | Execution - doing work |
 | `[Xul]` | `/phase/transform` | Transformation - changing form |
 | `[Ch'en]` | `/phase/render` | Render - making visible |
+
+---
+
+## 🧠 @GRAM Kernel — Self-Learning Engine
+
+The **@GRAM Kernel** (`gram-kernel.pi`, `gram-kernel-full.pi`) provides adaptive learning for the Atomic system:
+
+### Capabilities
+
+| Feature | Description |
+|---------|-------------|
+| **Pattern Observation** | Tracks every atomic block execution |
+| **N-gram Learning** | Unigrams, bigrams, and sequence patterns |
+| **Transition Probabilities** | Predicts likely next blocks |
+| **Auto-Macro Generation** | Creates macros from frequent sequences |
+| **Workflow Optimization** | Identifies inefficient patterns |
+| **Error Pattern Fixes** | Auto-generates fixes for common errors |
+| **Continuous Learning** | Self-improving learning loop |
+
+### Core Functions
+
+| Function | Purpose |
+|----------|---------|
+| `gram_observe` | Observe and record block events |
+| `gram_analyze_patterns` | Analyze frequency patterns |
+| `gram_suggest_next` | Suggest next blocks based on probabilities |
+| `gram_auto_generate` | Generate macros, optimizations, fixes |
+| `gram_learning_loop` | Continuous self-improvement |
+| `atomic_execute_with_learning` | Execute blocks with observation |
+
+### SCX Compression Learning
+
+The kernel also includes SCX-specific learning (`gram-kernel.pi`):
+
+```pi
+[Pop gram_observe_scx]
+  // Extract SCX patterns from element
+  [Wo el]→[Sek get_attributes]→[Ch'en attrs]
+  [Wo attrs]→[Sek filter [Sek starts_with "⟁"]]→[Ch'en scx_attrs]
+
+  // Calculate compression ratio
+  // Each SCX token ≈ 5-10 bytes vs 50-200 bytes in CSS
+```
+
+### Storage Schema
+
+```
+gram.ngrams.unigrams.{type}     → count
+gram.ngrams.bigrams.{t1}_{t2}   → count
+gram.transitions.{type}         → {next_type: count, ...}
+gram.probabilities.{type}       → [[next, prob], ...]
+gram.macros                     → [macro_blocks...]
+gram.metrics.entropy            → float (decreases as system learns)
+```
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/gram/start-learning` | POST | Start learning loop |
+| `/gram/suggestions` | POST | Get next block suggestions |
+| `/execute/with-learning` | POST | Execute with observation |
+| `/gram/metrics` | GET | Get learning metrics |
+| `/gram/report` | GET | Get learning report |
 
 ---
 

@@ -1,0 +1,498 @@
+// ============================================================================
+// SCX-ENHANCED @GRAM KERNEL
+// Adaptive Learning & Compression Engine for Atomic Block Systems
+// ============================================================================
+//
+// The @GRAM Kernel provides:
+// - Pattern observation and frequency learning (unigrams, bigrams)
+// - SCX compression ratio calculation
+// - Pattern suggestion based on learned data
+// - Automatic CSS → SCX compression
+// - Real-world CSS learning from live pages
+//
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// 1. SCX PATTERN OBSERVATION
+// Observes SCX usage and learns frequency patterns
+// ----------------------------------------------------------------------------
+
+[Pop gram_observe_scx]
+  [Wo @event_type]→[Ch'en type]
+  [Wo @element]→[Ch'en el]
+  [Wo @context]→[Ch'en ctx]
+
+  // Extract SCX patterns from element
+  [Wo el]→[Sek get_attributes]→[Ch'en attrs]
+  [Wo attrs]→[Sek filter [Sek starts_with "⟁"]]→[Ch'en scx_attrs]
+
+  // Convert to SCX unigrams
+  [Wo scx_attrs]→[Sek map [Sek substring 1]]→[Ch'en scx_tokens]
+
+  // Store SCX frequency patterns
+  [@loop scx_tokens]→[@as token]→[
+    // SCX unigram
+    [Wo token]→[Yax "gram.scx.unigrams." token]→[
+      [Sek mx2db_get 0]→[Ch'en count]
+      [Wo (+ count 1)]→[Sek mx2db_put]
+    ]
+
+    // SCX bigrams (contextual patterns)
+    [@if [Sek > [Sek length scx_tokens] 1]]→[@then
+      [Wo token]→[Ch'en current]
+      [Wo scx_tokens]→[Sek index_of current]→[Ch'en idx]
+      [@if [Sek > idx 0]]→[@then
+        [Wo scx_tokens]→[Sek get (- idx 1)]→[Ch'en prev]
+        // SCX bigram: prev→current
+        [Wo prev "→" current]→[Yax "gram.scx.bigrams." prev "_" current]→[
+          [Sek mx2db_get 0]→[Ch'en count]
+          [Wo (+ count 1)]→[Sek mx2db_put]
+        ]
+      ]
+    ]
+  ]
+
+  // Calculate SCX compression score
+  [Wo scx_tokens]→[Ch'en tokens]
+  [Wo el]→[Sek get_computed_style]→[Ch'en computed]
+  [Wo computed]→[Sek estimate_css_size]→[Ch'en original_size]
+
+  // Each SCX token ≈ 5-10 bytes vs 50-200 bytes in CSS
+  [Wo [Sek length tokens] 7]→[Sek math_multiply]→[Ch'en scx_size]
+  [Wo (/ (- original_size scx_size) original_size)]→[Ch'en compression_ratio]
+
+  // Store compression learning
+  [Sek atomic_block {
+    "@type": "scx_compression_observation",
+    "@control": ["@learn", "@optimize"],
+    "@data": {
+      "element_type": [Sek get_tag_name el],
+      "scx_tokens": tokens,
+      "original_size": original_size,
+      "scx_size": scx_size,
+      "compression_ratio": compression_ratio,
+      "compression_saved": (- original_size scx_size),
+      "timestamp": [Sek current_time]
+    },
+    "@view": "compression_display",
+    "@links": []
+  }]→[Ch'en observation]
+
+  [Wo observation]→[Yax "gram.scx.observations"]→[Sek mx2db_append]
+
+  [Xul return observation]
+[Xul]
+
+
+// ----------------------------------------------------------------------------
+// 2. SCX PATTERN SUGGESTION ENGINE
+// Suggests optimal SCX patterns based on learned data
+// ----------------------------------------------------------------------------
+
+[Pop gram_suggest_scx]
+  [Wo @element]→[Ch'en el]
+  [Wo @desired_style {}]→[Ch'en style]
+  [Wo @context]→[Ch'en ctx]
+
+  // Analyze current element
+  [Wo el]→[Sek get_attributes]→[Ch'en current_attrs]
+  [Wo current_attrs]→[Sek filter [Sek starts_with "⟁"]]→[Ch'en current_scx]
+  [Wo current_scx]→[Sek map [Sek substring 1]]→[Ch'en current_tokens]
+
+  // Find similar elements in learning data
+  [Yax "gram.scx.observations"]→[Sek mx2db_get_all]→[Ch'en observations]
+
+  // Filter by element type
+  [Wo [Sek get_tag_name el]]→[Ch'en element_type]
+  [Wo observations]→[Sek filter [Ch'en obs]→[@then
+    [Sek equals [Sek get "element_type" obs] element_type]
+  ]]→[Ch'en similar_observations]
+
+  // Find most effective SCX patterns for this element type
+  [Wo similar_observations]→[Sek group_by [Sek get "scx_tokens"]]→[Ch'en pattern_groups]
+
+  // Calculate effectiveness score for each pattern
+  [Wo pattern_groups]→[Sek map [Ch'en [tokens observations]]→[@then
+    // Average compression ratio
+    [Wo observations]→[Sek map [Sek get "compression_ratio"]]→[Ch'en ratios]
+    [Sek average ratios]→[Ch'en avg_ratio]
+
+    // Usage frequency
+    [Sek length observations]→[Ch'en frequency]
+
+    // Relevance to desired style
+    [Pop calculate_style_match]
+      [Wo tokens]→[Ch'en pattern_tokens]
+      [Wo style]→[Ch'en desired]
+
+      // Map SCX tokens to CSS properties
+      [Wo pattern_tokens]→[Sek map [Pop scx_to_css]]→[Ch'en pattern_css]
+
+      // Calculate match percentage
+      [Sek style_match_percentage pattern_css desired]→[Ch'en match_score]
+
+      [Xul return match_score]
+    [Xul]
+
+    [Sek list tokens avg_ratio frequency match_score]
+  ]]→[Ch'en scored_patterns]
+
+  // Sort by effectiveness
+  [Wo scored_patterns]→[Sek sort_by [Ch'en [tokens ratio freq match]]→[@then
+    // Weighted score: 40% compression + 30% frequency + 30% match
+    [Wo (+ (* ratio 0.4) (* (/ freq 100) 0.3) (* match 0.3))]→[Ch'en score]
+    [Xul return score]
+  ] :desc]→[Ch'en sorted_patterns]
+
+  // Get top 3 suggestions
+  [Wo sorted_patterns]→[Sek take 3]→[Ch'en top_patterns]
+
+  // Convert to suggestion atomic blocks
+  [Wo top_patterns]→[Sek map [Ch'en [tokens ratio freq match]]→[@then
+    [Sek atomic_block {
+      "@type": "scx_suggestion",
+      "@control": ["@apply", "@optimize"],
+      "@data": {
+        "suggested_tokens": tokens,
+        "scx_attributes": [Sek map tokens [Sek str "⟁" @token]],
+        "compression_ratio": ratio,
+        "frequency": freq,
+        "style_match": match,
+        "confidence": (min 1.0 (+ (* ratio 0.5) (* match 0.5))),
+        "reason": [Sek str "Effective SCX pattern for " element_type],
+        "estimated_savings": [Sek round (* ratio 100)] "%"
+      },
+      "@view": "suggestion_display",
+      "@links": []
+    }]
+  ]]→[Ch'en suggestions]
+
+  [Xul return suggestions]
+[Xul]
+
+
+// ----------------------------------------------------------------------------
+// 3. SCX AUTO-COMPRESSION ENGINE
+// Automatically compresses CSS to SCX tokens
+// ----------------------------------------------------------------------------
+
+[Pop gram_auto_compress_css]
+  [Wo @css_content]→[Ch'en css]
+  [Wo @context]→[Ch'en ctx]
+
+  // Parse CSS into rules
+  [Wo css]→[Sek parse_css]→[Ch'en rules]
+
+  // For each rule, find SCX equivalents
+  [Wo rules]→[Sek map [Ch'en rule]→[@then
+    [Wo rule]→[Sek get "selector"]→[Ch'en selector]
+    [Wo rule]→[Sek get "properties"]→[Ch'en props]
+
+    // Find SCX tokens for these properties
+    [Pop find_scx_for_properties]
+      [Wo props]→[Ch'en properties]
+
+      // Get all SCX mappings
+      [Yax "gram.scx.mappings"]→[Sek mx2db_get {}]→[Ch'en mappings]
+
+      // Find matching SCX tokens
+      [Wo properties]→[Sek map [Ch'en [prop value]]→[@then
+        // Look for direct mapping
+        [Wo prop "_" value]→[Sek str]→[Ch'en prop_key]
+        [Wo mappings]→[Sek get prop_key]→[Ch'en scx_token]
+
+        // If not found, look for approximate matches
+        [@if [Sek not scx_token]]→[@then
+          // Find similar properties
+          [Wo mappings]→[Sek keys]→[Ch'en all_mappings]
+          [Wo all_mappings]→[Sek filter [Sek includes prop]]→[Ch'en similar]
+
+          [@if [Sek not_empty similar]]→[@then
+            [Wo similar]→[Sek first]→[Ch'en similar_key]
+            [Wo mappings]→[Sek get similar_key]→[Ch'en similar_scx]
+            [Xul return similar_scx]
+          ]→[@else
+            [Xul return null]
+          ]
+        ]→[@else
+          [Xul return scx_token]
+        ]
+      ]]→[Ch'en scx_tokens]
+
+      [Wo scx_tokens]→[Sek filter [Sek not_null]]→[Ch'en valid_tokens]
+      [Xul return valid_tokens]
+    [Xul]
+
+    // Calculate compression
+    [Wo rule]→[Sek estimate_rule_size]→[Ch'en original_size]
+    [Wo valid_tokens]→[Ch'en tokens]
+    [Wo [Sek length tokens] 7]→[Sek math_multiply]→[Ch'en scx_size]
+    [Wo (- original_size scx_size)]→[Ch'en savings]
+
+    // Create compressed version
+    [Sek atomic_block {
+      "@type": "css_compression_result",
+      "@control": ["@replace", "@optimize"],
+      "@data": {
+        "selector": selector,
+        "original_properties": props,
+        "scx_tokens": tokens,
+        "scx_attributes": [Sek map tokens [Sek str "⟁" @token]],
+        "original_size": original_size,
+        "scx_size": scx_size,
+        "savings": savings,
+        "compression_ratio": (/ savings original_size),
+        "compression_possible": [Sek > savings 0]
+      },
+      "@view": "compression_result_display",
+      "@links": []
+    }]→[Ch'en result]
+
+    [Xul return result]
+  ]]→[Ch'en compression_results]
+
+  // Filter to only beneficial compressions
+  [Wo compression_results]→[Sek filter [Sek get "compression_possible"]]→[Ch'en beneficial]
+
+  // Sort by savings (descending)
+  [Wo beneficial]→[Sek sort_by [Sek get "savings"] :desc]→[Ch'en sorted_results]
+
+  // Generate final compressed output
+  [Pop generate_scx_html]
+    [Wo sorted_results]→[Ch'en results]
+
+    // Group by original selector
+    [Wo results]→[Sek group_by [Sek get "selector"]]→[Ch'en grouped]
+
+    [Wo grouped]→[Sek map [Ch'en [selector compressions]]→[@then
+      // Get all SCX attributes for this selector
+      [Wo compressions]→[Sek map [Sek get "scx_attributes"]]→[Sek flatten]→[Sek unique]→[Ch'en all_attrs]
+
+      // Create HTML with SCX attributes
+      [Sek str "<" [Sek strip_css_selector selector] " " [Sek join " " all_attrs] ">"]
+    ]]→[Ch'en scx_elements]
+
+    [Xul return [Sek join "\n" scx_elements]]
+  [Xul]
+
+  // Create learning report
+  [Sek atomic_block {
+    "@type": "auto_compression_report",
+    "@control": ["@review", "@apply"],
+    "@data": {
+      "original_css_size": [Sek estimate_css_size css],
+      "compressed_html_size": [Sek estimate_html_size [Sek generate_scx_html sorted_results]],
+      "total_savings": [Sek sum [Sek map sorted_results [Sek get "savings"]]],
+      "compression_count": [Sek length sorted_results],
+      "average_ratio": [Sek average [Sek map sorted_results [Sek get "compression_ratio"]]],
+      "timestamp": [Sek current_time],
+      "context": ctx
+    },
+    "@view": "report_display",
+    "@links": []
+  }]→[Ch'en report]
+
+  [Xul return [Sek list "compressed_html" [Sek generate_scx_html sorted_results] "report" report]]
+[Xul]
+
+
+// ----------------------------------------------------------------------------
+// 4. SCX LEARNING FROM REAL USAGE
+// Learns SCX patterns from live webpages
+// ----------------------------------------------------------------------------
+
+[Pop gram_learn_from_real_css]
+  // Analyze actual webpage CSS and learn patterns
+  [Wo @url]→[Ch'en page_url]
+
+  // Fetch page
+  [Wo page_url]→[Sek fetch_html]→[Ch'en html]
+  [Wo html]→[Sek extract_css]→[Ch'en all_css]
+
+  // Also extract any existing SCX usage
+  [Wo html]→[Sek extract_scx_attributes]→[Ch'en existing_scx]
+
+  // Parse CSS rules
+  [Wo all_css]→[Sek parse_css]→[Ch'en rules]
+
+  // Learn from each rule
+  [Wo rules]→[Sek map [Ch'en rule]→[@then
+    [Wo rule]→[Sek get "selector"]→[Ch'en selector]
+    [Wo rule]→[Sek get "properties"]→[Ch'en props]
+
+    // Check if this selector has SCX attributes in HTML
+    [Wo existing_scx]→[Sek filter [Sek equals_selector selector]]→[Ch'en matching_scx]
+
+    [@if [Sek not_empty matching_scx]]→[@then
+      // Learn SCX→CSS mapping from real usage
+      [Wo matching_scx]→[Sek first]→[Ch'en scx_attrs]
+      [Wo scx_attrs]→[Sek get_scx_tokens]→[Ch'en tokens]
+
+      // Create mapping for each property
+      [@loop props]→[@as [prop value]]→[
+        // Find which SCX token corresponds to this property
+        [Pop find_corresponding_scx]
+          [Wo tokens]→[Ch'en scx_tokens]
+          [Wo prop]→[Ch'en property]
+          [Wo value]→[Ch'en val]
+
+          // Look for SCX token that produces this property
+          [Wo scx_tokens]→[Sek filter [Ch'en token]→[@then
+            [Wo token]→[Sek scx_to_css]→[Ch'en css_output]
+            [Sek includes_property css_output prop val]
+          ]]→[Ch'en matching_tokens]
+
+          [@if [Sek not_empty matching_tokens]]→[@then
+            [Wo matching_tokens]→[Sek first]→[Ch'en matching_token]
+
+            // Store the mapping
+            [Wo prop "_" val]→[Ch'en css_key]
+            [Wo css_key]→[Yax "gram.scx.mappings." css_key]→[Sek mx2db_put matching_token]
+
+            // Also store reverse mapping
+            [Wo matching_token]→[Yax "gram.scx.reverse." matching_token]→[
+              [Sek mx2db_get []]→[Ch'en current]
+              [Wo current]→[Sek append css_key]→[Sek unique]→[Ch'en updated]
+              [Sek mx2db_put updated]
+            ]
+
+            [Xul return [Sek list css_key matching_token]]
+          ]→[@else
+            [Xul return null]
+          ]
+        [Xul]
+      ]
+    ]→[@else
+      // No SCX found - this is an opportunity for compression
+      [Sek atomic_block {
+        "@type": "compression_opportunity",
+        "@control": ["@analyze", "@suggest"],
+        "@data": {
+          "selector": selector,
+          "properties": props,
+          "rule_size": [Sek estimate_rule_size rule],
+          "potential_scx_size": [Sek * [Sek length props] 7],
+          "potential_savings": (- [Sek estimate_rule_size rule] [Sek * [Sek length props] 7]),
+          "url": page_url,
+          "timestamp": [Sek current_time]
+        },
+        "@view": "opportunity_display"
+      }]→[Ch'en opportunity]
+
+      [Wo opportunity]→[Yax "gram.scx.opportunities"]→[Sek mx2db_append]
+
+      [Xul return opportunity]
+    ]
+  ]]→[Ch'en learnings]
+
+  // Filter out nulls
+  [Wo learnings]→[Sek filter [Sek not_null]]→[Ch'en valid_learnings]
+
+  // Calculate learning metrics
+  [Sek atomic_block {
+    "@type": "scx_learning_report",
+    "@control": ["@review", "@improve"],
+    "@data": {
+      "url": page_url,
+      "total_css_rules": [Sek length rules],
+      "existing_scx_usage": [Sek length existing_scx],
+      "new_mappings_learned": [Sek length [Sek filter valid_learnings [Sek is_list]]],
+      "compression_opportunities": [Sek length [Sek filter valid_learnings [Sek is_atomic_block]]],
+      "total_potential_savings": [Sek sum [Sek map [Sek filter valid_learnings [Sek is_atomic_block]] [Sek get "potential_savings"]]],
+      "learning_timestamp": [Sek current_time],
+      "scx_coverage": (/ [Sek length existing_scx] [Sek length rules])
+    },
+    "@view": "learning_report_display",
+    "@links": []
+  }]→[Ch'en report]
+
+  [Xul return report]
+[Xul]
+
+
+// ----------------------------------------------------------------------------
+// 5. HELPER FUNCTIONS
+// ----------------------------------------------------------------------------
+
+// Convert SCX token to CSS properties
+[Pop scx_to_css]
+  [Wo @token]→[Ch'en token]
+
+  // Core SCX → CSS mappings
+  [Sek match token
+    "flex"   → { "display": "flex" }
+    "grid"   → { "display": "grid" }
+    "col"    → { "flex-direction": "column" }
+    "row"    → { "flex-direction": "row" }
+    "center" → { "align-items": "center", "justify-content": "center" }
+    "wrap"   → { "flex-wrap": "wrap" }
+    "p1"     → { "padding": "4px" }
+    "p2"     → { "padding": "8px" }
+    "p3"     → { "padding": "12px" }
+    "p4"     → { "padding": "16px" }
+    "g1"     → { "gap": "4px" }
+    "g2"     → { "gap": "8px" }
+    "g3"     → { "gap": "12px" }
+    "g4"     → { "gap": "16px" }
+    "ghost"  → { "background": "rgba(255,255,255,0.06)", "backdrop-filter": "blur(10px)" }
+    _        → {}
+  ]→[Ch'en css_props]
+
+  [Xul return css_props]
+[Xul]
+
+
+// Estimate CSS rule size in bytes
+[Pop estimate_rule_size]
+  [Wo @rule]→[Ch'en rule]
+
+  [Wo rule]→[Sek get "selector"]→[Ch'en selector]
+  [Wo rule]→[Sek get "properties"]→[Ch'en props]
+
+  // Selector bytes + braces + properties
+  [Wo [Sek length selector]]→[Ch'en selector_bytes]
+  [Wo 4]→[Ch'en brace_bytes]  // "{ }" with spaces
+
+  // Each property: "property: value;" average ~30 bytes
+  [Wo [Sek length props] 30]→[Sek math_multiply]→[Ch'en props_bytes]
+
+  [Wo (+ selector_bytes brace_bytes props_bytes)]→[Ch'en total]
+
+  [Xul return total]
+[Xul]
+
+
+// Calculate style match percentage
+[Pop style_match_percentage]
+  [Wo @pattern_css]→[Ch'en pattern]
+  [Wo @desired_css]→[Ch'en desired]
+
+  // Count matching properties
+  [Wo desired]→[Sek keys]→[Ch'en desired_keys]
+  [Wo pattern]→[Sek keys]→[Ch'en pattern_keys]
+
+  [Wo desired_keys]→[Sek filter [Ch'en key]→[@then
+    [Sek includes pattern_keys key]
+  ]]→[Ch'en matching_keys]
+
+  [@if [Sek > [Sek length desired_keys] 0]]→[@then
+    [Wo (/ [Sek length matching_keys] [Sek length desired_keys])]→[Ch'en match]
+    [Xul return match]
+  ]→[@else
+    [Xul return 1.0]  // Empty desired = full match
+  ]
+[Xul]
+
+
+// ============================================================================
+// @GRAM KERNEL STORAGE SCHEMA
+// ============================================================================
+//
+// gram.scx.unigrams.{token}         → count (int)
+// gram.scx.bigrams.{prev}_{next}    → count (int)
+// gram.scx.observations             → [observation_blocks...]
+// gram.scx.mappings.{css_key}       → scx_token (string)
+// gram.scx.reverse.{scx_token}      → [css_keys...]
+// gram.scx.opportunities            → [opportunity_blocks...]
+//
+// ============================================================================
