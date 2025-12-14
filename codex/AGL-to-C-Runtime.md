@@ -2221,4 +2221,306 @@ typedef agl_err_t (*agl_hostcall_fn)(
 
 
 
+Below is a **locked, canonical addendum** that completes the native backend:
+
+1. **EDGES batch framing** (BATCH header, count patching, META offsets feed)
+2. **SCXQ2 field-ID DICT lookup** (sorted table + optional perfect-hash hook)
+3. **Forbidden-import symbol scan contract** (binary verifier with no decode)
+
+All parts are **bounded, deterministic, stream-safe, MX2⟁☣-verifiable**, and drop directly on top of the `agl_runtime.h` you already have.
+
+---
+
+# 1️⃣ EDGES Batch Framing (stream-safe)
+
+## 1.1 Binary Layout (normative)
+
+```
++------------------+-----------------------------------+
+| BATCH_HDR        |  fixed, little-endian             |
++------------------+-----------------------------------+
+| EDGE_RECORDS     |  streaming records (fieldmap)    |
++------------------+-----------------------------------+
+| (optional) PAD   |  none required                    |
++------------------+-----------------------------------+
+
+BATCH_HDR:
+  u32  magic        = 0x53434745  // 'SCGE'
+  u16  version      = 1
+  u16  flags        = bit0: has_meta, bit1: sealed
+  u64  edge_count   // PATCHED AT END (initially 0)
+  u64  batch_bytes  // PATCHED AT END (bytes after header)
+  u64  crc32        // PATCHED AT END (0 if disabled)
+```
+
+**Rules**
+
+* `edge_count`, `batch_bytes`, `crc32` are **patched exactly once**.
+* Decoder may stream without knowing `edge_count`.
+* `flags.has_meta` indicates META sidecar exists later in stream.
+
+---
+
+## 1.2 META Offsets Feed (sidecar, JSON or binary)
+
+**Purpose:** enable seek / CSR build **without re-decoding**.
+
+### Binary META Block (recommended)
+
+```
+META_HDR:
+  u32 magic   = 0x4154454D // 'META'
+  u16 version = 1
+  u16 flags   = 0
+  u32 batches // number of batches described
+
+For each batch i:
+  u64 batch_start_offset   // absolute stream offset
+  u64 records_start       // offset to first EDGE_RECORD
+  u64 records_end         // offset past last EDGE_RECORD
+  u64 edge_count
+```
+
+**Invariants (MX2⟁☣)**
+
+* offsets strictly increasing
+* `records_start >= batch_start_offset + sizeof(BATCH_HDR)`
+* `records_end <= next_batch_start || EOF`
+* `edge_count` matches patched header
+
+---
+
+## 1.3 C Reference (encode / patch)
+
+```c
+/* ---------- BATCH HEADER ---------- */
+typedef struct agl_edges_batch_hdr {
+  uint32_t magic;        /* 'SCGE' */
+  uint16_t version;      /* 1 */
+  uint16_t flags;        /* bit0 has_meta, bit1 sealed */
+  uint64_t edge_count;   /* patch */
+  uint64_t batch_bytes;  /* patch */
+  uint64_t crc32;        /* patch or 0 */
+} agl_edges_batch_hdr_t;
+
+static inline agl_err_t
+agl_edges_batch_begin(agl_wr_t* w, agl_edges_batch_hdr_t* hdr_out) {
+  agl_edges_batch_hdr_t h = {
+    0x53434745u, 1u, 0u, 0ull, 0ull, 0ull
+  };
+  if (agl_wr_need(w, sizeof(h)) != AGL_OK) return AGL_EBOUNDS;
+  *hdr_out = h;
+  /* write placeholder */
+  return agl_wr_bytes(w, (const uint8_t*)&h, sizeof(h));
+}
+
+static inline agl_err_t
+agl_edges_batch_end(agl_wr_t* w,
+                    uint8_t* batch_start,
+                    agl_edges_batch_hdr_t* h,
+                    uint64_t edge_count,
+                    uint32_t crc32) {
+  uint64_t end = (uint64_t)(w->cur - batch_start);
+  h->edge_count  = edge_count;
+  h->batch_bytes = end - sizeof(*h);
+  h->crc32       = (uint64_t)crc32;
+
+  /* patch header in place */
+  for (size_t i = 0; i < sizeof(*h); i++)
+    batch_start[i] = ((const uint8_t*)h)[i];
+  return AGL_OK;
+}
+```
+
+---
+
+# 2️⃣ SCXQ2 Field-ID DICT Lookup
+
+Field IDs must be **stable across streams**. Two sanctioned methods:
+
+## 2.1 Sorted Table (default, tiny)
+
+```c
+typedef struct scx2_dict_entry {
+  uint32_t id;        /* canonical field id */
+  const char* key;    /* e.g. "src", "dst", "rel" */
+} scx2_dict_entry_t;
+
+/* sorted by key (lex) */
+static const scx2_dict_entry_t SCX2_EDGE_FIELDS[] = {
+  {1, "src"},
+  {2, "dst"},
+  {3, "rel"},
+  {4, "w"},
+  {5, "flags"}
+};
+
+static inline int scx2_dict_lookup(const char* key, uint32_t* out_id) {
+  size_t lo = 0, hi = sizeof(SCX2_EDGE_FIELDS)/sizeof(SCX2_EDGE_FIELDS[0]);
+  while (lo < hi) {
+    size_t mid = (lo + hi) >> 1;
+    int c = strcmp(key, SCX2_EDGE_FIELDS[mid].key);
+    if (c == 0) { *out_id = SCX2_EDGE_FIELDS[mid].id; return 1; }
+    if (c < 0) hi = mid;
+    else lo = mid + 1;
+  }
+  return 0;
+}
+```
+
+**Guarantees**
+
+* deterministic
+* no heap
+* O(log N), N ≤ 64 (acceptable)
+
+---
+
+## 2.2 Perfect-Hash Hook (optional)
+
+If you later generate a PHF:
+
+```c
+/* generated offline, pinned hash */
+uint32_t scx2_phf_lookup(const char* key); /* returns 0 if miss */
+
+static inline int scx2_dict_lookup_phf(const char* key, uint32_t* out_id) {
+  uint32_t id = scx2_phf_lookup(key);
+  if (!id) return 0;
+  *out_id = id;
+  return 1;
+}
+```
+
+**MX2⟁☣ rule:** PHF table hash **must be pinned** in the manifest.
+
+---
+
+# 3️⃣ Forbidden-Import “Symbol Scan Contract”
+
+This lets the kernel verify a **linked native artifact** **without decoding anything**.
+
+## 3.1 Contract (normative)
+
+**Input**
+
+* binary artifact (ELF / PE / Mach-O)
+* platform triple from `native_job`
+
+**Output**
+
+* `ok | violation`
+* list of offending symbols
+
+**Forbidden classes**
+
+* process spawn
+* filesystem write (outside sandbox hostcalls)
+* networking
+* clocks / timers
+* dynamic loading
+
+---
+
+## 3.2 Canonical Forbidden Symbol Sets
+
+### Cross-platform (always forbidden)
+
+```
+system, popen, fork, exec*, CreateProcess*
+dlopen, LoadLibrary*
+socket, connect, accept, send, recv
+time, gettimeofday, clock_gettime, QueryPerformanceCounter
+```
+
+### Allowed exceptions
+
+* `memcpy, memmove, memset`
+* math (`sin, cos, sqrt`)
+* **hostcall bridge only**: `agl_hostcall`
+
+---
+
+## 3.3 Binary-Level Scan Rules
+
+**ELF**
+
+* scan `.dynsym` + `.symtab`
+* scan `.plt` relocations
+
+**PE**
+
+* scan Import Address Table (IAT)
+
+**Mach-O**
+
+* scan `LC_SYMTAB` + `LC_DYSYMTAB`
+
+**Decision**
+
+* if any forbidden symbol is present → **critical hazard**
+
+---
+
+## 3.4 Scan Result Block (AST)
+
+```json
+{
+  "@type": "native_symbol_scan",
+  "@hazard": "native",
+  "@data": {
+    "@ok": false,
+    "@binary": "edges_accel.bin",
+    "@platform": "linux/x86_64",
+    "@forbidden": [
+      { "@symbol": "clock_gettime", "@section": ".plt" }
+    ]
+  }
+}
+```
+
+---
+
+## 3.5 π Validator Hook
+
+```clojure
+[Pop mx2hazard_validate_native_binary]
+  [Wo @scan]→[Ch'en scan]
+  [Wo scan]→[Sek pi.get "@data.@ok"]→[Ch'en ok]
+  [@if [Sek pi.not ok]]→[@then
+    [Xul return [Sek mx2_violation "hazard_forbidden_symbol" "critical" scan]]
+  ]
+  [Xul return {"@ok":true}]
+[Xul]
+```
+
+---
+
+# 4️⃣ End-to-End Native EDGES Flow (locked)
+
+```
+AGL EDGES
+  → AST (edges batch)
+  → native_job (emit C)
+  → native_plan (compile/link/run)
+  → native binary
+  → symbol_scan (NO DECODE)
+  → native_harvest (AST fragment)
+  → CSR build using META offsets
+```
+
+**Key property:**
+The kernel can **accept or reject the binary** *before execution* using only the symbol scan + pinned hashes.
+
+---
+
+## 🔒 Final Locks
+
+* EDGES batches are **patch-once**, stream-safe.
+* META offsets are the **only seek authority**.
+* Field IDs are **DICT-governed** (no ad-hoc numbers).
+* Native binaries are **verified structurally** (symbols), not heuristically.
+* Any violation → `@flux.halt` under MX2⟁☣.
+
+
 
