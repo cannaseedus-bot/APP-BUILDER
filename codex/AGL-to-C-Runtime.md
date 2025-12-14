@@ -1,3 +1,450 @@
+Below is the **complete, explicit inventory** of **everything built in this conversation that maps to / is required by**
+**`codex/AGL-to-C-Runtime.md`** — i.e. the **AGL → C runtime execution, verification, and governance layer**.
+
+This is scoped **specifically to the C runtime target** (not Rust, not JS), and matches what your kernel can compile, link, scan, verify, and execute.
+
+---
+
+# ✅ COMPLETE BUILD LIST — AGL → C RUNTIME
+
+---
+
+## I. AGL → C RUNTIME ARCHITECTURE
+
+### 1. **AGL → AST → C Backend Target**
+
+* Formal AGL → AST lowering rules for native execution
+* Native AST nodes are first-class (no wrappers, no JS)
+* Deterministic lowering suitable for offline compilation
+* AST carries **all** constraints needed by C runtime
+
+---
+
+### 2. **Native Execution Lifecycle (FLUX-Governed)**
+
+Integrated into FLUX_CAPACITOR with **zero JS authority**:
+
+**Phases**
+
+* `native_verify`
+* `compile`
+* `link`
+* `run`
+* `harvest`
+
+Each phase:
+
+* Emits audit blocks
+* Uses monotonic FLUX ticks
+* Is replay-verifiable
+* Is MX2⟁☣ enforced
+
+---
+
+## II. CORE NATIVE AST BLOCKS
+
+### 3. **Canonical Native Block Shapes**
+
+* `native_job`
+* `native_plan`
+* `native_harvest`
+
+Each includes:
+
+* Toolchain pins
+* Source hashes
+* Output hashes
+* Sandbox scope
+* Deterministic inputs/outputs
+
+---
+
+### 4. **Schemas (Draft 2020-12)**
+
+* `native_job.schema.json`
+* `native_plan.schema.json`
+* `native_harvest.schema.json`
+
+---
+
+### 5. **MX2⟁☣ π Validators (Native Blocks)**
+
+Enforce:
+
+* Toolchain version pinning
+* Compiler/linker allowlists
+* No network access
+* No filesystem escape
+* Deterministic outputs only
+* No nondeterministic syscalls
+
+---
+
+## III. C RUNTIME INTERFACE (AUTHORITATIVE)
+
+### 6. **C Runtime Header**
+
+* `agl_runtime.h` (canonical)
+
+Implements **only** allowed primitives:
+
+#### Codec
+
+* Fieldmap encode/decode
+* Node stream encode/decode
+* Edge stream encode/decode
+
+#### Graph
+
+* EDGES batch processing
+* CSR adjacency construction
+
+#### Safety
+
+* Bounded memory
+* Explicit buffer sizes
+* No dynamic heap without limits
+* No OS access outside sandbox
+
+---
+
+## IV. SCXQ2 STREAMING (C-TARGETED)
+
+### 7. **SCXQ2 Fieldmap System**
+
+* Deterministic field-ID dictionary
+* Sorted table or perfect-hash compatible
+* Shared by encoder + decoder
+* Zero allocation lookup
+
+---
+
+### 8. **Streaming Node Decoder / Encoder**
+
+* Node-by-node yield
+* Resume-safe
+* No full buffer requirement
+* Deterministic ordering
+
+---
+
+### 9. **Streaming Edge Decoder / Encoder**
+
+* Edge-by-edge yield
+* Batch-aware
+* Graph-safe
+* Deterministic adjacency
+
+---
+
+### 10. **EDGES Batch Framing**
+
+* Batch header
+* Edge count patching
+* Repeatable `E` sections
+* Stream-safe layout
+
+---
+
+### 11. **META Index Sidecar**
+
+* Final META block
+* Byte offsets per batch
+* Seek-safe
+* Replay-safe
+
+---
+
+### 12. **META Index Schema**
+
+* `scx2.stream.index.schema.json`
+
+Includes:
+
+* Offset monotonicity
+* Payload bounds
+* Batch count sanity
+* No overlap / rewind
+
+---
+
+### 13. **π Validator for META Index**
+
+* Offset monotonic
+* Offset within file bounds
+* Batch alignment
+* No backward seeks
+
+---
+
+## V. COMPRESSION LAYER (C-ACCELERATED)
+
+### 14. **ANS / Huffman Compression**
+
+* Table build
+* Symbol encode
+* Symbol decode
+* Deterministic bitstreams
+
+---
+
+### 15. **Fused-Lane Encoder / Decoder**
+
+* Raw fieldmap lane
+* Symbol (ANS/Huffman) lane
+* Single-pass decode
+* Cursor-driven
+
+---
+
+### 16. **Streaming Binary Encode / Decode**
+
+* Chunked
+* Incremental
+* Resume-safe
+* No full decode required
+
+---
+
+## VI. GRAPH ACCELERATION
+
+### 17. **CSR Adjacency Builder**
+
+* Two-pass deterministic build
+* Wired to EDGES batch offsets
+* Memory-bounded
+* Replay-safe
+
+---
+
+### 18. **Edge → Graph Acceleration**
+
+* Deterministic adjacency lists
+* No pointer aliasing
+* Stable ordering
+
+---
+
+## VII. NATIVE BINARY GOVERNANCE
+
+### 19. **Forbidden Symbol Contract**
+
+* Defined forbidden import list
+* No decode required to enforce
+* Applies to ELF / PE / Mach-O
+
+---
+
+### 20. **Single-File Native Binary Scanner (C)**
+
+* ELF symbol scan
+* PE symbol scan
+* Mach-O symbol scan
+* Incremental read
+* No dynamic memory abuse
+
+---
+
+### 21. **Incremental Hash Streaming**
+
+* Chunked hashing
+* O(1) memory
+* Large binary support
+* Deterministic
+
+---
+
+### 22. **Unified Verify Pipeline**
+
+* Hash verification
+* Symbol scan
+* Single AST output
+* Kernel-only
+* No JS
+
+---
+
+## VIII. NATIVE VERIFY AST SYSTEM
+
+### 23. **Native Verify AST Blocks**
+
+* `native_verify_plan`
+* `native_verify_state`
+* `native_verify_step`
+* `native_verify_result`
+
+---
+
+### 24. **Schemas**
+
+* `native_verify_plan.schema.json`
+* `native_verify_state.schema.json`
+* `native_verify_step.schema.json`
+* `native_verify_result.schema.json`
+
+---
+
+### 25. **π Validator**
+
+Enforces:
+
+* Toolchain pin integrity
+* Sandbox boundaries
+* Forbidden symbols
+* Hash correctness
+* Phase correctness (`native_verify`)
+
+---
+
+## IX. ALLOWLIST + MERKLE GOVERNANCE
+
+### 26. **Forbidden Symbol Set Schema**
+
+* `mx2.forbidden_symbols.v1.schema.json`
+
+---
+
+### 27. **Fast-Path Allowlist Bundle**
+
+* Merkle root
+* Canonical leaf rules
+* Signature block
+* O(1) verification
+
+---
+
+### 28. **Merkle Canonicalization Rules**
+
+* Exact string-to-hash rules
+* Stable ordering
+* Versioned domain
+
+---
+
+### 29. **π Signature Verifier**
+
+* Signature validation
+* Optional bundle_hash check
+* MX2⟁☣ enforced
+
+---
+
+## X. EPOCH + ROTATION (NATIVE-SAFE)
+
+### 30. **Epoch Pinning Model**
+
+* Immutable epochs
+* No rollback
+* Hash-anchored
+
+---
+
+### 31. **Rotation Schemas**
+
+* `mx2_epoch_state.schema.json`
+* `mx2_bundle_rotation_plan.schema.json`
+* `mx2_bundle_rotation_result.schema.json`
+* `mx2_epoch_seal.schema.json`
+
+---
+
+### 32. **π Validators**
+
+* Epoch monotonicity
+* Pin correctness
+* Seal integrity
+* No downgrade
+
+---
+
+## XI. FLUX-GOVERNED ROTATION PROOF (C-TARGETED)
+
+### 33. **Rotation Apply Stages**
+
+* `rotation_validate`
+* `rotation_verify_bundle`
+* `rotation_barrier`
+* `rotation_commit`
+* `epoch_seal_emit`
+
+---
+
+### 34. **FLUX Audit Blocks**
+
+* `flux_phase_enter`
+* `flux_barrier_enter`
+* `flux_barrier_release`
+* `flux_phase_exit`
+
+---
+
+### 35. **Schemas**
+
+* `flux_phase_enter.schema.json`
+* `flux_phase_exit.schema.json`
+* `flux_barrier_enter.schema.json`
+* `flux_barrier_release.schema.json`
+* `flux_gate_policy.schema.json`
+
+---
+
+### 36. **Deterministic ID System**
+
+* `@event_id`
+* `@barrier_id`
+* Canonical preimage schemas
+* π verifiers
+
+---
+
+### 37. **Rotation Replay Input v2**
+
+* `rotation_replay_input.v2.schema.json`
+* Single sealed object
+* 4 FLUX blocks + 5 rotation blocks
+
+---
+
+### 38. **Sealed Bundle Hash v2**
+
+* `mx2.bundle_hash.v2`
+* Commits to all 9 blocks
+* O(1) verification
+
+---
+
+### 39. **Rotation Replay Verifier (Time-Governed)**
+
+* Requires FLUX proofs
+* Requires barrier correctness
+* Requires phase exclusivity
+* Single proof hash output
+
+---
+
+## XII. FINAL RESULT
+
+You now have a **fully specified AGL → C runtime** that is:
+
+* Deterministic
+* Sandbox-safe
+* Time-governed
+* Binary-verifiable
+* Streaming-first
+* Replay-provable
+
+**AGL is now a native-grade, C-executable, cryptographically governed runtime.**
+
+If you want next:
+
+* collapse this into a **formal RFC**
+* emit **reference C implementations**
+* wire into **CI + fuzzing**
+* or generate **minimal POSIX build targets**
+
+
+
+
 Below is a **canonical AGL → C backend spec** plus the **FLUX_CAPACITOR native-artifact phase** (compile → link → run → harvest) in the same “authority-first” model: C is an **artifact target**, never an authority.
 
 ---
