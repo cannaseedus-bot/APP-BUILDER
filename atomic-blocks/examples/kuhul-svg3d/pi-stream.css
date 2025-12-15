@@ -1,0 +1,488 @@
+/* ============================================================
+   K'UHUL π-SVG-3D STREAMING SYSTEM - CSS RUNTIME
+   Pure CSS State Machine for Vector Glyph Streaming
+   ============================================================ */
+
+:root {
+  /* Core Palette */
+  --bg-0: #020409;
+  --bg-1: #050912;
+  --bg-2: #0a1220;
+  --panel: rgba(255, 255, 255, 0.06);
+  --fg-0: #e8f5ff;
+  --fg-1: #9fb3c8;
+  --accent: #16f2aa;
+  --accent-soft: rgba(22, 242, 170, 0.25);
+  --hazard: #ffb300;
+  --danger: #ff6b6b;
+
+  /* π-Stream State */
+  --stream-state: 'idle';
+  --frame-count: 0;
+  --glyph-count: 0;
+  --current-frame: 0;
+  --fps: 30;
+  --playback-speed: 1.0;
+  --playback-progress: 0;
+
+  /* Compression Metrics */
+  --compression-ratio: 0.001;
+  --raw-size: 16000000000;
+  --compressed-size: 16000000;
+
+  /* K'UHUL π Mathematical Constants */
+  --kuhul-pi: 3.141592653589793;
+  --kuhul-e: 2.718281828459045;
+  --kuhul-phi: 1.618033988749895;
+  --kuhul-tau: 6.283185307179586;
+
+  /* Derived π-Scales */
+  --pi-time-scale: calc(var(--kuhul-pi) / 30);
+  --phi-golden-scale: calc(var(--kuhul-phi) / 10);
+  --tau-rotation-scale: calc(var(--kuhul-tau) / 360);
+
+  /* Canvas */
+  --canvas-width: 800;
+  --canvas-height: 600;
+  --glyph-scale: 1.0;
+
+  /* Spacing */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px;
+  --r1: 4px; --r2: 8px; --r3: 12px;
+  --fs0: 12px; --fs1: 14px; --fs2: 16px;
+}
+
+/* ============================================================
+   AGL ATOMIC GLYPHS
+   ============================================================ */
+
+[⟁flex] { display: flex; }
+[⟁grid] { display: grid; }
+[⟁col] { flex-direction: column; }
+[⟁row] { flex-direction: row; }
+[⟁wrap] { flex-wrap: wrap; }
+[⟁center] { align-items: center; justify-content: center; }
+[⟁acenter] { align-items: center; }
+[⟁jbetween] { justify-content: space-between; }
+[⟁fill] { width: 100%; min-height: 100vh; }
+
+[⟁p1] { padding: var(--s1); }
+[⟁p2] { padding: var(--s2); }
+[⟁p3] { padding: var(--s3); }
+[⟁p4] { padding: var(--s4); }
+
+[⟁g1] { gap: var(--s1); }
+[⟁g2] { gap: var(--s2); }
+[⟁g3] { gap: var(--s3); }
+[⟁g4] { gap: var(--s4); }
+
+[⟁bg0] { background: var(--bg-0); }
+[⟁bg1] { background: var(--bg-1); }
+[⟁bg2] { background: var(--bg-2); }
+
+[⟁text] { color: var(--fg-0); font-family: 'Courier New', monospace; }
+[⟁text2] { color: var(--fg-1); }
+[⟁text-ac1] { color: var(--accent); }
+
+[⟁fs0] { font-size: var(--fs0); }
+[⟁fs1] { font-size: var(--fs1); }
+[⟁fs2] { font-size: var(--fs2); }
+
+[⟁ghost] {
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+[⟁rounded] { border-radius: var(--r2); }
+
+/* State Colors */
+[⟁danger] { --state-color: var(--danger); }
+[⟁warn] { --state-color: var(--hazard); }
+[⟁ok] { --state-color: var(--accent); }
+[⟁train] { --state-color: #9c88ff; }
+[⟁prime] { --state-color: #ff3366; }
+[⟁sync] { --state-color: #00aaff; }
+
+/* ============================================================
+   SVG-3D PLAYER
+   ============================================================ */
+
+.svg3d-player {
+  position: relative;
+  background: var(--bg-2);
+  border-radius: var(--r3);
+  overflow: hidden;
+}
+
+.svg3d-canvas {
+  width: 100%;
+  height: 400px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(22, 242, 170, 0.05), transparent 70%),
+    linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
+}
+
+.svg3d-canvas .overlay-text {
+  fill: var(--fg-1);
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.svg3d-canvas .overlay-text tspan {
+  fill: var(--accent);
+}
+
+/* Player States */
+.svg3d-player[data-state="idle"] .svg3d-canvas {
+  opacity: 0.7;
+}
+
+.svg3d-player[data-state="playing"] .svg3d-canvas {
+  opacity: 1;
+}
+
+.svg3d-player[data-state="playing"] .glyph-layer {
+  animation: glyph-stream 0.5s linear infinite;
+}
+
+@keyframes glyph-stream {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+.svg3d-player[data-state="paused"] .svg3d-canvas {
+  filter: saturate(0.5);
+}
+
+/* Player Controls */
+.player-controls {
+  background: rgba(0, 0, 0, 0.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.playback-progress {
+  width: 200px;
+  height: 4px;
+  background: var(--bg-2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: calc(var(--playback-progress, 0) * 100%);
+  background: linear-gradient(90deg, var(--accent), var(--hazard));
+  transition: width 0.1s linear;
+}
+
+/* ============================================================
+   MATHEMATICAL CONSTANTS
+   ============================================================ */
+
+.math-constant {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+  min-width: 140px;
+  transition: all 0.3s ease;
+}
+
+.math-constant:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(22, 242, 170, 0.2);
+}
+
+.math-constant .constant-symbol {
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--accent);
+  text-shadow: 0 0 20px var(--accent-soft);
+}
+
+.math-constant .constant-value {
+  font-size: 0.75em;
+  color: var(--fg-0);
+  font-family: 'Courier New', monospace;
+}
+
+.math-constant .constant-usage {
+  font-size: 0.7em;
+}
+
+.math-constant[data-constant="pi"] .constant-symbol { color: #ff3366; }
+.math-constant[data-constant="e"] .constant-symbol { color: #00aaff; }
+.math-constant[data-constant="phi"] .constant-symbol { color: #ffb300; }
+.math-constant[data-constant="tau"] .constant-symbol { color: #9c88ff; }
+
+/* ============================================================
+   GLYPH STREAM VISUALIZATION
+   ============================================================ */
+
+.stream-glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r2);
+  font-size: 1.2em;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  animation: stream-flow 2s ease-in-out infinite;
+}
+
+.stream-glyph:nth-child(odd) {
+  animation-delay: 0.1s;
+}
+
+@keyframes stream-flow {
+  0%, 100% { transform: translateY(0); opacity: 0.7; }
+  50% { transform: translateY(-4px); opacity: 1; }
+}
+
+.stream-glyph[data-type="flow"] {
+  background: rgba(22, 242, 170, 0.2);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.stream-glyph[data-type="svg"] {
+  background: rgba(255, 51, 102, 0.2);
+  color: #ff3366;
+  border: 1px solid #ff3366;
+}
+
+.stream-glyph[data-type="value"] {
+  background: rgba(156, 136, 255, 0.2);
+  color: #9c88ff;
+  border: 1px solid #9c88ff;
+}
+
+.stream-glyph[data-type="control"] {
+  background: rgba(255, 179, 0, 0.2);
+  color: var(--hazard);
+  border: 1px solid var(--hazard);
+}
+
+.stream-glyph[data-type="action"] {
+  background: rgba(0, 170, 255, 0.2);
+  color: #00aaff;
+  border: 1px solid #00aaff;
+}
+
+.stream-glyph[data-type="math"] {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--fg-0);
+  border: 1px solid var(--fg-1);
+}
+
+.stream-glyph[data-type="stream"] {
+  background: rgba(22, 242, 170, 0.3);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.stream-glyph[data-type="special"] {
+  background: linear-gradient(135deg, rgba(255, 51, 102, 0.3), rgba(156, 136, 255, 0.3));
+  color: var(--fg-0);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.stream-glyph:hover {
+  transform: scale(1.2) translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+/* Binary Stream Display */
+.binary-stream code {
+  color: var(--accent);
+  letter-spacing: 2px;
+  word-spacing: 8px;
+}
+
+/* ============================================================
+   COMPRESSION BAR
+   ============================================================ */
+
+.compression-bar {
+  position: relative;
+  height: 28px;
+  background: var(--bg-2);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-top: var(--s3);
+}
+
+.compression-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: calc(100% - (var(--compression-ratio, 0.001) * 100%));
+  background: linear-gradient(90deg,
+    var(--danger) 0%,
+    var(--hazard) 50%,
+    var(--accent) 100%
+  );
+  border-radius: 14px;
+  animation: compression-pulse 2s infinite;
+}
+
+@keyframes compression-pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+.compression-bar .label-original,
+.compression-bar .label-compressed {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--fs0);
+  color: var(--fg-0);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  z-index: 1;
+}
+
+.compression-bar .label-original { left: var(--s3); }
+.compression-bar .label-compressed { right: var(--s3); }
+
+/* ============================================================
+   CONTROL BUTTONS
+   ============================================================ */
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: var(--s2) var(--s3);
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  border: 1px solid var(--state-color, var(--accent));
+  border-radius: var(--r2);
+  color: var(--fg-0);
+  font-family: 'Courier New', monospace;
+  font-size: var(--fs0);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+  background: var(--state-color, var(--accent));
+  color: var(--bg-0);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn:active {
+  transform: translateY(0);
+}
+
+/* ============================================================
+   OUTPUT DISPLAY
+   ============================================================ */
+
+.output-display {
+  min-height: 150px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: var(--r2);
+  padding: var(--s4);
+  font-family: 'Courier New', monospace;
+  font-size: var(--fs0);
+  white-space: pre-wrap;
+  overflow: auto;
+}
+
+.output-display[data-state="ready"] .output-ready {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  gap: var(--s3);
+}
+
+.output-display .ready-glyph {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, var(--accent-soft), transparent),
+    conic-gradient(from 0deg, var(--accent), var(--hazard), #ff3366, #9c88ff, var(--accent));
+  animation: ready-pulse 3s infinite;
+}
+
+@keyframes ready-pulse {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+  50% { transform: scale(1.1) rotate(180deg); opacity: 1; }
+}
+
+.output-display[data-state="processing"] {
+  border-left: 3px solid var(--accent);
+}
+
+.output-display[data-state="complete"] {
+  border-left: 3px solid var(--accent);
+}
+
+/* ============================================================
+   STATUSBAR
+   ============================================================ */
+
+.statusbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: status-blink 2s infinite;
+}
+
+.status-indicator[data-level="ok"] { background: var(--accent); }
+.status-indicator[data-level="warn"] { background: var(--hazard); }
+.status-indicator[data-level="danger"] { background: var(--danger); }
+
+@keyframes status-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ============================================================
+   STREAM STATE ANIMATIONS
+   ============================================================ */
+
+[data-stream-state="idle"] {
+  --stream-animation: none;
+}
+
+[data-stream-state="playing"] {
+  --stream-animation: stream-active 0.5s linear infinite;
+}
+
+[data-stream-state="buffering"] {
+  --stream-animation: stream-buffer 1s ease-in-out infinite;
+}
+
+@keyframes stream-active {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(1.2); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes stream-buffer {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+

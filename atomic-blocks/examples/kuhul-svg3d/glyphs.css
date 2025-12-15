@@ -1,0 +1,151 @@
+/* ============================================================
+   K'UHUL π-SVG-3D GLYPH SYSTEM
+   AGL Icons via data-g attributes for streaming glyphs
+   ============================================================ */
+
+/* Base glyph styling */
+[data-g]::before {
+  content: '';
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  margin-right: 0.5em;
+  vertical-align: middle;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* K'UHUL Core Glyph */
+[data-g="kuhul"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="%2316f2aa" stroke-width="3"/><path d="M30,50 Q50,20 70,50 T30,50" fill="none" stroke="%2316f2aa" stroke-width="2"/><circle cx="50" cy="50" r="10" fill="%2316f2aa"/><text x="50" y="55" text-anchor="middle" fill="%23fff" font-size="12" font-weight="bold">π</text></svg>');
+}
+
+/* Stream Glyph */
+[data-g="stream"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,50 Q35,30 50,50 T80,50" fill="none" stroke="%2316f2aa" stroke-width="3"><animate attributeName="d" values="M20,50 Q35,30 50,50 T80,50;M20,50 Q35,70 50,50 T80,50;M20,50 Q35,30 50,50 T80,50" dur="1s" repeatCount="indefinite"/></path><circle cx="20" cy="50" r="5" fill="%2316f2aa"/><circle cx="80" cy="50" r="5" fill="%2316f2aa"/></svg>');
+}
+
+/* Playback Controls */
+[data-g="play"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="30,20 80,50 30,80" fill="%2316f2aa"/></svg>');
+}
+
+[data-g="pause"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="25" y="20" width="18" height="60" fill="%23ffb300"/><rect x="57" y="20" width="18" height="60" fill="%23ffb300"/></svg>');
+}
+
+[data-g="stop"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="25" y="25" width="50" height="50" fill="%23ff6b6b" rx="5"/></svg>');
+}
+
+[data-g="rewind"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,20 20,50 50,80" fill="%2300aaff"/><polygon points="80,20 50,50 80,80" fill="%2300aaff"/></svg>');
+}
+
+[data-g="forward"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="20,20 50,50 20,80" fill="%2300aaff"/><polygon points="50,20 80,50 50,80" fill="%2300aaff"/></svg>');
+}
+
+[data-g="loop"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M30,30 A30,30 0 1,1 30,70" fill="none" stroke="%239c88ff" stroke-width="4"/><polygon points="25,25 35,30 25,35" fill="%239c88ff"/><polygon points="25,65 35,70 25,75" fill="%239c88ff"/></svg>');
+}
+
+[data-g="expand"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,35 L20,20 L35,20 M65,20 L80,20 L80,35 M80,65 L80,80 L65,80 M35,80 L20,80 L20,65" fill="none" stroke="%23ff3366" stroke-width="4"/></svg>');
+}
+
+/* Mathematical Constants */
+[data-g="pi"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="65" text-anchor="middle" fill="%23ff3366" font-size="50" font-weight="bold">π</text></svg>');
+}
+
+[data-g="euler"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="65" text-anchor="middle" fill="%2300aaff" font-size="50" font-weight="bold" font-style="italic">e</text></svg>');
+}
+
+[data-g="phi"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="65" text-anchor="middle" fill="%23ffb300" font-size="50" font-weight="bold">φ</text></svg>');
+}
+
+[data-g="tau"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="65" text-anchor="middle" fill="%239c88ff" font-size="50" font-weight="bold">τ</text></svg>');
+}
+
+/* Operator Glyphs */
+[data-g="init"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M30,50 L50,30 L70,50 L50,70 Z" fill="none" stroke="%2316f2aa" stroke-width="3"/><circle cx="50" cy="50" r="8" fill="%2316f2aa"/><path d="M50,20 L50,30 M50,70 L50,80" stroke="%2316f2aa" stroke-width="2"/></svg>');
+}
+
+[data-g="execute"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="none" stroke="%2316f2aa" stroke-width="3"/><polygon points="40,35 70,50 40,65" fill="%2316f2aa"/></svg>');
+}
+
+[data-g="transform"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="none" stroke="%23ff3366" stroke-width="3"/><path d="M30,50 C30,30 70,30 70,50 C70,70 30,70 30,50" fill="none" stroke="%23ff3366" stroke-width="2"/><circle cx="35" cy="50" r="5" fill="%23ff3366"/><circle cx="65" cy="50" r="5" fill="%23ff3366"/></svg>');
+}
+
+[data-g="load"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="25" y="30" width="50" height="40" fill="none" stroke="%2300aaff" stroke-width="3" rx="5"/><path d="M50,20 L50,45 M40,35 L50,45 L60,35" stroke="%2300aaff" stroke-width="3"/></svg>');
+}
+
+[data-g="output"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="15" y="20" width="70" height="60" fill="none" stroke="%2316f2aa" stroke-width="3" rx="5"/><path d="M25,35 L75,35 M25,50 L60,50 M25,65 L70,65" stroke="%2316f2aa" stroke-width="2" opacity="0.6"/></svg>');
+}
+
+[data-g="metrics"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="15" y="60" width="15" height="25" fill="%2316f2aa"/><rect x="35" y="40" width="15" height="45" fill="%2300aaff"/><rect x="55" y="25" width="15" height="60" fill="%23ffb300"/><rect x="75" y="50" width="15" height="35" fill="%23ff3366"/></svg>');
+}
+
+[data-g="control"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="30" cy="50" r="15" fill="none" stroke="%23ffb300" stroke-width="3"/><circle cx="70" cy="50" r="15" fill="none" stroke="%23ffb300" stroke-width="3"/><path d="M45,50 L55,50" stroke="%23ffb300" stroke-width="3"/><circle cx="30" cy="50" r="5" fill="%23ffb300"/><circle cx="70" cy="50" r="5" fill="%23ffb300"/></svg>');
+}
+
+[data-g="wave"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M10,50 Q25,20 40,50 T70,50 T100,50" fill="none" stroke="%2316f2aa" stroke-width="3"><animate attributeName="d" values="M10,50 Q25,20 40,50 T70,50 T100,50;M10,50 Q25,80 40,50 T70,50 T100,50;M10,50 Q25,20 40,50 T70,50 T100,50" dur="2s" repeatCount="indefinite"/></path></svg>');
+}
+
+/* SVG Path Commands */
+[data-g="svg-m"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60" fill="none" stroke="%23ff3366" stroke-width="2" rx="5"/><text x="50" y="60" text-anchor="middle" fill="%23ff3366" font-size="30" font-weight="bold">M</text></svg>');
+}
+
+[data-g="svg-l"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60" fill="none" stroke="%23ff3366" stroke-width="2" rx="5"/><text x="50" y="60" text-anchor="middle" fill="%23ff3366" font-size="30" font-weight="bold">L</text></svg>');
+}
+
+[data-g="svg-c"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60" fill="none" stroke="%23ff3366" stroke-width="2" rx="5"/><text x="50" y="60" text-anchor="middle" fill="%23ff3366" font-size="30" font-weight="bold">C</text></svg>');
+}
+
+[data-g="svg-q"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60" fill="none" stroke="%23ff3366" stroke-width="2" rx="5"/><text x="50" y="60" text-anchor="middle" fill="%23ff3366" font-size="30" font-weight="bold">Q</text></svg>');
+}
+
+[data-g="svg-z"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60" fill="none" stroke="%23ff3366" stroke-width="2" rx="5"/><text x="50" y="60" text-anchor="middle" fill="%23ff3366" font-size="30" font-weight="bold">Z</text></svg>');
+}
+
+/* π-Compression Status */
+[data-g="compress-idle"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="30" width="60" height="40" fill="none" stroke="%239fb3c8" stroke-width="3" rx="5"/><path d="M35,50 L65,50" stroke="%239fb3c8" stroke-width="2" stroke-dasharray="5,5"/></svg>');
+}
+
+[data-g="compress-active"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="30" width="60" height="40" fill="none" stroke="%2316f2aa" stroke-width="3" rx="5"><animate attributeName="stroke-width" values="3;5;3" dur="1s" repeatCount="indefinite"/></rect><path d="M40,40 L50,50 L40,60 M60,40 L50,50 L60,60" stroke="%2316f2aa" stroke-width="2"><animate attributeName="opacity" values="1;0.5;1" dur="0.5s" repeatCount="indefinite"/></path></svg>');
+}
+
+/* Frame Types */
+[data-g="keyframe"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60" fill="%23ffb300" rx="5"/><path d="M35,50 L45,60 L65,40" stroke="%23000" stroke-width="4" fill="none"/></svg>');
+}
+
+[data-g="deltaframe"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60" fill="none" stroke="%239c88ff" stroke-width="3" rx="5"/><text x="50" y="58" text-anchor="middle" fill="%239c88ff" font-size="24" font-weight="bold">Δ</text></svg>');
+}
+
+/* Binary/Hex Display */
+[data-g="binary"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="15" y="25" width="70" height="50" fill="%23000" rx="5"/><text x="50" y="55" text-anchor="middle" fill="%2316f2aa" font-family="monospace" font-size="16">01 CF 80</text></svg>');
+}
+

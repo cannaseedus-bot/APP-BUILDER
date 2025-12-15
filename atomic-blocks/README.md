@@ -137,6 +137,9 @@ atomic-blocks/
 │   ├── core.pi            # FLUX opcode implementations
 │   ├── opcodes.json       # Opcode → AST mappings
 │   └── flux.css           # CSS runtime integration
+├── pi-compression/        # π-Compressed Glyph Encoding Library
+│   ├── pi-glyph-schema.json  # Complete glyph category definitions
+│   └── core.pi               # π-encoding, vector math, wavelets
 └── examples/              # Complete working examples & studio templates
     ├── counter-app/
     ├── black-code-editor/      # CANONICAL REFERENCE
@@ -144,7 +147,8 @@ atomic-blocks/
     ├── entropy-processor/      # Entropy visualization UI
     ├── css-runtime/            # CSS Runtime controller
     ├── atomic-portal/          # API command portal
-    └── qwen-compression/       # K'UHUL π QWEN vocab compression
+    ├── qwen-compression/       # K'UHUL π QWEN vocab compression
+    └── kuhul-svg3d/            # π-SVG-3D Glyph Streaming
 ```
 
 ---
@@ -498,6 +502,145 @@ qwen-compression/
 | `@generate_css` | `compression.generate_css` | Generate CSS glyph definitions |
 | `@show_encoding` | `compression.show_encoding` | Display math encoding table |
 | `@export` | `compression.export` | Export compressed format |
+
+---
+
+## 🎬 K'UHUL π-SVG-3D Glyph Streaming
+
+The **π-SVG-3D** (`examples/kuhul-svg3d/`) demonstrates real-time vector glyph streaming with 1000x compression:
+
+| Feature | Implementation |
+|---------|----------------|
+| **π-Compressed Glyphs** | Binary format with π-magic header (0xCF 0x80) |
+| **SVG-3D Rendering** | Vector graphics with 3D transformations |
+| **Bézier Interpolation** | Cubic and quadratic curve rendering |
+| **Delta Encoding** | Efficient frame-to-frame compression |
+| **Motion Prediction** | π-weighted extrapolation for smooth playback |
+| **Wavelet Transform** | Haar decomposition for signal compression |
+| **CSS Runtime** | All state via CSS variables |
+
+### π-Glyph Categories
+
+| Category | Range | Examples |
+|----------|-------|----------|
+| **flow** | 0-31 | → ← ↑ ↓ ⟁ ⇄ ↻ ⊛ |
+| **value** | 32-63 | ∅ ⊤ ⊥ ∞ ℘ Σ Δ Ω |
+| **action** | 64-95 | ⚡ 🔄 💾 📤 🎯 🔗 ⚙ |
+| **control** | 96-127 | Pop Wo Ch'en Sek Xul @state |
+| **svg** | 128-191 | M L C Q A Z H V S T |
+| **math** | 192-223 | + - * / ^ √ ∫ ∂ sin cos |
+| **stream** | 224-247 | ⏵ ⏸ ⏹ ⏪ ⏩ 🔁 📊 🌊 |
+| **special** | 248-255 | π-MAGIC π-EOF π-SYNC π-KEY |
+
+### Binary Stream Format
+
+```
+Header:
+  [0xCF 0x80]     π-Magic bytes
+  [uint8]         Version
+  [uint8]         Flags
+  [uint16]        Frame count
+  [uint32]        Glyph table offset
+
+Frame:
+  [float32]       Timestamp (π-units)
+  [uint16]        Glyph count
+  [glyph[]]       Encoded glyphs
+
+Glyph:
+  [uint8]         Glyph ID
+  [int16]         X delta
+  [int16]         Y delta
+  [int16]         Z delta
+  [uint8]         Scale (π-encoded)
+  [uint8]         Rotation (π-encoded)
+```
+
+### Mathematical Encoding
+
+```
+Position:   x' = x / π → decode: x = x' × π
+Scale:      s' = s × 40 → decode: s = s' / 40
+Rotation:   r' = r mod 256 → decode: r = (r' / 256) × τ
+Timestamp:  t' = frame / fps / π → decode: t = t' × π
+```
+
+### Files
+
+```
+kuhul-svg3d/
+├── index.html         # Structure + embedded Atomic Block
+├── pi-stream.css      # CSS Runtime (stream state → rendering)
+├── glyphs.css         # AGL icon system via data-g
+└── sw.js              # Service Worker with K'UHUL π functions
+```
+
+### Control Vectors
+
+| Vector | K'UHUL π Function | Purpose |
+|--------|-------------------|---------|
+| `@init` | `stream.init` | Initialize streaming engine |
+| `@play` | `stream.play` | Start playback |
+| `@pause` | `stream.pause` | Pause playback |
+| `@stop` | `stream.stop` | Stop and reset |
+| `@render_frame` | `svg3d.render_frame` | Render single frame |
+| `@export` | `svg3d.export_svg` | Export to SVG file |
+| `@benchmark` | `stream.benchmark` | Performance benchmark |
+
+### Core π Functions
+
+| Function | Purpose |
+|----------|---------|
+| `pi.encode` | Encode value using π/e/φ/τ |
+| `pi.decode` | Decode π-encoded value |
+| `vector.magnitude` | Vector length calculation |
+| `bezier.cubic` | Cubic Bézier interpolation |
+| `bezier.quadratic` | Quadratic Bézier interpolation |
+| `wavelet.haar_decompose` | Haar wavelet decomposition |
+| `motion.predict` | Motion prediction with π-weighting |
+| `delta.encode_frame` | Delta encode frame |
+| `glyph.encode` | Encode glyph to binary format |
+
+---
+
+## 📐 π-Compression Library
+
+The **π-Compression Library** (`pi-compression/`) provides the core mathematical functions:
+
+### pi-glyph-schema.json
+
+Complete glyph category definitions with:
+- 8 categories (256 total glyphs)
+- π-encoding formulas for each glyph
+- Binary encoding specification
+- SVG-3D coordinate system definition
+
+### core.pi Functions
+
+```pi
+// Encode value using π-compression
+[Pop pi.encode]
+  [Wo @value]→[Ch'en value]
+  [Wo @constant "π"]→[Ch'en constant]
+  [Wo (/ value [Sek get constant [Sek pi.constants]])]→[Ch'en encoded]
+  [Wo { "formula": [Sek str constant "×" encoded] }]→[Xul return]
+[Xul]
+
+// Cubic Bézier interpolation
+[Pop bezier.cubic]
+  [Wo @t]→[Ch'en t]
+  [Wo @p0 @p1 @p2 @p3]→[Ch'en control_points]
+  // B(t) = (1-t)³P₀ + 3(1-t)²tP₁ + 3(1-t)t²P₂ + t³P₃
+  ...
+[Xul]
+
+// Haar wavelet decomposition
+[Pop wavelet.haar_decompose]
+  [Wo @data]→[Ch'en data]
+  // Low-pass: averages, High-pass: differences
+  ...
+[Xul]
+```
 
 ---
 
