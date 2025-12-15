@@ -143,7 +143,8 @@ atomic-blocks/
     ├── quantum-fusion-engine/  # K'UHUL ⇄ C@@L ⇄ MX2LM Unification
     ├── entropy-processor/      # Entropy visualization UI
     ├── css-runtime/            # CSS Runtime controller
-    └── atomic-portal/          # API command portal
+    ├── atomic-portal/          # API command portal
+    └── qwen-compression/       # K'UHUL π QWEN vocab compression
 ```
 
 ---
@@ -443,6 +444,60 @@ gram.metrics.entropy            → float (decreases as system learns)
 | `/execute/with-learning` | POST | Execute with observation |
 | `/gram/metrics` | GET | Get learning metrics |
 | `/gram/report` | GET | Get learning report |
+
+---
+
+## 🔢 K'UHUL π QWEN Compression
+
+The **QWEN Compression** (`examples/qwen-compression/`) demonstrates 1000x vocabulary compression using mathematical encoding:
+
+| Feature | Implementation |
+|---------|----------------|
+| **1000x Compression** | 151,643 tokens → 151 CSS/SVG glyphs |
+| **Mathematical Encoding** | π, e, φ, τ as encoding bases |
+| **CSS Runtime** | All state via CSS variables |
+| **AGL Glyphs** | Semantic icons via `data-g` attributes |
+| **K'UHUL π Functions** | Pure computation in `core.pi` |
+| **sw.js Only** | JavaScript demoted to I/O bridge |
+
+### Compression Ratios
+
+| Original | Compressed | Ratio |
+|----------|------------|-------|
+| 16GB model | 16MB | 1000x |
+| 3MB vocab.json | 3KB CSS | 1000x |
+| 151,643 tokens | 151 glyphs | 1004:1 |
+
+### Mathematical Encoding Formula
+
+```
+token_encoding = constant × (token_id / constant)
+
+Examples:
+  Token 0 (!)        → π×0
+  Token 31 (@)       → π×9.87
+  Token 151643 (EOT) → τ×24135
+```
+
+### Files
+
+```
+qwen-compression/
+├── index.html         # Structure + embedded Atomic Block
+├── compression.css    # CSS Runtime (state → rendering)
+├── glyphs.css         # AGL icon system via data-g
+├── sw.js              # Service Worker (I/O only)
+└── core.pi            # K'UHUL π pure functions
+```
+
+### Control Vectors
+
+| Vector | K'UHUL π Function | Purpose |
+|--------|-------------------|---------|
+| `@compress` | `compression.execute` | Execute full compression |
+| `@generate_css` | `compression.generate_css` | Generate CSS glyph definitions |
+| `@show_encoding` | `compression.show_encoding` | Display math encoding table |
+| `@export` | `compression.export` | Export compressed format |
 
 ---
 

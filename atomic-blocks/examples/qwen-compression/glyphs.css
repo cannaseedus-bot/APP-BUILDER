@@ -1,0 +1,120 @@
+/* ============================================================
+   K'UHUL π GLYPH SYSTEM - AGL Icons via data-g attributes
+   ============================================================ */
+
+/* Base glyph styling */
+[data-g]::before {
+  content: '';
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  margin-right: 0.5em;
+  vertical-align: middle;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* K'UHUL Glyph */
+[data-g="kuhul"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="%2316f2aa" stroke-width="3"/><path d="M30,50 Q50,20 70,50 T30,50" fill="none" stroke="%2316f2aa" stroke-width="2"/><circle cx="50" cy="50" r="10" fill="%2316f2aa"/><text x="50" y="55" text-anchor="middle" fill="%23fff" font-size="12" font-weight="bold">π</text></svg>');
+}
+
+/* Compress Glyph */
+[data-g="compress"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="10" y="20" width="80" height="60" fill="none" stroke="%23ff3366" stroke-width="3" rx="5"/><path d="M30,50 L70,50" stroke="%23ff3366" stroke-width="3"/><path d="M40,35 L50,50 L40,65" fill="none" stroke="%23ff3366" stroke-width="2"/><path d="M60,35 L50,50 L60,65" fill="none" stroke="%23ff3366" stroke-width="2"/></svg>');
+}
+
+/* Glyph Symbol */
+[data-g="glyph"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%239c88ff" stroke-width="3"/><circle cx="50" cy="50" r="25" fill="none" stroke="%239c88ff" stroke-width="2"/><circle cx="50" cy="50" r="10" fill="%239c88ff"/><path d="M50,10 L50,30 M50,70 L50,90 M10,50 L30,50 M70,50 L90,50" stroke="%239c88ff" stroke-width="2"/></svg>');
+}
+
+/* Matrix Glyph */
+[data-g="matrix"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="15" y="15" width="20" height="20" fill="%2316f2aa" opacity="0.8"/><rect x="40" y="15" width="20" height="20" fill="%2316f2aa" opacity="0.6"/><rect x="65" y="15" width="20" height="20" fill="%2316f2aa" opacity="0.4"/><rect x="15" y="40" width="20" height="20" fill="%2316f2aa" opacity="0.5"/><rect x="40" y="40" width="20" height="20" fill="%2316f2aa" opacity="0.9"/><rect x="65" y="40" width="20" height="20" fill="%2316f2aa" opacity="0.3"/><rect x="15" y="65" width="20" height="20" fill="%2316f2aa" opacity="0.2"/><rect x="40" y="65" width="20" height="20" fill="%2316f2aa" opacity="0.7"/><rect x="65" y="65" width="20" height="20" fill="%2316f2aa" opacity="1"/></svg>');
+}
+
+/* Token Glyph */
+[data-g="token"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60" fill="none" stroke="%2300aaff" stroke-width="3" rx="10"/><text x="50" y="58" text-anchor="middle" fill="%2300aaff" font-size="24" font-weight="bold">T</text></svg>');
+}
+
+/* Control Glyph */
+[data-g="control"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="30" cy="50" r="15" fill="none" stroke="%23ffb300" stroke-width="3"/><circle cx="70" cy="50" r="15" fill="none" stroke="%23ffb300" stroke-width="3"/><path d="M45,50 L55,50" stroke="%23ffb300" stroke-width="3"/><circle cx="30" cy="50" r="5" fill="%23ffb300"/><circle cx="70" cy="50" r="5" fill="%23ffb300"/></svg>');
+}
+
+/* Output Glyph */
+[data-g="output"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="15" y="20" width="70" height="60" fill="none" stroke="%2316f2aa" stroke-width="3" rx="5"/><path d="M25,35 L75,35 M25,50 L60,50 M25,65 L70,65" stroke="%2316f2aa" stroke-width="2" opacity="0.6"/><path d="M15,35 L20,35" stroke="%2316f2aa" stroke-width="3"/></svg>');
+}
+
+/* Quantum Operator Glyphs */
+[data-g="init"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M30,50 L50,30 L70,50 L50,70 Z" fill="none" stroke="%2316f2aa" stroke-width="3"/><circle cx="50" cy="50" r="8" fill="%2316f2aa"/><path d="M50,20 L50,30 M50,70 L50,80" stroke="%2316f2aa" stroke-width="2"/></svg>');
+}
+
+[data-g="transform"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="none" stroke="%23ff3366" stroke-width="3"/><path d="M30,50 C30,30 70,30 70,50 C70,70 30,70 30,50" fill="none" stroke="%23ff3366" stroke-width="2"/><circle cx="35" cy="50" r="5" fill="%23ff3366"/><circle cx="65" cy="50" r="5" fill="%23ff3366"/></svg>');
+}
+
+[data-g="execute"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="35,25 75,50 35,75" fill="%2300aaff"/></svg>');
+}
+
+[data-g="bind"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="30" cy="50" r="20" fill="none" stroke="%239c88ff" stroke-width="3"/><circle cx="70" cy="50" r="20" fill="none" stroke="%239c88ff" stroke-width="3"/><path d="M50,50 L50,50" stroke="%239c88ff" stroke-width="5"/></svg>');
+}
+
+/* Mathematical Constant Glyphs */
+[data-g="pi"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="65" text-anchor="middle" fill="%23ff3366" font-size="50" font-weight="bold">π</text></svg>');
+}
+
+[data-g="euler"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="65" text-anchor="middle" fill="%2300aaff" font-size="50" font-weight="bold" font-style="italic">e</text></svg>');
+}
+
+[data-g="phi"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="65" text-anchor="middle" fill="%23ffb300" font-size="50" font-weight="bold">φ</text></svg>');
+}
+
+[data-g="tau"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="65" text-anchor="middle" fill="%239c88ff" font-size="50" font-weight="bold">τ</text></svg>');
+}
+
+/* Status Indicator Glyphs */
+[data-g="ok"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%2316f2aa" stroke-width="3"/><path d="M30,50 L45,65 L70,35" fill="none" stroke="%2316f2aa" stroke-width="4"/></svg>');
+}
+
+[data-g="warn"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,15 90,85 10,85" fill="none" stroke="%23ffb300" stroke-width="3"/><text x="50" y="70" text-anchor="middle" fill="%23ffb300" font-size="40" font-weight="bold">!</text></svg>');
+}
+
+[data-g="danger"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%23ff6b6b" stroke-width="3"/><path d="M35,35 L65,65 M65,35 L35,65" stroke="%23ff6b6b" stroke-width="4"/></svg>');
+}
+
+/* Compression State Glyphs */
+[data-g="compress-idle"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="30" width="60" height="40" fill="none" stroke="%239fb3c8" stroke-width="3" rx="5"/><path d="M35,50 L65,50" stroke="%239fb3c8" stroke-width="2" stroke-dasharray="5,5"/></svg>');
+}
+
+[data-g="compress-active"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="30" width="60" height="40" fill="none" stroke="%2316f2aa" stroke-width="3" rx="5"><animate attributeName="stroke-width" values="3;5;3" dur="1s" repeatCount="indefinite"/></rect><path d="M40,40 L50,50 L40,60 M60,40 L50,50 L60,60" stroke="%2316f2aa" stroke-width="2"><animate attributeName="opacity" values="1;0.5;1" dur="0.5s" repeatCount="indefinite"/></path></svg>');
+}
+
+/* QWEN Token Category Glyphs */
+[data-g="token-ascii"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="25" width="60" height="50" fill="none" stroke="%2300aaff" stroke-width="2" rx="5"/><text x="50" y="58" text-anchor="middle" fill="%2300aaff" font-size="20" font-family="monospace">ABC</text></svg>');
+}
+
+[data-g="token-unicode"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="25" width="60" height="50" fill="none" stroke="%239c88ff" stroke-width="2" rx="5"/><text x="50" y="58" text-anchor="middle" fill="%239c88ff" font-size="20">漢字</text></svg>');
+}
+
+[data-g="token-special"]::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="25" width="60" height="50" fill="none" stroke="%23ff3366" stroke-width="2" rx="5"/><text x="50" y="58" text-anchor="middle" fill="%23ff3366" font-size="16">&lt;|special|&gt;</text></svg>');
+}

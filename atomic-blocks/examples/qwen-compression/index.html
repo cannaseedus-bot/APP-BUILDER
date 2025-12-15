@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-compression="idle">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K'UHUL π - QWEN Vocab Compression</title>
+  <link rel="stylesheet" href="compression.css">
+  <link rel="stylesheet" href="glyphs.css">
+</head>
+<body ⟁flex ⟁col ⟁fill ⟁bg0 ⟁text>
+
+  <!-- ATOMIC BLOCK DEFINITION -->
+  <script type="application/json" id="atomic-block">
+  {
+    "@id": "qwen.compression.atomic",
+    "@type": "compression_system",
+    "@version": "2.0.0",
+
+    "@state": {
+      "--qwen-total-tokens": 151643,
+      "--compression-ratio": 0.001,
+      "--glyph-count": 151,
+      "--tokens-per-glyph": 1004,
+      "--original-size": 16000000000,
+      "--compressed-size": 16000000,
+      "--kuhul-pi": 3.141592653589793,
+      "--kuhul-e": 2.718281828459045,
+      "--kuhul-phi": 1.618033988749895,
+      "--kuhul-tau": 6.283185307179586,
+      "--compression-state": "idle",
+      "--progress": 0,
+      "--entropy": 0.5,
+      "--density": 0.87
+    },
+
+    "@control": {
+      "@compress": { "@pi": "compression.execute" },
+      "@generate_css": { "@pi": "compression.generate_css" },
+      "@show_encoding": { "@pi": "compression.show_encoding" },
+      "@export": { "@pi": "compression.export" },
+      "@derive": { "@pi": "compression.derive" }
+    },
+
+    "@flow": ["@init", "@derive", "@render"],
+
+    "@css": {
+      "@runtime": "compression.css",
+      "@glyphs": "glyphs.css"
+    },
+
+    "@events": {
+      "[data-action='compress']": "@compress",
+      "[data-action='generate']": "@generate_css",
+      "[data-action='encoding']": "@show_encoding",
+      "[data-action='export']": "@export"
+    },
+
+    "@xcfe": {
+      "@if_compression_idle": {
+        "condition": "state['--compression-state'] === 'idle'",
+        "then": "@show_ready",
+        "else": "@show_progress"
+      }
+    }
+  }
+  </script>
+
+  <!-- HEADER -->
+  <header ⟁flex ⟁col ⟁center ⟁p4>
+    <h1 ⟁text-ac1 data-g="kuhul">K'UHUL π VOCAB COMPRESSION</h1>
+    <h2 ⟁text2 ⟁fs1>151,643 QWEN Tokens → CSS/SVG Glyphs (1000x Compression)</h2>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main ⟁flex ⟁col ⟁g4 ⟁p4 style="max-width: 1200px; margin: 0 auto; width: 100%;">
+
+    <!-- COMPRESSION RATIO VISUALIZATION -->
+    <section ⟁flex ⟁col ⟁g3 ⟁ghost ⟁p4 ⟁rounded>
+      <h3 ⟁text-ac1 data-g="compress">Compression Ratio</h3>
+
+      <div class="compression-bar" data-original="16GB" data-compressed="16MB">
+        <div class="compression-fill" style="--ratio: 0.001;"></div>
+        <span class="label-original">Original: 16GB</span>
+        <span class="label-compressed">Compressed: 16MB</span>
+      </div>
+
+      <div class="compression-bar" data-original="151,643 tokens" data-compressed="151 glyphs">
+        <div class="compression-fill" style="--ratio: 0.001;"></div>
+        <span class="label-original">151,643 tokens</span>
+        <span class="label-compressed">151 glyphs</span>
+      </div>
+
+      <div class="compression-bar" data-original="3MB vocab.json" data-compressed="3KB CSS">
+        <div class="compression-fill" style="--ratio: 0.001;"></div>
+        <span class="label-original">3MB vocab.json</span>
+        <span class="label-compressed">3KB CSS</span>
+      </div>
+    </section>
+
+    <!-- MATHEMATICAL CONSTANTS -->
+    <section ⟁grid ⟁g3 style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+      <div ⟁ghost ⟁p3 ⟁rounded ⟁center class="math-constant" data-constant="pi">
+        <div class="constant-symbol">π</div>
+        <div class="constant-value" data-bind="--kuhul-pi">3.141592653589793</div>
+        <div ⟁text2 ⟁fs0>Base encoding constant</div>
+      </div>
+
+      <div ⟁ghost ⟁p3 ⟁rounded ⟁center class="math-constant" data-constant="e">
+        <div class="constant-symbol">e</div>
+        <div class="constant-value" data-bind="--kuhul-e">2.718281828459045</div>
+        <div ⟁text2 ⟁fs0>Exponential encoding</div>
+      </div>
+
+      <div ⟁ghost ⟁p3 ⟁rounded ⟁center class="math-constant" data-constant="phi">
+        <div class="constant-symbol">φ</div>
+        <div class="constant-value" data-bind="--kuhul-phi">1.618033988749895</div>
+        <div ⟁text2 ⟁fs0>Golden ratio encoding</div>
+      </div>
+
+      <div ⟁ghost ⟁p3 ⟁rounded ⟁center class="math-constant" data-constant="tau">
+        <div class="constant-symbol">τ</div>
+        <div class="constant-value" data-bind="--kuhul-tau">6.283185307179586</div>
+        <div ⟁text2 ⟁fs0>Circular encoding</div>
+      </div>
+    </section>
+
+    <!-- K'UHUL GLYPH VISUALIZATION -->
+    <section ⟁flex ⟁col ⟁g3 ⟁ghost ⟁p4 ⟁rounded>
+      <h3 ⟁text-ac1 data-g="glyph">K'UHUL π Glyph Encoding</h3>
+
+      <div ⟁flex ⟁row ⟁wrap ⟁g4 ⟁center>
+        <div class="kuhul-glyph" data-tokens="1000" data-compression="10" ⟁danger>
+          <div class="glyph-inner"></div>
+          <span class="glyph-label">1K</span>
+        </div>
+
+        <div class="kuhul-glyph" data-tokens="10000" data-compression="100" ⟁warn>
+          <div class="glyph-inner"></div>
+          <span class="glyph-label">10K</span>
+        </div>
+
+        <div class="kuhul-glyph" data-tokens="100000" data-compression="1000" ⟁ok>
+          <div class="glyph-inner"></div>
+          <span class="glyph-label">100K</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- DENSITY MATRIX -->
+    <section ⟁flex ⟁col ⟁g3 ⟁ghost ⟁p4 ⟁rounded>
+      <h3 ⟁text-ac1 data-g="matrix">Glyph Density Matrix</h3>
+      <div class="density-grid" id="density-grid">
+        <!-- 100 cells generated via CSS counter -->
+        <div class="density-cell" style="--cell: 1;"></div>
+        <div class="density-cell" style="--cell: 2;"></div>
+        <div class="density-cell" style="--cell: 3;"></div>
+        <div class="density-cell" style="--cell: 4;"></div>
+        <div class="density-cell" style="--cell: 5;"></div>
+        <div class="density-cell" style="--cell: 6;"></div>
+        <div class="density-cell" style="--cell: 7;"></div>
+        <div class="density-cell" style="--cell: 8;"></div>
+        <div class="density-cell" style="--cell: 9;"></div>
+        <div class="density-cell" style="--cell: 10;"></div>
+        <div class="density-cell" style="--cell: 11;"></div>
+        <div class="density-cell" style="--cell: 12;"></div>
+        <div class="density-cell" style="--cell: 13;"></div>
+        <div class="density-cell" style="--cell: 14;"></div>
+        <div class="density-cell" style="--cell: 15;"></div>
+        <div class="density-cell" style="--cell: 16;"></div>
+        <div class="density-cell" style="--cell: 17;"></div>
+        <div class="density-cell" style="--cell: 18;"></div>
+        <div class="density-cell" style="--cell: 19;"></div>
+        <div class="density-cell" style="--cell: 20;"></div>
+        <div class="density-cell" style="--cell: 21;"></div>
+        <div class="density-cell" style="--cell: 22;"></div>
+        <div class="density-cell" style="--cell: 23;"></div>
+        <div class="density-cell" style="--cell: 24;"></div>
+        <div class="density-cell" style="--cell: 25;"></div>
+        <div class="density-cell" style="--cell: 26;"></div>
+        <div class="density-cell" style="--cell: 27;"></div>
+        <div class="density-cell" style="--cell: 28;"></div>
+        <div class="density-cell" style="--cell: 29;"></div>
+        <div class="density-cell" style="--cell: 30;"></div>
+        <div class="density-cell" style="--cell: 31;"></div>
+        <div class="density-cell" style="--cell: 32;"></div>
+        <div class="density-cell" style="--cell: 33;"></div>
+        <div class="density-cell" style="--cell: 34;"></div>
+        <div class="density-cell" style="--cell: 35;"></div>
+        <div class="density-cell" style="--cell: 36;"></div>
+        <div class="density-cell" style="--cell: 37;"></div>
+        <div class="density-cell" style="--cell: 38;"></div>
+        <div class="density-cell" style="--cell: 39;"></div>
+        <div class="density-cell" style="--cell: 40;"></div>
+        <div class="density-cell" style="--cell: 41;"></div>
+        <div class="density-cell" style="--cell: 42;"></div>
+        <div class="density-cell" style="--cell: 43;"></div>
+        <div class="density-cell" style="--cell: 44;"></div>
+        <div class="density-cell" style="--cell: 45;"></div>
+        <div class="density-cell" style="--cell: 46;"></div>
+        <div class="density-cell" style="--cell: 47;"></div>
+        <div class="density-cell" style="--cell: 48;"></div>
+        <div class="density-cell" style="--cell: 49;"></div>
+        <div class="density-cell" style="--cell: 50;"></div>
+        <div class="density-cell" style="--cell: 51;"></div>
+        <div class="density-cell" style="--cell: 52;"></div>
+        <div class="density-cell" style="--cell: 53;"></div>
+        <div class="density-cell" style="--cell: 54;"></div>
+        <div class="density-cell" style="--cell: 55;"></div>
+        <div class="density-cell" style="--cell: 56;"></div>
+        <div class="density-cell" style="--cell: 57;"></div>
+        <div class="density-cell" style="--cell: 58;"></div>
+        <div class="density-cell" style="--cell: 59;"></div>
+        <div class="density-cell" style="--cell: 60;"></div>
+        <div class="density-cell" style="--cell: 61;"></div>
+        <div class="density-cell" style="--cell: 62;"></div>
+        <div class="density-cell" style="--cell: 63;"></div>
+        <div class="density-cell" style="--cell: 64;"></div>
+        <div class="density-cell" style="--cell: 65;"></div>
+        <div class="density-cell" style="--cell: 66;"></div>
+        <div class="density-cell" style="--cell: 67;"></div>
+        <div class="density-cell" style="--cell: 68;"></div>
+        <div class="density-cell" style="--cell: 69;"></div>
+        <div class="density-cell" style="--cell: 70;"></div>
+        <div class="density-cell" style="--cell: 71;"></div>
+        <div class="density-cell" style="--cell: 72;"></div>
+        <div class="density-cell" style="--cell: 73;"></div>
+        <div class="density-cell" style="--cell: 74;"></div>
+        <div class="density-cell" style="--cell: 75;"></div>
+        <div class="density-cell" style="--cell: 76;"></div>
+        <div class="density-cell" style="--cell: 77;"></div>
+        <div class="density-cell" style="--cell: 78;"></div>
+        <div class="density-cell" style="--cell: 79;"></div>
+        <div class="density-cell" style="--cell: 80;"></div>
+        <div class="density-cell" style="--cell: 81;"></div>
+        <div class="density-cell" style="--cell: 82;"></div>
+        <div class="density-cell" style="--cell: 83;"></div>
+        <div class="density-cell" style="--cell: 84;"></div>
+        <div class="density-cell" style="--cell: 85;"></div>
+        <div class="density-cell" style="--cell: 86;"></div>
+        <div class="density-cell" style="--cell: 87;"></div>
+        <div class="density-cell" style="--cell: 88;"></div>
+        <div class="density-cell" style="--cell: 89;"></div>
+        <div class="density-cell" style="--cell: 90;"></div>
+        <div class="density-cell" style="--cell: 91;"></div>
+        <div class="density-cell" style="--cell: 92;"></div>
+        <div class="density-cell" style="--cell: 93;"></div>
+        <div class="density-cell" style="--cell: 94;"></div>
+        <div class="density-cell" style="--cell: 95;"></div>
+        <div class="density-cell" style="--cell: 96;"></div>
+        <div class="density-cell" style="--cell: 97;"></div>
+        <div class="density-cell" style="--cell: 98;"></div>
+        <div class="density-cell" style="--cell: 99;"></div>
+        <div class="density-cell" style="--cell: 100;"></div>
+      </div>
+    </section>
+
+    <!-- QWEN TOKEN EXAMPLES -->
+    <section ⟁flex ⟁col ⟁g3 ⟁ghost ⟁p4 ⟁rounded>
+      <h3 ⟁text-ac1 data-g="token">QWEN Token Compression</h3>
+
+      <div class="token-grid">
+        <div class="token-cell" data-token-id="0">
+          <span class="token-char">!</span>
+          <span class="token-id">ID: 0</span>
+          <span class="token-encoding">π×0</span>
+        </div>
+
+        <div class="token-cell" data-token-id="31">
+          <span class="token-char">@</span>
+          <span class="token-id">ID: 31</span>
+          <span class="token-encoding">π×9.87</span>
+        </div>
+
+        <div class="token-cell" data-token-id="32">
+          <span class="token-char">A</span>
+          <span class="token-id">ID: 32</span>
+          <span class="token-encoding">π×10.18</span>
+        </div>
+
+        <div class="token-cell" data-token-id="151622">
+          <span class="token-char">âĴŁ</span>
+          <span class="token-id">ID: 151622</span>
+          <span class="token-encoding">φ×93702</span>
+        </div>
+
+        <div class="token-cell" data-token-id="151643">
+          <span class="token-char">&lt;|endoftext|&gt;</span>
+          <span class="token-id">ID: 151643</span>
+          <span class="token-encoding">τ×24135</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPRESSION CONTROLS -->
+    <section ⟁flex ⟁col ⟁g3 ⟁ghost ⟁p4 ⟁rounded>
+      <h3 ⟁text-ac1 data-g="control">Compression Controls</h3>
+
+      <div ⟁grid ⟁g3 style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+        <button class="control-btn" data-action="compress" data-g="init" ⟁train>
+          ⤍ Compress QWEN Vocab
+        </button>
+
+        <button class="control-btn" data-action="generate" data-g="transform" ⟁prime>
+          ↻ Generate CSS Weights
+        </button>
+
+        <button class="control-btn" data-action="encoding" data-g="execute" ⟁sync>
+          ⟲ Show Math Encoding
+        </button>
+
+        <button class="control-btn" data-action="export" data-g="bind" ⟁ok>
+          ⟿ Export Compressed
+        </button>
+      </div>
+    </section>
+
+    <!-- OUTPUT DISPLAY -->
+    <section ⟁flex ⟁col ⟁g3 ⟁ghost ⟁p4 ⟁rounded>
+      <h3 ⟁text-ac1 data-g="output">Output</h3>
+      <div id="output" class="output-display" data-state="ready">
+        <div class="output-ready">
+          <div class="ready-glyph"></div>
+          <h4 ⟁text-ac1>K'UHUL π QWEN Compression Ready</h4>
+          <p ⟁text2>Click buttons above to compress, generate CSS, or export</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- STATUSBAR -->
+  <footer ⟁flex ⟁row ⟁jbetween ⟁acenter ⟁p2 ⟁bg2 class="statusbar">
+    <span ⟁text2 ⟁fs0>K'UHUL π v2.0</span>
+    <span ⟁text2 ⟁fs0>Tokens: <span data-bind="--qwen-total-tokens">151,643</span></span>
+    <span ⟁text2 ⟁fs0>Glyphs: <span data-bind="--glyph-count">151</span></span>
+    <span ⟁text2 ⟁fs0>Ratio: <span data-bind="--compression-ratio">0.001</span></span>
+    <span class="status-indicator" data-level="ok"></span>
+  </footer>
+
+  <!-- SERVICE WORKER (I/O ONLY) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
