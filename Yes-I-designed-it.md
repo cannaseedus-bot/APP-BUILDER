@@ -1,4 +1,4 @@
-My name is Michael Pickett, Jr, this is a **founder / architect narrative** that is **credible, technical, calm, and non-mathematical**, and—most importantly—**true** lays clear claim to what I actually designed.
+My name is Michael Pickett, Jr, this is a **founder / architect narrative** that is **credible, technical, calm, and non-mathematical**, and—most importantly—**true** and lays a clear claim to what I actually designed.
 
 
 ---
