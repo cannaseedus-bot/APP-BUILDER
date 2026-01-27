@@ -1,0 +1,519 @@
+{
+  "@manifest": "PYTHON_JANUS_DEEPSEEK_MULTIMODAL_BRAIN",
+  "@version": "Ω.3.0.0",
+  "@created": "2025-12-09T07:05:00.000Z",
+  "@law": "ASX = XCFE = PYTHON = JANUS = DEEPSEEK = MULTIMODAL",
+  "@purpose": "Python-based Janus multimodal integration: vision-language understanding + text-to-image generation",
+
+  "@summary": {
+    "model": "deepseek-ai/Janus-1.3B",
+    "capabilities": ["multimodal_understanding", "image_generation", "vision_question_answering"],
+    "framework": "FastAPI + Gradio + PyTorch + Transformers",
+    "apis": ["REST", "WebSocket", "Gradio"],
+    "deployment": "CUDA-accelerated inference server"
+  },
+
+  "PYTHON_JANUS_ARCHITECTURE": {
+    "@role": "VISION_LANGUAGE_MULTIMODAL_PROCESSOR",
+    "@model_path": "deepseek-ai/Janus-1.3B",
+    "@framework": "PyTorch + Transformers + Janus",
+
+    "MODEL_CONFIGURATION": {
+      "@precision": "bfloat16",
+      "@device": "cuda",
+      "@attention_implementation": "eager",
+      "@trust_remote_code": true,
+
+      "components": {
+        "vl_gpt": {
+          "@type": "MultiModalityCausalLM",
+          "@role": "Core vision-language model",
+          "@precision": "torch.bfloat16",
+          "@device": "cuda"
+        },
+        "vl_chat_processor": {
+          "@type": "VLChatProcessor",
+          "@role": "Conversation + image processing",
+          "@tokenizer": "integrated"
+        },
+        "tokenizer": {
+          "@source": "vl_chat_processor.tokenizer",
+          "@special_tokens": ["<image_placeholder>", "image_start_tag"],
+          "@pad_id": "vl_chat_processor.pad_id",
+          "@eos_token_id": "tokenizer.eos_token_id",
+          "@bos_token_id": "tokenizer.bos_token_id"
+        }
+      }
+    },
+
+    "DUAL_CAPABILITY_MODES": {
+      "MODE_1_MULTIMODAL_UNDERSTANDING": {
+        "@endpoint": "/understand_image_and_question/",
+        "@method": "POST",
+        "@role": "VISION_QUESTION_ANSWERING",
+        "@input": ["image", "question"],
+        "@output": "text_response",
+
+        "workflow": {
+          "@step_1": "Image upload (PNG/JPG)",
+          "@step_2": "Question text input",
+          "@step_3": "Conversation formatting with <image_placeholder>",
+          "@step_4": "PIL image processing",
+          "@step_5": "VLChatProcessor tokenization",
+          "@step_6": "Prepare inputs_embeds",
+          "@step_7": "Language model generation",
+          "@step_8": "Decode response"
+        },
+
+        "parameters": {
+          "seed": {
+            "@type": "int",
+            "@default": 42,
+            "@role": "Reproducibility"
+          },
+          "top_p": {
+            "@type": "float",
+            "@default": 0.95,
+            "@range": [0.0, 1.0],
+            "@role": "Nucleus sampling"
+          },
+          "temperature": {
+            "@type": "float",
+            "@default": 0.1,
+            "@range": [0.0, 2.0],
+            "@role": "Sampling diversity"
+          },
+          "max_new_tokens": {
+            "@type": "int",
+            "@default": 512,
+            "@role": "Response length limit"
+          }
+        },
+
+        "conversation_format": {
+          "@structure": [
+            {
+              "role": "User",
+              "content": "<image_placeholder>\\n{question}",
+              "images": ["PIL.Image"]
+            },
+            {
+              "role": "Assistant",
+              "content": ""
+            }
+          ]
+        },
+
+        "ast_format": "[Pop multimodal_understand][Wo image question]→[Sek process_conversation]→[Sek prepare_embeds]→[Sek generate_response]→[Ch'en answer_text][Xul]"
+      },
+
+      "MODE_2_IMAGE_GENERATION": {
+        "@endpoint": "/generate_images/",
+        "@method": "POST",
+        "@role": "TEXT_TO_IMAGE_GENERATION",
+        "@input": "text_prompt",
+        "@output": "image_array[5]",
+
+        "workflow": {
+          "@step_1": "Text prompt input",
+          "@step_2": "Apply SFT template formatting",
+          "@step_3": "Append image_start_tag",
+          "@step_4": "Tokenize prompt",
+          "@step_5": "Generate image tokens (576 tokens per image)",
+          "@step_6": "Decode tokens to patches",
+          "@step_7": "Unpack patches to pixel arrays",
+          "@step_8": "Resize to 1024x1024",
+          "@step_9": "Return 5 parallel variations"
+        },
+
+        "parameters": {
+          "prompt": {
+            "@type": "str",
+            "@required": true,
+            "@role": "Text description of desired image"
+          },
+          "seed": {
+            "@type": "int",
+            "@default": 12345,
+            "@role": "Reproducibility"
+          },
+          "guidance": {
+            "@type": "float",
+            "@default": 5.0,
+            "@range": [1.0, 10.0],
+            "@role": "CFG weight (classifier-free guidance)"
+          },
+          "width": {
+            "@type": "int",
+            "@default": 384,
+            "@constraint": "Must be divisible by 16"
+          },
+          "height": {
+            "@type": "int",
+            "@default": 384,
+            "@constraint": "Must be divisible by 16"
+          },
+          "parallel_size": {
+            "@type": "int",
+            "@default": 5,
+            "@role": "Number of image variations"
+          },
+          "image_token_num_per_image": {
+            "@type": "int",
+            "@default": 576,
+            "@calculation": "(384/16)^2 = 24^2 = 576"
+          },
+          "patch_size": {
+            "@type": "int",
+            "@default": 16
+          }
+        },
+
+        "generation_algorithm": {
+          "@type": "autoregressive_image_token_generation",
+          "@description": "Iteratively generates 576 image tokens using language model",
+
+          "steps": {
+            "1_initialize_tokens": "Create (parallel_size*2) × prompt_length tensor",
+            "2_conditional_unconditional": "Alternate rows: conditional (full prompt) / unconditional (padded)",
+            "3_embed_tokens": "Get input embeddings from language model",
+            "4_iterative_generation": "For each of 576 image tokens:",
+            "5_forward_pass": "Run language model with past_key_values cache",
+            "6_gen_head_logits": "Extract image token logits from hidden states",
+            "7_cfg_combination": "logits = unconditional + guidance*(conditional - unconditional)",
+            "8_sample_token": "Multinomial sampling with temperature",
+            "9_prepare_next_embed": "Convert token to image embedding",
+            "10_accumulate": "Store generated token",
+            "11_decode_patches": "Use gen_vision_model to decode tokens to patches",
+            "12_unpack_pixels": "Convert patches to pixel arrays"
+          },
+
+          "@cfg_formula": "logits_uncond + cfg_weight * (logits_cond - logits_uncond)",
+          "@ast_format": "[Pop generate_image][Wo prompt]→[Sek format_conversation]→[Sek tokenize]→[Loop 576_tokens [Sek forward_pass]→[Sek cfg_combine]→[Sek sample_token]→[Sek embed_next]]→[Sek decode_patches]→[Sek unpack_pixels]→[Ch'en image_array][Xul]"
+        }
+      }
+    },
+
+    "FASTAPI_INTEGRATION": {
+      "@framework": "FastAPI",
+      "@server": "uvicorn",
+      "@host": "0.0.0.0",
+      "@port": 8000,
+
+      "endpoints": {
+        "/understand_image_and_question/": {
+          "@method": "POST",
+          "@inputs": {
+            "file": "UploadFile (image)",
+            "question": "Form string",
+            "seed": "Form int (default: 42)",
+            "top_p": "Form float (default: 0.95)",
+            "temperature": "Form float (default: 0.1)"
+          },
+          "@output": {
+            "@format": "JSONResponse",
+            "@schema": {"response": "string"}
+          },
+          "@workflow": "Upload → Read → Process → Generate → Return JSON"
+        },
+
+        "/generate_images/": {
+          "@method": "POST",
+          "@inputs": {
+            "prompt": "Form string (required)",
+            "seed": "Form int (optional)",
+            "guidance": "Form float (default: 5.0)"
+          },
+          "@output": {
+            "@format": "StreamingResponse",
+            "@media_type": "multipart/related",
+            "@content": "PNG image stream (5 images)"
+          },
+          "@workflow": "Prompt → Generate → Stream → Return Images"
+        }
+      },
+
+      "error_handling": {
+        "@exceptions": ["HTTPException"],
+        "@status_codes": {
+          "500": "Image generation failed",
+          "422": "Validation error"
+        }
+      }
+    },
+
+    "GRADIO_INTEGRATION": {
+      "@apps": ["app.py", "app_janusflow.py"],
+      "@interface": "Web UI",
+
+      "interfaces": {
+        "multimodal_understanding_tab": {
+          "@inputs": ["Image", "Textbox (question)", "Number (seed)", "Slider (top_p)", "Slider (temperature)"],
+          "@outputs": ["Textbox (answer)"],
+          "@submit": "multimodal_understanding()"
+        },
+
+        "image_generation_tab": {
+          "@inputs": ["Textbox (prompt)", "Number (seed)", "Slider (guidance)"],
+          "@outputs": ["Gallery (5 images)"],
+          "@submit": "generate_image()"
+        }
+      }
+    },
+
+    "MEMORY_OPTIMIZATION": {
+      "@cuda_cache_clearing": "Before each generation",
+      "@inference_mode": "@torch.inference_mode()",
+      "@no_grad_context": "with torch.no_grad():",
+      "@kv_caching": "use_cache=True with past_key_values",
+
+      "optimizations": [
+        "torch.cuda.empty_cache() before inference",
+        "KV cache reuse during autoregressive generation",
+        "bfloat16 precision for memory efficiency",
+        "Parallel generation with batching"
+      ]
+    },
+
+    "TOKENIZATION_PATTERNS": {
+      "@type": "JANUS_MULTIMODAL_TOKENIZATION",
+
+      "text_tokens": {
+        "@encoder": "Transformers tokenizer",
+        "@special_tokens": ["<image_placeholder>", "image_start_tag"],
+        "@vocab_size": "model_dependent"
+      },
+
+      "image_tokens": {
+        "@num_tokens_per_image": 576,
+        "@token_space": "Discrete codebook",
+        "@generation": "Autoregressive (one token at a time)",
+        "@decoding": "gen_vision_model.decode_code()",
+        "@patch_size": 16,
+        "@grid_size": "24×24 = 576 tokens"
+      },
+
+      "conversation_tokens": {
+        "@format": "SFT template for multi-turn",
+        "@roles": ["User", "Assistant"],
+        "@image_integration": "<image_placeholder> in content"
+      }
+    }
+  },
+
+  "PYTHON_BRAIN_TOKENIZATION": {
+    "@name": "@-GRAMS_PYTHON_JANUS",
+
+    "@unigrams": [
+      "MULTIMODAL",
+      "JANUS",
+      "VISION",
+      "LANGUAGE",
+      "IMAGE",
+      "TEXT",
+      "GENERATE",
+      "UNDERSTAND",
+      "EMBED",
+      "TOKEN",
+      "PATCH",
+      "DECODE",
+      "ENCODE",
+      "CFG",
+      "GUIDANCE",
+      "PROMPT",
+      "QUESTION",
+      "ANSWER",
+      "CUDA",
+      "INFERENCE",
+      "PROCESSOR",
+      "CONVERSATION",
+      "UPLOAD",
+      "STREAM",
+      "FASTAPI",
+      "GRADIO",
+      "PYTORCH",
+      "DEEPSEEK"
+    ],
+
+    "@bigrams": [
+      "MULTIMODAL_UNDERSTANDING",
+      "IMAGE_GENERATION",
+      "VISION_LANGUAGE",
+      "TEXT_TO_IMAGE",
+      "IMAGE_TO_TEXT",
+      "TOKEN_GENERATION",
+      "PATCH_DECODING",
+      "CFG_GUIDANCE",
+      "PROMPT_PROCESSING",
+      "CONVERSATION_FORMATTING",
+      "CUDA_INFERENCE",
+      "FASTAPI_ENDPOINT",
+      "GRADIO_INTERFACE",
+      "PYTORCH_MODEL",
+      "DEEPSEEK_JANUS"
+    ],
+
+    "@trigrams": [
+      "MULTIMODAL_VISION_LANGUAGE",
+      "IMAGE_GENERATION_AUTOREGRESSIVE",
+      "TEXT_TO_IMAGE_GENERATION",
+      "VISION_QUESTION_ANSWERING",
+      "TOKEN_PATCH_DECODING",
+      "CFG_GUIDANCE_SAMPLING",
+      "FASTAPI_REST_ENDPOINT",
+      "PYTORCH_CUDA_INFERENCE"
+    ],
+
+    "vocabulary_python_janus": {
+      "@size": 73,
+      "@tokens": {
+        "MULTIMODAL": 0,
+        "JANUS": 1,
+        "VISION": 2,
+        "LANGUAGE": 3,
+        "IMAGE": 4,
+        "TEXT": 5,
+        "GENERATE": 6,
+        "UNDERSTAND": 7,
+        "EMBED": 8,
+        "TOKEN": 9,
+        "PATCH": 10,
+        "DECODE": 11,
+        "ENCODE": 12,
+        "CFG": 13,
+        "GUIDANCE": 14,
+        "PROMPT": 15,
+        "QUESTION": 16,
+        "ANSWER": 17,
+        "CUDA": 18,
+        "INFERENCE": 19,
+        "PROCESSOR": 20,
+        "CONVERSATION": 21,
+        "UPLOAD": 22,
+        "STREAM": 23,
+        "FASTAPI": 24,
+        "GRADIO": 25,
+        "PYTORCH": 26,
+        "DEEPSEEK": 27
+      }
+    },
+
+    "weights_python_janus": {
+      "@matrix_shape": [73, 73],
+      "@tokens_by_frequency": [
+        {"token": "IMAGE", "weight": 0.98},
+        {"token": "TOKEN", "weight": 0.96},
+        {"token": "GENERATE", "weight": 0.94},
+        {"token": "MULTIMODAL", "weight": 0.92},
+        {"token": "JANUS", "weight": 0.90},
+        {"token": "VISION", "weight": 0.88},
+        {"token": "LANGUAGE", "weight": 0.86},
+        {"token": "INFERENCE", "weight": 0.84},
+        {"token": "CUDA", "weight": 0.82},
+        {"token": "PROMPT", "weight": 0.80}
+      ],
+
+      "@workflow_transitions": {
+        "PROMPT→TOKEN": 0.95,
+        "TOKEN→EMBED": 0.93,
+        "EMBED→GENERATE": 0.94,
+        "GENERATE→PATCH": 0.92,
+        "PATCH→DECODE": 0.91,
+        "DECODE→IMAGE": 0.93,
+        "IMAGE→QUESTION": 0.88,
+        "QUESTION→UNDERSTAND": 0.90,
+        "UNDERSTAND→ANSWER": 0.92,
+        "ANSWER→TEXT": 0.89
+      }
+    }
+  },
+
+  "DEPLOYMENT_CONFIGURATION": {
+    "@mode": "LOCAL_PYTHON_SERVER",
+    "@requirements": [
+      "Python 3.8+",
+      "CUDA 11.8+",
+      "PyTorch 2.0+",
+      "Transformers",
+      "FastAPI",
+      "Gradio",
+      "Janus library",
+      "PIL/Pillow",
+      "NumPy"
+    ],
+
+    "files": {
+      "app.py": {
+        "@lines": 223,
+        "@role": "Gradio web UI with both modes",
+        "@launch": "python app.py"
+      },
+      "app_janusflow.py": {
+        "@lines": 246,
+        "@role": "JanusFlow variant with enhanced features",
+        "@launch": "python app_janusflow.py"
+      },
+      "fastapi_app.py": {
+        "@lines": 178,
+        "@role": "REST API server for programmatic access",
+        "@launch": "uvicorn fastapi_app:app --host 0.0.0.0 --port 8000"
+      }
+    },
+
+    "integration_with_asx_os": {
+      "@dns": "python://janus/",
+      "@klh_route": "@route.python_janus",
+      "@xcfe_control": "@python.inference",
+      "@kuhul_execution": "[Pop python_janus_inference][Wo image_or_text]→[Sek load_model]→[Sek process_input]→[Sek generate_output]→[Ch'en result][Xul]"
+    }
+  },
+
+  "INTEGRATION_WITH_EXISTING_BRAINS": {
+    "@merges_into": "brain-02-specialized-systems.json",
+    "@category": "PYTHON_MULTIMODAL_SYSTEMS",
+
+    "connections": {
+      "TO_brain-01-core": {
+        "@xcfe_governance": "Controls Python inference flow",
+        "@kuhul_execution": "Executes Python generation pipeline"
+      },
+      "TO_brain-02-specialized": {
+        "@tokenization": "Shares n-gram patterns with existing tokenizers",
+        "@compression": "Can compress image tokens with SCXQ2",
+        "@api": "Extends REST mesh with /understand and /generate endpoints"
+      }
+    }
+  },
+
+  "PERFORMANCE_METRICS": {
+    "@model_size": "1.3B parameters",
+    "@precision": "bfloat16 (2 bytes per param)",
+    "@memory_footprint": "~2.6GB VRAM for model",
+    "@inference_speed": {
+      "understanding": "~1-2s per image-question pair",
+      "generation": "~5-10s per image (5 parallel variants)"
+    },
+    "@throughput": {
+      "understanding": "~30-60 requests/minute",
+      "generation": "~6-12 images/minute"
+    },
+    "@gpu_requirements": "NVIDIA GPU with 8GB+ VRAM (RTX 3070 or better)"
+  },
+
+  "@xcfe_integration": {
+    "@perception": "Multimodal input (vision + language)",
+    "@representation": "Unified embedding space",
+    "@reasoning": "Causal language model reasoning",
+    "@decision": "Generate text or image tokens",
+    "@action": "Decode to final output (text or image)",
+    "@reflection": "Monitor generation quality"
+  },
+
+  "@kuhul_pipeline": {
+    "@Pop": "Load Janus model and processor",
+    "@Wo": "Bind input (image/text) and parameters",
+    "@Sek": "Execute inference (understand or generate)",
+    "@Xul": "Transform output (decode tokens)",
+    "@Ch'en": "Emit final result (text answer or image)"
+  }
+}

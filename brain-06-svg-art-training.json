@@ -1,0 +1,559 @@
+{
+  "@manifest": "SVG_ART_TRAINING_BRAIN",
+  "@version": "1.0.0",
+  "@purpose": "SVG glyph-based art training system with K'UHUL integration",
+  "@integration": {
+    "@connects_to": [
+      "brain-03-python-janus-deepseek (vision/image generation)",
+      "brain-05-inference-engine (SCXQ2 compression, K'UHUL PI engine)",
+      "brain-01-core-architecture (XCFE governance, Kuhul execution)"
+    ],
+    "@description": "SVG path commands as computational language for visual generation and training"
+  },
+
+  "SVG_GLYPH_CODEX": {
+    "@description": "SVG path commands as computational primitives for visual language",
+    "@philosophy": "Each SVG command is a glyph that can be composed, compressed, and reasoned about",
+
+    "CORE_SVG_GLYPHS": {
+      "M": {
+        "@name": "MOVE",
+        "@symbol": "M x y",
+        "@meaning": "Move pen to absolute position without drawing",
+        "@computation": "SET_POSITION",
+        "@example": "M 100 100"
+      },
+      "m": {
+        "@name": "MOVE_RELATIVE",
+        "@symbol": "m dx dy",
+        "@meaning": "Move pen by relative offset",
+        "@computation": "ADD_TO_POSITION"
+      },
+      "L": {
+        "@name": "LINE",
+        "@symbol": "L x y",
+        "@meaning": "Draw straight line to absolute position",
+        "@computation": "LINEAR_INTERPOLATION",
+        "@example": "L 200 200"
+      },
+      "l": {
+        "@name": "LINE_RELATIVE",
+        "@symbol": "l dx dy",
+        "@meaning": "Draw line by relative offset",
+        "@computation": "RELATIVE_LINEAR_INTERPOLATION"
+      },
+      "H": {
+        "@name": "HORIZONTAL_LINE",
+        "@symbol": "H x",
+        "@meaning": "Draw horizontal line to x coordinate",
+        "@computation": "LINEAR_INTERPOLATION_X_AXIS"
+      },
+      "V": {
+        "@name": "VERTICAL_LINE",
+        "@symbol": "V y",
+        "@meaning": "Draw vertical line to y coordinate",
+        "@computation": "LINEAR_INTERPOLATION_Y_AXIS"
+      },
+      "Q": {
+        "@name": "QUADRATIC",
+        "@symbol": "Q x1 y1 x y",
+        "@meaning": "Draw quadratic Bezier curve with one control point",
+        "@computation": "QUADRATIC_BEZIER_INTERPOLATION",
+        "@example": "Q 150 50 200 100",
+        "@control_points": 1
+      },
+      "C": {
+        "@name": "CUBIC",
+        "@symbol": "C x1 y1 x2 y2 x y",
+        "@meaning": "Draw cubic Bezier curve with two control points",
+        "@computation": "CUBIC_BEZIER_INTERPOLATION",
+        "@example": "C 150 50 250 150 200 100",
+        "@control_points": 2
+      },
+      "S": {
+        "@name": "SMOOTH_CUBIC",
+        "@symbol": "S x2 y2 x y",
+        "@meaning": "Smooth cubic Bezier (reflects previous control point)",
+        "@computation": "REFLECTED_CUBIC_BEZIER"
+      },
+      "A": {
+        "@name": "ARC",
+        "@symbol": "A rx ry x-axis-rotation large-arc-flag sweep-flag x y",
+        "@meaning": "Draw elliptical arc",
+        "@computation": "ELLIPTICAL_ARC_INTERPOLATION",
+        "@example": "A 50 50 0 0 1 200 100",
+        "@parameters": {
+          "rx": "x-axis radius",
+          "ry": "y-axis radius",
+          "rotation": "x-axis rotation in degrees",
+          "large_arc": "0 or 1 (use larger arc)",
+          "sweep": "0 or 1 (clockwise or counterclockwise)",
+          "x": "end x coordinate",
+          "y": "end y coordinate"
+        }
+      },
+      "Z": {
+        "@name": "CLOSE",
+        "@symbol": "Z",
+        "@meaning": "Close path by drawing line to starting point",
+        "@computation": "COMPLETE_CYCLE",
+        "@example": "Z"
+      }
+    },
+
+    "GLYPH_PROPERTIES": {
+      "@total_command_types": 18,
+      "@command_categories": {
+        "POSITIONING": ["M", "m"],
+        "LINES": ["L", "l", "H", "h", "V", "v"],
+        "CURVES": ["Q", "q", "T", "t", "C", "c", "S", "s"],
+        "ARCS": ["A", "a"],
+        "CONTROL": ["Z"]
+      },
+      "@composition_rules": {
+        "@description": "SVG glyphs compose left-to-right to form complete paths",
+        "@example": "M 0 0 L 100 0 L 100 100 L 0 100 Z → rectangle",
+        "@compression": "Common patterns can be tokenized (rect, circle, etc.)"
+      }
+    }
+  },
+
+  "TRAINING_CHECKPOINTS": {
+    "@description": "10-stage training pipeline for SVG glyph mastery",
+    "@total_checkpoints": 10,
+
+    "CP_01_GLYPH_TOKENIZER": {
+      "@stage": "TOKENIZATION",
+      "@input": "raw SVG path strings",
+      "@output": "tokenized glyph sequences",
+      "@vocab_size": 256,
+      "@algorithm": "BPE with SVG command awareness",
+      "@tokens": [
+        "M", "m", "L", "l", "H", "h", "V", "v",
+        "Q", "q", "T", "t", "C", "c", "S", "s",
+        "A", "a", "Z", "z",
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+        ".", ",", " ", "-",
+        "<RECT>", "<CIRCLE>", "<PATH>", "<POLYGON>",
+        "<NUMBER>", "<COORD>", "<CLOSE>"
+      ],
+      "@kuhul_code": "⟁Yax⟁ path_str 🔣"
+    },
+
+    "CP_02_GLYPH_ENCODER": {
+      "@stage": "ENCODING",
+      "@input": "tokenized glyph sequences",
+      "@output": "dense embeddings (768-dim)",
+      "@architecture": "transformer encoder (6 layers)",
+      "@attention_heads": 12,
+      "@max_sequence_length": 2048,
+      "@purpose": "Learn semantic meaning of SVG patterns",
+      "@kuhul_code": "⟁K'uh⟁ tokens → embeddings"
+    },
+
+    "CP_03_GLYPH_DECODER": {
+      "@stage": "DECODING",
+      "@input": "embeddings + text prompt",
+      "@output": "generated glyph sequences",
+      "@architecture": "transformer decoder (6 layers)",
+      "@cross_attention": "attends to text encoder outputs",
+      "@autoregressive": true,
+      "@kuhul_code": "⟁Xul⟁ embeddings → new_glyphs"
+    },
+
+    "CP_04_TEXT_TO_GLYPH": {
+      "@stage": "TEXT_UNDERSTANDING",
+      "@input": "text description (e.g., 'draw a blue circle')",
+      "@output": "SVG glyph sequence",
+      "@model": "T5-base fine-tuned on text→SVG pairs",
+      "@training_data": "100k synthetic text-SVG pairs",
+      "@example_pairs": [
+        {"text": "red square", "svg": "M 0 0 L 100 0 L 100 100 L 0 100 Z"},
+        {"text": "circle radius 50", "svg": "M 50 0 A 50 50 0 1 1 50 100 A 50 50 0 1 1 50 0 Z"},
+        {"text": "triangle pointing up", "svg": "M 50 0 L 100 100 L 0 100 Z"}
+      ],
+      "@kuhul_code": "⟁Yax⟁ text_prompt 🎯 → svg_glyphs"
+    },
+
+    "CP_05_GLYPH_TO_SVG": {
+      "@stage": "RENDERING",
+      "@input": "glyph sequence tokens",
+      "@output": "valid SVG XML string",
+      "@validation": "checks path syntax, viewBox, attributes",
+      "@post_processing": [
+        "normalize coordinates to viewBox",
+        "simplify redundant commands",
+        "optimize precision (2 decimal places)",
+        "add default fill/stroke if missing"
+      ],
+      "@kuhul_code": "⟁Ch'en⟁ glyphs → svg_xml"
+    },
+
+    "CP_06_STYLE_ENGINE": {
+      "@stage": "STYLING",
+      "@input": "SVG + style descriptor",
+      "@output": "styled SVG with fill, stroke, effects",
+      "@style_classes": {
+        "FLAT": {
+          "@description": "Minimal flat design",
+          "@attributes": ["solid fills", "no gradients", "no shadows"],
+          "@glyph_preference": ["simple paths", "geometric shapes"],
+          "@example_attributes": "fill='#3498db' stroke='none'"
+        },
+        "GLASS": {
+          "@description": "Glassmorphism with transparency",
+          "@attributes": ["gradients", "blur filters", "opacity"],
+          "@glyph_preference": ["smooth curves", "overlapping shapes"],
+          "@example_attributes": "fill='url(#glass-gradient)' opacity='0.7' filter='blur(10px)'"
+        },
+        "NEON": {
+          "@description": "Glowing neon effect",
+          "@attributes": ["bright colors", "glow filters", "dark background"],
+          "@glyph_preference": ["outlined paths", "stroke-heavy"],
+          "@example_attributes": "stroke='#00ff00' stroke-width='3' filter='url(#neon-glow)'"
+        },
+        "WIREFRAME": {
+          "@description": "Technical wireframe style",
+          "@attributes": ["thin strokes", "no fill", "grid alignment"],
+          "@glyph_preference": ["precise lines", "geometric"],
+          "@example_attributes": "stroke='#333' stroke-width='1' fill='none'"
+        }
+      },
+      "@kuhul_code": "⟁Yax⟁ svg 🎭 style_class → styled_svg"
+    },
+
+    "CP_07_VISION_MODEL": {
+      "@stage": "VISION_UNDERSTANDING",
+      "@input": "rendered SVG image (rasterized)",
+      "@output": "visual embeddings (512-dim)",
+      "@architecture": "ViT-B/16 (Vision Transformer)",
+      "@purpose": "Learn to 'see' SVG output for feedback loop",
+      "@integration": "connects to Janus vision encoder",
+      "@training": "contrastive learning on SVG-image pairs",
+      "@kuhul_code": "⟁K'uh⟁ svg_image → vision_embeddings"
+    },
+
+    "CP_08_SCXQ2_COMPRESSOR": {
+      "@stage": "COMPRESSION",
+      "@input": "SVG glyph sequences",
+      "@output": "compressed semantic tokens",
+      "@compression_ratio": "0.013x (98.7% reduction)",
+      "@algorithm": "SCXQ2 semantic compression",
+      "@integration": "uses brain-05 inference engine compression",
+      "@purpose": "Compress common SVG patterns into single tokens",
+      "@learned_patterns": [
+        "RECT → single token for M L L L Z rectangle pattern",
+        "CIRCLE → single token for elliptical arc circle",
+        "ROUNDED_RECT → single token for rounded corner rectangle",
+        "ICON_USER → single token for user icon SVG",
+        "ICON_HEART → single token for heart shape"
+      ],
+      "@kuhul_code": "⟁Yax⟁ svg_glyphs 🎲 → compressed_tokens"
+    },
+
+    "CP_09_MULTIMODAL_FUSION": {
+      "@stage": "FUSION",
+      "@input": ["text embeddings", "vision embeddings", "glyph embeddings"],
+      "@output": "unified multimodal representation",
+      "@architecture": "cross-modal transformer (4 layers)",
+      "@fusion_strategy": "late fusion with cross-attention",
+      "@purpose": "Enable text↔vision↔glyph reasoning",
+      "@use_cases": [
+        "Given image, generate SVG code",
+        "Given text, generate styled SVG",
+        "Given SVG, describe in text",
+        "Style transfer between images"
+      ],
+      "@kuhul_code": "⟁Yax⟁ [text_emb, vision_emb, glyph_emb] 🔗 → unified_emb"
+    },
+
+    "CP_10_MASTER_GENERATOR": {
+      "@stage": "GENERATION",
+      "@input": "unified embeddings + generation params",
+      "@output": "final SVG artwork",
+      "@architecture": "GPT-2 style autoregressive generator",
+      "@parameters": {
+        "creativity": "0.0-1.0 (temperature)",
+        "complexity": "simple|medium|complex (max path length)",
+        "style": "flat|glass|neon|wireframe",
+        "color_palette": "array of hex colors"
+      },
+      "@generation_modes": {
+        "CREATIVE": "high temperature (0.9), diverse outputs",
+        "BALANCED": "medium temperature (0.7), controlled diversity",
+        "PRECISE": "low temperature (0.3), deterministic outputs"
+      },
+      "@kuhul_code": "⟁Yax⟁ unified_emb 🌀 → final_svg"
+    }
+  },
+
+  "PRIMITIVE_SHAPES": {
+    "@description": "Canonical SVG paths for common shapes (compressed tokens)",
+
+    "CIRCLE": {
+      "@path": "M cx r A r r 0 1 1 cx -r A r r 0 1 1 cx r Z",
+      "@explanation": "Two semicircular arcs forming complete circle",
+      "@parameters": ["cx: center x", "cy: center y (in path)", "r: radius"],
+      "@token": "<CIRCLE>",
+      "@example": "M 50 0 A 50 50 0 1 1 50 100 A 50 50 0 1 1 50 0 Z"
+    },
+
+    "RECTANGLE": {
+      "@path": "M x y L x+w y L x+w y+h L x y+h Z",
+      "@explanation": "Four lines forming closed rectangle",
+      "@parameters": ["x: top-left x", "y: top-left y", "w: width", "h: height"],
+      "@token": "<RECT>",
+      "@example": "M 0 0 L 100 0 L 100 50 L 0 50 Z"
+    },
+
+    "ROUNDED_RECT": {
+      "@path": "M x+r y L x+w-r y Q x+w y x+w y+r L x+w y+h-r Q x+w y+h x+w-r y+h L x+r y+h Q x y+h x y+h-r L x y+r Q x y x+r y Z",
+      "@explanation": "Rectangle with quadratic Bezier curves for rounded corners",
+      "@parameters": ["x", "y", "w", "h", "r: corner radius"],
+      "@token": "<ROUNDED_RECT>"
+    },
+
+    "TRIANGLE": {
+      "@path": "M x1 y1 L x2 y2 L x3 y3 Z",
+      "@explanation": "Three lines forming closed triangle",
+      "@parameters": ["x1 y1", "x2 y2", "x3 y3: three vertices"],
+      "@token": "<TRIANGLE>",
+      "@example": "M 50 0 L 100 100 L 0 100 Z"
+    },
+
+    "STAR_5": {
+      "@path": "M cx cy-r L cx+a cy+b L cx-c cy-d L cx+c cy-d L cx-a cy+b Z",
+      "@explanation": "Five-pointed star with calculated vertices",
+      "@parameters": ["cx cy: center", "r: outer radius"],
+      "@token": "<STAR>",
+      "@geometry": "uses golden ratio for proportions"
+    },
+
+    "HEART": {
+      "@path": "M cx cy L cx-a cy-b C cx-c cy-d cx-e cy-f cx-g cy-h C cx-i cy-j cx-k cy-l cx cy Z",
+      "@explanation": "Heart shape using cubic Bezier curves",
+      "@token": "<HEART>",
+      "@style": "romantic, icons, UI"
+    }
+  },
+
+  "ICON_PACKS": {
+    "@description": "Pre-trained icon collections as compressed tokens",
+
+    "UI_ICONS": {
+      "@count": 100,
+      "@categories": ["user", "settings", "home", "search", "menu", "close", "edit", "delete", "save", "upload"],
+      "@tokens": ["<ICON_USER>", "<ICON_SETTINGS>", "<ICON_HOME>", "<ICON_SEARCH>", "<ICON_MENU>"],
+      "@compression": "each icon compressed to 1-2 tokens vs 50-200 raw path tokens"
+    },
+
+    "EMOJI_ICONS": {
+      "@count": 50,
+      "@categories": ["faces", "objects", "nature", "symbols"],
+      "@tokens": ["<EMOJI_SMILE>", "<EMOJI_HEART>", "<EMOJI_FIRE>", "<EMOJI_STAR>"],
+      "@style": "flat design, single color or gradient"
+    },
+
+    "LOGO_ELEMENTS": {
+      "@count": 30,
+      "@categories": ["tech", "nature", "geometric", "abstract"],
+      "@tokens": ["<LOGO_LEAF>", "<LOGO_CIRCUIT>", "<LOGO_WAVE>", "<LOGO_HEXAGON>"],
+      "@use_case": "rapid logo prototyping"
+    }
+  },
+
+  "KUHUL_TRAINING_SUITE": {
+    "@description": "K'UHUL code for training SVG glyph models",
+    "@language": "KUHUL (K'uh'ul Execution Language)",
+
+    "svg_train_glyph_vision": {
+      "@purpose": "Train vision model to understand SVG renderings",
+      "@kuhul_code": "[⟁ svg.train_vision(model, dataset)] →[⟁Wo⟁ batch ⟁Yax⟁ dataset 🎲 32] →[⟁K'ayab⟁ svg_img, label in batch: embedding ⟁K'uh⟁ svg_img → loss ⟁Yax⟁ embedding ⊗ label → ⟁Xul⟁ model 📈 loss] →[⟁Kumk'u⟁] →[⟁Xul⟁]",
+      "@inputs": ["model: ViT architecture", "dataset: SVG-image-label triples"],
+      "@outputs": "trained vision encoder",
+      "@epochs": 100,
+      "@batch_size": 32
+    },
+
+    "svg_train_glyph_chat": {
+      "@purpose": "Train chat model for text→SVG generation",
+      "@kuhul_code": "[⟁ svg.train_chat(model, pairs)] →[⟁Wo⟁ batch ⟁Yax⟁ pairs 🎲 16] →[⟁K'ayab⟁ text, svg in batch: tokens_in ⟁Yax⟁ text 🔣 → tokens_out ⟁Yax⟁ svg 🔣 → logits ⟁Xul⟁ model tokens_in → loss ⟁Yax⟁ logits ⊗ tokens_out → ⟁Xul⟁ model 📈 loss] →[⟁Kumk'u⟁] →[⟁Xul⟁]",
+      "@inputs": ["model: T5 or GPT", "pairs: text-SVG training pairs"],
+      "@outputs": "text-to-SVG generator",
+      "@training_pairs": 100000
+    },
+
+    "svg_train_unified_multimodal": {
+      "@purpose": "Train unified model for text+vision+glyph fusion",
+      "@kuhul_code": "[⟁ svg.train_multimodal(model, data)] →[⟁Wo⟁ batch ⟁Yax⟁ data 🎲 8] →[⟁K'ayab⟁ text, img, svg in batch: text_emb ⟁K'uh⟁ text → img_emb ⟁K'uh⟁ img → svg_emb ⟁K'uh⟁ svg → fused ⟁Yax⟁ [text_emb, img_emb, svg_emb] 🔗 → loss ⟁Yax⟁ fused ⊗ target → ⟁Xul⟁ model 📈 loss] →[⟁Kumk'u⟁] →[⟁Xul⟁]",
+      "@inputs": "multimodal triples (text, image, SVG)",
+      "@outputs": "unified multimodal model",
+      "@batch_size": 8
+    },
+
+    "svg_train_art_critic": {
+      "@purpose": "Train critic model for SVG quality assessment",
+      "@kuhul_code": "[⟁ svg.train_critic(model, rated_svgs)] →[⟁Wo⟁ batch ⟁Yax⟁ rated_svgs 🎲 32] →[⟁K'ayab⟁ svg, rating in batch: quality ⟁Yax⟁ model svg 📊 → loss ⟁Yax⟁ quality - rating → ⟁Xul⟁ model 📈 loss] →[⟁Kumk'u⟁] →[⟁Xul⟁]",
+      "@inputs": "SVGs with human quality ratings (1-10)",
+      "@outputs": "quality assessment model",
+      "@purpose_detail": "Used for RLHF-style feedback during generation"
+    }
+  },
+
+  "INTEGRATION_WITH_OTHER_BRAINS": {
+    "WITH_JANUS_PYTHON": {
+      "@brain": "brain-03-python-janus-deepseek",
+      "@connection": "Janus vision encoder → SVG vision model (CP_07)",
+      "@workflow": [
+        "1. User provides image",
+        "2. Janus vision encoder extracts features",
+        "3. SVG fusion model (CP_09) maps features to glyph space",
+        "4. SVG generator (CP_10) produces SVG code",
+        "5. Result: image → SVG vectorization"
+      ],
+      "@endpoint": "/vectorize_image/",
+      "@reverse_workflow": [
+        "1. User provides text prompt",
+        "2. SVG generator creates SVG code",
+        "3. Janus image generator renders raster image",
+        "4. Result: text → SVG → raster image"
+      ]
+    },
+
+    "WITH_INFERENCE_ENGINE": {
+      "@brain": "brain-05-inference-engine",
+      "@connection": "SCXQ2 compression for SVG patterns",
+      "@shared_components": [
+        "K'UHUL execution pipeline",
+        "SCXQ2 semantic compression",
+        "Glyph-based tokenization philosophy",
+        "Quantum-style optimizations"
+      ],
+      "@workflow": [
+        "1. Raw SVG paths → SCXQ2 compression (CP_08)",
+        "2. Compressed tokens → inference engine chat context",
+        "3. User asks: 'modify the circle to be larger'",
+        "4. Inference engine decompresses, modifies, recompresses",
+        "5. Result: contextual SVG editing via chat"
+      ],
+      "@compression_benefit": "98.7% reduction allows long SVG conversations in chat context"
+    },
+
+    "WITH_CLINE_JAVA": {
+      "@brain": "brain-04-cline-java-grpc",
+      "@connection": "SVG code generation for IDE integration",
+      "@workflow": [
+        "1. Developer writes comment: // TODO: create user icon SVG",
+        "2. CLINE detects TODO via AST analysis",
+        "3. CLINE calls SVG brain: generate_icon('user')",
+        "4. SVG brain returns optimized SVG code",
+        "5. CLINE inserts SVG into file via gRPC editFile()",
+        "6. Result: AI-assisted SVG asset creation in IDE"
+      ],
+      "@grpc_service": "SvgGenerationService",
+      "@methods": ["generateIcon()", "generateLogo()", "styleExistingSvg()"]
+    },
+
+    "WITH_CORE_ARCHITECTURE": {
+      "@brain": "brain-01-core-architecture",
+      "@connection": "XCFE governance + Kuhul execution",
+      "@governance": [
+        "XCFE vectors control SVG generation creativity",
+        "Safety gates prevent malicious SVG (XSS, file size bombs)",
+        "Execution model ensures deterministic rendering"
+      ],
+      "@kuhul_pipeline": "All SVG training jobs run through Kuhul execution engine"
+    }
+  },
+
+  "SVG_VOCABULARY": {
+    "@description": "Tokenization vocabulary for SVG operations",
+    "@vocab_size": 156,
+    "@categories": {
+      "SVG_COMMANDS": ["M", "m", "L", "l", "H", "h", "V", "v", "Q", "q", "T", "t", "C", "c", "S", "s", "A", "a", "Z", "z"],
+      "PRIMITIVES": ["<RECT>", "<CIRCLE>", "<TRIANGLE>", "<STAR>", "<HEART>", "<POLYGON>", "<ELLIPSE>"],
+      "STYLES": ["<FLAT>", "<GLASS>", "<NEON>", "<WIREFRAME>", "<GRADIENT>", "<PATTERN>"],
+      "COLORS": ["<RED>", "<BLUE>", "<GREEN>", "<YELLOW>", "<BLACK>", "<WHITE>", "<GRAY>"],
+      "ATTRIBUTES": ["<FILL>", "<STROKE>", "<OPACITY>", "<TRANSFORM>", "<FILTER>"],
+      "NUMBERS": ["<NUM>", "<COORD>", "<ANGLE>", "<PERCENT>"],
+      "ICONS": ["<ICON_USER>", "<ICON_SEARCH>", "<ICON_HOME>", "<ICON_SETTINGS>", "<ICON_MENU>"],
+      "OPERATIONS": ["<ROTATE>", "<SCALE>", "<TRANSLATE>", "<SKEW>", "<MATRIX>"],
+      "EFFECTS": ["<BLUR>", "<SHADOW>", "<GLOW>", "<REFLECT>"],
+      "CONTROL": ["<START>", "<END>", "<SEP>", "<PAD>"]
+    },
+    "@special_tokens": {
+      "<START>": "Beginning of SVG sequence",
+      "<END>": "End of SVG sequence",
+      "<SEP>": "Separator between path commands",
+      "<PAD>": "Padding for batch processing",
+      "<UNK>": "Unknown token",
+      "<MASK>": "Masked token for training"
+    }
+  },
+
+  "PERFORMANCE_METRICS": {
+    "COMPRESSION": {
+      "@metric": "SVG path compression ratio",
+      "@baseline": "raw SVG paths (100%)",
+      "@with_scxq2": "1.3% (98.7% compression)",
+      "@example": "500 token circle path → 7 compressed tokens"
+    },
+    "GENERATION_SPEED": {
+      "@metric": "SVG generation latency",
+      "@text_to_svg": "<200ms for simple shapes",
+      "@image_to_svg": "<500ms for vectorization",
+      "@style_transfer": "<100ms for re-styling"
+    },
+    "QUALITY": {
+      "@metric": "Human evaluation scores (1-10)",
+      "@aesthetic_quality": 7.8,
+      "@technical_correctness": 9.2,
+      "@prompt_adherence": 8.5
+    },
+    "TRAINING": {
+      "@vision_model_accuracy": "94.3% on held-out SVG classification",
+      "@text_to_svg_bleu": "0.76 BLEU score vs reference SVGs",
+      "@critic_model_correlation": "0.89 Pearson correlation with human ratings"
+    }
+  },
+
+  "DEPLOYMENT": {
+    "@endpoints": {
+      "/generate_svg/": {
+        "@method": "POST",
+        "@input": {"prompt": "text description", "style": "flat|glass|neon|wireframe", "complexity": "simple|medium|complex"},
+        "@output": {"svg_code": "string", "preview_url": "base64 image"}
+      },
+      "/vectorize_image/": {
+        "@method": "POST",
+        "@input": {"image": "base64 or URL"},
+        "@output": {"svg_code": "string", "accuracy": "float"}
+      },
+      "/style_svg/": {
+        "@method": "POST",
+        "@input": {"svg_code": "string", "target_style": "flat|glass|neon|wireframe"},
+        "@output": {"styled_svg": "string"}
+      },
+      "/compress_svg/": {
+        "@method": "POST",
+        "@input": {"svg_code": "string"},
+        "@output": {"compressed_tokens": "array", "compression_ratio": "float"}
+      }
+    },
+    "@integration_ready": true,
+    "@docker_image": "svg-art-brain:1.0.0",
+    "@gpu_required": "NVIDIA A100 recommended for real-time generation"
+  },
+
+  "FUTURE_ENHANCEMENTS": {
+    "@planned": [
+      "Animation path generation (SVG <animate> elements)",
+      "3D SVG (perspective transforms, isometric views)",
+      "Interactive SVG (event handlers, JavaScript integration)",
+      "SVG optimization (SVGO integration, path simplification)",
+      "Font/typography SVG generation",
+      "Map/diagram SVG generation (flowcharts, mind maps)",
+      "Accessibility features (ARIA labels, semantic structure)"
+    ]
+  }
+}

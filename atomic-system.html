@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html class="asx-os asx-layout-grid">
+<head>
+  <meta charset="UTF-8">
+  <title>ATOMIC SYSTEM v1.0 - N-Gram Language Model</title>
+  <style>
+    :root {
+      --entropy: 0.5;
+      --innovation: 0.6;
+      --stability: 0.8;
+      --kuhul-primary: #16f2aa;
+      --kuhul-secondary: #00e0ff;
+      --kuhul-accent: #9966ff;
+      --kuhul-bg: #0a0a1a;
+      --kuhul-panel: #070b12;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: var(--kuhul-bg);
+      color: var(--kuhul-primary);
+      overflow: hidden;
+    }
+
+    .asx-layout-grid {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      grid-template-rows: 60px 1fr;
+      height: 100vh;
+      gap: 0;
+    }
+
+    /* Header */
+    .asx-header {
+      grid-column: 1 / -1;
+      background: var(--kuhul-panel);
+      border-bottom: 2px solid var(--kuhul-primary);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .asx-header h1 {
+      font-size: 24px;
+      color: var(--kuhul-primary);
+      text-shadow: 0 0 10px var(--kuhul-primary);
+    }
+
+    .asx-header .stats {
+      display: flex;
+      gap: 20px;
+      font-size: 12px;
+    }
+
+    .asx-header .stat {
+      padding: 4px 10px;
+      background: rgba(22, 242, 170, 0.1);
+      border: 1px solid var(--kuhul-primary);
+      border-radius: 4px;
+    }
+
+    /* Left Panel - Input & Controls */
+    .asx-panel-left {
+      background: var(--kuhul-panel);
+      border-right: 2px solid var(--kuhul-primary);
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .asx-panel {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(22, 242, 170, 0.05);
+      border: 1px solid var(--kuhul-primary);
+      border-radius: 8px;
+    }
+
+    .asx-panel h2 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: var(--kuhul-secondary);
+      border-bottom: 1px solid var(--kuhul-secondary);
+      padding-bottom: 5px;
+    }
+
+    #inputText {
+      width: 100%;
+      padding: 10px;
+      background: var(--kuhul-bg);
+      border: 1px solid var(--kuhul-primary);
+      color: var(--kuhul-primary);
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 80px;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: var(--kuhul-primary);
+      color: var(--kuhul-bg);
+      border: none;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background: var(--kuhul-secondary);
+      box-shadow: 0 0 15px var(--kuhul-secondary);
+    }
+
+    button.secondary {
+      background: var(--kuhul-accent);
+    }
+
+    button.secondary:hover {
+      background: var(--kuhul-secondary);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Right Panel - Output */
+    .asx-panel-right {
+      background: var(--kuhul-bg);
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    /* Atomic Blocks */
+    .atomic-block {
+      border: 2px solid var(--kuhul-primary);
+      border-radius: 6px;
+      padding: 15px;
+      margin: 10px 0;
+      background: var(--kuhul-panel);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: all 0.3s;
+    }
+
+    .atomic-block:hover {
+      transform: translateX(5px);
+      box-shadow: 0 6px 12px rgba(22, 242, 170, 0.3);
+    }
+
+    .atomic-type {
+      font-weight: bold;
+      color: var(--kuhul-secondary);
+      font-size: 14px;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .atomic-id {
+      font-size: 10px;
+      color: rgba(22, 242, 170, 0.5);
+      margin-bottom: 8px;
+    }
+
+    .atomic-control {
+      color: var(--kuhul-accent);
+      font-size: 12px;
+      margin: 5px 0;
+    }
+
+    .atomic-variable {
+      color: var(--kuhul-primary);
+      font-size: 12px;
+      margin: 5px 0;
+      background: rgba(22, 242, 170, 0.05);
+      padding: 5px;
+      border-radius: 3px;
+    }
+
+    .atomic-view {
+      color: var(--kuhul-secondary);
+      font-size: 11px;
+      font-style: italic;
+      margin-top: 5px;
+    }
+
+    /* Stats Display */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .stat-card {
+      padding: 10px;
+      background: var(--kuhul-bg);
+      border: 1px solid var(--kuhul-primary);
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--kuhul-primary);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--kuhul-secondary);
+      margin-top: 5px;
+    }
+
+    /* Tabs */
+    .tab-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--kuhul-primary);
+      padding-bottom: 10px;
+    }
+
+    .tab {
+      padding: 8px 15px;
+      background: rgba(22, 242, 170, 0.1);
+      border: 1px solid var(--kuhul-primary);
+      border-radius: 4px 4px 0 0;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s;
+    }
+
+    .tab.active {
+      background: var(--kuhul-primary);
+      color: var(--kuhul-bg);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Agent Status */
+    .agent-card {
+      padding: 10px;
+      margin: 5px 0;
+      background: rgba(153, 102, 255, 0.1);
+      border: 1px solid var(--kuhul-accent);
+      border-radius: 4px;
+    }
+
+    .agent-name {
+      font-weight: bold;
+      color: var(--kuhul-accent);
+    }
+
+    .agent-stats {
+      font-size: 11px;
+      color: var(--kuhul-primary);
+      margin-top: 5px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--kuhul-panel);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--kuhul-primary);
+      border-radius: 4px;
+    }
+
+    /* Loading animation */
+    .processing {
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="asx-header">
+    <h1>⚛️ ATOMIC SYSTEM v1.0</h1>
+    <div class="stats">
+      <div class="stat">Blocks: <span id="totalBlocks">0</span></div>
+      <div class="stat">N-grams: <span id="totalNgrams">0</span></div>
+      <div class="stat">Agents: <span id="activeAgents">3</span></div>
+    </div>
+  </div>
+
+  <!-- Left Panel -->
+  <div class="asx-panel-left">
+    <div class="asx-panel">
+      <h2>📝 Input</h2>
+      <textarea id="inputText" placeholder="Type something to process through the atomic system...">Hello, how are you?</textarea>
+      <div class="button-group">
+        <button onclick="processInput()">🔄 Process</button>
+        <button class="secondary" onclick="clearAll()">🧹 Clear</button>
+      </div>
+    </div>
+
+    <div class="asx-panel">
+      <h2>📊 System State</h2>
+      <div id="systemState">
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-number" id="unigramCount">0</div>
+            <div class="stat-label">Unigrams</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="bigramCount">0</div>
+            <div class="stat-label">Bigrams</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="trigramCount">0</div>
+            <div class="stat-label">Trigrams</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="pentagramCount">0</div>
+            <div class="stat-label">Pentagrams</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="asx-panel">
+      <h2>🤖 Agents</h2>
+      <div id="agentList"></div>
+    </div>
+
+    <div class="asx-panel">
+      <h2>⚙️ Actions</h2>
+      <div class="button-group">
+        <button class="secondary" onclick="exportData()">💾 Export XJSON</button>
+        <button class="secondary" onclick="showStats()">📈 Stats</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="asx-panel-right">
+    <div class="tab-group">
+      <div class="tab active" onclick="switchTab('blocks')">Atomic Blocks</div>
+      <div class="tab" onclick="switchTab('ngrams')">N-grams</div>
+      <div class="tab" onclick="switchTab('history')">History</div>
+    </div>
+
+    <div id="tab-blocks" class="tab-content active">
+      <h2>⚛️ Atomic Blocks</h2>
+      <div id="atomicBlocks">
+        <p style="color: var(--kuhul-secondary);">Process some input to see atomic blocks...</p>
+      </div>
+    </div>
+
+    <div id="tab-ngrams" class="tab-content">
+      <h2>🔤 N-grams</h2>
+      <div id="ngrams">
+        <p style="color: var(--kuhul-secondary);">N-gram statistics will appear here...</p>
+      </div>
+    </div>
+
+    <div id="tab-history" class="tab-content">
+      <h2>📜 Processing History</h2>
+      <div id="history">
+        <p style="color: var(--kuhul-secondary);">Processing history will appear here...</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import DataPipeline from './src/pipeline/DataPipeline.js';
+
+    // Initialize pipeline
+    const pipeline = new DataPipeline();
+    window.pipeline = pipeline; // For debugging
+
+    // Process input
+    window.processInput = async function() {
+      const input = document.getElementById('inputText').value;
+      if (!input.trim()) return;
+
+      console.log('Processing input:', input);
+
+      // Add processing indicator
+      document.getElementById('atomicBlocks').innerHTML = '<p class="processing">⏳ Processing...</p>';
+
+      try {
+        const result = await pipeline.processInput(input);
+
+        // Update UI
+        updateAtomicBlocksDisplay();
+        updateNgramsDisplay();
+        updateSystemState();
+        updateAgentList();
+        updateHistory();
+
+        console.log('Processing complete:', result);
+      } catch (error) {
+        console.error('Processing error:', error);
+        document.getElementById('atomicBlocks').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+      }
+    };
+
+    // Update displays
+    function updateAtomicBlocksDisplay() {
+      const container = document.getElementById('atomicBlocks');
+      container.innerHTML = '';
+
+      const blocks = pipeline.atomicBlocks.slice(-20); // Last 20 blocks
+
+      if (blocks.length === 0) {
+        container.innerHTML = '<p>No blocks yet.</p>';
+        return;
+      }
+
+      blocks.reverse().forEach(block => {
+        const div = document.createElement('div');
+        div.className = 'atomic-block';
+        div.innerHTML = `
+          <div class="atomic-type">${block['@type']}</div>
+          <div class="atomic-id">${block['@id']}</div>
+          <div class="atomic-control">Control: ${block['@control'].join(', ')}</div>
+          <div class="atomic-variable">Variables: ${JSON.stringify(block['@variable'], null, 2)}</div>
+          ${block['@view'] ? `<div class="atomic-view">${block['@view']}</div>` : ''}
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function updateNgramsDisplay() {
+      const container = document.getElementById('ngrams');
+      const stats = pipeline.ngramEngine.getStats();
+
+      container.innerHTML = `
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-number">${stats.unigrams}</div>
+            <div class="stat-label">Unigrams</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${stats.bigrams}</div>
+            <div class="stat-label">Bigrams</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${stats.trigrams}</div>
+            <div class="stat-label">Trigrams</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${stats.pentagrams}</div>
+            <div class="stat-label">Pentagrams</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${stats.supagrams}</div>
+            <div class="stat-label">Supagrams</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${stats.total}</div>
+            <div class="stat-label">Total</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateSystemState() {
+      const state = pipeline.getSystemState();
+
+      document.getElementById('totalBlocks').textContent = state['@total_blocks'];
+      document.getElementById('totalNgrams').textContent = state['@ngram_stats'].total;
+
+      document.getElementById('unigramCount').textContent = state['@ngram_stats'].unigrams;
+      document.getElementById('bigramCount').textContent = state['@ngram_stats'].bigrams;
+      document.getElementById('trigramCount').textContent = state['@ngram_stats'].trigrams;
+      document.getElementById('pentagramCount').textContent = state['@ngram_stats'].pentagrams;
+    }
+
+    function updateAgentList() {
+      const container = document.getElementById('agentList');
+      const state = pipeline.getSystemState();
+
+      container.innerHTML = '';
+
+      state['@agent_states'].forEach(agent => {
+        const div = document.createElement('div');
+        div.className = 'agent-card';
+        div.innerHTML = `
+          <div class="agent-name">🤖 ${agent.name}</div>
+          <div class="agent-stats">
+            Capabilities: ${agent.capabilities.join(', ')}<br>
+            Created: ${agent.atomicsCreated} blocks<br>
+            Success: ${agent.state.successCount}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function updateHistory() {
+      const container = document.getElementById('history');
+      const state = pipeline.getSystemState();
+
+      container.innerHTML = '';
+
+      if (state['@processing_history'].length === 0) {
+        container.innerHTML = '<p>No history yet.</p>';
+        return;
+      }
+
+      state['@processing_history'].reverse().forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'atomic-block';
+        div.innerHTML = `
+          <div class="atomic-type">Input: "${entry.input}"</div>
+          <div class="atomic-variable">
+            Timestamp: ${new Date(entry.timestamp).toLocaleString()}<br>
+            N-grams: ${entry.ngramCount}<br>
+            Agents: ${entry.agentCount}<br>
+            Processing Time: ${entry.processingTime}ms
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Tab switching
+    window.switchTab = function(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+    };
+
+    // Clear all
+    window.clearAll = function() {
+      if (confirm('Clear all data?')) {
+        pipeline.clear();
+        updateAtomicBlocksDisplay();
+        updateNgramsDisplay();
+        updateSystemState();
+        updateAgentList();
+        updateHistory();
+        document.getElementById('inputText').value = '';
+      }
+    };
+
+    // Export data
+    window.exportData = function() {
+      const xjson = pipeline.exportXJSON();
+      const blob = new Blob([xjson], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `atomic-system-${Date.now()}.xjson`;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    // Show stats
+    window.showStats = function() {
+      const state = pipeline.getSystemState();
+      alert(JSON.stringify(state, null, 2));
+    };
+
+    // Auto-process demo on load
+    setTimeout(() => {
+      processInput();
+    }, 1000);
+  </script>
+</body>
+</html>

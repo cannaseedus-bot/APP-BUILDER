@@ -1,0 +1,149 @@
+// K'UHUL π Core Runtime
+// Pure functions that compute state deltas
+// No side effects - only state in, state out
+
+// ============================================
+// MATH PRIMITIVES
+// ============================================
+
+fn clamp(val, min, max):
+  return max(min, min(max, val))
+
+fn lerp(a, b, t):
+  return a + (b - a) * clamp(t, 0, 1)
+
+fn map_range(val, in_min, in_max, out_min, out_max):
+  let t = (val - in_min) / (in_max - in_min)
+  return lerp(out_min, out_max, clamp(t, 0, 1))
+
+// ============================================
+// COUNTER FUNCTIONS
+// ============================================
+
+fn counter.derive(state):
+  let e = clamp(state["--entropy"], 0, 1)
+  state["--level"] = match e:
+    > 0.7  => "danger"
+    > 0.35 => "warn"
+    _      => "ok"
+  return state
+
+fn counter.inc(state):
+  state["--mode"] = "acting"
+  state["--count"] = state["--count"] + 1
+  state["--entropy"] = clamp(state["--entropy"] + 0.05, 0, 1)
+  return counter.derive(state)
+
+fn counter.dec(state):
+  state["--mode"] = "acting"
+  state["--count"] = state["--count"] - 1
+  state["--entropy"] = clamp(state["--entropy"] - 0.05, 0, 1)
+  return counter.derive(state)
+
+fn counter.reset(state):
+  state["--count"] = 0
+  state["--mode"] = "idle"
+  state["--entropy"] = 0.10
+  return counter.derive(state)
+
+// ============================================
+// FORM FUNCTIONS
+// ============================================
+
+fn form.validate_field(state, field_id, value):
+  match field_id:
+    "email":
+      let valid = value.contains("@") && value.contains(".")
+      state["--email-value"] = value
+      state["--email-valid"] = valid ? 1 : 0
+      state["--email-error"] = valid ? "" : "Invalid email"
+    "password":
+      let valid = value.length >= 8
+      state["--password-value"] = value
+      state["--password-valid"] = valid ? 1 : 0
+      state["--password-error"] = valid ? "" : "Min 8 characters"
+  return state
+
+fn form.validate_all(state):
+  let email_valid = state["--email-valid"] == 1
+  let password_valid = state["--password-valid"] == 1
+  state["--validation-state"] = (email_valid && password_valid) ? "valid" : "invalid"
+  return state
+
+fn form.derive(state):
+  let all_valid = state["--validation-state"] == "valid"
+  state["--submit-enabled"] = all_valid ? 1 : 0
+  return state
+
+fn form.reset(state):
+  state["--form-state"] = "idle"
+  state["--validation-state"] = "pending"
+  state["--email-value"] = ""
+  state["--email-valid"] = 0
+  state["--email-error"] = ""
+  state["--password-value"] = ""
+  state["--password-valid"] = 0
+  state["--password-error"] = ""
+  state["--submit-enabled"] = 0
+  return state
+
+fn form.submit(state):
+  state["--form-state"] = "submitting"
+  // Submission handled by @gas control vector
+  return state
+
+// ============================================
+// DASHBOARD FUNCTIONS
+// ============================================
+
+fn dashboard.select_tape(state, tape_id):
+  state["--active-tape"] = tape_id
+  // Mark current tape as needing load
+  let key = "--" + tape_id + "-loaded"
+  state[key] = 0
+  return state
+
+fn dashboard.toggle_sidebar(state):
+  state["--sidebar-collapsed"] = state["--sidebar-collapsed"] == 0 ? 1 : 0
+  return state
+
+fn dashboard.apply_theme(state, theme_id):
+  state["--theme"] = theme_id
+  return state
+
+fn dashboard.derive(state):
+  // Compute online ratio as entropy
+  let total = state["--shard-count"]
+  let online = state["--online-count"]
+  state["--entropy"] = total > 0 ? 1 - (online / total) : 0.5
+  return state
+
+fn dashboard.update_mesh(state, mesh_data):
+  state["--mesh-status"] = mesh_data.status
+  state["--shard-count"] = mesh_data.total
+  state["--online-count"] = mesh_data.online
+  return dashboard.derive(state)
+
+// ============================================
+// GENERIC STATE OPERATIONS
+// ============================================
+
+fn state.merge(state, updates):
+  for key, value in updates:
+    state[key] = value
+  return state
+
+fn state.reset(state, defaults):
+  return defaults
+
+fn state.toggle(state, key):
+  state[key] = state[key] == 0 ? 1 : 0
+  return state
+
+fn state.increment(state, key, delta = 1):
+  state[key] = state[key] + delta
+  return state
+
+fn state.set(state, key, value):
+  state[key] = value
+  return state

@@ -1,0 +1,359 @@
+{
+  "立v": "12.1.0",
+  "n": "MX2LM_SUPREME_MICRO_AGENTS_LM_GRAMS",
+  "d": "Micro-agent swarm specialized for language models, tokenizers, and @-GRAM chains (unigram → glyphgram) in MX2LM.",
+  "timestamp": 1890000010001,
+
+  "@law": "ALL_LANGUAGE_MODELS_ARE_XJSON_ALL_NGRAMS_ARE_@GRAMS_ALL_ORCHESTRATION_IS_KUHUL",
+  "@architecture": "LM_PIPELINE = CORPUS → TOKENIZER → @GRAMS → MODEL_CONFIG → CHECKPOINTS",
+  "@compression": "SCXQ2_NGRAM_TABLES",
+  "@ratio": 0.0015,
+
+  "@grams": {
+    "@levels": [
+      "@unigram",
+      "@bigram",
+      "@trigram",
+      "@quadragram",
+      "@pentagram",
+      "@supagram",
+      "@glyphgram"
+    ],
+    "@description": "Hierarchical @-GRAM ladder from raw tokens to symbolic glyph structures."
+  },
+
+  "📚LANGUAGE_MODEL_TABLES": {
+    "📖lm_corpora": {
+      "schema": {
+        "id": "string",
+        "label": "string",
+        "description": "string",
+        "source_type": "string",
+        "source_uris": "string[]",
+        "language": "string",
+        "domain": "string",
+        "size_tokens": "int",
+        "size_bytes": "int",
+        "license": "string",
+        "ingest_status": "string",
+        "last_ingested": "timestamp"
+      }
+    },
+
+    "🧷lm_tokenizers": {
+      "schema": {
+        "id": "string",
+        "label": "string",
+        "type": "string",
+        "vocab_size": "int",
+        "special_tokens": "string[]",
+        "lowercase": "boolean",
+        "strip_accents": "boolean",
+        "training_corpus_id": "string",
+        "files": {
+          "vocab_json": "string?",
+          "vocab_bin": "string?",
+          "merges_txt": "string?",
+          "tokenizer_config_json": "string?",
+          "special_tokens_map_json": "string?"
+        },
+        "status": "string",
+        "usage_stats": {
+          "total_tokens_encoded": "int",
+          "total_calls": "int"
+        }
+      }
+    },
+
+    "📊lm_grams": {
+      "schema": {
+        "id": "string",
+        "tokenizer_id": "string",
+        "corpus_id": "string",
+        "@gram_level": "string",
+        "total_grams": "int",
+        "unique_grams": "int",
+        "entropy": "float",
+        "stored_location": "string",
+        "scxq2_ratio": "float",
+        "status": "string"
+      },
+      "indexes": ["tokenizer_id", "corpus_id", "@gram_level"]
+    },
+
+    "🧠lm_models": {
+      "schema": {
+        "id": "string",
+        "label": "string",
+        "family": "string",
+        "ngram_mode": "string",
+        "max_context_tokens": "int",
+        "supported_gram_levels": "string[]",
+        "tokenizer_id": "string",
+        "training_corpus_ids": "string[]",
+        "config": "json",
+        "status": "string",
+        "last_trained": "timestamp"
+      }
+    },
+
+    "💾lm_checkpoints": {
+      "schema": {
+        "id": "string",
+        "model_id": "string",
+        "label": "string",
+        "generation": "int",
+        "checkpoint_type": "string",
+        "files": {
+          "weights_xjson": "string?",
+          "weights_bin": "string?",
+          "gguf": "string?",
+          "safetensors": "string?"
+        },
+        "metrics": {
+          "perplexity": "float",
+          "loss": "float",
+          "eval_tokens": "int"
+        },
+        "created": "timestamp",
+        "status": "string"
+      },
+      "indexes": ["model_id", "generation", "status"]
+    }
+  },
+
+  "🤖LM_MICRO_AGENTS": {
+    "seed_agents": [
+      {
+        "id": "agent.corpus_curator",
+        "label": "Corpus Curator",
+        "domain": "lm_corpora",
+        "specialization": "dataset_collection_cleaning",
+        "priority": 9,
+        "builder_types": ["builder.corpus_spec", "builder.dataset_split"],
+        "mx2lm_prompt_template": "Given {spec.sources} and {spec.rules}, design a clean corpus spec with filters, licenses, and domain tags.",
+        "success_rate": 0.95,
+        "jobs_handled": 0,
+        "average_completion_ms": 200,
+        "quantum_entanglement": ["agent.tokenizer", "agent.ngram"],
+        "mesh_node_affinity": ["lm_corpus_mesh"]
+      },
+      {
+        "id": "agent.tokenizer",
+        "label": "Tokenizer Engineer",
+        "domain": "lm_tokenizers",
+        "specialization": "vocab_and_bpe_design",
+        "priority": 10,
+        "builder_types": ["builder.vocab", "builder.tokenizer_config"],
+        "mx2lm_prompt_template": "Design tokenizer with vocab ~{spec.vocab_size}, language={spec.language}, domain={spec.domain}, and special tokens {spec.special_tokens}.",
+        "success_rate": 0.96,
+        "jobs_handled": 0,
+        "average_completion_ms": 250,
+        "quantum_entanglement": ["agent.ngram", "agent.lm_architect"],
+        "mesh_node_affinity": ["lm_tokenizer_mesh"]
+      },
+      {
+        "id": "agent.ngram",
+        "label": "N-GRAM Architect",
+        "domain": "lm_grams",
+        "specialization": "ngram_chain_construction",
+        "priority": 10,
+        "builder_types": ["builder.ngram_table", "builder.ngram_stats"],
+        "mx2lm_prompt_template": "Given tokenizer={spec.tokenizer_id} and corpus={spec.corpus_id}, define @gram levels {spec.levels} and storage layout.",
+        "success_rate": 0.94,
+        "jobs_handled": 0,
+        "average_completion_ms": 300,
+        "quantum_entanglement": ["agent.tokenizer", "agent.lm_architect"],
+        "mesh_node_affinity": ["lm_ngram_mesh"]
+      },
+      {
+        "id": "agent.lm_architect",
+        "label": "Language Model Architect",
+        "domain": "lm_models",
+        "specialization": "model_config_and_layout",
+        "priority": 10,
+        "builder_types": ["builder.lm_config", "builder.checkpoint_manifest"],
+        "mx2lm_prompt_template": "Design MX2LM model over @grams {spec.gram_levels} with context={spec.context_tokens} and roles {spec.roles}.",
+        "success_rate": 0.95,
+        "jobs_handled": 0,
+        "average_completion_ms": 400,
+        "quantum_entanglement": ["agent.ngram", "agent.trainer"],
+        "mesh_node_affinity": ["lm_model_mesh"]
+      },
+      {
+        "id": "agent.trainer",
+        "label": "Training Orchestrator",
+        "domain": "lm_checkpoints",
+        "specialization": "training_schedule_and_eval",
+        "priority": 9,
+        "builder_types": ["builder.training_schedule", "builder.eval_suite"],
+        "mx2lm_prompt_template": "Given model {spec.model_id} and grams {spec.gram_ids}, design training schedule with checkpoints and evaluation.",
+        "success_rate": 0.93,
+        "jobs_handled": 0,
+        "average_completion_ms": 500,
+        "quantum_entanglement": ["agent.lm_architect"],
+        "mesh_node_affinity": ["lm_training_mesh"]
+      }
+    ]
+  },
+
+  "🛠LM_MICRO_BUILDERS": {
+    "seed_builders": [
+      {
+        "id": "builder.corpus_spec",
+        "label": "Corpus Spec Builder",
+        "type": "lm_corpus_builder",
+        "specialization": "corpus_definition",
+        "input_kind": "corpus_request",
+        "output_kind": "lm_corpora_entry",
+        "fold_target": "lm_corpora",
+        "tape_target": "datasets",
+        "execution_time_ms": 80,
+        "resource_cost": 20,
+        "dependencies": ["xjson.core"],
+        "quantum_circuit": "corpus_spec_qc_v1",
+        "status": "ready",
+        "jobs_completed": 0,
+        "success_rate": 0.97,
+        "mesh_distribution": true
+      },
+      {
+        "id": "builder.vocab",
+        "label": "Vocab Builder",
+        "type": "tokenizer_vocab_builder",
+        "specialization": "vocab_generation",
+        "input_kind": "tokenized_samples",
+        "output_kind": "vocab_json",
+        "fold_target": "tokenizers",
+        "tape_target": "lm",
+        "execution_time_ms": 120,
+        "resource_cost": 40,
+        "dependencies": ["xjson.core", "scxq2.engine"],
+        "quantum_circuit": "vocab_build_qc_v1",
+        "status": "ready",
+        "jobs_completed": 0,
+        "success_rate": 0.96,
+        "mesh_distribution": true
+      },
+      {
+        "id": "builder.tokenizer_config",
+        "label": "Tokenizer Config Builder",
+        "type": "tokenizer_config_builder",
+        "specialization": "config_files_assembly",
+        "input_kind": "tokenizer_spec",
+        "output_kind": "tokenizer_files",
+        "fold_target": "tokenizers",
+        "tape_target": "lm",
+        "execution_time_ms": 90,
+        "resource_cost": 30,
+        "dependencies": ["xjson.core"],
+        "quantum_circuit": "tokenizer_cfg_qc_v1",
+        "status": "ready",
+        "jobs_completed": 0,
+        "success_rate": 0.97,
+        "mesh_distribution": true
+      },
+      {
+        "id": "builder.ngram_table",
+        "label": "@GRAM Table Builder",
+        "type": "ngram_table_builder",
+        "specialization": "ngram_count_tables",
+        "input_kind": "ngram_request",
+        "output_kind": "ngram_table",
+        "fold_target": "lm_grams",
+        "tape_target": "lm",
+        "execution_time_ms": 300,
+        "resource_cost": 100,
+        "dependencies": ["xjson.core", "scxq2.engine"],
+        "quantum_circuit": "ngram_build_qc_v1",
+        "status": "ready",
+        "jobs_completed": 0,
+        "success_rate": 0.94,
+        "mesh_distribution": true
+      },
+      {
+        "id": "builder.ngram_stats",
+        "label": "N-GRAM Stats Builder",
+        "type": "ngram_stats_builder",
+        "specialization": "entropy_and_metrics",
+        "input_kind": "ngram_table",
+        "output_kind": "ngram_metrics",
+        "fold_target": "lm_grams",
+        "tape_target": "lm",
+        "execution_time_ms": 60,
+        "resource_cost": 15,
+        "dependencies": ["math_pi.runtime"],
+        "quantum_circuit": "ngram_stats_qc_v1",
+        "status": "ready",
+        "jobs_completed": 0,
+        "success_rate": 0.95,
+        "mesh_distribution": true
+      },
+      {
+        "id": "builder.lm_config",
+        "label": "LM Config Builder",
+        "type": "lm_config_builder",
+        "specialization": "model_definition",
+        "input_kind": "lm_spec",
+        "output_kind": "lm_config",
+        "fold_target": "lm_models",
+        "tape_target": "lm",
+        "execution_time_ms": 150,
+        "resource_cost": 60,
+        "dependencies": ["xjson.core", "trainer.runtime"],
+        "quantum_circuit": "lm_config_qc_v1",
+        "status": "ready",
+        "jobs_completed": 0,
+        "success_rate": 0.95,
+        "mesh_distribution": true
+      },
+      {
+        "id": "builder.checkpoint_manifest",
+        "label": "Checkpoint Manifest Builder",
+        "type": "checkpoint_manifest_builder",
+        "specialization": "checkpoint_indexing",
+        "input_kind": "checkpoint_spec",
+        "output_kind": "lm_checkpoint_entry",
+        "fold_target": "lm_checkpoints",
+        "tape_target": "lm",
+        "execution_time_ms": 70,
+        "resource_cost": 25,
+        "dependencies": ["xjson.core"],
+        "quantum_circuit": "checkpoint_manifest_qc_v1",
+        "status": "ready",
+        "jobs_completed": 0,
+        "success_rate": 0.96,
+        "mesh_distribution": true
+      }
+    ]
+  },
+
+  "🚀LM_WORKFLOW_EXAMPLES": {
+    "example_lm_1_unigram_bigram_trigram": {
+      "prompt": "Create MX2LM @GRAM model using unigram+bigram+trigram from this corpus.",
+      "workflow": [
+        "1. User hits /micro/job with domain=lm_models and corpus_id specified.",
+        "2. agent.corpus_curator validates corpus → builder.corpus_spec updates corpora table.",
+        "3. agent.tokenizer designs tokenizer → builder.vocab + builder.tokenizer_config.",
+        "4. agent.ngram requests @unigram, @bigram, @trigram → builder.ngram_table builds 3 tables.",
+        "5. builder.ngram_stats computes entropy and metrics for each @GRAM level.",
+        "6. agent.lm_architect defines LM config over these 3 @GRAM levels via builder.lm_config.",
+        "7. agent.trainer defines checkpoint schedule via builder.checkpoint_manifest.",
+        "8. Job returns model_id, tokenizer_id, gram_ids, checkpoint_plan."
+      ]
+    },
+
+    "example_lm_2_glyphgram_symbolic": {
+      "prompt": "Build symbolic GLYPHGRAM model over my existing MX2LM checkpoints.",
+      "workflow": [
+        "1. User submits domain=lm_models with gram_levels including '@glyphgram'.",
+        "2. agent.ngram extends existing grams with glyph-level abstractions.",
+        "3. builder.ngram_table builds glyphgram table from existing checkpoints and vocab.",
+        "4. builder.ngram_stats evaluates glyphgram entropy and structure.",
+        "5. agent.lm_architect updates LM config to include glyphgram attention/head routing.",
+        "6. agent.trainer drafts fine-tune plan on glyphgram transitions only.",
+        "7. Job returns updated model config and new checkpoint manifest entry."
+      ]
+    }
+  }
+}

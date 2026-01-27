@@ -320,4 +320,5 @@ class KuhulRuntime {
 }
 
 // Make it globally available
+
 window.KuhulRuntime = KuhulRuntime;
