@@ -1,0 +1,523 @@
+# ⚡ FLUX_CAPACITOR K'UHUL π Core Implementation
+#
+# Authority: MX2⟁☣
+# Domain: Temporal-Energy Execution Core
+# Status: Canonical / Non-Optional
+#
+# This file contains the K'UHUL π implementations of all
+# FLUX_CAPACITOR opcodes.
+
+# ============================================
+# CORE INITIALIZATION
+# ============================================
+
+[Pop flux_capacitor_core_init]
+  ; Initialize the temporal-energy spine with MX2⟁☣ governance
+  [Sek atomic_block {
+    "@type": "flux_capacitor_core",
+    "@control": ["@flux.init"],
+    "@data": {
+      ; === CANONICAL STATE ===
+      "@tick": 0,
+      "@phase": "boot",
+      "@energy": 0.1,
+      "@entropy": 0.0,
+      "@timebase": [Sek current_time],
+      "@delta": 16.667,
+      "@monotonic": true,
+
+      ; === OPCODE REGISTRY ===
+      "@opcodes": {
+        "@flux.init": "@flux_opcode_init",
+        "@flux.tick": "@flux_opcode_tick",
+        "@flux.phase": "@flux_opcode_phase",
+        "@flux.delta": "@flux_opcode_delta",
+        "@flux.time": "@flux_opcode_time",
+        "@flux.energy": "@flux_opcode_energy",
+        "@flux.entropy": "@flux_opcode_entropy",
+        "@flux.sync": "@flux_opcode_sync",
+        "@flux.barrier": "@flux_opcode_barrier",
+        "@flux.halt": "@flux_opcode_halt",
+        "@flux.resume": "@flux_opcode_resume",
+        "@flux.snapshot": "@flux_opcode_snapshot",
+        "@flux.stabilize": "@flux_opcode_stabilize",
+        "@flux.align": "@flux_opcode_align"
+      },
+
+      ; === SYNCHRONIZATION STATE ===
+      "@sync_points": {
+        "css": false,
+        "xcfe": false,
+        "dom": false,
+        "agents": false,
+        "storage": false
+      },
+
+      ; === HAZARD STATE ===
+      "@hazard": {
+        "active": false,
+        "reason": null,
+        "resolution": null,
+        "halted_at": null
+      },
+
+      ; === TEMPORAL CONSTRAINTS ===
+      "@constraints": {
+        "max_entropy": 0.95,
+        "min_energy": 0.05,
+        "max_phase_duration": 60000,
+        "max_tick_variance": 2.0
+      }
+    },
+    "@view": "flux_hud",
+    "@hazard": "temporal",
+    "@mx2": {
+      "@governed": true,
+      "@non_bypassable": true,
+      "@violation_action": "structural_halt"
+    }
+  }]→[Ch'en flux_core]
+
+  ; Store under MX2⟁☣ temporal authority
+  [Wo flux_core]→[Yax "mx2hazard.temporal.core"]→[Sek mx2db_put]
+
+  ; Initialize opcode bindings
+  [Sek flux_register_opcodes]
+
+  ; Start flux loop (governed)
+  [Sek flux_governed_loop_init]
+
+  [Xul return flux_core]
+[Xul]
+
+
+# ============================================
+# TICK OPCODE - Core temporal advancement
+# ============================================
+
+[Pop flux_opcode_tick]
+  ; CANONICAL: Advance exactly one lawful tick
+  [Yax "mx2hazard.temporal.core"]→[Sek mx2db_get]→[Ch'en flux]
+
+  ; Check hazard state
+  [Wo flux]→[Sek get "@data.@hazard.active"]→[Ch'en halted]
+  [@if halted]→[@then
+    [Xul return [Sek atomic_block {
+      "@type": "flux_halted",
+      "@data": {
+        "reason": [Sek get flux "@data.@hazard.reason"],
+        "cannot_tick": true,
+        "resolution_required": true
+      }
+    }]]
+  ]
+
+  ; Calculate next state
+  [Sek current_time]→[Ch'en now]
+  [Wo flux]→[Sek get "@data.@timebase"]→[Ch'en last_timebase]
+  [Wo now]→[Sek subtract last_timebase]→[Ch'en actual_delta]
+
+  ; Enforce temporal constraints
+  [Wo flux]→[Sek get "@data.@delta"]→[Ch'en target_delta]
+  [Wo actual_delta target_delta]→[Sek calculate_delta_variance]→[Ch'en variance]
+  [Wo flux]→[Sek get "@data.@constraints.max_tick_variance"]→[Ch'en max_variance]
+
+  [@if [Sek > variance max_variance]]→[@then
+    ; Temporal instability detected
+    [Sek mx2hazard_report {
+      "@violation": "temporal_instability",
+      "@severity": "high",
+      "@actual_delta": actual_delta,
+      "@target_delta": target_delta,
+      "@variance": variance
+    }]
+
+    ; Apply entropy penalty
+    [Wo flux]→[Sek get "@data.@entropy"]→[Sek + 0.1]→[Ch'en new_entropy]
+    [Wo flux]→[Sek assoc "@data.@entropy" new_entropy]→[Ch'en updated_flux]
+    [Wo updated_flux]→[Yax "mx2hazard.temporal.core"]→[Sek mx2db_put]
+  ]
+
+  ; Update flux state
+  [Wo flux]→[Sek get "@data.@tick"]→[Sek + 1]→[Ch'en new_tick]
+  [Wo flux]→[Sek assoc "@data.@tick" new_tick]→[Ch'en flux1]
+  [Wo flux1]→[Sek assoc "@data.@timebase" now]→[Ch'en flux2]
+  [Wo flux2]→[Sek assoc "@data.@delta" actual_delta]→[Ch'en flux3]
+
+  ; Energy & entropy dynamics
+  [Wo flux3]→[Sek get "@data.@energy"]→[Ch'en current_energy]
+  [Wo flux3]→[Sek get "@data.@phase"]→[Ch'en current_phase]
+  [Wo current_energy current_phase actual_delta]→[Sek calculate_energy_drift]→[Ch'en energy_drift]
+  [Wo current_energy]→[Sek + energy_drift]→[Ch'en new_energy]
+
+  ; Clamp energy to [0.05, 1.0]
+  [Wo new_energy]→[Sek max 0.05]→[Sek min 1.0]→[Ch'en clamped_energy]
+  [Wo flux3]→[Sek assoc "@data.@energy" clamped_energy]→[Ch'en flux4]
+
+  ; Update storage
+  [Wo flux4]→[Yax "mx2hazard.temporal.core"]→[Sek mx2db_put]
+
+  ; Dispatch tick event for synchronization
+  [Sek flux_dispatch_tick_event flux4]
+
+  [Xul return flux4]
+[Xul]
+
+
+# ============================================
+# PHASE OPCODE - Execution phase transitions
+# ============================================
+
+[Pop flux_opcode_phase]
+  ; CANONICAL: Phase transition with constraints
+  [Wo @params]→[Ch'en params]
+  [Yax "mx2hazard.temporal.core"]→[Sek mx2db_get]→[Ch'en flux]
+
+  ; Validate phase transition
+  [Wo flux]→[Sek get "@data.@phase"]→[Ch'en current_phase]
+  [Wo params]→[Sek get "enter"]→[Ch'en new_phase]
+
+  [Wo current_phase new_phase]→[Sek validate_phase_transition]→[Ch'en valid_transition]
+
+  [@if [Sek not valid_transition]]→[@then
+    [Xul return [Sek atomic_block {
+      "@type": "flux_phase_violation",
+      "@data": {
+        "current_phase": current_phase,
+        "requested_phase": new_phase,
+        "valid_transitions": [Sek get_valid_phase_transitions current_phase],
+        "violation": "illegal_phase_transition"
+      }
+    }]]
+  ]
+
+  ; Execute phase exit actions
+  [Wo current_phase]→[Sek execute_phase_exit_actions]
+
+  ; Update phase
+  [Wo flux]→[Sek assoc "@data.@phase" new_phase]→[Ch'en flux1]
+  [Wo flux1]→[Sek assoc "@data.@phase_start" [Sek current_time]]→[Ch'en flux2]
+
+  ; Update CSS custom properties
+  [Sek set_css_variable "--flux-phase" new_phase]
+  [Sek set_css_variable "--flux-phase-age" 0]
+
+  ; Execute phase entry actions
+  [Wo new_phase]→[Sek execute_phase_entry_actions]
+
+  ; Update storage
+  [Wo flux2]→[Yax "mx2hazard.temporal.core"]→[Sek mx2db_put]
+
+  ; Dispatch phase change event
+  [Sek flux_dispatch_phase_event flux2]
+
+  [Xul return flux2]
+[Xul]
+
+
+# ============================================
+# ENERGY OPCODE - Energy level control
+# ============================================
+
+[Pop flux_opcode_energy]
+  ; CANONICAL: Energy level control
+  [Wo @params]→[Ch'en params]
+  [Yax "mx2hazard.temporal.core"]→[Sek mx2db_get]→[Ch'en flux]
+
+  [@if [Sek has_key params "set"]]→[@then
+    ; Set energy level (with constraints)
+    [Wo params]→[Sek get "set"]→[Ch'en requested_energy]
+
+    ; Clamp to valid range
+    [Wo requested_energy]→[Sek max 0.05]→[Sek min 1.0]→[Ch'en clamped_energy]
+
+    ; Update energy
+    [Wo flux]→[Sek assoc "@data.@energy" clamped_energy]→[Ch'en updated_flux]
+
+    ; Update CSS
+    [Sek set_css_variable "--flux-energy" clamped_energy]
+
+    ; Update storage
+    [Wo updated_flux]→[Yax "mx2hazard.temporal.core"]→[Sek mx2db_put]
+
+    [Xul return updated_flux]
+  ]→[@else
+    ; Query current energy
+    [Wo flux]→[Sek get "@data.@energy"]→[Ch'en current_energy]
+    [Xul return current_energy]
+  ]
+[Xul]
+
+
+# ============================================
+# ENTROPY OPCODE - Entropy management
+# ============================================
+
+[Pop flux_opcode_entropy]
+  ; CANONICAL: Entropy accumulation/decay
+  [Wo @params]→[Ch'en params]
+  [Yax "mx2hazard.temporal.core"]→[Sek mx2db_get]→[Ch'en flux]
+
+  [Wo flux]→[Sek get "@data.@entropy"]→[Ch'en current_entropy]
+
+  [@if [Sek has_key params "add"]]→[@then
+    [Wo params]→[Sek get "add"]→[Ch'en add_value]
+    [Wo current_entropy]→[Sek + add_value]→[Ch'en new_entropy]
+  ]
+
+  [@if [Sek has_key params "decay"]]→[@then
+    [Wo params]→[Sek get "decay"]→[Ch'en decay_value]
+    [Wo current_entropy]→[Sek - decay_value]→[Ch'en new_entropy]
+  ]
+
+  ; Clamp entropy to [0, 1]
+  [Wo new_entropy]→[Sek max 0]→[Sek min 1]→[Ch'en clamped_entropy]
+
+  ; Check hazard threshold
+  [Wo flux]→[Sek get "@data.@constraints.max_entropy"]→[Ch'en max_entropy]
+  [@if [Sek > clamped_entropy max_entropy]]→[@then
+    ; Entropy critical - trigger hazard
+    [Sek flux_opcode_halt {"reason": "entropy_critical"}]
+  ]
+
+  ; Update entropy
+  [Wo flux]→[Sek assoc "@data.@entropy" clamped_entropy]→[Ch'en updated_flux]
+
+  ; Update CSS
+  [Sek set_css_variable "--flux-entropy" clamped_entropy]
+
+  ; Update storage
+  [Wo updated_flux]→[Yax "mx2hazard.temporal.core"]→[Sek mx2db_put]
+
+  [Xul return updated_flux]
+[Xul]
+
+
+# ============================================
+# SYNC OPCODE - Multi-system synchronization
+# ============================================
+
+[Pop flux_opcode_sync]
+  ; CANONICAL: Multi-system synchronization
+  [Wo @params]→[Ch'en params]
+  [Yax "mx2hazard.temporal.core"]→[Sek mx2db_get]→[Ch'en flux]
+
+  ; Update sync points
+  [Wo flux]→[Sek get "@data.@sync_points"]→[Ch'en sync_points]
+
+  [@each [Sek keys params]]→[Ch'en system]→[@then
+    [Wo params]→[Sek get system]→[Ch'en synced]
+    [Wo sync_points]→[Sek assoc system synced]→[Ch'en new_sync_points]
+    [Wo new_sync_points]→[Ch'en sync_points]
+  ]
+
+  ; Check if all required systems are synced
+  [Wo sync_points]→[Sek calculate_sync_completeness]→[Ch'en sync_complete]
+
+  [Wo flux]→[Sek assoc "@data.@sync_points" sync_points]→[Ch'en updated_flux]
+
+  [@if sync_complete]→[@then
+    ; All systems synced - advance barrier
+    [Sek flux_opcode_barrier {"release": true}]
+  ]
+
+  ; Update storage
+  [Wo updated_flux]→[Yax "mx2hazard.temporal.core"]→[Sek mx2db_put]
+
+  ; Dispatch sync event
+  [Sek flux_dispatch_sync_event updated_flux]
+
+  [Xul return updated_flux]
+[Xul]
+
+
+# ============================================
+# HALT OPCODE - Emergency temporal halt
+# ============================================
+
+[Pop flux_opcode_halt]
+  ; CANONICAL: Emergency temporal halt
+  [Wo @params]→[Ch'en params]
+  [Yax "mx2hazard.temporal.core"]→[Sek mx2db_get]→[Ch'en flux]
+
+  ; Set hazard state
+  [Wo flux]→[Sek assoc "@data.@hazard.active" true]→[Ch'en flux1]
+  [Wo flux1]→[Sek assoc "@data.@hazard.reason" [Sek get params "reason"]]→[Ch'en flux2]
+  [Wo flux2]→[Sek assoc "@data.@hazard.halted_at" [Sek current_time]]→[Ch'en flux3]
+
+  ; Force phase to "halted"
+  [Wo flux3]→[Sek assoc "@data.@phase" "halted"]→[Ch'en flux4]
+
+  ; Set energy to minimum
+  [Wo flux4]→[Sek assoc "@data.@energy" 0.05]→[Ch'en flux5]
+
+  ; Update CSS
+  [Sek set_css_variable "--flux-halted" true]
+  [Sek set_css_variable "--flux-hazard-reason" [Sek get params "reason"]]
+
+  ; Dispatch hazard event
+  [Sek mx2hazard_dispatch {
+    "@type": "temporal_halt",
+    "@severity": "critical",
+    "@reason": [Sek get params "reason"],
+    "@recovery_required": true
+  }]
+
+  ; Update storage
+  [Wo flux5]→[Yax "mx2hazard.temporal.core"]→[Sek mx2db_put]
+
+  [Xul return flux5]
+[Xul]
+
+
+# ============================================
+# RESUME OPCODE - Resume after halt
+# ============================================
+
+[Pop flux_opcode_resume]
+  ; CANONICAL: Resume lawful ticking after halt
+  [Yax "mx2hazard.temporal.core"]→[Sek mx2db_get]→[Ch'en flux]
+
+  ; Verify hazard is resolved
+  [Wo flux]→[Sek get "@data.@hazard.active"]→[Ch'en halted]
+  [@if [Sek not halted]]→[@then
+    [Xul return [Sek atomic_block {
+      "@type": "flux_not_halted",
+      "@data": {"message": "System is not halted"}
+    }]]
+  ]
+
+  ; Clear hazard state
+  [Wo flux]→[Sek assoc "@data.@hazard.active" false]→[Ch'en flux1]
+  [Wo flux1]→[Sek assoc "@data.@hazard.resolution" [Sek current_time]]→[Ch'en flux2]
+
+  ; Reset to idle phase
+  [Wo flux2]→[Sek assoc "@data.@phase" "idle"]→[Ch'en flux3]
+
+  ; Update CSS
+  [Sek set_css_variable "--flux-halted" false]
+
+  ; Update storage
+  [Wo flux3]→[Yax "mx2hazard.temporal.core"]→[Sek mx2db_put]
+
+  [Xul return flux3]
+[Xul]
+
+
+# ============================================
+# SNAPSHOT OPCODE - Capture temporal state
+# ============================================
+
+[Pop flux_opcode_snapshot]
+  ; CANONICAL: Capture full temporal state
+  [Yax "mx2hazard.temporal.core"]→[Sek mx2db_get]→[Ch'en flux]
+
+  [Sek atomic_block {
+    "@type": "flux_snapshot",
+    "@data": {
+      "time": [Sek get flux "@data.@timebase"],
+      "tick": [Sek get flux "@data.@tick"],
+      "phase": [Sek get flux "@data.@phase"],
+      "energy": [Sek get flux "@data.@energy"],
+      "entropy": [Sek get flux "@data.@entropy"],
+      "delta": [Sek get flux "@data.@delta"],
+      "sync_points": [Sek get flux "@data.@sync_points"],
+      "hazard": [Sek get flux "@data.@hazard"],
+      "captured_at": [Sek current_time]
+    },
+    "@replayable": true,
+    "@deterministic": true
+  }]→[Ch'en snapshot]
+
+  [Xul return snapshot]
+[Xul]
+
+
+# ============================================
+# DELTA OPCODE - Retrieve tick delta
+# ============================================
+
+[Pop flux_opcode_delta]
+  ; CANONICAL: Retrieve current tick delta
+  [Yax "mx2hazard.temporal.core"]→[Sek mx2db_get]→[Ch'en flux]
+  [Wo flux]→[Sek get "@data.@delta"]→[Ch'en delta]
+  [Xul return delta]
+[Xul]
+
+
+# ============================================
+# TIME OPCODE - Read absolute time
+# ============================================
+
+[Pop flux_opcode_time]
+  ; CANONICAL: Read absolute lawful time
+  [Yax "mx2hazard.temporal.core"]→[Sek mx2db_get]→[Ch'en flux]
+  [Wo flux]→[Sek get "@data.@timebase"]→[Ch'en time]
+  [Xul return time]
+[Xul]
+
+
+# ============================================
+# STABILIZE OPCODE - Actively reduce entropy
+# ============================================
+
+[Pop flux_opcode_stabilize]
+  ; CANONICAL: Actively reduce entropy
+  [Wo @params]→[Ch'en params]
+  [Yax "mx2hazard.temporal.core"]→[Sek mx2db_get]→[Ch'en flux]
+
+  [Wo params]→[Sek get "target"]→[Ch'en target_entropy]
+  [Wo params]→[Sek get "rate"]→[Ch'en decay_rate]
+
+  [Wo flux]→[Sek get "@data.@entropy"]→[Ch'en current_entropy]
+
+  ; Calculate new entropy moving toward target
+  [Wo current_entropy target_entropy decay_rate]→[Sek lerp]→[Ch'en new_entropy]
+
+  ; Update entropy
+  [Wo flux]→[Sek assoc "@data.@entropy" new_entropy]→[Ch'en updated_flux]
+
+  ; Update CSS
+  [Sek set_css_variable "--flux-entropy" new_entropy]
+
+  ; Update storage
+  [Wo updated_flux]→[Yax "mx2hazard.temporal.core"]→[Sek mx2db_put]
+
+  [Xul return updated_flux]
+[Xul]
+
+
+# ============================================
+# UTILITY FUNCTIONS
+# ============================================
+
+fn clamp(val, min, max):
+  return Math.min(Math.max(val, min), max)
+
+fn lerp(a, b, t):
+  return a + (b - a) * t
+
+fn calculate_delta_variance(actual, target):
+  return Math.abs(actual - target)
+
+fn validate_phase_transition(current, next):
+  let valid_transitions = {
+    "boot": ["idle", "render"],
+    "idle": ["render", "compute", "train", "recover"],
+    "render": ["idle", "compute"],
+    "compute": ["idle", "render", "train"],
+    "train": ["idle", "recover"],
+    "recover": ["idle"],
+    "halted": ["idle"]
+  }
+  return valid_transitions[current].contains(next)
+
+fn calculate_energy_drift(energy, phase, delta):
+  let phase_modifiers = {
+    "idle": -0.001,
+    "render": 0.002,
+    "compute": 0.005,
+    "train": 0.01,
+    "recover": -0.005
+  }
+  return phase_modifiers[phase] * (delta / 16.667)

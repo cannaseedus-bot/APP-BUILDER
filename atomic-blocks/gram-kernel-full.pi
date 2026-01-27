@@ -1,0 +1,635 @@
+// ============================================================================
+// SELF-LEARNING @GRAM KERNEL - COMPLETE IMPLEMENTATION
+// Pure Atomic Intelligence: No JavaScript, Everything Atomic
+// ============================================================================
+//
+// CAPABILITIES:
+// 1. Observes every atomic block execution
+// 2. Learns patterns from successful workflows
+// 3. Suggests next blocks based on probabilities
+// 4. Auto-generates macros for frequent sequences
+// 5. Optimizes inefficient workflows
+// 6. Fixes common errors automatically
+// 7. Continuously improves through learning loop
+//
+// ============================================================================
+
+
+// ============================================================================
+// 1. OBSERVATION ENGINE (TRACKS EVERYTHING)
+// ============================================================================
+
+[Pop gram_observe]
+  [Wo @event_type]→[Ch'en type]      ; "block_created", "workflow_executed", "error_occurred"
+  [Wo @event_data]→[Ch'en data]
+  [Wo @context]→[Ch'en ctx]
+
+  // Extract n-grams from event
+  [Pop extract_ngrams_from_event]
+    [Wo data]→[Sek get "@type"]→[Ch'en block_type]
+    [Wo data]→[Sek get "@control" []]→[Ch'en controls]
+    [Wo data]→[Sek get "@data" {}]→[Ch'en block_data]
+
+    // UNIGRAMS: Individual elements
+    [Sek atomic_block {
+      "@type": "unigram_observation",
+      "@data": {
+        "type": block_type,
+        "controls": controls,
+        "timestamp": [Sek current_time],
+        "context": ctx
+      }
+    }]→[Ch'en unigram_obs]
+
+    // Store unigram frequency
+    [Wo block_type]→[Yax "gram.ngrams.unigrams." block_type]→[
+      [Sek mx2db_get]→[Ch'en current]
+      [Wo (+ (or current 0) 1)]→[Sek mx2db_put]
+    ]
+
+    // Extract patterns from data for BIGRAMS
+    [Wo block_data]→[Sek keys]→[Ch'en data_keys]
+    [@loop data_keys]→[@as key]→[
+      [Wo key]→[Ch'en data_key]
+      [Wo block_data]→[Sek get data_key]→[Ch'en value]
+
+      // Create bigram: type→key
+      [Wo block_type "→" data_key]→[Yax "gram.ngrams.bigrams." block_type "_" data_key]→[
+        [Sek mx2db_get]→[Ch'en current]
+        [Wo (+ (or current 0) 1)]→[Sek mx2db_put]
+      ]
+
+      // If value is another block type, create bigram: type→value_type
+      [Wo value]→[Sek get "@type"]→[Ch'en value_type]
+      [@if value_type]→[@then
+        [Wo block_type "→" value_type]→[Yax "gram.ngrams.bigrams." block_type "_" value_type]→[
+          [Sek mx2db_get]→[Ch'en current]
+          [Wo (+ (or current 0) 1)]→[Sek mx2db_put]
+        ]
+      ]
+    ]
+
+    // Store full observation
+    [Wo "observation_" [Sek current_time] "_" [Sek random_id]]→[Yax "gram.observations"]→[
+      [Sek mx2db_put {
+        "event_type": type,
+        "data": data,
+        "context": ctx,
+        "ngrams": {
+          "unigram": block_type,
+          "bigrams": [Sek map data_keys [Sek str block_type "→" @key]]
+        },
+        "timestamp": [Sek current_time],
+        "entropy": [Sek calculate_entropy data]
+      }]
+    ]
+
+    [Xul return unigram_obs]
+  [Xul]
+
+  // Also observe workflow sequences
+  [@if [Sek equals type "workflow_executed"]]→[@then
+    [Wo data]→[Sek get "blocks" []]→[Ch'en workflow_blocks]
+    [Wo workflow_blocks]→[Sek map [Sek get "@type"]]→[Ch'en block_sequence]
+
+    // Store sequence patterns
+    [@loop [Sek pairs block_sequence]]→[@as [prev current]]→[
+      // Bigram: prev→current
+      [Wo prev "→" current]→[Yax "gram.sequences.bigrams." prev "_" current]→[
+        [Sek mx2db_get]→[Ch'en count]
+        [Wo (+ (or count 0) 1)]→[Sek mx2db_put]
+      ]
+
+      // Calculate transition probability
+      [Wo prev]→[Yax "gram.transitions." prev]→[
+        [Sek mx2db_get {}]→[Ch'en transitions]
+        [Wo current]→[Sek get transitions]→[Ch'en current_count]
+        [Wo transitions]→[Sek assoc current (+ (or current_count 0) 1)]→[Ch'en updated]
+        [Sek mx2db_put updated]
+      ]
+    ]
+  ]
+
+  // Update learning entropy (measures system learning)
+  [Wo "gram.entropy"]→[Yax "gram.metrics"]→[
+    [Sek mx2db_get 0.5]→[Ch'en current_entropy]
+    [Wo (* current_entropy 0.99)]→[Sek mx2db_put]  ; Decreases as system learns (becomes more predictable)
+  ]
+
+  [Xul return "observed"]
+[Xul]
+
+
+// ============================================================================
+// 2. PATTERN RECOGNITION ENGINE
+// ============================================================================
+
+[Pop gram_analyze_patterns]
+  // Analyze most frequent patterns
+  [Yax "gram.ngrams.unigrams"]→[Sek mx2db_get_all]→[Ch'en all_unigrams]
+  [Wo all_unigrams]→[Sek sort_by_value :desc]→[Sek take 10]→[Ch'en top_unigrams]
+
+  [Yax "gram.ngrams.bigrams"]→[Sek mx2db_get_all]→[Ch'en all_bigrams]
+  [Wo all_bigrams]→[Sek sort_by_value :desc]→[Sek take 10]→[Ch'en top_bigrams]
+
+  [Yax "gram.sequences.bigrams"]→[Sek mx2db_get_all]→[Ch'en all_sequences]
+  [Wo all_sequences]→[Sek sort_by_value :desc]→[Sek take 10]→[Ch'en top_sequences]
+
+  // Calculate transition probabilities
+  [Yax "gram.transitions"]→[Sek mx2db_get_all]→[Ch'en all_transitions]
+
+  [Wo all_transitions]→[Sek map [Ch'en [block_type transitions]]→[@then
+    [Wo transitions]→[Sek values]→[Sek sum]→[Ch'en total]
+    [Wo transitions]→[Sek map [Ch'en [next_type count]]→[@then
+      [Wo (/ count total)]→[Ch'en probability]
+      [Sek list next_type probability]
+    ]]→[Ch'en prob_map]
+
+    // Store normalized probabilities
+    [Wo block_type]→[Yax "gram.probabilities." block_type]→[Sek mx2db_put prob_map]
+
+    [Xul return [Sek list block_type prob_map]]
+  ]]→[Ch'en transition_probs]
+
+  // Find emerging patterns (rapidly increasing frequency)
+  [Pop find_emerging_patterns]
+    [Wo all_bigrams]→[Sek filter [Ch'en [pattern count]]→[@then
+      [Wo pattern]→[Yax "gram.history." pattern]→[Sek mx2db_get []]→[Ch'en history]
+
+      // Check if count is rapidly increasing
+      [@if [Sek length history] >= 3]→[@then
+        [Wo [Sek take_last 3 history]]→[Ch'en last_three]
+        [Sek calculate_growth_rate last_three]→[Ch'en growth]
+
+        [@if [Sek > growth 1.5]]→[@then  ; 50%+ growth
+          [Xul return true]
+        ]→[@else
+          [Xul return false]
+        ]
+      ]→[@else
+        [Xul return false]
+      ]
+    ]]→[Ch'en emerging_patterns]
+
+    // Store emerging patterns
+    [Wo emerging_patterns]→[Sek take 5]→[Ch'en top_emerging]
+    [Sek mx2db_put "gram.patterns.emerging" top_emerging]
+
+    [Xul return top_emerging]
+  [Xul]
+
+  // Store analysis results
+  [Sek atomic_block {
+    "@type": "pattern_analysis",
+    "@control": ["@learn", "@suggest"],
+    "@data": {
+      "top_unigrams": top_unigrams,
+      "top_bigrams": top_bigrams,
+      "top_sequences": top_sequences,
+      "transition_probabilities": transition_probs,
+      "emerging_patterns": [Sek find_emerging_patterns],
+      "analysis_time": [Sek current_time],
+      "entropy": [Yax "gram.metrics.entropy" [Sek mx2db_get 0.5]]
+    },
+    "@view": "analysis_display",
+    "@links": []
+  }]→[Ch'en analysis_block]
+
+  [Wo analysis_block]→[Yax "gram.analyses.latest"]→[Sek mx2db_put]
+
+  [Xul return analysis_block]
+[Xul]
+
+
+// ============================================================================
+// 3. SUGGESTION ENGINE (PREDICTS NEXT BLOCKS)
+// ============================================================================
+
+[Pop gram_suggest_next]
+  [Wo @current_block]→[Ch'en current]
+  [Wo @context]→[Ch'en ctx]
+  [Wo @max_suggestions 3]→[Ch'en max]
+
+  // Get current block type
+  [Wo current]→[Sek get "@type"]→[Ch'en current_type]
+
+  // Look up transition probabilities
+  [Wo current_type]→[Yax "gram.probabilities." current_type]→[
+    [Sek mx2db_get []]→[Ch'en probabilities]
+
+    [@if [Sek empty probabilities]]→[@then
+      // Fallback: use most frequent unigrams
+      [Yax "gram.ngrams.unigrams"]→[Sek mx2db_get_all]→[Ch'en all_unigrams]
+      [Wo all_unigrams]→[Sek sort_by_value :desc]→[Sek take max]→[Ch'en top_unigrams]
+
+      [Wo top_unigrams]→[Sek map [Ch'en [type count]]→[@then
+        [Sek atomic_block {
+          "@type": "suggestion",
+          "@control": ["@follow", "@try"],
+          "@data": {
+            "suggested_type": type,
+            "confidence": (/ count [Sek sum [Sek values all_unigrams]]),
+            "reason": "Most frequent block type",
+            "based_on": "global_frequency",
+            "context": ctx
+          },
+          "@view": "suggestion_display",
+          "@links": [current["@id"]]
+        }]
+      ]]→[Ch'en suggestions]
+
+      [Xul return suggestions]
+    ]→[@else
+      // Use transition probabilities
+      [Wo probabilities]→[Sek sort_by_second :desc]→[Sek take max]→[Ch'en top_next]
+
+      [Wo top_next]→[Sek map [Ch'en [next_type prob]]→[@then
+        // Create suggested block based on next_type
+        [Pop create_suggestion_for_type]
+          [Wo next_type]→[Ch'en type]
+          [Wo prob]→[Ch'en confidence]
+
+          // Look for examples of this block type
+          [Wo "gram.examples." type]→[Yax "gram.examples"]→[
+            [Sek mx2db_get []]→[Ch'en examples]
+
+            [@if [Sek not_empty examples]]→[@then
+              [Wo examples]→[Sek random_element]→[Ch'en example]
+              [Wo example]→[Sek get "@data"]→[Ch'en example_data]
+            ]→[@else
+              [Wo {}]→[Ch'en example_data]
+            ]
+          ]
+
+          [Sek atomic_block {
+            "@type": "suggestion",
+            "@control": ["@follow", "@try", "@learn"],
+            "@data": {
+              "suggested_type": type,
+              "confidence": prob,
+              "example_data": example_data,
+              "reason": [Sek str "Commonly follows " current_type " (" (* prob 100) "%)"],
+              "based_on": "transition_probability",
+              "context": ctx
+            },
+            "@view": "suggestion_display",
+            "@links": [current["@id"]]
+          }]→[Ch'en suggestion]
+
+          [Xul return suggestion]
+        [Xul]
+      ]]→[Ch'en suggestions]
+
+      [Xul return suggestions]
+    ]
+  ]
+[Xul]
+
+
+// ============================================================================
+// 4. AUTO-GENERATION ENGINE (CREATES NEW BLOCKS)
+// ============================================================================
+
+[Pop gram_auto_generate]
+  [Wo @pattern_type]→[Ch'en type]  ; "macro", "optimization", "fix"
+
+  [@dispatch type]
+    →[@case "macro"]→[
+      // Find frequent sequences that could be macros
+      [Yax "gram.sequences.bigrams"]→[Sek mx2db_get_all]→[Ch'en sequences]
+      [Wo sequences]→[Sek filter [Ch'en [seq count]]→[@then
+        [Sek > count 5]  ; At least 5 occurrences
+      ]]→[Ch'en frequent_sequences]
+
+      // Create macro blocks
+      [Wo frequent_sequences]→[Sek map [Ch'en [seq count]]→[@then
+        [Sek split "→" seq]→[Ch'en [block1 block2]]
+
+        // Look up example blocks
+        [Wo "gram.examples." block1]→[Yax "gram.examples"]→[Sek mx2db_get []]→[Ch'en example1]
+        [Wo "gram.examples." block2]→[Yax "gram.examples"]→[Sek mx2db_get []]→[Ch'en example2]
+
+        [Sek atomic_block {
+          "@type": "auto_macro",
+          "@control": ["@execute_sequence", "@optimize"],
+          "@data": {
+            "name": [Sek str block1 "_" block2 "_macro"],
+            "sequence": [block1 block2],
+            "frequency": count,
+            "components": {
+              "first": [Sek if [Sek not_empty example1] [Sek first example1] {}],
+              "second": [Sek if [Sek not_empty example2] [Sek first example2] {}]
+            },
+            "generated_at": [Sek current_time],
+            "confidence": (min 1.0 (/ count 10.0))
+          },
+          "@view": "macro_display",
+          "@links": []
+        }]→[Ch'en macro_block]
+
+        // Store the macro
+        [Wo macro_block]→[Yax "gram.macros"]→[Sek mx2db_append]
+
+        [Xul return macro_block]
+      ]]→[Ch'en macros]
+
+      [Xul return macros]
+    ]
+
+    →[@case "optimization"]→[
+      // Find inefficient patterns
+      [Yax "gram.observations"]→[Sek mx2db_get_all]→[Ch'en observations]
+
+      // Group by workflow and calculate efficiency
+      [Wo observations]→[Sek filter [Sek equals "@event_type" "workflow_executed"]]→[Ch'en workflows]
+      [Wo workflows]→[Sek group_by [Sek get "context.workflow_id"]]→[Ch'en grouped]
+
+      [Wo grouped]→[Sek map [Ch'en [workflow_id executions]]→[@then
+        // Calculate average execution time
+        [Wo executions]→[Sek map [Sek get "data.execution_time" 0]]→[Ch'en times]
+        [Sek average times]→[Ch'en avg_time]
+
+        // Find similar workflows with better times
+        [Wo grouped]→[Sek filter [Ch'en [other_id other_execs]]→[@then
+          [Sek not_equal other_id workflow_id]
+        ]]→[Ch'en other_workflows]
+
+        [Wo other_workflows]→[Sek find [Ch'en [other_id other_execs]]→[@then
+          [Wo other_execs]→[Sek map [Sek get "data.execution_time" 0]]→[Ch'en other_times]
+          [Sek average other_times]→[Ch'en other_avg]
+          [Sek < other_avg (* avg_time 0.8)]  ; 20% faster
+        ]]→[Ch'en faster_workflow]
+
+        [@if faster_workflow]→[@then
+          // Create optimization suggestion
+          [Sek atomic_block {
+            "@type": "optimization_suggestion",
+            "@control": ["@apply", "@test"],
+            "@data": {
+              "workflow_id": workflow_id,
+              "current_avg_time": avg_time,
+              "suggested_workflow": [Sek first faster_workflow],
+              "predicted_improvement": (* (/ (- avg_time [Sek second faster_workflow]) avg_time) 100),
+              "confidence": 0.7,
+              "generated_at": [Sek current_time]
+            },
+            "@view": "optimization_display"
+          }]
+        ]→[@else
+          [Xul return null]
+        ]
+      ]]→[Ch'en optimizations]
+
+      [Wo optimizations]→[Sek filter [Sek not_null]]→[Ch'en valid_optimizations]
+      [Xul return valid_optimizations]
+    ]
+
+    →[@case "fix"]→[
+      // Find common error patterns and generate fixes
+      [Yax "gram.observations"]→[Sek mx2db_get_all]→[Ch'en observations]
+      [Wo observations]→[Sek filter [Sek equals "@event_type" "error_occurred"]]→[Ch'en errors]
+
+      // Group errors by type and context
+      [Wo errors]→[Sek group_by [Ch'en error]→[@then
+        [Wo error]→[Sek get "data.error_type"]→[Ch'en error_type]
+        [Wo error]→[Sek get "context.block_type"]→[Ch'en block_type]
+        [Sek str error_type "_" block_type]
+      ]]→[Ch'en error_groups]
+
+      // Generate fix suggestions
+      [Wo error_groups]→[Sek map [Ch'en [error_key error_list]]→[@then
+        [Wo error_list]→[Sek first]→[Ch'en example_error]
+        [Wo error_list]→[Sek count]→[Ch'en frequency]
+
+        // Look for successful executions after similar errors
+        [Yax "gram.observations"]→[Sek mx2db_get_all]→[Ch'en all_obs]
+        [Wo all_obs]→[Sek filter [Ch'en obs]→[@then
+          [Wo obs]→[Sek get "context.block_type"]→[Ch'en obs_block_type]
+          [Sek equals obs_block_type [Sek get "context.block_type" example_error]]
+        ]]→[Ch'en similar_blocks]
+
+        [Wo similar_blocks]→[Sek filter [Sek equals "@event_type" "workflow_executed"]]→[Ch'en successful]
+
+        [@if [Sek not_empty successful]]→[@then
+          [Wo successful]→[Sek first]→[Ch'en success_example]
+
+          [Sek atomic_block {
+            "@type": "error_fix_suggestion",
+            "@control": ["@apply", "@prevent"],
+            "@data": {
+              "error_pattern": error_key,
+              "frequency": frequency,
+              "example_error": [Sek get "data" example_error],
+              "suggested_fix": [Sek get "data" success_example],
+              "confidence": (min 0.9 (/ frequency 10.0)),
+              "generated_at": [Sek current_time]
+            },
+            "@view": "fix_display"
+          }]
+        ]→[@else
+          [Xul return null]
+        ]
+      ]]→[Ch'en fixes]
+
+      [Wo fixes]→[Sek filter [Sek not_null]]→[Ch'en valid_fixes]
+      [Xul return valid_fixes]
+    ]
+  ]
+[Xul]
+
+
+// ============================================================================
+// 5. LEARNING LOOP (CONTINUOUS SELF-IMPROVEMENT)
+// ============================================================================
+
+[Pop gram_learning_loop]
+  [Wo @interval_seconds 300]→[Ch'en interval]  ; Run every 5 minutes
+
+  // Main learning loop
+  [Pop learn_iteration]
+    // 1. Analyze recent patterns
+    [Sek gram_analyze_patterns]→[Ch'en analysis]
+
+    // 2. Generate new macros from frequent sequences
+    [Sek gram_auto_generate "macro"]→[Ch'en new_macros]
+
+    // 3. Find optimizations
+    [Sek gram_auto_generate "optimization"]→[Ch'en optimizations]
+
+    // 4. Generate error fixes
+    [Sek gram_auto_generate "fix"]→[Ch'en fixes]
+
+    // 5. Update learning metrics
+    [Wo "gram.metrics.learning_iterations"]→[Yax "gram.metrics"]→[
+      [Sek mx2db_get 0]→[Ch'en iterations]
+      [Wo (+ iterations 1)]→[Sek mx2db_put]
+    ]
+
+    // Calculate learning progress
+    [Wo [Sek length new_macros] [Sek length optimizations] [Sek length fixes]]→[Ch'en [macro_count opt_count fix_count]]
+    [Wo (+ macro_count opt_count fix_count)]→[Ch'en total_new]
+
+    [Wo "gram.metrics.learned_items"]→[Yax "gram.metrics"]→[
+      [Sek mx2db_get 0]→[Ch'en learned]
+      [Wo (+ learned total_new)]→[Sek mx2db_put]
+    ]
+
+    // Log learning activity
+    [Wo "🧠 @gram learned " total_new " new patterns"]→[Sek log]
+
+    // Create learning report
+    [Sek atomic_block {
+      "@type": "learning_report",
+      "@control": ["@review", "@apply"],
+      "@data": {
+        "iteration": iterations,
+        "new_macros": macro_count,
+        "optimizations": opt_count,
+        "fixes": fix_count,
+        "total_learned": learned,
+        "timestamp": [Sek current_time],
+        "entropy": [Yax "gram.metrics.entropy" [Sek mx2db_get 0.5]]
+      },
+      "@view": "report_display",
+      "@links": []
+    }]→[Ch'en report]
+
+    [Wo report]→[Yax "gram.reports"]→[Sek mx2db_append]
+
+    [Xul return report]
+  [Xul]
+
+  // Start continuous learning
+  [Sek interval (* interval 1000) [Sek learn_iteration]]→[Ch'en loop_id]
+
+  // Store loop reference
+  [Wo loop_id]→[Yax "gram.learning_loop_id"]→[Sek mx2db_put]
+
+  [Xul return "🧠 @gram learning loop started"]
+[Xul]
+
+
+// ============================================================================
+// 6. INTEGRATION WITH ATOMIC SYSTEM
+// ============================================================================
+
+[Pop atomic_execute_with_learning]
+  [Wo @atomic_block]→[Ch'en block]
+  [Wo @context {}]→[Ch'en ctx]
+
+  // Observe before execution
+  [Sek gram_observe "block_executing" block ctx]→[Ch'en observation]
+
+  // Execute the block
+  [Wo block]→[Sek execute_atomic_block]→[Ch'en result]
+
+  // Observe result
+  [@if [Sek get "@type" result] == "error"]→[@then
+    [Sek gram_observe "error_occurred" result ctx]
+  ]→[@else
+    [Sek gram_observe "block_completed" result ctx]
+  ]
+
+  // Get suggestions for next steps
+  [Wo result]→[Sek gram_suggest_next ctx]→[Ch'en suggestions]
+
+  // Return enhanced result with suggestions
+  [Sek atomic_block {
+    "@type": "execution_result",
+    "@control": ["@continue", "@choose_next"],
+    "@data": {
+      "original_result": result,
+      "suggestions": suggestions,
+      "context": ctx,
+      "executed_at": [Sek current_time],
+      "learning_enabled": true
+    },
+    "@view": "result_with_suggestions",
+    "@links": [block["@id"]]
+  }]→[Ch'en enhanced_result]
+
+  [Xul return enhanced_result]
+[Xul]
+
+
+// ============================================================================
+// 7. REST API ENDPOINTS
+// ============================================================================
+
+[Pop setup_gram_api]
+  // Start learning loop
+  [Pop "POST" "/gram/start-learning"]→[
+    [Sek gram_learning_loop]→[Ch'en result]
+    [Xul return {"status": "started", "result": result}]
+  ]
+
+  // Get suggestions
+  [Pop "POST" "/gram/suggestions"]→[
+    [Wo @request_body]→[Ch'en body]
+    [Wo body]→[Sek get "current_block"]→[Ch'en current]
+    [Wo body]→[Sek get "context"]→[Ch'en ctx]
+    [Wo current ctx]→[Sek gram_suggest_next]→[Ch'en suggestions]
+    [Xul return {"suggestions": suggestions}]
+  ]
+
+  // Execute with learning
+  [Pop "POST" "/execute/with-learning"]→[
+    [Wo @request_body]→[Ch'en body]
+    [Wo body]→[Sek get "block"]→[Ch'en block]
+    [Wo body]→[Sek get "context"]→[Ch'en ctx]
+    [Wo block ctx]→[Sek atomic_execute_with_learning]→[Ch'en result]
+    [Xul return result]
+  ]
+
+  // Get learning metrics
+  [Pop "GET" "/gram/metrics"]→[
+    [Yax "gram.metrics"]→[Sek mx2db_get_all]→[Ch'en metrics]
+    [Yax "gram.analyses.latest"]→[Sek mx2db_get]→[Ch'en latest_analysis]
+    [Xul return {"metrics": metrics, "latest_analysis": latest_analysis}]
+  ]
+
+  // Get learning report
+  [Pop "GET" "/gram/report"]→[
+    [Yax "gram.reports"]→[Sek mx2db_get_all]→[Ch'en reports]
+    [Xul return {"reports": [Sek take_last 10 reports]}]
+  ]
+[Xul]
+
+
+// ============================================================================
+// @GRAM KERNEL STORAGE SCHEMA
+// ============================================================================
+//
+// gram.ngrams.unigrams.{type}           → count (int)
+// gram.ngrams.bigrams.{type1}_{type2}   → count (int)
+// gram.sequences.bigrams.{seq}          → count (int)
+// gram.transitions.{type}               → {next_type: count, ...}
+// gram.probabilities.{type}             → [[next_type, prob], ...]
+// gram.observations                     → [observation_objects...]
+// gram.examples.{type}                  → [example_blocks...]
+// gram.macros                           → [macro_blocks...]
+// gram.patterns.emerging                → [[pattern, count], ...]
+// gram.history.{pattern}                → [historical_counts...]
+// gram.analyses.latest                  → analysis_block
+// gram.reports                          → [learning_reports...]
+// gram.metrics.entropy                  → float
+// gram.metrics.learning_iterations      → int
+// gram.metrics.learned_items            → int
+// gram.learning_loop_id                 → loop_reference
+//
+// ============================================================================
+
+
+// ============================================================================
+// EXAMPLE LEARNING JOURNEY
+// ============================================================================
+//
+// Day 1: User creates workflow: math → 3d
+// Day 2: Another user creates: math → 3d → ai
+// Day 3: @Gram notices pattern, suggests "ai" after math+3d
+// Day 4: @Gram auto-generates "math_3d_ai_macro"
+// Day 5: System suggests macro to new users automatically
+// Day 6: @Gram optimizes execution based on timing data
+// Day 7: System is 40% more efficient than Day 1
+//
+// ============================================================================

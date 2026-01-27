@@ -1,0 +1,397 @@
+// ============================================================
+// π-COMPRESSION CORE LIBRARY
+// Pure Mathematical Functions for π-Glyph Encoding
+// ============================================================
+
+
+// Mathematical Constants
+[Pop pi.constants]
+  [Wo {
+    "π": 3.141592653589793,
+    "e": 2.718281828459045,
+    "φ": 1.618033988749895,
+    "τ": 6.283185307179586
+  }]→[Xul return]
+[Xul]
+
+
+// ============================================================
+// π-ENCODING FUNCTIONS
+// ============================================================
+
+// Encode value using π-compression
+[Pop pi.encode]
+  [Wo @value]→[Ch'en value]
+  [Wo @constant "π"]→[Ch'en constant]
+  [Sek pi.constants]→[Ch'en c]
+
+  [Wo (/ value [Sek get constant c])]→[Ch'en encoded]
+
+  [Wo {
+    "original": value,
+    "constant": constant,
+    "multiplier": (round encoded 6),
+    "formula": [Sek str constant "×" (round encoded 6)]
+  }]→[Xul return]
+[Xul]
+
+
+// Decode π-encoded value
+[Pop pi.decode]
+  [Wo @constant]→[Ch'en constant]
+  [Wo @multiplier]→[Ch'en multiplier]
+  [Sek pi.constants]→[Ch'en c]
+
+  [Wo (* [Sek get constant c] multiplier)]→[Xul return]
+[Xul]
+
+
+// Select optimal constant for encoding
+[Pop pi.select_constant]
+  [Wo @value]→[Ch'en value]
+  [Sek pi.constants]→[Ch'en c]
+
+  // Find constant that gives cleanest encoding
+  [Wo [
+    { "constant": "π", "remainder": (mod value [Sek get "π" c]) },
+    { "constant": "e", "remainder": (mod value [Sek get "e" c]) },
+    { "constant": "φ", "remainder": (mod value [Sek get "φ" c]) },
+    { "constant": "τ", "remainder": (mod value [Sek get "τ" c]) }
+  ]]→[Sek sort_by "remainder"]→[Sek first]→[Sek get "constant"]→[Xul return]
+[Xul]
+
+
+// ============================================================
+// VECTOR MATH FUNCTIONS
+// ============================================================
+
+// Vector magnitude
+[Pop vector.magnitude]
+  [Wo @x]→[Ch'en x]
+  [Wo @y]→[Ch'en y]
+  [Wo @z 0]→[Ch'en z]
+
+  [Wo (sqrt (+ (* x x) (* y y) (* z z)))]→[Xul return]
+[Xul]
+
+
+// Normalize vector
+[Pop vector.normalize]
+  [Wo @x]→[Ch'en x]
+  [Wo @y]→[Ch'en y]
+  [Wo @z 0]→[Ch'en z]
+
+  [Sek vector.magnitude x y z]→[Ch'en mag]
+
+  [Wo {
+    "x": (/ x mag),
+    "y": (/ y mag),
+    "z": (/ z mag)
+  }]→[Xul return]
+[Xul]
+
+
+// Dot product
+[Pop vector.dot]
+  [Wo @v1]→[Ch'en v1]
+  [Wo @v2]→[Ch'en v2]
+
+  [Wo (+
+    (* [Sek get "x" v1] [Sek get "x" v2])
+    (* [Sek get "y" v1] [Sek get "y" v2])
+    (* [Sek get "z" v1 0] [Sek get "z" v2 0])
+  )]→[Xul return]
+[Xul]
+
+
+// Cross product
+[Pop vector.cross]
+  [Wo @v1]→[Ch'en v1]
+  [Wo @v2]→[Ch'en v2]
+
+  [Wo {
+    "x": (- (* [Sek get "y" v1] [Sek get "z" v2 0]) (* [Sek get "z" v1 0] [Sek get "y" v2])),
+    "y": (- (* [Sek get "z" v1 0] [Sek get "x" v2]) (* [Sek get "x" v1] [Sek get "z" v2 0])),
+    "z": (- (* [Sek get "x" v1] [Sek get "y" v2]) (* [Sek get "y" v1] [Sek get "x" v2]))
+  }]→[Xul return]
+[Xul]
+
+
+// ============================================================
+// BEZIER CURVE FUNCTIONS
+// ============================================================
+
+// Cubic Bézier interpolation
+[Pop bezier.cubic]
+  [Wo @t]→[Ch'en t]
+  [Wo @p0]→[Ch'en p0]
+  [Wo @p1]→[Ch'en p1]
+  [Wo @p2]→[Ch'en p2]
+  [Wo @p3]→[Ch'en p3]
+
+  [Wo (- 1 t)]→[Ch'en u]
+  [Wo (* u u u)]→[Ch'en u3]
+  [Wo (* 3 u u t)]→[Ch'en u2t]
+  [Wo (* 3 u t t)]→[Ch'en ut2]
+  [Wo (* t t t)]→[Ch'en t3]
+
+  [Wo {
+    "x": (+ (* u3 [Sek get "x" p0]) (* u2t [Sek get "x" p1]) (* ut2 [Sek get "x" p2]) (* t3 [Sek get "x" p3])),
+    "y": (+ (* u3 [Sek get "y" p0]) (* u2t [Sek get "y" p1]) (* ut2 [Sek get "y" p2]) (* t3 [Sek get "y" p3])),
+    "z": (+ (* u3 [Sek get "z" p0 0]) (* u2t [Sek get "z" p1 0]) (* ut2 [Sek get "z" p2 0]) (* t3 [Sek get "z" p3 0]))
+  }]→[Xul return]
+[Xul]
+
+
+// Quadratic Bézier interpolation
+[Pop bezier.quadratic]
+  [Wo @t]→[Ch'en t]
+  [Wo @p0]→[Ch'en p0]
+  [Wo @p1]→[Ch'en p1]
+  [Wo @p2]→[Ch'en p2]
+
+  [Wo (- 1 t)]→[Ch'en u]
+  [Wo (* u u)]→[Ch'en u2]
+  [Wo (* 2 u t)]→[Ch'en ut]
+  [Wo (* t t)]→[Ch'en t2]
+
+  [Wo {
+    "x": (+ (* u2 [Sek get "x" p0]) (* ut [Sek get "x" p1]) (* t2 [Sek get "x" p2])),
+    "y": (+ (* u2 [Sek get "y" p0]) (* ut [Sek get "y" p1]) (* t2 [Sek get "y" p2])),
+    "z": (+ (* u2 [Sek get "z" p0 0]) (* ut [Sek get "z" p1 0]) (* t2 [Sek get "z" p2 0]))
+  }]→[Xul return]
+[Xul]
+
+
+// ============================================================
+// FRACTAL COMPRESSION FUNCTIONS
+// ============================================================
+
+// Mandelbrot iteration for compression pattern
+[Pop fractal.mandelbrot_iter]
+  [Wo @zr]→[Ch'en zr]
+  [Wo @zi]→[Ch'en zi]
+  [Wo @cr]→[Ch'en cr]
+  [Wo @ci]→[Ch'en ci]
+  [Wo @max_iter 50]→[Ch'en max_iter]
+
+  [Wo 0]→[Ch'en iter]
+  [@loop]→[@while (and (< iter max_iter) (< (+ (* zr zr) (* zi zi)) 4))]→[
+    [Wo (- (* zr zr) (* zi zi))]→[Ch'en new_zr]
+    [Wo (* 2 zr zi)]→[Ch'en new_zi]
+    [Wo (+ new_zr cr)]→[Ch'en zr]
+    [Wo (+ new_zi ci)]→[Ch'en zi]
+    [Wo (+ iter 1)]→[Ch'en iter]
+  ]
+
+  [Wo iter]→[Xul return]
+[Xul]
+
+
+// Julia set iteration for motion prediction
+[Pop fractal.julia_iter]
+  [Wo @zr]→[Ch'en zr]
+  [Wo @zi]→[Ch'en zi]
+  [Wo @cr -0.7]→[Ch'en cr]
+  [Wo @ci 0.27015]→[Ch'en ci]
+  [Wo @max_iter 50]→[Ch'en max_iter]
+
+  [Wo 0]→[Ch'en iter]
+  [@loop]→[@while (and (< iter max_iter) (< (+ (* zr zr) (* zi zi)) 4))]→[
+    [Wo (- (* zr zr) (* zi zi))]→[Ch'en new_zr]
+    [Wo (* 2 zr zi)]→[Ch'en new_zi]
+    [Wo (+ new_zr cr)]→[Ch'en zr]
+    [Wo (+ new_zi ci)]→[Ch'en zi]
+    [Wo (+ iter 1)]→[Ch'en iter]
+  ]
+
+  [Wo iter]→[Xul return]
+[Xul]
+
+
+// ============================================================
+// π-WAVELET TRANSFORM
+// ============================================================
+
+// Haar wavelet decomposition
+[Pop wavelet.haar_decompose]
+  [Wo @data]→[Ch'en data]
+
+  [Wo [Sek length data]]→[Ch'en n]
+  [Wo (/ n 2)]→[Ch'en half]
+
+  // Low-pass (averages)
+  [Wo half]→[Sek range]→[Sek map [Ch'en i]→[@then
+    [Wo (/ (+ [Sek get (* i 2) data] [Sek get (+ (* i 2) 1) data]) 2)]
+  ]]→[Ch'en low]
+
+  // High-pass (differences)
+  [Wo half]→[Sek range]→[Sek map [Ch'en i]→[@then
+    [Wo (/ (- [Sek get (* i 2) data] [Sek get (+ (* i 2) 1) data]) 2)]
+  ]]→[Ch'en high]
+
+  [Wo { "low": low, "high": high }]→[Xul return]
+[Xul]
+
+
+// Reconstruct from wavelet coefficients
+[Pop wavelet.haar_reconstruct]
+  [Wo @low]→[Ch'en low]
+  [Wo @high]→[Ch'en high]
+
+  [Wo [Sek length low]]→[Ch'en n]
+
+  // Interleave reconstruction
+  [Wo n]→[Sek range]→[Sek flatmap [Ch'en i]→[@then
+    [Wo [
+      (+ [Sek get i low] [Sek get i high]),
+      (- [Sek get i low] [Sek get i high])
+    ]]
+  ]]→[Xul return]
+[Xul]
+
+
+// ============================================================
+// MOTION PREDICTION
+// ============================================================
+
+// Predict next frame using π-based interpolation
+[Pop motion.predict]
+  [Wo @frames]→[Ch'en frames]
+  [Wo @t 1.0]→[Ch'en t]
+
+  [Wo [Sek length frames]]→[Ch'en n]
+
+  // Need at least 2 frames
+  [@if (< n 2)]→[@then
+    [Wo [Sek last frames]]→[Xul return]
+  ]
+
+  // Calculate velocity from last two frames
+  [Wo [Sek get (- n 2) frames]]→[Ch'en prev]
+  [Wo [Sek get (- n 1) frames]]→[Ch'en curr]
+
+  [Wo {
+    "x": (- [Sek get "x" curr] [Sek get "x" prev]),
+    "y": (- [Sek get "y" curr] [Sek get "y" prev]),
+    "z": (- [Sek get "z" curr 0] [Sek get "z" prev 0])
+  }]→[Ch'en velocity]
+
+  // Predict using π-weighted extrapolation
+  [Sek pi.constants]→[Ch'en c]
+  [Wo (/ [Sek get "π" c] 10)]→[Ch'en pi_weight]
+
+  [Wo {
+    "x": (+ [Sek get "x" curr] (* [Sek get "x" velocity] t pi_weight)),
+    "y": (+ [Sek get "y" curr] (* [Sek get "y" velocity] t pi_weight)),
+    "z": (+ [Sek get "z" curr 0] (* [Sek get "z" velocity 0] t pi_weight)),
+    "confidence": 0.85
+  }]→[Xul return]
+[Xul]
+
+
+// ============================================================
+// DELTA ENCODING
+// ============================================================
+
+// Encode frame as delta from previous
+[Pop delta.encode_frame]
+  [Wo @current]→[Ch'en current]
+  [Wo @previous]→[Ch'en previous]
+
+  [Wo {
+    "dx": (- [Sek get "x" current] [Sek get "x" previous]),
+    "dy": (- [Sek get "y" current] [Sek get "y" previous]),
+    "dz": (- [Sek get "z" current 0] [Sek get "z" previous 0]),
+    "dscale": (- [Sek get "scale" current 1] [Sek get "scale" previous 1]),
+    "drotation": (- [Sek get "rotation" current 0] [Sek get "rotation" previous 0])
+  }]→[Xul return]
+[Xul]
+
+
+// Decode delta to absolute frame
+[Pop delta.decode_frame]
+  [Wo @delta]→[Ch'en delta]
+  [Wo @previous]→[Ch'en previous]
+
+  [Wo {
+    "x": (+ [Sek get "x" previous] [Sek get "dx" delta]),
+    "y": (+ [Sek get "y" previous] [Sek get "dy" delta]),
+    "z": (+ [Sek get "z" previous 0] [Sek get "dz" delta 0]),
+    "scale": (+ [Sek get "scale" previous 1] [Sek get "dscale" delta 0]),
+    "rotation": (+ [Sek get "rotation" previous 0] [Sek get "drotation" delta 0])
+  }]→[Xul return]
+[Xul]
+
+
+// ============================================================
+// GLYPH STREAM ENCODING
+// ============================================================
+
+// Encode glyph to binary format
+[Pop glyph.encode]
+  [Wo @glyph]→[Ch'en glyph]
+
+  [Wo {
+    "id": [Sek get "id" glyph],
+    "x_delta": (round [Sek get "dx" glyph 0]),
+    "y_delta": (round [Sek get "dy" glyph 0]),
+    "z_delta": (round [Sek get "dz" glyph 0]),
+    "scale_pi": (round (* [Sek get "scale" glyph 1] 40)),
+    "rotation_pi": (round (mod [Sek get "rotation" glyph 0] 256))
+  }]→[Xul return]
+[Xul]
+
+
+// Encode frame header
+[Pop frame.encode_header]
+  [Wo @frame_num]→[Ch'en frame_num]
+  [Wo @glyph_count]→[Ch'en glyph_count]
+  [Sek pi.constants]→[Ch'en c]
+
+  // Timestamp as multiple of π
+  [Wo (* frame_num (/ [Sek get "π" c] 30))]→[Ch'en timestamp_pi]
+
+  [Wo {
+    "timestamp_pi": (round timestamp_pi 6),
+    "glyph_count": glyph_count,
+    "frame_type": [@if (= (mod frame_num 30) 0)]→[@then "keyframe"]→[@else "delta"]
+  }]→[Xul return]
+[Xul]
+
+
+// ============================================================
+// STREAM STATE MANAGEMENT
+// ============================================================
+
+// Initialize stream state
+[Pop stream.init]
+  [Wo @config {}]→[Ch'en config]
+
+  [Wo {
+    "version": 1,
+    "frame_count": 0,
+    "glyph_count": 0,
+    "keyframes": [],
+    "current_frame": null,
+    "playback_state": "idle",
+    "compression_ratio": 0,
+    "constants": [Sek pi.constants]
+  }]→[Xul return]
+[Xul]
+
+
+// Update stream metrics
+[Pop stream.update_metrics]
+  [Wo @state]→[Ch'en state]
+  [Wo @raw_size]→[Ch'en raw_size]
+  [Wo @compressed_size]→[Ch'en compressed_size]
+
+  [Wo state]→[Sek merge {
+    "--raw-size": raw_size,
+    "--compressed-size": compressed_size,
+    "--compression-ratio": (/ compressed_size raw_size),
+    "--compression-x": (round (/ raw_size compressed_size))
+  }]→[Xul return]
+[Xul]
+

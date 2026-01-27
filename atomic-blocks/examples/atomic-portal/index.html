@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html ⟁flex ⟁col ⟁min-h-full ⟁bg1 ⟁text>
+<head>
+  <meta charset="UTF-8">
+  <title>ATOMIC PORTAL v∞</title>
+
+  <!-- ATOMIC CSS INLINE (COMPLETE SCX SYSTEM) -->
+  <style>
+    /* ==================== ATOMIC FOUNDATION ==================== */
+    :root {
+      /* SCX Color Tokens */
+      --⟁bg1: #0a0f1c; --⟁bg2: #131a2c; --⟁bg3: #1a2340;
+      --⟁fg: #e8f5ff; --⟁fg2: #7a8699;
+      --⟁ac1: #16f2aa; --⟁ac2: #00f5ff; --⟁ac3: #9c88ff; --⟁ac4: #ff6b6b;
+
+      /* SCX Spacing */
+      --⟁s1: 4px; --⟁s2: 8px; --⟁s3: 12px; --⟁s4: 16px;
+      --⟁s5: 24px; --⟁s6: 32px; --⟁s7: 48px;
+
+      /* SCX Radius */
+      --⟁r1: 4px; --⟁r2: 8px; --⟁r3: 12px; --⟁r4: 16px; --⟁r5: 24px;
+
+      /* Dynamic Variables (Updated by JSON) */
+      --entropy: 0.5; --innovation: 0.6; --stability: 0.8;
+      --energy: 0.3; --pulse: 0.5; --glow: 0;
+    }
+
+    /* ==================== ATOMIC OPERATIONS ==================== */
+    [⟁flex] { display: flex; } [⟁grid] { display: grid; }
+    [⟁block] { display: block; } [⟁inline] { display: inline; }
+    [⟁hidden] { display: none; }
+
+    [⟁col] { flex-direction: column; } [⟁row] { flex-direction: row; }
+    [⟁wrap] { flex-wrap: wrap; } [⟁nowrap] { flex-wrap: nowrap; }
+
+    [⟁center] { align-items: center; justify-content: center; }
+    [⟁acenter] { align-items: center; } [⟁jcenter] { justify-content: center; }
+    [⟁aleft] { align-items: flex-start; } [⟁jleft] { justify-content: flex-start; }
+    [⟁aright] { align-items: flex-end; } [⟁jright] { justify-content: flex-end; }
+    [⟁jbetween] { justify-content: space-between; }
+    [⟁jaround] { justify-content: space-around; }
+
+    [⟁p1] { padding: var(--⟁s1); } [⟁p2] { padding: var(--⟁s2); }
+    [⟁p3] { padding: var(--⟁s3); } [⟁p4] { padding: var(--⟁s4); }
+
+    [⟁m1] { margin: var(--⟁s1); } [⟁m2] { margin: var(--⟁s2); }
+    [⟁m3] { margin: var(--⟁s3); } [⟁m4] { margin: var(--⟁s4); }
+
+    [⟁g1] { gap: var(--⟁s1); } [⟁g2] { gap: var(--⟁s2); }
+    [⟁g3] { gap: var(--⟁s3); } [⟁g4] { gap: var(--⟁s4); }
+
+    [⟁border] { border: 1px solid var(--⟁fg2); }
+    [⟁border-ac1] { border: 1px solid var(--⟁ac1); }
+    [⟁border-ac2] { border: 1px solid var(--⟁ac2); }
+
+    [⟁rounded] { border-radius: var(--⟁r2); }
+    [⟁rounded-lg] { border-radius: var(--⟁r4); }
+    [⟁rounded-full] { border-radius: 9999px; }
+
+    [⟁bg1] { background: var(--⟁bg1); } [⟁bg2] { background: var(--⟁bg2); }
+    [⟁bg3] { background: var(--⟁bg3); }
+    [⟁bg-ac1] { background: var(--⟁ac1); }
+    [⟁bg-ac2] { background: var(--⟁ac2); }
+
+    [⟁text] { color: var(--⟁fg); } [⟁text2] { color: var(--⟁fg2); }
+    [⟁text-ac1] { color: var(--⟁ac1); } [⟁text-ac2] { color: var(--⟁ac2); }
+
+    [⟁glass] {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    [⟁w-full] { width: 100%; } [⟁h-full] { height: 100%; }
+    [⟁w-auto] { width: auto; } [⟁h-auto] { height: auto; }
+
+    [⟁cursor-pointer] { cursor: pointer; }
+    [⟁select-none] { user-select: none; }
+
+    [⟁shadow] { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
+    [⟁shadow-lg] { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); }
+
+    [⟁transition] { transition: all 0.2s ease; }
+    [⟁transition-slow] { transition: all 0.4s ease; }
+
+    /* ==================== ENERGY ANIMATIONS ==================== */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.02); }
+    }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 0px var(--⟁ac1); }
+      50% { box-shadow: 0 0 calc(var(--glow) * 30px) var(--⟁ac1); }
+    }
+
+    @keyframes entropy-pulse {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(calc(var(--entropy) * 360deg)); }
+    }
+
+    .energy-pulse { animation: pulse calc(1s / var(--pulse)) infinite; }
+    .energy-glow { animation: glow 2s infinite; }
+    .energy-entropy { animation: entropy-pulse 3s infinite linear; }
+
+    /* ==================== API CONTROL STATES ==================== */
+    .api-active { border-left: 4px solid var(--⟁ac1); }
+    .api-processing { border-left: 4px solid var(--⟁ac2); }
+    .api-error { border-left: 4px solid var(--⟁ac4); }
+    .api-success { border-left: 4px solid var(--⟁ac1); }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 768px) {
+      [⟁mobile-col] { flex-direction: column; }
+      [⟁mobile-stack] > * { margin-bottom: var(--⟁s3); }
+      [⟁mobile-center] { text-align: center; align-items: center; }
+    }
+  </style>
+</head>
+
+<body ⟁flex ⟁col ⟁min-h-full>
+
+  <!-- ==================== ATOMIC PORTAL ==================== -->
+  <div ⟁flex ⟁col ⟁g4 ⟁p4 ⟁bg2 ⟁rounded-lg ⟁border-ac1 ⟁shadow-lg
+       data-api-portal="main">
+
+    <!-- PORTAL HEADER -->
+    <div ⟁flex ⟁row ⟁jbetween ⟁acenter>
+      <h1 ⟁text-ac1 ⟁fs5 ⟁bold>⚡ ATOMIC PORTAL v∞</h1>
+      <div ⟁flex ⟁row ⟁g2>
+        <div ⟁flex ⟁row ⟁acenter ⟁g2 ⟁p2 ⟁bg3 ⟁rounded>
+          <div class="energy-pulse" style="width: 10px; height: 10px; border-radius: 50%; background: var(--⟁ac1);"></div>
+          <span ⟁text2>Energy: <span id="energy-value">0.3</span></span>
+        </div>
+        <div ⟁flex ⟁row ⟁acenter ⟁g2 ⟁p2 ⟁bg3 ⟁rounded>
+          <div class="energy-entropy" style="width: 10px; height: 10px; border-radius: 50%; background: var(--⟁ac2);"></div>
+          <span ⟁text2>Entropy: <span id="entropy-value">0.5</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- API CONTROL PANEL -->
+    <div ⟁grid-2 ⟁g4>
+      <!-- LEFT: API COMMANDER -->
+      <div ⟁flex ⟁col ⟁g3 ⟁p4 ⟁bg3 ⟁rounded ⟁border>
+        <h2 ⟁text-ac2>🔌 API COMMANDER</h2>
+
+        <textarea id="api-command" ⟁w-full ⟁p3 ⟁bg2 ⟁rounded ⟁border
+                  rows="6" placeholder='{"@control": "@execute", "@data": {...}}'>
+{
+  "@control": "@render",
+  "@data": {
+    "type": "welcome",
+    "message": "Atomic Portal Active",
+    "energy": 0.7
+  }
+}</textarea>
+
+        <div ⟁flex ⟁row ⟁g2>
+          <button ⟁button ⟁bg-ac1 onclick="executeAPI()">▶ EXECUTE</button>
+          <button ⟁button ⟁bg-ac2 onclick="clearCommands()">🗑 CLEAR</button>
+          <button ⟁button ⟁bg-ac3 onclick="loadExample()">📋 EXAMPLE</button>
+        </div>
+
+        <!-- QUICK COMMANDS -->
+        <div ⟁flex ⟁row ⟁wrap ⟁g2 ⟁mt3>
+          <button class="quick-command" data-command='{"@control":"@update_energy","@data":{"energy":0.9}}'>
+            ⚡ HIGH ENERGY
+          </button>
+          <button class="quick-command" data-command='{"@control":"@render_block","@data":{"type":"grid","columns":3}}'>
+            🌀 3 COL GRID
+          </button>
+          <button class="quick-command" data-command='{"@control":"@animate","@data":{"animation":"pulse","speed":2}}'>
+            🎨 PULSE ANIM
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT: STATE VISUALIZER -->
+      <div ⟁flex ⟁col ⟁g3 ⟁p4 ⟁bg3 ⟁rounded ⟁border>
+        <h2 ⟁text-ac3>📊 STATE VISUALIZER</h2>
+
+        <!-- DYNAMIC STATE DISPLAY -->
+        <div id="state-display" ⟁flex ⟁col ⟁g2 ⟁p3 ⟁bg2 ⟁rounded>
+          <div ⟁flex ⟁row ⟁jbetween>
+            <span ⟁text2>System Status:</span>
+            <span ⟁text-ac1 id="system-status">ACTIVE</span>
+          </div>
+          <div ⟁flex ⟁row ⟁jbetween>
+            <span ⟁text2>API Calls:</span>
+            <span ⟁text-ac2 id="api-count">0</span>
+          </div>
+          <div ⟁flex ⟁row ⟁jbetween>
+            <span ⟁text2>Last Update:</span>
+            <span ⟁text2 id="last-update">--:--:--</span>
+          </div>
+        </div>
+
+        <!-- ENERGY BARS -->
+        <div ⟁flex ⟁col ⟁g1>
+          <div ⟁flex ⟁row ⟁jbetween>
+            <span ⟁text2>Entropy</span>
+            <span ⟁text2 id="entropy-display">0.5</span>
+          </div>
+          <div class="energy-bar">
+            <div class="energy-fill" id="entropy-bar" style="width: 50%; background: var(--⟁ac2);"></div>
+          </div>
+
+          <div ⟁flex ⟁row ⟁jbetween>
+            <span ⟁text2>Innovation</span>
+            <span ⟁text2 id="innovation-display">0.6</span>
+          </div>
+          <div class="energy-bar">
+            <div class="energy-fill" id="innovation-bar" style="width: 60%; background: var(--⟁ac1);"></div>
+          </div>
+
+          <div ⟁flex ⟁row ⟁jbetween>
+            <span ⟁text2>Stability</span>
+            <span ⟁text2 id="stability-display">0.8</span>
+          </div>
+          <div class="energy-bar">
+            <div class="energy-fill" id="stability-bar" style="width: 80%; background: var(--⟁ac3);"></div>
+          </div>
+        </div>
+
+        <!-- LIVE DATA FEED -->
+        <div ⟁mt3>
+          <h4 ⟁text-ac4>📡 LIVE FEED</h4>
+          <div id="live-feed" ⟁p2 ⟁bg2 ⟁rounded style="height: 100px; overflow-y: auto; font-size: 12px;">
+            <!-- Feed items will appear here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RENDER ZONE (API OUTPUT) -->
+    <div ⟁flex ⟁col ⟁g3 ⟁p4 ⟁bg3 ⟁rounded ⟁border>
+      <h2 ⟁text-ac4>🎨 RENDER ZONE</h2>
+      <div id="render-output" ⟁flex ⟁col ⟁g3 ⟁p4 ⟁bg2 ⟁rounded>
+        <!-- API results render here -->
+        <div ⟁flex ⟁col ⟁center ⟁p4 ⟁border-ac1 ⟁rounded class="energy-glow">
+          <h3 ⟁text-ac1>Welcome to Atomic Portal</h3>
+          <p ⟁text-center ⟁text2>Execute API commands to see magic happen</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- API LOG -->
+    <div ⟁flex ⟁col ⟁g2 ⟁p3 ⟁bg3 ⟁rounded ⟁border>
+      <h4 ⟁text2>📝 API LOG</h4>
+      <div id="api-log" ⟁p2 ⟁bg2 ⟁rounded style="height: 150px; overflow-y: auto; font-family: monospace; font-size: 11px;">
+        > System initialized at <span id="init-time"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== EMBEDDED JSON API ==================== -->
+  <script type="application/json" id="atomic-api">
+  {
+    "@context": "atomic://portal/api/v∞",
+    "@name": "ATOMIC_PORTAL_API",
+    "@state": "active",
+
+    "endpoints": {
+      "@render": {
+        "description": "Render content to DOM",
+        "handler": "renderHandler"
+      },
+      "@update_energy": {
+        "description": "Update energy state variables",
+        "handler": "energyHandler"
+      },
+      "@animate": {
+        "description": "Apply animations",
+        "handler": "animateHandler"
+      },
+      "@render_block": {
+        "description": "Render atomic block",
+        "handler": "blockHandler"
+      },
+      "@execute_sequence": {
+        "description": "Execute command sequence",
+        "handler": "sequenceHandler"
+      }
+    },
+
+    "state": {
+      "entropy": 0.5,
+      "innovation": 0.6,
+      "stability": 0.8,
+      "energy": 0.3,
+      "pulse": 0.5,
+      "glow": 0,
+      "api_calls": 0,
+      "last_command": null,
+      "system_status": "active"
+    },
+
+    "render_templates": {
+      "welcome": {
+        "html": "<div ⟁flex ⟁col ⟁center ⟁p4 ⟁border-ac1 ⟁rounded class='energy-glow'><h3 ⟁text-ac1>{{message}}</h3><p ⟁text-center ⟁text2>{{subtitle}}</p></div>",
+        "css_vars": {"--glow": "{{energy}}"}
+      },
+      "grid": {
+        "html": "<div ⟁grid-{{columns}} ⟁g4 ⟁p4 ⟁bg2 ⟁rounded>{{#cells}}<div ⟁p3 ⟁bg3 ⟁rounded>Cell {{.}}</div>{{/cells}}</div>"
+      },
+      "metric": {
+        "html": "<div ⟁flex ⟁row ⟁jbetween ⟁p3 ⟁bg2 ⟁rounded ⟁border><span ⟁text2>{{label}}</span><span ⟁text-ac1>{{value}}</span></div>"
+      }
+    }
+  }
+  </script>
+
+  <!-- ==================== API EXECUTION ENGINE ==================== -->
+  <script>
+    // ATOMIC API ENGINE
+    const AtomicAPI = {
+      // Load embedded API definition
+      api: JSON.parse(document.getElementById('atomic-api').textContent),
+
+      // State
+      state: {
+        entropy: 0.5,
+        innovation: 0.6,
+        stability: 0.8,
+        energy: 0.3,
+        pulse: 0.5,
+        glow: 0,
+        apiCalls: 0,
+        lastCommand: null,
+        systemStatus: 'active'
+      },
+
+      // Command history
+      history: [],
+
+      // Initialize
+      init() {
+        console.log('⚡ Atomic API Engine Initialized');
+
+        // Load initial state from API definition
+        Object.assign(this.state, this.api.state);
+
+        // Update UI with initial state
+        this.updateUI();
+
+        // Set up quick commands
+        document.querySelectorAll('.quick-command').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const command = JSON.parse(e.target.dataset.command);
+            this.execute(command);
+          });
+        });
+
+        // Set init time
+        document.getElementById('init-time').textContent = new Date().toLocaleTimeString();
+
+        // Start pulse animation
+        this.startEnergyPulse();
+
+        // Log initialization
+        this.log('System initialized');
+
+        return this;
+      },
+
+      // Execute API command
+      async execute(command) {
+        try {
+          // Validate command
+          if (!command['@control']) {
+            throw new Error('Command missing @control field');
+          }
+
+          // Update state
+          this.state.apiCalls++;
+          this.state.lastCommand = command['@control'];
+
+          // Log command
+          this.log(`Executing: ${command['@control']}`);
+
+          // Find handler
+          const endpoint = this.api.endpoints[command['@control']];
+          if (!endpoint) {
+            throw new Error(`Unknown command: ${command['@control']}`);
+          }
+
+          // Call handler
+          const handler = this[endpoint.handler];
+          if (typeof handler !== 'function') {
+            throw new Error(`Handler not found: ${endpoint.handler}`);
+          }
+
+          // Execute with data
+          const result = await handler.call(this, command['@data'] || {});
+
+          // Update UI
+          this.updateUI();
+
+          // Log success
+          this.log(`✓ ${command['@control']} completed`);
+
+          return result;
+        } catch (error) {
+          this.log(`✗ Error: ${error.message}`, 'error');
+          throw error;
+        }
+      },
+
+      // HANDLERS
+      renderHandler(data) {
+        const templateName = data.type || 'welcome';
+        const template = this.api.render_templates[templateName];
+
+        if (!template) {
+          throw new Error(`Template not found: ${templateName}`);
+        }
+
+        // Simple template replacement
+        let html = template.html;
+        Object.keys(data).forEach(key => {
+          const value = data[key];
+          const placeholder = `{{${key}}}`;
+          html = html.replace(new RegExp(placeholder, 'g'), value);
+        });
+
+        // Special handling for arrays (like grid cells)
+        if (data.cells && Array.isArray(data.cells)) {
+          const cellsHtml = data.cells.map(cell =>
+            `<div ⟁p3 ⟁bg3 ⟁rounded>${cell}</div>`
+          ).join('');
+          html = html.replace('{{#cells}}<div ⟁p3 ⟁bg3 ⟁rounded>Cell {{.}}</div>{{/cells}}', cellsHtml);
+        }
+
+        // Apply CSS variables if defined
+        if (template.css_vars) {
+          Object.entries(template.css_vars).forEach(([key, value]) => {
+            const root = document.documentElement;
+            const resolvedValue = this.resolveValue(value, data);
+            root.style.setProperty(key, resolvedValue);
+          });
+        }
+
+        // Render to output
+        const output = document.getElementById('render-output');
+        output.innerHTML = html;
+
+        // Process any new SCX attributes
+        this.processSCXAttributes(output);
+
+        return { rendered: templateName, data };
+      },
+
+      energyHandler(data) {
+        // Update energy variables
+        Object.keys(data).forEach(key => {
+          if (this.state.hasOwnProperty(key)) {
+            this.state[key] = data[key];
+          }
+
+          // Update CSS variable if it exists
+          const cssVar = `--${key}`;
+          if (cssVar in document.documentElement.style) {
+            document.documentElement.style.setProperty(cssVar, data[key]);
+          }
+        });
+
+        return { updated: Object.keys(data) };
+      },
+
+      animateHandler(data) {
+        const { animation, speed = 1, target = '#render-output' } = data;
+        const element = document.querySelector(target) || document.getElementById('render-output');
+
+        switch(animation) {
+          case 'pulse':
+            element.style.animation = `pulse ${1/speed}s infinite`;
+            break;
+          case 'glow':
+            element.classList.add('energy-glow');
+            break;
+          case 'entropy':
+            element.classList.add('energy-entropy');
+            break;
+        }
+
+        return { animated: animation, target };
+      },
+
+      blockHandler(data) {
+        // Create atomic block from data
+        const { type, columns = 3, rows = 3, content } = data;
+
+        let html = '';
+
+        switch(type) {
+          case 'grid':
+            html = `<div ⟁grid-${columns} ⟁g4 ⟁p4 ⟁bg2 ⟁rounded>`;
+            for (let i = 0; i < columns * rows; i++) {
+              html += `<div ⟁p3 ⟁bg3 ⟁rounded ⟁center>Cell ${i + 1}</div>`;
+            }
+            html += '</div>';
+            break;
+
+          case 'card':
+            html = `<div ⟁flex ⟁col ⟁g3 ⟁p4 ⟁bg2 ⟁rounded ⟁border-ac1 ⟁shadow>
+                      <h3 ⟁text-ac1>${content?.title || 'Card'}</h3>
+                      <p ⟁text2>${content?.body || 'Content here'}</p>
+                    </div>`;
+            break;
+
+          case 'metric':
+            html = `<div ⟁flex ⟁row ⟁jbetween ⟁p3 ⟁bg2 ⟁rounded ⟁border>
+                      <span ⟁text2>${content?.label || 'Metric'}</span>
+                      <span ⟁text-ac1>${content?.value || '0'}</span>
+                    </div>`;
+            break;
+        }
+
+        const output = document.getElementById('render-output');
+        output.innerHTML = html;
+
+        this.processSCXAttributes(output);
+
+        return { block: type, rendered: true };
+      },
+
+      sequenceHandler(data) {
+        // Execute sequence of commands
+        const { commands } = data;
+        const results = [];
+
+        commands.forEach((cmd, i) => {
+          setTimeout(() => {
+            this.execute(cmd).then(result => {
+              results.push(result);
+              this.log(`Sequence step ${i + 1}/${commands.length} complete`);
+
+              // If last command, update UI
+              if (i === commands.length - 1) {
+                this.updateUI();
+              }
+            });
+          }, i * 100); // Stagger commands
+        });
+
+        return { sequence: 'started', length: commands.length };
+      },
+
+      // UTILITIES
+      resolveValue(template, data) {
+        // Simple template resolution: {{key}}
+        return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+          return data[key] || this.state[key] || match;
+        });
+      },
+
+      processSCXAttributes(container) {
+        // Find elements with SCX attributes and apply styles
+        const elements = container.querySelectorAll('[⟁]');
+        elements.forEach(el => {
+          const attrs = el.getAttribute('⟁').split(' ');
+          attrs.forEach(attr => {
+            // This is where a proper SCX processor would go
+            // For now, we'll just add a data attribute
+            el.setAttribute(`data-scx-${attr}`, 'applied');
+          });
+        });
+      },
+
+      updateUI() {
+        // Update all UI elements with current state
+        document.getElementById('energy-value').textContent = this.state.energy.toFixed(2);
+        document.getElementById('entropy-value').textContent = this.state.entropy.toFixed(2);
+
+        document.getElementById('entropy-display').textContent = this.state.entropy.toFixed(2);
+        document.getElementById('innovation-display').textContent = this.state.innovation.toFixed(2);
+        document.getElementById('stability-display').textContent = this.state.stability.toFixed(2);
+
+        document.getElementById('api-count').textContent = this.state.apiCalls;
+        document.getElementById('system-status').textContent = this.state.systemStatus.toUpperCase();
+        document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+
+        // Update energy bars
+        document.getElementById('entropy-bar').style.width = `${this.state.entropy * 100}%`;
+        document.getElementById('innovation-bar').style.width = `${this.state.innovation * 100}%`;
+        document.getElementById('stability-bar').style.width = `${this.state.stability * 100}%`;
+
+        // Update CSS variables
+        const root = document.documentElement;
+        root.style.setProperty('--entropy', this.state.entropy);
+        root.style.setProperty('--innovation', this.state.innovation);
+        root.style.setProperty('--stability', this.state.stability);
+        root.style.setProperty('--energy', this.state.energy);
+        root.style.setProperty('--pulse', this.state.pulse);
+        root.style.setProperty('--glow', this.state.glow);
+      },
+
+      startEnergyPulse() {
+        // Subtle energy pulse animation
+        let pulse = 0.5;
+        setInterval(() => {
+          pulse = 0.4 + Math.sin(Date.now() / 1000) * 0.1;
+          this.state.pulse = pulse;
+          document.documentElement.style.setProperty('--pulse', pulse);
+        }, 100);
+      },
+
+      log(message, type = 'info') {
+        const logElement = document.getElementById('api-log');
+        const time = new Date().toLocaleTimeString();
+
+        const color = {
+          info: 'var(--⟁ac2)',
+          error: 'var(--⟁ac4)',
+          success: 'var(--⟁ac1)'
+        }[type] || 'var(--⟁fg2)';
+
+        const entry = `<div style="color: ${color}; margin: 2px 0;">> ${time}: ${message}</div>`;
+        logElement.innerHTML = entry + logElement.innerHTML;
+
+        // Also add to live feed
+        const feed = document.getElementById('live-feed');
+        if (feed.children.length > 10) {
+          feed.removeChild(feed.lastChild);
+        }
+        feed.innerHTML = `<div style="color: ${color}; font-size: 11px;">${time}: ${message}</div>` + feed.innerHTML;
+      }
+    };
+
+    // GLOBAL FUNCTIONS
+    function executeAPI() {
+      const textarea = document.getElementById('api-command');
+      try {
+        const command = JSON.parse(textarea.value);
+        AtomicAPI.execute(command);
+      } catch (error) {
+        AtomicAPI.log(`JSON Parse Error: ${error.message}`, 'error');
+      }
+    }
+
+    function clearCommands() {
+      document.getElementById('api-command').value = '';
+      AtomicAPI.log('Command buffer cleared');
+    }
+
+    function loadExample() {
+      const examples = [
+        {
+          "@control": "@render",
+          "@data": {
+            "type": "welcome",
+            "message": "Quantum Interface Active",
+            "subtitle": "Energy levels stabilized",
+            "energy": 0.8
+          }
+        },
+        {
+          "@control": "@update_energy",
+          "@data": {
+            "entropy": 0.7,
+            "innovation": 0.9,
+            "stability": 0.6,
+            "energy": 0.8
+          }
+        },
+        {
+          "@control": "@render_block",
+          "@data": {
+            "type": "grid",
+            "columns": 4,
+            "rows": 2
+          }
+        },
+        {
+          "@control": "@animate",
+          "@data": {
+            "animation": "pulse",
+            "speed": 2
+          }
+        },
+        {
+          "@control": "@execute_sequence",
+          "@data": {
+            "commands": [
+              {"@control": "@update_energy", "@data": {"energy": 0.9}},
+              {"@control": "@animate", "@data": {"animation": "glow"}},
+              {"@control": "@render", "@data": {"type": "welcome", "message": "Sequence Complete"}}
+            ]
+          }
+        }
+      ];
+
+      const randomExample = examples[Math.floor(Math.random() * examples.length)];
+      document.getElementById('api-command').value = JSON.stringify(randomExample, null, 2);
+      AtomicAPI.log('Loaded example command');
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      window.AtomicAPI = AtomicAPI.init();
+
+      // Welcome message
+      setTimeout(() => {
+        AtomicAPI.execute({
+          "@control": "@render",
+          "@data": {
+            "type": "welcome",
+            "message": "ATOMIC PORTAL ONLINE",
+            "subtitle": "API control system active",
+            "energy": 0.9
+          }
+        });
+
+        AtomicAPI.log('Ready for commands. Type JSON or use quick buttons.');
+      }, 1000);
+    });
+  </script>
+
+  <!-- ==================== ENERGY BAR STYLES ==================== -->
+  <style>
+    .energy-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--⟁bg3);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .energy-fill {
+      height: 100%;
+      transition: width 0.3s ease;
+      border-radius: 4px;
+    }
+  </style>
+</body>
+</html>

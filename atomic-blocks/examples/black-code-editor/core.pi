@@ -1,0 +1,195 @@
+# MX2 K'UHUL π - Black Code Editor Functions
+#
+# K'UHUL π is the computation layer.
+# These are PURE FUNCTIONS that:
+# - Read Atomic Block state
+# - Compute deltas
+# - Return new state
+# - NEVER touch DOM
+# - NEVER own state
+#
+# CSS reacts to the returned state automatically.
+
+# ============================================
+# EDITOR FUNCTIONS
+# ============================================
+
+fn editor.derive(state):
+  # Compute level from entropy
+  let e = clamp(state["--entropy"], 0, 1)
+  state["--level"] = (e > 0.7) ? "danger" : (e > 0.35) ? "warn" : "ok"
+
+  # Reset mode to idle after acting
+  if state["--mode"] == "acting":
+    state["--mode"] = "idle"
+
+  return state
+
+fn editor.select_tape(state, params):
+  state["--active-tape"] = params.target
+  state["--mode"] = "acting"
+  return state
+
+fn editor.select_file(state, params):
+  state["--active-file"] = params.file
+  state["--mode"] = "acting"
+  state["--cursor-line"] = 1
+  state["--cursor-col"] = 1
+  return state
+
+fn editor.toggle_sidebar(state):
+  let collapsed = state["--sidebar-collapsed"]
+  state["--sidebar-collapsed"] = collapsed ? 0 : 1
+  return state
+
+fn editor.theme_cycle(state):
+  let themes = ["dark-glass", "light-clean", "neon-purple"]
+  let current = state["--theme"]
+  let idx = themes.indexOf(current)
+  let next = themes[(idx + 1) % themes.length]
+  state["--theme"] = next
+  return state
+
+fn editor.apply_theme(state, params):
+  state["--theme"] = params.theme
+  return state
+
+fn editor.save(state):
+  state["--mode"] = "saving"
+  state["--file-modified"] = 0
+  return state
+
+fn editor.run(state):
+  state["--mode"] = "running"
+  state["--entropy"] = clamp(state["--entropy"] + 0.15, 0, 1)
+  return state
+
+fn editor.format(state):
+  state["--mode"] = "acting"
+  return state
+
+
+# ============================================
+# PREVIEW FUNCTIONS
+# ============================================
+
+fn preview.refresh(state):
+  state["--mode"] = "acting"
+  return state
+
+fn preview.toggle_responsive(state):
+  state["--mode"] = "acting"
+  return state
+
+
+# ============================================
+# AST VIEW FUNCTIONS
+# ============================================
+
+fn ast.set_mode(state, params):
+  state["--ast-mode"] = params.astMode
+  return state
+
+
+# ============================================
+# TERMINAL FUNCTIONS
+# ============================================
+
+fn terminal.exec(state, params):
+  # Command parsing happens here
+  let cmd = params.command
+  state["--mode"] = "acting"
+
+  # Route commands
+  if cmd == "help":
+    # @dispatch to @show_help
+    return { ...state, "@dispatch": "@show_help" }
+
+  if cmd == "clear":
+    return { ...state, "@dispatch": "@clear_terminal" }
+
+  if cmd.startsWith("run "):
+    return { ...state, "@dispatch": "@run" }
+
+  return state
+
+
+# ============================================
+# SETTINGS FUNCTIONS
+# ============================================
+
+fn settings.update(state, params):
+  let key = "--" + params.setting
+  state[key] = params.value
+  return state
+
+fn settings.toggle(state, params):
+  let key = "--" + params.setting
+  let current = state[key]
+  state[key] = current ? 0 : 1
+  return state
+
+
+# ============================================
+# SHARD FUNCTIONS
+# ============================================
+
+fn shards.update_status(state, params):
+  for shard in params:
+    let key = "--shard-" + shard.name
+    state[key] = shard.status
+  return state
+
+
+# ============================================
+# CANVAS/STUDIO FUNCTIONS
+# ============================================
+
+fn canvas.pan(state, params):
+  state["--canvas-x"] = state["--canvas-x"] + params.dx
+  state["--canvas-y"] = state["--canvas-y"] + params.dy
+  return state
+
+fn canvas.zoom(state, params):
+  let z = state["--canvas-zoom"]
+  state["--canvas-zoom"] = clamp(z * params.factor, 0.1, 10)
+  return state
+
+fn canvas.select(state, params):
+  state["--selected-id"] = params.id
+  state["--mode"] = "selecting"
+  return state
+
+fn canvas.deselect(state):
+  state["--selected-id"] = null
+  state["--mode"] = "idle"
+  return state
+
+fn canvas.move_object(state, params):
+  # Object positions stored in separate registry
+  state["--mode"] = "moving"
+  return {
+    ...state,
+    "@io": {
+      "op": "objects.update",
+      "id": params.id,
+      "x": params.x,
+      "y": params.y
+    }
+  }
+
+
+# ============================================
+# UTILITY FUNCTIONS
+# ============================================
+
+fn clamp(val, min, max):
+  return Math.min(Math.max(val, min), max)
+
+fn lerp(a, b, t):
+  return a + (b - a) * t
+
+fn distance(x1, y1, x2, y2):
+  let dx = x2 - x1
+  let dy = y2 - y1
+  return Math.sqrt(dx * dx + dy * dy)

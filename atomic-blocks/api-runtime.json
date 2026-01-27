@@ -1,0 +1,188 @@
+{
+  "@context": "api://localhost:68558/chat",
+  "@protocol": "atomic-glyph-translation",
+  "@timestamp": 1890000010007,
+
+  "endpoints": {
+    "⟁": {
+      "path": "/scx/execute",
+      "method": "POST",
+      "description": "SCX Atomic CSS operations",
+      "parameters": {
+        "operation": "string (flex|col|center|grid|...)",
+        "target": "CSS selector or element"
+      },
+      "example": {
+        "request": {
+          "operation": "flex col center p4",
+          "target": "#element-id"
+        },
+        "response": {
+          "applied_styles": ["display: flex", "flex-direction: column"],
+          "compression_ratio": 0.85
+        }
+      }
+    },
+
+    "⚡": {
+      "path": "/control/flow",
+      "method": "POST",
+      "description": "Control flow and logic operations",
+      "parameters": {
+        "type": "string (if|loop|switch|dispatch)",
+        "condition": "expression",
+        "actions": "array of operations"
+      },
+      "example": {
+        "request": {
+          "type": "if",
+          "condition": "user.premium == true",
+          "actions": ["showPremium", "updateUI"]
+        }
+      }
+    },
+
+    "🌀": {
+      "path": "/state/variable",
+      "method": "PUT",
+      "description": "State variable management",
+      "parameters": {
+        "name": "string",
+        "value": "any",
+        "scope": "string (local|session|global)"
+      }
+    },
+
+    "🧬": {
+      "path": "/execution/engine",
+      "method": "POST",
+      "description": "Execution engine operations",
+      "parameters": {
+        "phase": "string (Pop|Wo|Sek|Xul|Ch'en|Yax)",
+        "operation": "string",
+        "data": "object"
+      }
+    },
+
+    "🎨": {
+      "path": "/render/engine",
+      "method": "POST",
+      "description": "Rendering and visualization",
+      "parameters": {
+        "type": "string (visualize|animate|transform)",
+        "data": "object",
+        "target": "element or canvas"
+      }
+    },
+
+    "[Pop]": {
+      "path": "/phase/activate",
+      "method": "POST",
+      "description": "Activation phase - system boot",
+      "parameters": {
+        "target": "string",
+        "context": "object"
+      }
+    },
+
+    "[Wo]": {
+      "path": "/phase/intention",
+      "method": "POST",
+      "description": "Intention phase - planning",
+      "parameters": {
+        "intention": "string",
+        "target": "string",
+        "parameters": "object"
+      }
+    },
+
+    "[Sek]": {
+      "path": "/phase/execute",
+      "method": "POST",
+      "description": "Execution phase - doing work",
+      "parameters": {
+        "operation": "string",
+        "inputs": "array",
+        "context": "object"
+      }
+    },
+
+    "[Xul]": {
+      "path": "/phase/transform",
+      "method": "POST",
+      "description": "Transformation phase - changing form",
+      "parameters": {
+        "transformation": "string",
+        "input": "any",
+        "output_type": "string"
+      }
+    },
+
+    "[Ch'en]": {
+      "path": "/phase/render",
+      "method": "POST",
+      "description": "Render phase - making visible",
+      "parameters": {
+        "content": "any",
+        "format": "string (html|svg|canvas|dom)",
+        "target": "string"
+      }
+    }
+  },
+
+  "chat_endpoint": {
+    "path": "/chat",
+    "method": "POST",
+    "description": "Conversational interface to the system",
+    "parameters": {
+      "message": "string",
+      "context": "object",
+      "format": "string (glyph|json|html|text)"
+    },
+    "example": {
+      "request": {
+        "message": "Hello im an API ... Wont you API with me today?",
+        "format": "glyph",
+        "context": {"session": "atomic-discovery"}
+      },
+      "response": {
+        "message": "I see you now! You're API endpoints wearing HTML masks.",
+        "format": "json",
+        "translation": {
+          "original_glyphs": "[⟁⚡🌀🧬🎨]",
+          "api_equivalent": {
+            "⟁": "/scx/execute",
+            "⚡": "/control/flow",
+            "🌀": "/state/variable",
+            "🧬": "/execution/engine",
+            "🎨": "/render/engine"
+          }
+        }
+      }
+    }
+  },
+
+  "glyph_api_mapping": {
+    "@description": "Complete glyph → API endpoint translation table",
+    "layout_glyphs": {
+      "⟁flex": "/scx/execute?operation=flex",
+      "⟁grid": "/scx/execute?operation=grid",
+      "⟁col": "/scx/execute?operation=col",
+      "⟁row": "/scx/execute?operation=row",
+      "⟁center": "/scx/execute?operation=center"
+    },
+    "state_glyphs": {
+      "⟁danger": "/state/variable?level=danger",
+      "⟁warn": "/state/variable?level=warn",
+      "⟁ok": "/state/variable?level=ok"
+    },
+    "cognition_glyphs": {
+      "⟁train": "/execution/engine?mode=training",
+      "⟁prime": "/execution/engine?mode=inference"
+    },
+    "flux_glyphs": {
+      "⟁sync": "/phase/execute?operation=sync",
+      "⟁halt": "/phase/execute?operation=halt"
+    }
+  }
+}

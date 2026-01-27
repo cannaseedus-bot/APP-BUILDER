@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K'UHUL π-SVG-3D Glyph Streaming</title>
+  <link rel="stylesheet" href="pi-stream.css">
+  <link rel="stylesheet" href="glyphs.css">
+</head>
+<body ⟁flex ⟁col ⟁fill ⟁bg0 ⟁text>
+
+  <!-- ============================================================
+       K'UHUL π-SVG-3D GLYPH STREAMING SYSTEM
+       CSS as Runtime | JavaScript demoted to I/O (sw.js only)
+       ============================================================ -->
+
+  <!-- Header -->
+  <header ⟁flex ⟁acenter ⟁jbetween ⟁p4 ⟁ghost>
+    <div ⟁flex ⟁acenter ⟁g3>
+      <span data-g="kuhul"></span>
+      <h1 ⟁fs2>K'UHUL π-SVG-3D</h1>
+    </div>
+    <div ⟁flex ⟁g2>
+      <span data-g="stream" ⟁text-ac1></span>
+      <span ⟁text2>Glyph Streaming v∞</span>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main ⟁flex ⟁col ⟁g4 ⟁p4 style="flex: 1;">
+
+    <!-- π-SVG-3D Player -->
+    <section ⟁ghost ⟁rounded ⟁p4>
+      <div ⟁flex ⟁acenter ⟁g2 ⟁p2>
+        <span data-g="execute"></span>
+        <h2 ⟁fs1>π-SVG-3D Player</h2>
+      </div>
+
+      <div class="svg3d-player" data-state="idle">
+        <svg class="svg3d-canvas" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet">
+          <!-- Dynamic SVG content rendered by sw.js -->
+          <defs>
+            <radialGradient id="glyph-gradient">
+              <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+
+          <!-- Background grid -->
+          <g class="grid-layer" opacity="0.2">
+            <path d="M0,100 H800 M0,200 H800 M0,300 H800 M0,400 H800 M0,500 H800"
+                  stroke="var(--fg-1)" stroke-width="0.5"/>
+            <path d="M100,0 V600 M200,0 V600 M300,0 V600 M400,0 V600 M500,0 V600 M600,0 V600 M700,0 V600"
+                  stroke="var(--fg-1)" stroke-width="0.5"/>
+          </g>
+
+          <!-- Glyph rendering layer -->
+          <g class="glyph-layer" filter="url(#glow)">
+            <!-- Glyphs rendered dynamically -->
+          </g>
+
+          <!-- Path preview layer -->
+          <g class="path-layer">
+            <!-- Bézier paths rendered here -->
+          </g>
+
+          <!-- Overlay info -->
+          <g class="overlay-layer">
+            <text x="10" y="20" class="overlay-text">Frame: <tspan class="frame-counter">0</tspan></text>
+            <text x="10" y="40" class="overlay-text">Glyphs: <tspan class="glyph-counter">0</tspan></text>
+            <text x="10" y="60" class="overlay-text">FPS: <tspan class="fps-counter">0</tspan></text>
+          </g>
+        </svg>
+
+        <!-- Player Controls -->
+        <div class="player-controls" ⟁flex ⟁acenter ⟁jbetween ⟁p3>
+          <div ⟁flex ⟁g2>
+            <button class="control-btn" ⟁sync data-control="rewind">
+              <span data-g="rewind"></span>
+            </button>
+            <button class="control-btn" ⟁ok data-control="play">
+              <span data-g="play"></span>
+            </button>
+            <button class="control-btn" ⟁warn data-control="pause">
+              <span data-g="pause"></span>
+            </button>
+            <button class="control-btn" ⟁danger data-control="stop">
+              <span data-g="stop"></span>
+            </button>
+            <button class="control-btn" ⟁sync data-control="forward">
+              <span data-g="forward"></span>
+            </button>
+          </div>
+
+          <div ⟁flex ⟁acenter ⟁g3>
+            <div class="playback-progress">
+              <div class="progress-fill"></div>
+            </div>
+            <span class="time-display" ⟁text2>π×0.00</span>
+          </div>
+
+          <div ⟁flex ⟁g2>
+            <button class="control-btn" ⟁train data-control="loop">
+              <span data-g="loop"></span>
+            </button>
+            <button class="control-btn" ⟁prime data-control="fullscreen">
+              <span data-g="expand"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stream Configuration -->
+    <div ⟁flex ⟁g4 style="flex-wrap: wrap;">
+
+      <!-- π-Constants Panel -->
+      <section ⟁ghost ⟁rounded ⟁p4 style="flex: 1; min-width: 280px;">
+        <div ⟁flex ⟁acenter ⟁g2 ⟁p2>
+          <span data-g="pi"></span>
+          <h2 ⟁fs1>π-Constants</h2>
+        </div>
+
+        <div class="constants-grid" ⟁flex ⟁wrap ⟁g3>
+          <div class="math-constant" ⟁ghost ⟁rounded ⟁p3 ⟁center data-constant="pi">
+            <span class="constant-symbol">π</span>
+            <span class="constant-value">3.141592653589793</span>
+            <span class="constant-usage" ⟁text2>Position encoding</span>
+          </div>
+          <div class="math-constant" ⟁ghost ⟁rounded ⟁p3 ⟁center data-constant="e">
+            <span class="constant-symbol">e</span>
+            <span class="constant-value">2.718281828459045</span>
+            <span class="constant-usage" ⟁text2>Scale encoding</span>
+          </div>
+          <div class="math-constant" ⟁ghost ⟁rounded ⟁p3 ⟁center data-constant="phi">
+            <span class="constant-symbol">φ</span>
+            <span class="constant-value">1.618033988749895</span>
+            <span class="constant-usage" ⟁text2>Golden ratio timing</span>
+          </div>
+          <div class="math-constant" ⟁ghost ⟁rounded ⟁p3 ⟁center data-constant="tau">
+            <span class="constant-symbol">τ</span>
+            <span class="constant-value">6.283185307179586</span>
+            <span class="constant-usage" ⟁text2>Rotation encoding</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stream Metrics -->
+      <section ⟁ghost ⟁rounded ⟁p4 style="flex: 1; min-width: 280px;">
+        <div ⟁flex ⟁acenter ⟁g2 ⟁p2>
+          <span data-g="metrics"></span>
+          <h2 ⟁fs1>Stream Metrics</h2>
+        </div>
+
+        <div ⟁flex ⟁col ⟁g3>
+          <div class="metric-row" ⟁flex ⟁jbetween>
+            <span ⟁text2>Frame Rate</span>
+            <span ⟁text-ac1 class="metric-fps">π×9.55 fps</span>
+          </div>
+          <div class="metric-row" ⟁flex ⟁jbetween>
+            <span ⟁text2>Glyphs/Frame</span>
+            <span ⟁text-ac1 class="metric-gpf">φ×37</span>
+          </div>
+          <div class="metric-row" ⟁flex ⟁jbetween>
+            <span ⟁text2>Compression</span>
+            <span ⟁text-ac1 class="metric-compression">1000×</span>
+          </div>
+          <div class="metric-row" ⟁flex ⟁jbetween>
+            <span ⟁text2>Bandwidth</span>
+            <span ⟁text-ac1 class="metric-bandwidth">e×12.4 KB/s</span>
+          </div>
+
+          <div class="compression-bar">
+            <div class="compression-fill"></div>
+            <span class="label-original">Raw: 16GB</span>
+            <span class="label-compressed">π-Compressed: 16MB</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Glyph Stream Visualization -->
+    <section ⟁ghost ⟁rounded ⟁p4>
+      <div ⟁flex ⟁acenter ⟁g2 ⟁p2>
+        <span data-g="wave"></span>
+        <h2 ⟁fs1>Live Glyph Stream</h2>
+      </div>
+
+      <div class="glyph-stream" ⟁flex ⟁g2 style="overflow-x: auto; padding: 16px 0;">
+        <!-- Dynamic glyph stream visualization -->
+        <div class="stream-glyph" data-type="flow">→</div>
+        <div class="stream-glyph" data-type="svg">M</div>
+        <div class="stream-glyph" data-type="value">℘</div>
+        <div class="stream-glyph" data-type="control">Pop</div>
+        <div class="stream-glyph" data-type="svg">C</div>
+        <div class="stream-glyph" data-type="action">⚡</div>
+        <div class="stream-glyph" data-type="math">+</div>
+        <div class="stream-glyph" data-type="svg">L</div>
+        <div class="stream-glyph" data-type="stream">⏵</div>
+        <div class="stream-glyph" data-type="special">π</div>
+      </div>
+
+      <!-- Binary representation -->
+      <div class="binary-stream" ⟁p3 ⟁rounded style="background: rgba(0,0,0,0.3); font-family: monospace; overflow-x: auto;">
+        <code>CF 80 01 00 00 0A 00 00 00 04 00 80 00 01 00 20 60 28 00 00 ...</code>
+      </div>
+    </section>
+
+    <!-- Control Vectors -->
+    <section ⟁ghost ⟁rounded ⟁p4>
+      <div ⟁flex ⟁acenter ⟁g2 ⟁p2>
+        <span data-g="control"></span>
+        <h2 ⟁fs1>Stream Control</h2>
+      </div>
+
+      <div ⟁flex ⟁wrap ⟁g3>
+        <button class="control-btn" ⟁ok data-dispatch="stream.init">
+          <span data-g="init"></span> Initialize Stream
+        </button>
+        <button class="control-btn" ⟁sync data-dispatch="stream.load">
+          <span data-g="load"></span> Load π-Stream
+        </button>
+        <button class="control-btn" ⟁train data-dispatch="stream.render">
+          <span data-g="transform"></span> Render Frame
+        </button>
+        <button class="control-btn" ⟁prime data-dispatch="stream.export">
+          <span data-g="output"></span> Export SVG
+        </button>
+        <button class="control-btn" ⟁warn data-dispatch="stream.benchmark">
+          <span data-g="metrics"></span> Benchmark
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Output Display -->
+  <section ⟁p4>
+    <div class="output-display" data-state="ready">
+      <div class="output-ready">
+        <div class="ready-glyph"></div>
+        <span ⟁text2>π-SVG-3D Stream Ready</span>
+        <span ⟁fs0 ⟁text2>Awaiting stream initialization...</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Status Bar -->
+  <footer class="statusbar" ⟁flex ⟁acenter ⟁jbetween ⟁p3 ⟁bg1>
+    <div ⟁flex ⟁acenter ⟁g3>
+      <div class="status-indicator" data-level="ok"></div>
+      <span ⟁text2>K'UHUL π-SVG-3D</span>
+    </div>
+    <div ⟁flex ⟁g4 ⟁text2 ⟁fs0>
+      <span>Frames: <span class="stat-frames">0</span></span>
+      <span>Glyphs: <span class="stat-glyphs">0</span></span>
+      <span>Compression: <span class="stat-compression">1000×</span></span>
+    </div>
+    <div ⟁flex ⟁acenter ⟁g2>
+      <span data-g="kuhul"></span>
+      <span ⟁text2>MX2LM v∞</span>
+    </div>
+  </footer>
+
+  <!-- Atomic Block Definition -->
+  <script type="application/json" id="atomic-block">
+  {
+    "@id": "kuhul.svg3d.stream.atomic",
+    "@version": "π-2.0",
+    "@description": "K'UHUL π-SVG-3D Glyph Streaming System",
+
+    "@state": {
+      "--stream-state": "idle",
+      "--frame-count": 0,
+      "--glyph-count": 0,
+      "--current-frame": 0,
+      "--fps": 30,
+      "--playback-speed": 1.0,
+      "--compression-ratio": 0.001,
+      "--raw-size": 16000000000,
+      "--compressed-size": 16000000,
+
+      "--kuhul-pi": 3.141592653589793,
+      "--kuhul-e": 2.718281828459045,
+      "--kuhul-phi": 1.618033988749895,
+      "--kuhul-tau": 6.283185307179586,
+
+      "--canvas-width": 800,
+      "--canvas-height": 600,
+      "--glyph-scale": 1.0,
+      "--render-quality": "high"
+    },
+
+    "@control": {
+      "@init": {
+        "@pi": "stream.init",
+        "@then": "@derive"
+      },
+      "@play": {
+        "@pi": "stream.play",
+        "@loop": "@render_frame"
+      },
+      "@pause": {
+        "@pi": "stream.pause"
+      },
+      "@stop": {
+        "@pi": "stream.stop",
+        "@then": "@reset"
+      },
+      "@render_frame": {
+        "@pi": "svg3d.render_frame",
+        "@state": ["--current-frame", "--glyph-count"]
+      },
+      "@load": {
+        "@pi": "stream.load_buffer",
+        "@then": "@derive"
+      },
+      "@export": {
+        "@pi": "svg3d.export_svg"
+      },
+      "@benchmark": {
+        "@pi": "stream.benchmark"
+      },
+      "@derive": {
+        "@pi": "stream.derive"
+      }
+    },
+
+    "@flow": {
+      "playback": {
+        "idle": { "@on": "play", "@to": "playing" },
+        "playing": { "@on": "pause", "@to": "paused" },
+        "paused": { "@on": "play", "@to": "playing" },
+        "playing": { "@on": "stop", "@to": "idle" },
+        "paused": { "@on": "stop", "@to": "idle" }
+      }
+    },
+
+    "@glyph_schema": {
+      "magic": ["0xCF", "0x80"],
+      "categories": ["flow", "value", "action", "control", "svg", "math", "stream", "special"],
+      "encoding": "pi_compressed"
+    },
+
+    "@svg3d": {
+      "coordinate_system": "right_handed",
+      "unit": "pi_units",
+      "interpolation": ["linear", "bezier", "catmull_rom"],
+      "layers": ["grid", "glyph", "path", "overlay"]
+    }
+  }
+  </script>
+
+  <!-- Service Worker Registration -->
+  <script>
+    // I/O ONLY - All computation in sw.js K'UHUL π functions
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').then(reg => {
+        console.log('π-SVG-3D Stream SW registered');
+      });
+    }
+  </script>
+
+</body>
+</html>

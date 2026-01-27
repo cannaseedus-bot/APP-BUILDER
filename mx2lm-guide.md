@@ -102,6 +102,159 @@ Because **Atomic Blocks are JSON**, they:
 
 ---
 
+## MX2⟁☣ — Atomic Hazard Authority (Formalized)
+
+**Symbol:** `MX2⟁☣`
+**Name:** *MX2 Atomic Hazard Authority*
+**Class:** Structural Governor
+**Scope:** Cross-Runtime (DOM, CSS, K'UHUL π, Storage, API)
+**Status:** Canonical / Non-Optional
+
+### What MX2⟁☣ Is (Precise Definition)
+
+> **MX2⟁☣ is the enforcement authority that prevents semantic corruption, uncontrolled execution, and unsafe mutation inside an Atomic system.**
+
+| It is NOT | It IS |
+|-----------|-------|
+| A feature | A hazard boundary |
+| A UI element | A semantic firewall |
+| A warning label | A structural veto power |
+| A permission flag | The law of the system |
+
+If ASX defines *what exists*
+and XCFE defines *how it flows*
+then **MX2⟁☣ defines what must never be allowed to happen**.
+
+### Why MX2⟁☣ Must Exist
+
+Atomic Blocks introduce dangerous power:
+
+- Executable semantics
+- Mutable meaning
+- Trainable UI
+- AI-driven mutation
+- CSS as runtime
+- JS demotion
+
+That power **cannot rely on developer discipline**.
+
+MX2⟁☣ answers one question:
+
+> **"What happens when something tries to act outside the atomic contract?"**
+
+Answer: **MX2⟁☣ blocks it.**
+
+### Stack Position (Above Runtime Layers)
+
+```
+MX2⟁☣  ← Hazard / Authority Layer
+│
+├─ config.schema.json   (enforcement)
+├─ config.json          (policy)
+│
+├─ Atomic Blocks        (meaning)
+├─ XCFE                 (flow)
+├─ K'UHUL π              (computation)
+├─ CSS Runtime          (perception)
+└─ JavaScript           (utility)
+```
+
+Nothing below MX2⟁☣ is allowed to:
+- Redefine semantics
+- Bypass declared flows
+- Write outside permitted storage
+- Invent new execution paths
+
+### The Four Hazard Domains
+
+#### ☣ H1 — Semantic Hazard
+
+> Meaning drift, symbol corruption, fake atoms
+
+Blocked by:
+- `@atomic` definitions
+- `@atoms` registry
+- `@dom_mask.authority = ast_only`
+
+**Rule:** No glyph, class, or DOM mutation may exist without a registered Atomic meaning.
+
+#### ☣ H2 — Execution Hazard
+
+> JS, UI, or API executing logic outside XCFE / K'UHUL π
+
+Blocked by:
+- `@dom_mask.rules`
+- Sealed kernel calls
+- Control-vector whitelisting
+
+**Rule:** JavaScript may transport intent, never decide outcome.
+
+#### ☣ H3 — Persistence Hazard
+
+> State leaking, cross-scope storage, silent sync
+
+Blocked by:
+- `@idb` store declarations
+- `@data_sources.never_contains`
+- Environment-scoped storage
+
+**Rule:** Data may only exist where the config explicitly allows it.
+
+#### ☣ H4 — Cognitive / AI Hazard
+
+> Agents mutating structure, UI, or language without constraint
+
+Blocked by:
+- `@constraints.hard`
+- MX2LEX direction limits
+- SCXQ2 lossless guarantees
+
+**Rule:** AI may learn and suggest — never redefine law.
+
+### MX2⟁☣ Encoded in Configuration (Not Code)
+
+MX2⟁☣ **does not live in JS**.
+
+It is expressed through **enforceable declarations**:
+
+| File | Purpose |
+|------|---------|
+| `config.schema.json` | Defines *what must exist*, rejects malformed authority |
+| `config.json` | Defines *what is allowed*, sets policy |
+| `@dom_mask` | Enforces AST-only semantics, demotes JS |
+
+### The ☣ Symbol is Correct (Not Aesthetic)
+
+The hazard symbol is accurate:
+
+- Atomic systems are **power-dense**
+- Meaning is executable
+- UI is trainable
+- Compression hides complexity
+- AI participates in structure
+
+This is **radioactive power** if uncontrolled.
+
+`MX2⟁☣` means:
+
+> "This system is safe **because** it is constrained — not because it is simple."
+
+### Formal One-Line Law (Canonical)
+
+```text
+MX2⟁☣ = the non-bypassable authority that prevents any mutation of meaning,
+        execution, storage, or cognition outside the declared Atomic contract.
+```
+
+This law is:
+- Runtime-agnostic
+- AI-readable
+- Enforceable
+- Compressible
+- Future-proof
+
+---
+
 ## CSS as Runtime (Not Styling)
 
 Traditional CSS is declarative styling. **Atomic CSS is a state machine.**
@@ -1096,6 +1249,146 @@ async function bootWhiteLabel() {
 
 ---
 
+## Unified Routing: Links Replace Routers
+
+Routes are **links**, not functions. This generalizes PHP includes, React Router, and API calls into one model.
+
+### The Core Idea
+
+```
+control → link → handler
+```
+
+Where handler can be:
+- `home.html`
+- `api.php?route=home`
+- `/tapes/home.xjson`
+- Another Atomic Block
+- Another page or hive
+
+### Routes in Config (Link Map)
+
+```json
+{
+  "@routes": {
+    "@pages": {
+      "home": {
+        "@type": "page",
+        "@link": "home.html",
+        "@mount": "#viewport"
+      },
+      "dashboard": {
+        "@type": "page",
+        "@link": "dashboard.html",
+        "@mount": "#viewport"
+      }
+    },
+
+    "@api": {
+      "state.save": {
+        "@type": "php",
+        "@link": "/api.php?route=save_state",
+        "@method": "POST"
+      },
+      "state.load": {
+        "@type": "php",
+        "@link": "/api.php?route=load_state",
+        "@method": "GET"
+      }
+    },
+
+    "@includes": {
+      "nav": {
+        "@type": "html",
+        "@link": "partials/nav.html",
+        "@mount": "#nav"
+      },
+      "footer": {
+        "@type": "html",
+        "@link": "partials/footer.html",
+        "@mount": "#footer"
+      }
+    }
+  }
+}
+```
+
+This is the **generalized equivalent** of `<?php include('home'); ?>` but:
+- Declarative
+- Inspectable
+- Secure
+- Runtime-switchable
+- AI-readable
+
+### Link Resolution (JS Utility)
+
+JS does **not decide** what is allowed. It only **resolves declared links**.
+
+```javascript
+async function resolveLink(name) {
+  const route = CONFIG["@routes"]["@pages"][name]
+             || CONFIG["@routes"]["@includes"][name]
+             || CONFIG["@routes"]["@api"][name];
+
+  if (!route) throw new Error("Route not allowed");
+
+  if (route["@type"] === "page" || route["@type"] === "html") {
+    const html = await fetch(route["@link"]).then(r => r.text());
+    document.querySelector(route["@mount"]).innerHTML = html;
+  }
+
+  if (route["@type"] === "php") {
+    return fetch(route["@link"], { method: route["@method"] });
+  }
+}
+```
+
+### Atomic Blocks Call Links, Not URLs
+
+Inside an Atomic Block:
+
+```json
+"@control": {
+  "@go_home": { "@link": "home" },
+  "@save": { "@link": "state.save" }
+}
+```
+
+No hardcoded paths. No fetch calls. No imports. No coupling.
+Atomic logic is now **location-agnostic**.
+
+### Why This Matters
+
+| Concern | Old Web | Atomic Stack |
+|---------|---------|--------------|
+| Include | PHP include | config link |
+| Route | Router lib | link map |
+| API | fetch | declared link |
+| Navigation | imperative | control vector |
+| Security | trust | whitelist |
+| AI reasoning | impossible | native |
+
+---
+
+## Config Schema: The Constitutional Enforcement
+
+The `config.schema.json` is not just validation — it validates **authority, execution boundaries, cognition, and trust**.
+
+| Section | What It Replaces |
+|---------|------------------|
+| `@environment` | Auth guards, role checks, feature gates → one canonical truth |
+| `@idb` | Ad-hoc storage → persistence as law |
+| `@atomic` + `@atoms` | Implicit semantics → enforced meaning |
+| `@mx2lex` | Bolted-on NLP → bidirectional language infrastructure |
+| `@dom_mask` | JS discipline → JS demotion by law |
+| `@data_sources` | Hope-based privacy → memory sovereignty |
+| `@scxq2` | Optional optimization → first-class compression constraint |
+| `@constraints` | README warnings → explicit system ethics |
+
+See `config.schema.json` for the complete enforcement schema.
+
+---
+
 ## Building Your Own MX2LM System
 
 ### Step 1: Create Your Foreman Shard
@@ -1565,6 +1858,9 @@ Standard intents your shards should understand:
 
 | Document | Purpose |
 |----------|---------|
+| `config.schema.json` | Constitutional enforcement schema (MX2⟁☣) |
+| `atomic-blocks/README.md` | Atomic Blocks architecture & examples |
+| `atomic-blocks/examples/black-code-editor/` | Canonical reference implementation |
 | `SHARD-INTEGRATION.md` | Complete shard roster & mesh architecture |
 | `gas/README.md` | GAS plugin system details |
 | `guides/readme.md` | Atomic guide philosophy |

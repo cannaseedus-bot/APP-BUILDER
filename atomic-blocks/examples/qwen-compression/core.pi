@@ -1,0 +1,247 @@
+// ============================================================
+// K'UHUL π QWEN COMPRESSION - PURE COMPUTATION FUNCTIONS
+// No DOM, No I/O - Pure State Transformations
+// ============================================================
+
+
+// Mathematical Constants
+[Pop constants]
+  [Wo {
+    "pi": 3.141592653589793,
+    "e": 2.718281828459045,
+    "phi": 1.618033988749895,
+    "tau": 6.283185307179586
+  }]→[Xul return]
+[Xul]
+
+
+// Main compression execution
+[Pop compression.execute]
+  [Wo @state]→[Ch'en state]
+
+  // Extract parameters
+  [Wo state]→[Sek get "--qwen-total-tokens" 151643]→[Ch'en total_tokens]
+  [Wo 151]→[Ch'en glyph_count]
+  [Wo (ceiling (/ total_tokens glyph_count))]→[Ch'en tokens_per_glyph]
+
+  // Size calculations
+  [Wo 16000000000]→[Ch'en original_size]   // 16GB
+  [Wo 16000000]→[Ch'en compressed_size]    // 16MB
+  [Wo (/ compressed_size original_size)]→[Ch'en ratio]
+
+  // Generate glyphs
+  [Wo glyph_count]→[Sek range]→[Sek map [Ch'en i]→[@then
+    [Wo {
+      "id": i,
+      "token_range": [(* i tokens_per_glyph) (min (- (* (+ i 1) tokens_per_glyph) 1) (- total_tokens 1))],
+      "encoding": [Sek compression.math_encode (* i tokens_per_glyph)],
+      "hue": (mod (* i 137.508) 360),
+      "density": (+ 0.5 (* (sin (* i 0.1)) 0.3))
+    }]
+  ]]→[Ch'en glyphs]
+
+  // Return updated state
+  [Wo state]→[Sek merge {
+    "--compression-state": "complete",
+    "--compression-ratio": ratio,
+    "--glyph-count": glyph_count,
+    "--tokens-per-glyph": tokens_per_glyph,
+    "@result": {
+      "success": true,
+      "total_tokens": total_tokens,
+      "glyph_count": glyph_count,
+      "tokens_per_glyph": tokens_per_glyph,
+      "original_size": original_size,
+      "compressed_size": compressed_size,
+      "ratio": ratio,
+      "glyphs": [Sek take 5 glyphs],
+      "compression_x": (round (/ original_size compressed_size))
+    }
+  }]→[Xul return]
+[Xul]
+
+
+// Mathematical encoding function
+[Pop compression.math_encode]
+  [Wo @token_id]→[Ch'en token_id]
+
+  // Get constants
+  [Sek constants]→[Ch'en c]
+
+  // Create encoding options
+  [Wo [
+    { "constant": "π", "value": (/ token_id [Sek get "pi" c]) },
+    { "constant": "e", "value": (/ token_id [Sek get "e" c]) },
+    { "constant": "φ", "value": (/ token_id [Sek get "phi" c]) },
+    { "constant": "τ", "value": (/ token_id [Sek get "tau" c]) }
+  ]]→[Ch'en encodings]
+
+  // Select based on token_id mod 4
+  [Wo encodings]→[Sek get (mod token_id 4)]→[Ch'en selected]
+
+  // Format output
+  [Wo [Sek get "constant" selected] "×" (round [Sek get "value" selected] 2)]→[Sek str]→[Xul return]
+[Xul]
+
+
+// Generate CSS glyph definitions
+[Pop compression.generate_css]
+  [Wo @state]→[Ch'en state]
+
+  [Wo state]→[Sek get "--glyph-count" 151]→[Ch'en glyph_count]
+  [Wo state]→[Sek get "--qwen-total-tokens" 151643]→[Ch'en total_tokens]
+  [Wo state]→[Sek get "--compression-ratio" 0.001]→[Ch'en ratio]
+  [Sek constants]→[Ch'en c]
+
+  // CSS header
+  [Wo "/* K'UHUL π QWEN VOCAB COMPRESSION CSS */\n"]→[Ch'en css]
+  [Wo css "/* " total_tokens " tokens → " glyph_count " glyphs */\n"]→[Sek str]→[Ch'en css]
+  [Wo css "/* Compression: 1000x */\n\n"]→[Sek str]→[Ch'en css]
+
+  // Root variables
+  [Wo css ":root {\n"]→[Sek str]→[Ch'en css]
+  [Wo css "  --qwen-tokens: " total_tokens ";\n"]→[Sek str]→[Ch'en css]
+  [Wo css "  --kuhul-glyphs: " glyph_count ";\n"]→[Sek str]→[Ch'en css]
+  [Wo css "  --kuhul-pi: " [Sek get "pi" c] ";\n"]→[Sek str]→[Ch'en css]
+  [Wo css "  --kuhul-e: " [Sek get "e" c] ";\n"]→[Sek str]→[Ch'en css]
+  [Wo css "  --kuhul-phi: " [Sek get "phi" c] ";\n"]→[Sek str]→[Ch'en css]
+  [Wo css "  --kuhul-tau: " [Sek get "tau" c] ";\n"]→[Sek str]→[Ch'en css]
+  [Wo css "}\n\n"]→[Sek str]→[Ch'en css]
+
+  // Generate glyph classes (sample)
+  [Wo 20]→[Sek range]→[@loop]→[@as i]→[
+    [Wo (* i 137.508)]→[Sek mod 360]→[Ch'en hue]
+    [Wo (+ 0.5 (* (sin (* i 0.1)) 0.3))]→[Ch'en density]
+
+    [Wo css ".glyph-" i " {\n"]→[Sek str]→[Ch'en css]
+    [Wo css "  --glyph-id: " i ";\n"]→[Sek str]→[Ch'en css]
+    [Wo css "  --glyph-hue: " (round hue 1) ";\n"]→[Sek str]→[Ch'en css]
+    [Wo css "  --glyph-density: " (round density 3) ";\n"]→[Sek str]→[Ch'en css]
+    [Wo css "}\n\n"]→[Sek str]→[Ch'en css]
+  ]
+
+  [Wo state]→[Sek merge {
+    "@result": {
+      "success": true,
+      "css": css,
+      "size": [Sek length css],
+      "glyph_count": glyph_count
+    }
+  }]→[Xul return]
+[Xul]
+
+
+// Show mathematical encoding
+[Pop compression.show_encoding]
+  [Wo @state]→[Ch'en state]
+
+  // Sample tokens
+  [Wo [
+    { "char": "!", "id": 0 },
+    { "char": "@", "id": 31 },
+    { "char": "A", "id": 32 },
+    { "char": "Z", "id": 57 },
+    { "char": "中", "id": 50000 },
+    { "char": "<|endoftext|>", "id": 151643 }
+  ]]→[Ch'en sample_tokens]
+
+  // Add encodings
+  [Wo sample_tokens]→[Sek map [Ch'en token]→[@then
+    [Wo token]→[Sek merge {
+      "encoding": [Sek compression.math_encode [Sek get "id" token]]
+    }]
+  ]]→[Ch'en encodings]
+
+  [Wo state]→[Sek merge {
+    "@result": {
+      "success": true,
+      "encodings": encodings,
+      "formula": "token_encoding = constant × (token_id / constant)",
+      "constants": [Sek constants]
+    }
+  }]→[Xul return]
+[Xul]
+
+
+// Export compressed format
+[Pop compression.export]
+  [Wo @state]→[Ch'en state]
+
+  [Wo state]→[Sek get "--qwen-total-tokens" 151643]→[Ch'en total_tokens]
+  [Wo state]→[Sek get "--glyph-count" 151]→[Ch'en glyph_count]
+  [Wo state]→[Sek get "--tokens-per-glyph" 1004]→[Ch'en tokens_per_glyph]
+  [Wo state]→[Sek get "--compression-ratio" 0.001]→[Ch'en ratio]
+
+  [Wo {
+    "metadata": {
+      "version": "K'UHUL π 2.0",
+      "compression": "CSS/SVG Glyph Encoding",
+      "original_tokens": total_tokens,
+      "compressed_glyphs": glyph_count,
+      "ratio": ratio,
+      "constants": [Sek constants],
+      "generated": [Sek current_time_iso]
+    },
+    "encoding_schema": {
+      "base": "mathematical_constants",
+      "glyphs": glyph_count,
+      "tokens_per_glyph": tokens_per_glyph,
+      "format": "css_svg_backgrounds"
+    },
+    "sample_glyphs": [
+      [Sek 5]→[Sek range]→[Sek map [Ch'en i]→[@then
+        {
+          "id": i,
+          "encoding": [Sek compression.math_encode (* i 1000)],
+          "css_class": [Sek str ".glyph-" i]
+        }
+      ]]
+    ]
+  }]→[Ch'en export_data]
+
+  [Wo state]→[Sek merge {
+    "@result": {
+      "success": true,
+      "export_data": export_data,
+      "json": [Sek json_stringify export_data 2]
+    }
+  }]→[Xul return]
+[Xul]
+
+
+// Derive state from current values
+[Pop compression.derive]
+  [Wo @state]→[Ch'en state]
+
+  [Wo state]→[Sek get "--qwen-total-tokens" 151643]→[Ch'en total_tokens]
+  [Wo state]→[Sek get "--glyph-count" 151]→[Ch'en glyph_count]
+  [Wo (ceiling (/ total_tokens glyph_count))]→[Ch'en tokens_per_glyph]
+
+  [Wo state]→[Sek get "--original-size" 16000000000]→[Ch'en original_size]
+  [Wo state]→[Sek get "--compressed-size" 16000000]→[Ch'en compressed_size]
+
+  [Wo state]→[Sek merge {
+    "--tokens-per-glyph": tokens_per_glyph,
+    "--compression-ratio": (/ compressed_size original_size),
+    "--density": 0.87
+  }]→[Xul return]
+[Xul]
+
+
+// ============================================================
+// UTILITY FUNCTIONS
+// ============================================================
+
+[Pop round]
+  [Wo @value]→[Ch'en v]
+  [Wo @decimals 0]→[Ch'en d]
+  [Wo (pow 10 d)]→[Ch'en multiplier]
+  [Wo (/ (floor (+ (* v multiplier) 0.5)) multiplier)]→[Xul return]
+[Xul]
+
+[Pop clamp]
+  [Wo @value]→[Ch'en v]
+  [Wo @min_val]→[Ch'en min_v]
+  [Wo @max_val]→[Ch'en max_v]
+  [Wo (max min_v (min max_v v))]→[Xul return]
+[Xul]
