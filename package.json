@@ -1,0 +1,34 @@
+{
+  "name": "app-builder",
+  "version": "1.0.0",
+  "description": "ASX Runtime PWA Application Builder - Monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "start": "npm run start:cluster",
+    "start:cluster": "cd packages/cluster && npm start",
+    "dev": "npm run dev:cluster",
+    "dev:cluster": "cd packages/cluster && npm run dev",
+    "serve:apps": "npx serve apps -l 3000",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cannaseedus-bot/APP-BUILDER.git"
+  },
+  "keywords": [
+    "pwa",
+    "asx",
+    "kuhul",
+    "ml-runtime",
+    "monorepo"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
