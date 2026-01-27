@@ -1,0 +1,335 @@
+{
+  "@context": "xjson://asxr/qwen-asx/files/v1",
+  "@version": "1.0.0",
+  "@law": "QWEN_ASX_FILES = @model ⊗ @tokenizer ⊗ @config → MX2LEX × MX2GYM × MX2QF1",
+
+  "base_url": "https://mx2lm.app/Qwen-ASX/",
+  "description": "Complete file manifest for Qwen-ASX model hosted at mx2lm.app",
+
+  "files": {
+    "model.safetensors": {
+      "url": "https://mx2lm.app/Qwen-ASX/model.safetensors",
+      "size": "1.8GB",
+      "format": "safetensors",
+      "description": "Main model weights in SafeTensors format",
+      "required_for": ["inference", "training"],
+      "used_by": ["MX2QF1", "MX2GYM"],
+      "download": "curl -O https://mx2lm.app/Qwen-ASX/model.safetensors"
+    },
+
+    "config.json": {
+      "url": "https://mx2lm.app/Qwen-ASX/config.json",
+      "size": "~2KB",
+      "format": "json",
+      "description": "Model architecture configuration (layers, hidden size, vocab size, etc.)",
+      "required_for": ["inference", "training"],
+      "used_by": ["MX2QF1", "MX2GYM"],
+      "download": "curl -O https://mx2lm.app/Qwen-ASX/config.json",
+      "sample_content": {
+        "architectures": ["Qwen2ForCausalLM"],
+        "hidden_size": 1024,
+        "num_attention_heads": 16,
+        "num_hidden_layers": 24,
+        "vocab_size": 151662,
+        "max_position_embeddings": 8192
+      }
+    },
+
+    "generation_config.json": {
+      "url": "https://mx2lm.app/Qwen-ASX/generation_config.json",
+      "size": "~1KB",
+      "format": "json",
+      "description": "Text generation parameters (temperature, top_p, max_length, etc.)",
+      "required_for": ["inference"],
+      "used_by": ["MX2QF1"],
+      "download": "curl -O https://mx2lm.app/Qwen-ASX/generation_config.json",
+      "sample_content": {
+        "max_length": 8192,
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "repetition_penalty": 1.1
+      }
+    },
+
+    "vocab.json": {
+      "url": "https://mx2lm.app/Qwen-ASX/vocab.json",
+      "size": "~3MB",
+      "format": "json",
+      "description": "Vocabulary mapping (151,662 tokens → IDs) - BPE tokenizer",
+      "required_for": ["tokenization"],
+      "used_by": ["Traditional tokenizer (can be replaced by MX2LEX)"],
+      "download": "curl -O https://mx2lm.app/Qwen-ASX/vocab.json",
+      "mx2lex_replacement": {
+        "replaces": "vocab.json (3MB)",
+        "with": "MX2LEX symbolic lexicon (24KB)",
+        "compression_ratio": 0.008,
+        "savings": "99.2% size reduction"
+      },
+      "content_structure": {
+        "example": {
+          "!": 0,
+          "\"": 1,
+          "#": 2,
+          "hello": 3456,
+          "world": 3457,
+          "...": "151662 total entries"
+        }
+      }
+    },
+
+    "tokenizer.json": {
+      "url": "https://mx2lm.app/Qwen-ASX/tokenizer.json",
+      "size": "~500KB",
+      "format": "json",
+      "description": "Byte Pair Encoding (BPE) merge rules and tokenizer configuration",
+      "required_for": ["tokenization"],
+      "used_by": ["Traditional tokenizer (can be replaced by MX2LEX)"],
+      "download": "curl -O https://mx2lm.app/Qwen-ASX/tokenizer.json",
+      "mx2lex_replacement": {
+        "replaces": "tokenizer.json (500KB)",
+        "with": "MX2LEX grammar rules (12KB)",
+        "compression_ratio": 0.024,
+        "savings": "97.6% size reduction"
+      },
+      "content_structure": {
+        "version": "1.0",
+        "model": {
+          "type": "BPE",
+          "vocab": "vocab.json",
+          "merges": "merges.txt"
+        }
+      }
+    },
+
+    "merges.txt": {
+      "url": "https://mx2lm.app/Qwen-ASX/merges.txt",
+      "size": "~400KB",
+      "format": "text",
+      "description": "BPE merge operations (subword units)",
+      "required_for": ["tokenization"],
+      "used_by": ["Traditional tokenizer (can be replaced by MX2LEX)"],
+      "download": "curl -O https://mx2lm.app/Qwen-ASX/merges.txt",
+      "mx2lex_replacement": {
+        "replaces": "merges.txt (400KB)",
+        "with": "MX2LEX composite tokens (8KB)",
+        "compression_ratio": 0.02,
+        "savings": "98% size reduction"
+      }
+    },
+
+    "tokenizer_config.json": {
+      "url": "https://mx2lm.app/Qwen-ASX/tokenizer_config.json",
+      "size": "~1KB",
+      "format": "json",
+      "description": "Tokenizer configuration (special tokens, padding, truncation)",
+      "required_for": ["tokenization"],
+      "used_by": ["Traditional tokenizer (can be replaced by MX2LEX)"],
+      "download": "curl -O https://mx2lm.app/Qwen-ASX/tokenizer_config.json",
+      "sample_content": {
+        "bos_token": "<|endoftext|>",
+        "eos_token": "<|endoftext|>",
+        "pad_token": "<|endoftext|>",
+        "unk_token": "<|endoftext|>"
+      }
+    },
+
+    "special_tokens_map.json": {
+      "url": "https://mx2lm.app/Qwen-ASX/special_tokens_map.json",
+      "size": "~500 bytes",
+      "format": "json",
+      "description": "Special tokens mapping (BOS, EOS, PAD, UNK)",
+      "required_for": ["tokenization"],
+      "used_by": ["Traditional tokenizer"],
+      "download": "curl -O https://mx2lm.app/Qwen-ASX/special_tokens_map.json",
+      "sample_content": {
+        "bos_token": "<|endoftext|>",
+        "eos_token": "<|endoftext|>",
+        "pad_token": "<|endoftext|>",
+        "unk_token": "<|endoftext|>"
+      }
+    },
+
+    "added_tokens.json": {
+      "url": "https://mx2lm.app/Qwen-ASX/added_tokens.json",
+      "size": "~100 bytes",
+      "format": "json",
+      "description": "Additional tokens added to vocabulary",
+      "required_for": ["tokenization"],
+      "used_by": ["Traditional tokenizer"],
+      "download": "curl -O https://mx2lm.app/Qwen-ASX/added_tokens.json",
+      "sample_content": {}
+    },
+
+    "chat_template.jinja": {
+      "url": "https://mx2lm.app/Qwen-ASX/chat_template.jinja",
+      "size": "~1KB",
+      "format": "jinja2",
+      "description": "Chat conversation template for formatting multi-turn dialogues",
+      "required_for": ["chat_inference"],
+      "used_by": ["MX2QF1 (chat mode)"],
+      "download": "curl -O https://mx2lm.app/Qwen-ASX/chat_template.jinja",
+      "sample_content": "{% for message in messages %}{{ message['role'] }}: {{ message['content'] }}\\n{% endfor %}"
+    }
+  },
+
+  "download_strategies": {
+    "full_download": {
+      "description": "Download everything (required for full local deployment)",
+      "size": "~5.7GB total",
+      "files": [
+        "model.safetensors (1.8GB)",
+        "vocab.json (3MB)",
+        "tokenizer.json (500KB)",
+        "merges.txt (400KB)",
+        "config.json (2KB)",
+        "generation_config.json (1KB)",
+        "tokenizer_config.json (1KB)",
+        "special_tokens_map.json (500B)",
+        "added_tokens.json (100B)",
+        "chat_template.jinja (1KB)"
+      ],
+      "commands": [
+        "curl -O https://mx2lm.app/Qwen-ASX/model.safetensors",
+        "curl -O https://mx2lm.app/Qwen-ASX/vocab.json",
+        "curl -O https://mx2lm.app/Qwen-ASX/tokenizer.json",
+        "curl -O https://mx2lm.app/Qwen-ASX/merges.txt",
+        "curl -O https://mx2lm.app/Qwen-ASX/config.json",
+        "curl -O https://mx2lm.app/Qwen-ASX/generation_config.json",
+        "curl -O https://mx2lm.app/Qwen-ASX/tokenizer_config.json",
+        "curl -O https://mx2lm.app/Qwen-ASX/special_tokens_map.json",
+        "curl -O https://mx2lm.app/Qwen-ASX/added_tokens.json",
+        "curl -O https://mx2lm.app/Qwen-ASX/chat_template.jinja"
+      ]
+    },
+
+    "inference_only": {
+      "description": "Minimum files for inference (model + configs)",
+      "size": "~1.8GB",
+      "files": [
+        "model.safetensors (1.8GB)",
+        "config.json (2KB)",
+        "generation_config.json (1KB)"
+      ],
+      "tokenization": "Use MX2LEX (24KB) instead of traditional tokenizer files",
+      "commands": [
+        "curl -O https://mx2lm.app/Qwen-ASX/model.safetensors",
+        "curl -O https://mx2lm.app/Qwen-ASX/config.json",
+        "curl -O https://mx2lm.app/Qwen-ASX/generation_config.json"
+      ]
+    },
+
+    "mx2_optimized": {
+      "description": "Use MX2LEX instead of traditional tokenizer (massive savings)",
+      "size": "~1.8GB (vs 5.7GB traditional)",
+      "savings": "~3.9GB saved (68% reduction)",
+      "files": [
+        "model.safetensors (1.8GB)",
+        "config.json (2KB)",
+        "generation_config.json (1KB)",
+        "MX2LEX lexicon (24KB) - replaces vocab.json + tokenizer.json + merges.txt"
+      ],
+      "commands": [
+        "# Download model and configs",
+        "curl -O https://mx2lm.app/Qwen-ASX/model.safetensors",
+        "curl -O https://mx2lm.app/Qwen-ASX/config.json",
+        "curl -O https://mx2lm.app/Qwen-ASX/generation_config.json",
+        "",
+        "# Use MX2LEX instead of traditional tokenizer",
+        "curl -X POST /mx2lex -d '{\"action\": \"export\", \"format\": \"scxq2\"}' > mx2lex_lexicon.scxq2"
+      ]
+    }
+  },
+
+  "file_replacements": {
+    "traditional_tokenizer": {
+      "files": [
+        "vocab.json (3MB)",
+        "tokenizer.json (500KB)",
+        "merges.txt (400KB)",
+        "tokenizer_config.json (1KB)",
+        "special_tokens_map.json (500B)",
+        "added_tokens.json (100B)"
+      ],
+      "total_size": "~3.9MB"
+    },
+
+    "mx2lex_tokenizer": {
+      "files": [
+        "mx2lex_lexicon.scxq2 (24KB)",
+        "mx2lex_config.xjson (12KB)",
+        "mx2lex_grammar.scxq2 (8KB)"
+      ],
+      "total_size": "~44KB",
+      "savings": "3.9MB → 44KB (98.9% reduction)"
+    }
+  },
+
+  "integration_examples": {
+    "example_1_traditional_inference": {
+      "description": "Inference using traditional Qwen tokenizer",
+      "required_files": [
+        "model.safetensors",
+        "vocab.json",
+        "tokenizer.json",
+        "config.json"
+      ],
+      "total_size": "~4.8GB",
+      "code": "from transformers import AutoTokenizer, AutoModelForCausalLM\n\ntokenizer = AutoTokenizer.from_pretrained('https://mx2lm.app/Qwen-ASX/')\nmodel = AutoModelForCausalLM.from_pretrained('https://mx2lm.app/Qwen-ASX/')\n\ninputs = tokenizer('Hello world', return_tensors='pt')\noutputs = model.generate(**inputs)"
+    },
+
+    "example_2_mx2lex_inference": {
+      "description": "Inference using MX2LEX tokenizer (99% smaller)",
+      "required_files": [
+        "model.safetensors",
+        "config.json",
+        "mx2lex_lexicon.scxq2 (24KB)"
+      ],
+      "total_size": "~1.8GB",
+      "savings": "~3GB saved",
+      "code": "fetch('/mx2lex', {\n  method: 'POST',\n  body: JSON.stringify({ action: 'tokenize', text: 'Hello world' })\n}).then(tokens => {\n  return fetch('/mx2qf1', {\n    method: 'POST',\n    body: JSON.stringify({\n      action: 'inference',\n      model_url: 'https://mx2lm.app/Qwen-ASX/model.safetensors',\n      tokens: tokens\n    })\n  });\n});"
+    },
+
+    "example_3_chat_with_template": {
+      "description": "Chat inference using Jinja template",
+      "required_files": [
+        "model.safetensors",
+        "config.json",
+        "chat_template.jinja",
+        "mx2lex_lexicon.scxq2"
+      ],
+      "code": "fetch('/mx2qf1', {\n  method: 'POST',\n  body: JSON.stringify({\n    action: 'chat',\n    model_url: 'https://mx2lm.app/Qwen-ASX/model.safetensors',\n    template_url: 'https://mx2lm.app/Qwen-ASX/chat_template.jinja',\n    messages: [\n      { role: 'user', content: 'Hello!' },\n      { role: 'assistant', content: 'Hi! How can I help?' },\n      { role: 'user', content: 'Tell me about quantum computing' }\n    ]\n  })\n});"
+    }
+  },
+
+  "compression_analysis": {
+    "traditional_approach": {
+      "tokenizer_files": "3.9MB",
+      "model_file": "1.8GB",
+      "total": "~1.803GB",
+      "memory_footprint": "High (all vocab in RAM)"
+    },
+
+    "mx2lex_approach": {
+      "tokenizer_files": "44KB (MX2LEX)",
+      "model_file": "1.8GB",
+      "total": "~1.800GB",
+      "savings": "3.9MB (99% tokenizer reduction)",
+      "memory_footprint": "Ultra-low (symbolic glyphs)",
+      "additional_benefits": [
+        "Faster tokenization (<1ms)",
+        "Lower memory usage (~100KB vs 3.9MB)",
+        "Grammar-aware tokenization",
+        "Semantic vector embeddings",
+        "Domain-specific vocabularies"
+      ]
+    }
+  },
+
+  "usage_recommendations": {
+    "for_inference_only": "Download model.safetensors + config.json + use MX2LEX (saves 3.9GB)",
+    "for_training": "Download model.safetensors + optimizer.pt + use MX2LEX + MX2GYM fold-deltas",
+    "for_chat_applications": "Download model.safetensors + chat_template.jinja + use MX2LEX",
+    "for_production": "Use MX2QF1 plugin to fetch model from mx2lm.app (no local storage needed)",
+    "for_development": "Download full model locally, but use MX2LEX for tokenization"
+  }
+}

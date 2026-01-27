@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atomic HTML — Local Guide v3 (≤40KB)</title>
+<style>
+body{margin:0;background:#000;color:#9ff;font:15px/1.5 ui-monospace,Menlo,monospace}h1{margin:16px;border-bottom:1px solid #0f8;padding-bottom:6px;color:#6f9}
+h2{margin:16px;color:#6f9}section{margin:12px 16px;padding:10px;border:1px solid #0f8;border-radius:8px;background:#021}code,pre{background:#012;border:1px solid #0a5;border-radius:6px}code{padding:2px 4px}pre{padding:10px;overflow:auto}
+small{opacity:.8}
+</style>
+<h1>Atomic HTML — Local Authoring Guide v3</h1>
+<section><h2>Why</h2><p>Write and preview ASX apps fully offline. One HTML file + one JSON (<code>app.asx</code>) is enough.</p></section>
+<section><h2>Quick Start</h2>
+<pre>&lt;!-- atomic-local.html --&gt;
+&lt;div id="splash"&gt;Booting…&lt;/div&gt;
+&lt;main id="app" hidden&gt;
+  &lt;h3&gt;Score: &lt;span data-bind="user.score"&gt;&lt;/span&gt;&lt;/h3&gt;
+  &lt;button id="plus"&gt;+5&lt;/button&gt;
+&lt;/main&gt;
+&lt;script&gt;
+// Minimal Atomic (tiny, no deps)
+const A={S:{},R:{},init(u="app.asx"){fetch(u).then(r=&gt;r.json()).then(j=&gt;{A.C=j;A.S=j.$state||{};A.R=j.$routes||{};setTimeout(()=>{s.remove();m.hidden=0;A.U()},600)})},
+U(){document.querySelectorAll("[data-bind]").forEach(e=&gt;{let v=A.S;e.getAttribute("data-bind").split(".").forEach(k=&gt;v=v&&v[k]);e.textContent=v??""})},
+set(p,v){let o=A.S,a=p.split(".");while(a.length&gt;1){const k=a.shift();o=o[k]=o[k]||{}}o[a[0]]=v;A.U();}
+};
+const s=document.getElementById("splash"),m=document.getElementById("app");
+A.init(); plus.onclick=()=&gt;A.set("user.score",(A.S.user?.score||0)+5);
+&lt;/script&gt;</pre>
+<p><small>Tip: keep this file lean; use PNG/SVG assets externally.</small></p>
+</section>
+<section><h2>app.asx (example)</h2>
+<pre>{
+  "$schema":"asx-shell-v1",
+  "$state":{"user":{"score":0}},
+  "$routes":{"home":{}}
+}</pre>
+</section>
+<section><h2>SCX (optional)</h2>
+<p>Inline control strings like <code>(?) user.score ≥ 10 (∴) (💬&gt;) "Ding"</code>. Parse safely; no <code>eval</code>.</p>
+</section>
+<section><h2>Build & Ship</h2>
+<ol>
+<li>Keep this HTML ≤ ~40KB (no heavy fonts, no libs).</li>
+<li>Host <code>atomic-runtime.html</code> for production; keep this one for local notes.</li>
+<li>Version bump by changing <code>app.asx?v=3</code>.</li>
+</ol>
+</section>
+<footer style="text-align:center;margin:18px 0;color:#6f9">Atomic HTML v3 • Local Guide</footer>

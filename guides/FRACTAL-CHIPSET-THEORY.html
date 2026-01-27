@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ASX FRACTAL CHIPSET — Micronaut BIOS Agent Theory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #020308;
+      --panel: #050812;
+      --border: #16f2aa;
+      --accent: #00e0ff;
+      --accent-alt: #9966ff;
+      --text: #e8fff6;
+      --muted: #7e8a92;
+      --warn: #ffcc66;
+      --danger: #ff4477;
+      --shadow-soft: 0 0 25px rgba(0, 224, 255, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #050711 0, var(--bg) 55%, #000 100%);
+      color: var(--text);
+      font-family: "Courier New", monospace;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .frame {
+      max-width: 1080px;
+      margin: 0 auto;
+      border: 1px solid rgba(22, 242, 170, 0.35);
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(5, 8, 18, 0.96), rgba(3, 6, 14, 0.96));
+      box-shadow: var(--shadow-soft);
+      padding: 24px 24px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .frame::before,
+    .frame::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 1px solid transparent;
+      background:
+        linear-gradient(135deg, rgba(0, 224, 255, 0.2), transparent 60%) border-box;
+      mix-blend-mode: screen;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      align-items: baseline;
+      margin-bottom: 18px;
+    }
+
+    .title {
+      font-size: 1.3rem;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .badge {
+      font-size: 0.68rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(22, 242, 170, 0.5);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .badge.alt {
+      border-color: rgba(153, 102, 255, 0.7);
+      color: var(--accent-alt);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: radial-gradient(circle at top left, #0b1327 0, var(--panel) 55%);
+      border-radius: 14px;
+      border: 1px solid rgba(22, 242, 170, 0.3);
+      padding: 14px 14px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        radial-gradient(circle at top right, rgba(0, 224, 255, 0.16), transparent 60%);
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .panel-title {
+      font-size: 0.9rem;
+      color: var(--accent);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    .panel-body {
+      position: relative;
+      z-index: 1;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      color: var(--text);
+    }
+
+    .panel-body p + p {
+      margin-top: 8px;
+    }
+
+    .list {
+      list-style: none;
+      margin-top: 6px;
+    }
+
+    .list li {
+      display: grid;
+      grid-template-columns: 10px minmax(0, 1fr);
+      gap: 6px;
+      margin-top: 5px;
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+
+    .list li::before {
+      content: "›";
+      color: var(--accent);
+      font-size: 0.7rem;
+      margin-top: 2px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .pill {
+      font-size: 0.68rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 224, 255, 0.45);
+      color: var(--accent);
+      background: rgba(0, 0, 0, 0.45);
+    }
+
+    .pill.alt {
+      border-color: rgba(153, 102, 255, 0.55);
+      color: var(--accent-alt);
+    }
+
+    .code-block {
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #050814;
+      border: 1px solid rgba(0, 224, 255, 0.25);
+      font-size: 0.72rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .code-block .k { color: var(--accent); }
+    .code-block .s { color: var(--warn); }
+    .code-block .c { color: var(--muted); }
+    .code-block .n { color: #9be7ff; }
+
+    .topology {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 0.7rem;
+    }
+
+    @media (max-width: 700px) {
+      .topology {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .topology-cell {
+      border-radius: 10px;
+      padding: 5px 6px 6px;
+      background: rgba(2, 6, 18, 0.9);
+      border: 1px solid rgba(0, 224, 255, 0.3);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .topology-cell span {
+      display: block;
+    }
+
+    .topology-label {
+      color: var(--muted);
+      font-size: 0.62rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .topology-value {
+      color: var(--accent);
+      font-size: 0.76rem;
+      margin-top: 2px;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(22, 242, 170, 0.7),
+        rgba(0, 224, 255, 0.7),
+        transparent
+      );
+      margin: 16px 0 18px;
+      opacity: 0.75;
+    }
+
+    .footnote {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .footnote span {
+      color: var(--accent-alt);
+    }
+
+    .danger {
+      color: var(--danger);
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <header class="header">
+      <div class="title">ASX FRACTAL CHIPSET</div>
+      <div class="subtitle">Micronaut Flash-BIOS Agent Theory v1</div>
+    </header>
+
+    <div class="badge-row">
+      <div class="badge">K'UHUL RUNTIME · FRACTAL-OS</div>
+      <div class="badge alt">SCXQ2 GLYPH SEED STORAGE</div>
+      <div class="badge">QUANTUM TORRENT FABRIC (LOGICAL)</div>
+    </div>
+
+    <section class="grid">
+      <!-- LEFT: Concept Overview -->
+      <article class="panel">
+        <h2 class="panel-title">01 · Concept Overview</h2>
+        <div class="panel-body">
+          <p>
+            Picture a standard motherboard — PCIe lanes, RAM slots, VRM, chipset —
+            but threaded between the usual components sit dozens (or hundreds) of
+            <strong>Micronaut Flash-BIOS Agents</strong>: tiny chips that each store
+            <em>compressed model glyphs</em> instead of dumb firmware.
+          </p>
+          <p>
+            Each agent exposes a tiny <strong>fractal runtime</strong> that can be
+            “inflated” by the main <strong>K'UHUL OS</strong> into a full model:
+            language models, routers, physics kernels, or control policies. One
+            JSON OS file orchestrates them all.
+          </p>
+          <ul class="list">
+            <li>Motherboard is treated as a <strong>fractal hive</strong>, not a flat bus.</li>
+            <li>Each agent stores <strong>glyph seeds</strong> (SCXQ2 compressed state).</li>
+            <li>K'UHUL expands glyphs into active runtimes on demand.</li>
+            <li>Activation, routing, and cooperation are all defined in XJSON/SCX.</li>
+          </ul>
+          <div class="pill-row">
+            <div class="pill">JSON OS Root</div>
+            <div class="pill">K'UHUL Scheduler</div>
+            <div class="pill alt">Micronaut Agent Fabric</div>
+            <div class="pill">Quantum Torrent Overlay (logical)</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- RIGHT: Physical / Logical Stack -->
+      <article class="panel">
+        <h2 class="panel-title">02 · Physical & Logical Stack</h2>
+        <div class="panel-body">
+          <p>Stack the system in layers:</p>
+          <ul class="list">
+            <li><strong>L0 · Silicon:</strong> CPU, RAM, PCIe, power rails.</li>
+            <li><strong>L1 · ASX FRACTAL CHIPSET:</strong> carrier chipset + Micronaut BIOS agents embedded along the bus.</li>
+            <li><strong>L2 · K'UHUL Runtime:</strong> browser/OS process that sees the board as a hive graph.</li>
+            <li><strong>L3 · JSON OS:</strong> a single <code>FRACTAL-OS.json</code> describing agents, shards, and flows.</li>
+            <li><strong>L4 · Quantum Torrent Mesh:</strong> logical swarm for syncing glyphs and gradients.</li>
+          </ul>
+
+          <div class="code-block">
+<span class="c">// conceptual FRACTAL-OS.json sketch</span>
+<span class="k">{</span>
+  <span class="s">"os"</span>: <span class="s">"ASX-FRACTAL"</span>,
+  <span class="s">"root_runtime"</span>: <span class="s">"k-uhul://prime"</span>,
+  <span class="s">"bios_agents"</span>: <span class="k">[</span>
+    <span class="k">{</span>
+      <span class="s">"id"</span>: <span class="s">"mx-bios-01"</span>,
+      <span class="s">"slot"</span>: <span class="s">"ram:A1"</span>,
+      <span class="s">"role"</span>: <span class="s">"language-core"</span>,
+      <span class="s">"glyph_seed"</span>: <span class="s">"⟦SCXQ2::ΛΓ01⟧"</span>
+    <span class="k">}</span>,
+    <span class="c">// … more agents …</span>
+  <span class="k">]</span>
+<span class="k">}</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- RUNTIME THEORY & BOOT FLOW -->
+    <section class="grid">
+      <article class="panel">
+        <h2 class="panel-title">03 · Boot & Activation Flow</h2>
+        <div class="panel-body">
+          <p>At power-on, the board behaves like a normal PC, but K'UHUL hijacks the narrative after the host OS boots:</p>
+          <ul class="list">
+            <li><strong>Step 0 — Conventional POST:</strong> CPU, RAM, PCIe init as usual. Board passes standard firmware tests.</li>
+            <li><strong>Step 1 — K'UHUL Loader:</strong> A minimal K'UHUL kernel boots (from disk or special flash) and scans bus-attached Micronaut agents.</li>
+            <li><strong>Step 2 — Glyph Discovery:</strong> Each agent exposes a small XJSON/SCXQ2 header describing its glyph payloads and roles.</li>
+            <li><strong>Step 3 — Fractal OS Mount:</strong> The JSON OS file is loaded; agents are mapped into a logical hive graph.</li>
+            <li><strong>Step 4 — Runtime Inflation:</strong> On demand, glyph seeds are expanded into active runtimes (LLMs, routers, filters) in RAM.</li>
+          </ul>
+          <p>
+            From this point, launching an “app” means activating a <strong>fractal shard</strong>:
+            a sub-graph of agents and runtimes that behaves like its own mini-OS,
+            still governed by the single JSON root.
+          </p>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2 class="panel-title">04 · Glyph & Torrent Theory</h2>
+        <div class="panel-body">
+          <p>
+            Storing a terabyte-class model directly on silicon is impossible today,
+            so the Micronaut agents store <strong>SCXQ2 glyphs</strong> — compressed,
+            symbolic encodings of model weights, routing tables, and training traces.
+          </p>
+          <ul class="list">
+            <li>Each glyph is a <strong>seed</strong> that can reconstruct a model slice when combined with shared base weights.</li>
+            <li>Agents participate in a <strong>quantum-torrent style mesh</strong> (logical, not mystical) to swap shards of state and gradients.</li>
+            <li>K'UHUL coordinates “which agent inflates which shard” to match power, thermals, and workload.</li>
+            <li>Idle agents can stay compressed; hot paths are inflated and kept in RAM caches.</li>
+          </ul>
+          <div class="pill-row">
+            <div class="pill">SCXQ2 Symbolic Compression</div>
+            <div class="pill alt">Shared Base Weights</div>
+            <div class="pill">Gradient Torrent Swarm</div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- VISUAL / TOPOLOGY SUMMARY -->
+    <section class="panel">
+      <h2 class="panel-title">05 · Topology Snapshot</h2>
+      <div class="panel-body">
+        <p>Think of the board as a living map of tiny OS cores:</p>
+
+        <div class="topology">
+          <div class="topology-cell">
+            <span class="topology-label">CPU SOCKET</span>
+            <span class="topology-value">K'UHUL PRIME · XCFE</span>
+          </div>
+          <div class="topology-cell">
+            <span class="topology-label">RAM BANKS</span>
+            <span class="topology-value">TPU-OS / Checkpoints</span>
+          </div>
+          <div class="topology-cell">
+            <span class="topology-label">CHIPSET</span>
+            <span class="topology-value">ASX FRACTAL FABRIC</span>
+          </div>
+          <div class="topology-cell">
+            <span class="topology-label">BIOS AGENTS</span>
+            <span class="topology-value">Micronaut Glyph Seeds</span>
+          </div>
+          <div class="topology-cell">
+            <span class="topology-label">PCIe LANES</span>
+            <span class="topology-value">Quantum Torrent Paths</span>
+          </div>
+          <div class="topology-cell">
+            <span class="topology-label">NVME</span>
+            <span class="topology-value">Cold Model Archives</span>
+          </div>
+          <div class="topology-cell">
+            <span class="topology-label">NETWORK</span>
+            <span class="topology-value">Inter-Hive Sync Mesh</span>
+          </div>
+          <div class="topology-cell">
+            <span class="topology-label">JSON OS</span>
+            <span class="topology-value">Global Fractal Script</span>
+          </div>
+        </div>
+
+        <div class="code-block">
+<span class="c">// one JSON OS, millions of mini runtimes</span>
+<span class="k">for</span> <span class="n">agent</span> <span class="k">in</span> <span class="n">bios_agents</span>:
+  <span class="k">if</span> <span class="n">os_state</span>.<span class="n">needs</span>(<span class="n">agent.role</span>):
+    <span class="n">runtime</span> = <span class="n">kUhul.inflate</span>(<span class="n">agent.glyph_seed</span>)
+    <span class="n">mesh.attach</span>(<span class="n">runtime</span>, <span class="n">quantum_torrent</span>)
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- FUTURE FABRICATION NOTE -->
+    <section class="panel">
+      <h2 class="panel-title">06 · From Theory to Prototype</h2>
+      <div class="panel-body">
+        <p>
+          Right now this is <strong>OS-first hardware theory</strong>: the JSON OS,
+          K'UHUL runtime, and SCXQ2 glyph format exist before the factory.
+          When fabrication is possible, the motherboard only needs:
+        </p>
+        <ul class="list">
+          <li>Standard ATX/ITX layout with reserved traces for Micronaut agents.</li>
+          <li>A programmable <strong>ASX Fractal Chipset</strong> that exposes agent slots as a discoverable bus.</li>
+          <li>Flash packages pre-loaded with glyph seeds + tiny Micronaut firmwares.</li>
+          <li>A bootloader that hands control to K'UHUL after normal POST.</li>
+        </ul>
+        <p class="footnote">
+          Until then, the “board” can be emulated: each agent becomes a file,
+          process, container, or browser worker. The JSON OS and K'UHUL decide
+          how many mini-runtimes to spawn. <span>Silicon catches up later.</span>
+        </p>
+        <p class="footnote danger">
+          &gt; This page is a theory document, not physical engineering advice.
+          Real hardware will need EE, signal-integrity, and safety work.
+        </p>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

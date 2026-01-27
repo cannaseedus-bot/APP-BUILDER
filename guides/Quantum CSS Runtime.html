@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum CSS Runtime | Compression Universe</title>
+    <style>
+        /* CSS MICRONAUT CONTROL VECTORS */
+        :root {
+            --compression-level: 94.1%;
+            --quantum-speed: 0.2ms;
+            --universe-scale: 1;
+            --data-flow: normal;
+            --logic-execution: running;
+            --pattern-recognition: active;
+            --quantum-state: 0;
+        }
+
+        /* Micronaut Control Classes */
+        .micronaut-db-master {
+            --control-vector: storage;
+            --operation-mode: data-unfolding;
+            --compression-target: database;
+        }
+
+        .micronaut-code-exec {
+            --control-vector: execution;
+            --operation-mode: logic-unfolding;
+            --compression-target: code;
+        }
+
+        .micronaut-lang-parse {
+            --control-vector: parsing;
+            --operation-mode: syntax-unfolding;
+            --compression-target: language;
+        }
+
+        .micronaut-pattern-match {
+            --control-vector: analysis;
+            --operation-mode: pattern-recognition;
+            --compression-target: patterns;
+        }
+
+        .micronaut-ast-gen {
+            --control-vector: generation;
+            --operation-mode: tree-building;
+            --compression-target: ast;
+        }
+
+        .micronaut-vector-ctrl {
+            --control-vector: coordination;
+            --operation-mode: flow-management;
+            --compression-target: universe;
+        }
+
+        /* Compression State Classes */
+        .compression-active {
+            --compression-state: active;
+            --efficiency: 94.1%;
+            animation: compress-pulse 2s infinite;
+        }
+
+        .compression-optimized {
+            --compression-state: optimized;
+            --efficiency: 97.3%;
+            animation: optimize-glow 3s infinite;
+        }
+
+        .compression-maximum {
+            --compression-state: maximum;
+            --efficiency: 99.8%;
+            animation: quantum-oscillate 1s infinite;
+        }
+
+        /* Animation Keyframes for Compression */
+        @keyframes compress-pulse {
+            0%, 100% { --compression-intensity: 0.7; }
+            50% { --compression-intensity: 1; }
+        }
+
+        @keyframes optimize-glow {
+            0%, 100% { 
+                --compression-glow: 0;
+                filter: drop-shadow(0 0 5px rgba(22, 242, 170, 0.3));
+            }
+            50% { 
+                --compression-glow: 1;
+                filter: drop-shadow(0 0 20px rgba(22, 242, 170, 0.8));
+            }
+        }
+
+        @keyframes quantum-oscillate {
+            0%, 100% { --quantum-state: 0; }
+            25% { --quantum-state: 0.25; }
+            50% { --quantum-state: 0.5; }
+            75% { --quantum-state: 0.75; }
+        }
+
+        /* Base Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #0a0a1a; 
+            color: #e9f5ff; 
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+        
+        .header { 
+            text-align: center; 
+            padding: 40px 0; 
+            border-bottom: 1px solid rgba(22, 242, 170, 0.3); 
+            margin-bottom: 40px; 
+        }
+        
+        h1 { 
+            font-size: 3rem; 
+            color: #16f2aa; 
+            letter-spacing: 4px; 
+            margin-bottom: 15px; 
+            text-shadow: 0 0 20px rgba(22, 242, 170, 0.5); 
+        }
+        
+        .subtitle { 
+            color: #00e0ff; 
+            font-size: 1.3rem; 
+            letter-spacing: 2px; 
+        }
+        
+        /* Grid System */
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+            gap: 30px; 
+            margin-bottom: 50px; 
+        }
+        
+        /* Cards */
+        .card { 
+            background: #070b12; 
+            border: 1px solid rgba(22, 242, 170, 0.2); 
+            border-radius: 15px; 
+            padding: 30px; 
+            transition: all 0.3s ease; 
+            position: relative; 
+            overflow: hidden; 
+        }
+        
+        .card:hover { 
+            border-color: #16f2aa; 
+            box-shadow: 0 0 25px rgba(22, 242, 170, 0.2); 
+            transform: translateY(-5px); 
+        }
+        
+        .card-title { 
+            color: #16f2aa; 
+            font-size: 1.5rem; 
+            margin-bottom: 20px; 
+            border-bottom: 1px solid rgba(22, 242, 170, 0.3); 
+            padding-bottom: 10px; 
+        }
+        
+        /* Code Blocks */
+        .code-block { 
+            background: rgba(0, 0, 0, 0.4); 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin: 15px 0; 
+            font-size: 0.9rem; 
+            overflow-x: auto; 
+            border-left: 3px solid #16f2aa; 
+        }
+        
+        /* Micronaut Control Panel */
+        .micronaut-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .micronaut-card {
+            background: rgba(22, 242, 170, 0.05);
+            border: 1px solid rgba(22, 242, 170, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .micronaut-card.active {
+            background: rgba(22, 242, 170, 0.15);
+            border-color: #16f2aa;
+            box-shadow: 0 0 15px rgba(22, 242, 170, 0.4);
+        }
+        
+        .micronaut-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #9966ff;
+        }
+        
+        .micronaut-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #16f2aa;
+        }
+        
+        .micronaut-status {
+            font-size: 0.8rem;
+            color: #7b8a9a;
+        }
+        
+        /* Compression Visualization */
+        .compression-visual {
+            height: 200px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .compression-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(22, 242, 170, 0.1), transparent);
+        }
+        
+        .compression-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #16f2aa;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+        
+        /* Control Interface */
+        .control-interface {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn { 
+            background: rgba(22, 242, 170, 0.1); 
+            border: 1px solid #16f2aa; 
+            color: #e9f5ff; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-family: 'Courier New', monospace; 
+            transition: all 0.3s ease; 
+        }
+        
+        .control-btn:hover { 
+            background: rgba(22, 242, 170, 0.2); 
+            transform: translateY(-2px); 
+        }
+        
+        .control-btn.active {
+            background: rgba(22, 242, 170, 0.3);
+            box-shadow: 0 0 10px rgba(22, 242, 170, 0.5);
+        }
+        
+        /* Metrics Display */
+        .metrics-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #16f2aa;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #7b8a9a;
+        }
+        
+        /* Quantum CSS Output */
+        .quantum-output {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            border-left: 3px solid #9966ff;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .output-line {
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .output-timestamp {
+            color: #7b8a9a;
+            margin-right: 10px;
+        }
+        
+        /* Demo Elements */
+        .demo-element {
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            background: rgba(22, 242, 170, 0.05);
+            border: 1px solid rgba(22, 242, 170, 0.2);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Quantum CSS Runtime</h1>
+            <div class="subtitle">Compression Universe with CSS Micronaut Control</div>
+        </div>
+
+        <div class="grid">
+            <!-- Quantum CSS Runtime -->
+            <div class="card">
+                <div class="card-title">⚛️ Quantum CSS Runtime</div>
+                <p>Real-time CSS compression and expansion with Micronaut control vectors.</p>
+                
+                <div class="code-block">
+// K'UHUL Compressed CSS Examples
+⟁m⟁0_auto⟁⟁p⟁20px⟁⟁bd⟁1px_solid_#16f2aa⟁
+⟁d⟁grid⟁⟁gtc⟁repeat(3,1fr)⟁⟁gap⟁20px⟁
+⟁c⟁#e9f5ff⟁⟁b⟁#070b12⟁⟁br⟁15px⟁
+                </div>
+
+                <div class="control-interface">
+                    <button class="control-btn" id="expandBtn">Expand CSS</button>
+                    <button class="control-btn" id="compressBtn">Compress CSS</button>
+                    <button class="control-btn" id="applyBtn">Apply Quantum CSS</button>
+                </div>
+
+                <div class="quantum-output" id="quantumOutput">
+                    <div class="output-line">
+                        <span class="output-timestamp">[00:00:00]</span>
+                        <span>Quantum CSS Runtime initialized</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CSS Control Vectors -->
+            <div class="card">
+                <div class="card-title">🎛️ CSS Control Vectors</div>
+                <p>CSS custom properties as control mechanisms for compression operations.</p>
+                
+                <div class="micronaut-panel" id="micronautPanel">
+                    <!-- Micronauts will be added here by JavaScript -->
+                </div>
+
+                <div class="control-interface">
+                    <button class="control-btn" id="activateBtn">Activate Compression</button>
+                    <button class="control-btn" id="optimizeBtn">Optimize Flow</button>
+                    <button class="control-btn" id="maximizeBtn">Maximum Compression</button>
+                    <button class="control-btn" id="resetBtn">Reset System</button>
+                </div>
+
+                <div class="compression-visual" id="compressionVisual">
+                    <div class="compression-wave"></div>
+                    <!-- Particles will be added by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Demo Area -->
+        <div class="card">
+            <div class="card-title">🎮 Live Quantum CSS Demo</div>
+            
+            <div class="control-interface">
+                <button class="control-btn" id="demoLayout">Demo Layout</button>
+                <button class="control-btn" id="demoAnimation">Demo Animation</button>
+                <button class="control-btn" id="demoEffects">Demo Effects</button>
+                <button class="control-btn" id="clearDemo">Clear Demo</button>
+            </div>
+
+            <div class="metrics-display">
+                <div class="metric-card">
+                    <div class="metric-value" id="efficiencyValue">94.1%</div>
+                    <div class="metric-label">Compression Efficiency</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="speedValue">0.2ms</div>
+                    <div class="metric-label">Execution Speed</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="memoryValue">12KB</div>
+                    <div class="metric-label">Memory Usage</div>
+                </div>
+            </div>
+
+            <div id="demoArea" class="demo-area">
+                <div class="demo-element" id="demoElement1">
+                    Quantum Element 1
+                </div>
+                <div class="demo-element" id="demoElement2">
+                    Quantum Element 2
+                </div>
+                <div class="demo-element" id="demoElement3">
+                    Quantum Element 3
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quantum CSS Runtime with Micronaut Integration
+        class QuantumCSSRuntime {
+            constructor() {
+                this.expandedCSS = new Map();
+                this.loadTime = performance.now();
+                this.micronauts = [
+                    { id: 'db-master', name: 'DB Master µ', icon: '🗄️', status: 'Active', vector: 'storage' },
+                    { id: 'code-exec', name: 'Code Exec µ', icon: '⚡', status: 'Active', vector: 'execution' },
+                    { id: 'lang-parse', name: 'Lang Parse µ', icon: '🔤', status: 'Active', vector: 'parsing' },
+                    { id: 'pattern-match', name: 'Pattern Match µ', icon: '🔍', status: 'Active', vector: 'analysis' },
+                    { id: 'ast-gen', name: 'AST Gen µ', icon: '🌳', status: 'Active', vector: 'generation' },
+                    { id: 'vector-ctrl', name: 'Vector Ctrl µ', icon: '🎮', status: 'Active', vector: 'coordination' }
+                ];
+                
+                this.compressionState = 'active';
+                this.efficiency = 94.1;
+                this.speed = 0.2;
+                this.memory = 12;
+                
+                this.init();
+            }
+            
+            init() {
+                this.renderMicronauts();
+                this.setupEventListeners();
+                this.startCompressionVisualization();
+                this.updateMetrics();
+                this.log('SYSTEM', 'Quantum CSS Runtime initialized');
+            }
+            
+            expandKuhulCSS(compressedCSS) {
+                const startTime = performance.now();
+                const result = compressedCSS.replace(/⟁([^⟁]+)⟁([^⟁]+)⟁/g, (match, prop, value) => {
+                    const expandedProp = this.expandProperty(prop);
+                    const expandedValue = this.expandValue(value);
+                    return `${expandedProp}:${expandedValue};`;
+                });
+                
+                const endTime = performance.now();
+                this.log('EXPAND', `CSS expansion completed in ${(endTime - startTime).toFixed(2)}ms`);
+                return result;
+            }
+            
+            expandProperty(compressed) {
+                const expansionMap = {
+                    'm': 'margin', 'p': 'padding', 'c': 'color', 'b': 'background',
+                    'bd': 'border', 'd': 'display', 'gtc': 'grid-template-columns',
+                    'br': 'border-radius', 'mxw': 'max-width', 'w': 'width',
+                    'h': 'height', 'pos': 'position', 't': 'top', 'l': 'left',
+                    'bg': 'background', 'fs': 'font-size', 'fw': 'font-weight',
+                    'ta': 'text-align', 'jc': 'justify-content', 'ai': 'align-items',
+                    'gap': 'gap', 'flex': 'flex', 'grid': 'grid'
+                };
+                return expansionMap[compressed] || compressed;
+            }
+            
+            expandValue(compressed) {
+                return compressed
+                    .replace(/_/g, ' ')
+                    .replace(/#([0-9a-f]{3})/g, '#$1$1')
+                    .replace(/(\d)(?=[a-z%])/g, '$1px')
+                    .replace(/rem_/g, 'rem ')
+                    .replace(/deg_/g, 'deg ');
+            }
+            
+            // Apply CSS at runtime
+            applyQuantumCSS(selector, kuhulCSS) {
+                const expanded = this.expandKuhulCSS(kuhulCSS);
+                const style = document.createElement('style');
+                style.className = 'quantum-css-generated';
+                style.textContent = `${selector} {${expanded}}`;
+                document.head.appendChild(style);
+                
+                this.log('APPLY', `Applied quantum CSS to ${selector}`);
+                this.log('CSS', `Generated: ${expanded}`);
+                
+                return expanded;
+            }
+            
+            // Compress CSS to K'UHUL format
+            compressCSS(css) {
+                const propertyMap = {
+                    'margin': 'm', 'padding': 'p', 'color': 'c', 'background': 'b',
+                    'border': 'bd', 'display': 'd', 'grid-template-columns': 'gtc',
+                    'border-radius': 'br', 'max-width': 'mxw', 'width': 'w',
+                    'height': 'h', 'position': 'pos', 'top': 't', 'left': 'l',
+                    'font-size': 'fs', 'font-weight': 'fw', 'text-align': 'ta',
+                    'justify-content': 'jc', 'align-items': 'ai', 'gap': 'gap'
+                };
+                
+                return css.replace(/([^{]+\{)([^}]+)(\})/g, (match, selector, properties, close) => {
+                    const compressedProps = properties.split(';').filter(p => p.trim()).map(prop => {
+                        const [key, value] = prop.split(':').map(s => s.trim());
+                        const compressedKey = propertyMap[key] || key;
+                        const compressedValue = value
+                            .replace(/px/g, '')
+                            .replace(/ /g, '_')
+                            .replace(/#([0-9a-f]{6})/g, (m, hex) => 
+                                hex[0] === hex[1] && hex[2] === hex[3] && hex[4] === hex[5] ? 
+                                `#${hex[0]}${hex[2]}${hex[4]}` : m);
+                        
+                        return `⟁${compressedKey}⟁${compressedValue}⟁`;
+                    }).join('');
+                    
+                    return `${selector}${compressedProps}${close}`;
+                });
+            }
+            
+            renderMicronauts() {
+                const panel = document.getElementById('micronautPanel');
+                panel.innerHTML = '';
+                
+                this.micronauts.forEach(micronaut => {
+                    const card = document.createElement('div');
+                    card.className = 'micronaut-card';
+                    card.id = `micronaut-${micronaut.id}`;
+                    card.innerHTML = `
+                        <div class="micronaut-icon">${micronaut.icon}</div>
+                        <div class="micronaut-name">${micronaut.name}</div>
+                        <div class="micronaut-status">${micronaut.status}</div>
+                        <div class="micronaut-vector">Vector: ${micronaut.vector}</div>
+                    `;
+                    
+                    card.addEventListener('click', () => this.toggleMicronaut(micronaut.id));
+                    panel.appendChild(card);
+                });
+            }
+            
+            setupEventListeners() {
+                document.getElementById('expandBtn').addEventListener('click', () => this.demoExpand());
+                document.getElementById('compressBtn').addEventListener('click', () => this.demoCompress());
+                document.getElementById('applyBtn').addEventListener('click', () => this.demoApply());
+                
+                document.getElementById('activateBtn').addEventListener('click', () => this.setCompressionState('active'));
+                document.getElementById('optimizeBtn').addEventListener('click', () => this.setCompressionState('optimized'));
+                document.getElementById('maximizeBtn').addEventListener('click', () => this.setCompressionState('maximum'));
+                document.getElementById('resetBtn').addEventListener('click', () => this.resetSystem());
+                
+                document.getElementById('demoLayout').addEventListener('click', () => this.demoLayout());
+                document.getElementById('demoAnimation').addEventListener('click', () => this.demoAnimation());
+                document.getElementById('demoEffects').addEventListener('click', () => this.demoEffects());
+                document.getElementById('clearDemo').addEventListener('click', () => this.clearDemo());
+            }
+            
+            setCompressionState(state) {
+                this.compressionState = state;
+                document.body.classList.remove('compression-active', 'compression-optimized', 'compression-maximum');
+                document.body.classList.add(`compression-${state}`);
+                
+                // Update metrics based on state
+                switch(state) {
+                    case 'active':
+                        this.efficiency = 94.1;
+                        this.speed = 0.2;
+                        this.memory = 12;
+                        break;
+                    case 'optimized':
+                        this.efficiency = 97.3;
+                        this.speed = 0.15;
+                        this.memory = 8;
+                        break;
+                    case 'maximum':
+                        this.efficiency = 99.8;
+                        this.speed = 0.08;
+                        this.memory = 4;
+                        break;
+                }
+                
+                this.updateMetrics();
+                this.log('COMPRESSION', `State: ${state} | Efficiency: ${this.efficiency}%`);
+            }
+            
+            toggleMicronaut(micronautId) {
+                const card = document.getElementById(`micronaut-${micronautId}`);
+                card.classList.toggle('active');
+                
+                const micronaut = this.micronauts.find(m => m.id === micronautId);
+                micronaut.status = card.classList.contains('active') ? 'Enhanced' : 'Active';
+                
+                document.querySelector(`#micronaut-${micronautId} .micronaut-status`).textContent = micronaut.status;
+                
+                // Apply CSS control class
+                document.body.classList.toggle(`micronaut-${micronautId}`);
+                
+                this.log('MICRONAUT', `${micronaut.name} ${micronaut.status.toLowerCase()}`);
+            }
+            
+            startCompressionVisualization() {
+                const visual = document.getElementById('compressionVisual');
+                
+                // Create compression particles
+                for (let i = 0; i < 30; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'compression-particle';
+                    
+                    // Random position
+                    const left = Math.random() * 100;
+                    const bottom = Math.random() * 100;
+                    
+                    particle.style.left = `${left}%`;
+                    particle.style.bottom = `${bottom}%`;
+                    
+                    // Random animation
+                    const duration = 2 + Math.random() * 3;
+                    const delay = Math.random() * 5;
+                    
+                    particle.style.animation = `float ${duration}s ${delay}s infinite ease-in-out`;
+                    
+                    visual.appendChild(particle);
+                }
+            }
+            
+            updateMetrics() {
+                document.getElementById('efficiencyValue').textContent = `${this.efficiency}%`;
+                document.getElementById('speedValue').textContent = `${this.speed}ms`;
+                document.getElementById('memoryValue').textContent = `${this.memory}KB`;
+            }
+            
+            log(module, message) {
+                const output = document.getElementById('quantumOutput');
+                const timestamp = new Date().toLocaleTimeString();
+                const entry = document.createElement('div');
+                entry.className = 'output-line';
+                entry.innerHTML = `<span class="output-timestamp">[${timestamp}]</span> <span>${module}: ${message}</span>`;
+                output.appendChild(entry);
+                output.scrollTop = output.scrollHeight;
+                
+                // Limit to 15 lines
+                const lines = output.querySelectorAll('.output-line');
+                if (lines.length > 15) {
+                    lines[0].remove();
+                }
+            }
+            
+            // Demo Methods
+            demoExpand() {
+                const compressed = '⟁d⟁grid⟁⟁gtc⟁repeat(3,1fr)⟁⟁gap⟁20px⟁⟁p⟁30px⟁⟁b⟁#070b12⟁⟁br⟁15px⟁';
+                const expanded = this.expandKuhulCSS(compressed);
+                this.log('DEMO', `Expanded: ${expanded}`);
+            }
+            
+            demoCompress() {
+                const css = `.demo-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 30px; background: #070b12; border-radius: 15px; }`;
+                const compressed = this.compressCSS(css);
+                this.log('DEMO', `Compressed: ${compressed}`);
+            }
+            
+            demoApply() {
+                const compressedCSS = '⟁d⟁flex⟁⟁jc⟁center⟁⟁ai⟁center⟁⟁p⟁20px⟁⟁b⟁#16f2aa⟁⟁c⟁#0a0a1a⟁⟁br⟁10px⟁⟁fw⟁bold⟁';
+                this.applyQuantumCSS('#demoElement1', compressedCSS);
+            }
+            
+            demoLayout() {
+                const layoutCSS = '⟁d⟁grid⟁⟁gtc⟁1fr_2fr_1fr⟁⟁gap⟁15px⟁⟁p⟁25px⟁⟁b⟁rgba(22,242,170,0.1)⟁⟁bd⟁2px_solid_#16f2aa⟁⟁br⟁12px⟁';
+                this.applyQuantumCSS('#demoArea', layoutCSS);
+                this.log('DEMO', 'Applied grid layout to demo area');
+            }
+            
+            demoAnimation() {
+                const animationCSS = '⟁b⟁linear-gradient(45deg,#16f2aa,#9966ff)⟁⟁animation⟁pulse_2s_infinite⟁⟁c⟁#0a0a1a⟁⟁p⟁25px⟁⟁br�️⟁8px⟁⟁ta⟁center⟁⟁fw⟁bold⟁';
+                this.applyQuantumCSS('#demoElement2', animationCSS);
+                
+                // Add pulse animation
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes pulse {
+                        0%, 100% { transform: scale(1); opacity: 1; }
+                        50% { transform: scale(1.05); opacity: 0.8; }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                this.log('DEMO', 'Applied animation to demo element');
+            }
+            
+            demoEffects() {
+                const effectsCSS = '⟁b⟁rgba(153,102,255,0.15)⟁⟁bd⟁1px_solid_#9966ff⟁⟁box-shadow⟁0_0_20px_rgba(153,102,255,0.3)⟁⟁p⟁20px⟁⟁br⟁10px⟁⟁transform⟁rotate(2deg)⟁⟁transition⟁all_0.3s_ease⟁';
+                this.applyQuantumCSS('#demoElement3', effectsCSS);
+                this.log('DEMO', 'Applied glow effects to demo element');
+            }
+            
+            clearDemo() {
+                // Remove generated styles
+                document.querySelectorAll('.quantum-css-generated').forEach(style => style.remove());
+                this.log('DEMO', 'Cleared all quantum CSS');
+            }
+            
+            resetSystem() {
+                document.body.className = '';
+                this.micronauts.forEach(m => {
+                    const card = document.getElementById(`micronaut-${m.id}`);
+                    if (card) card.classList.remove('active');
+                    m.status = 'Active';
+                });
+                
+                this.setCompressionState('active');
+                this.renderMicronauts();
+                this.clearDemo();
+                this.log('SYSTEM', 'Reset to default state');
+            }
+        }
+
+        // Add floating animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
+                50% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize the system when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.quantumCSSRuntime = new QuantumCSSRuntime();
+        });
+    </script>
+</body>
+</html>

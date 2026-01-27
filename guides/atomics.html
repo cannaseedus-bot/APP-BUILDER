@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en" ⟁flex ⟁col ⟁bg1 ⟁text style="min-height:100%;">
+<head>
+  <meta charset="UTF-8" />
+  <title>ASXR MICRONAUT PORTAL — ATOMIC SINGLE FILE v∞</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- ========================= ATOMIC CSS v∞ (Compressed Ops) ========================= -->
+  <style>
+    /* ============================================================
+       ATOMIC CSS FOUNDATION - SCX COMPRESSION PRINCIPLES
+       ============================================================ */
+
+    :root {
+      /* SCX Color Tokens - Compressed Semantic Palette */
+      --⟁bg: #050811;
+      --⟁bg1: #050811;
+      --⟁bg2: #090f1c;
+      --⟁bg3: #0f1728;
+      --⟁bg4: #11182c;
+      --⟁editor: #05060c;
+      --⟁gutter: #0b0f1a;
+
+      --⟁fg: #e8f5ff;
+      --⟁fg2: #7a8699;
+      --⟁fg3: #4b5568;
+
+      --⟁ac1: #16f2aa;
+      --⟁ac2: #00f5ff;
+      --⟁ac3: #9c88ff;
+      --⟁ac4: #ff6b6b;
+      --⟁ac5: #ffd166;
+
+      --⟁code-key: #ffcc66;
+      --⟁code-str: #79c0ff;
+      --⟁code-fn: #c792ea;
+      --⟁code-com: #5c6370;
+      --⟁code-num: #f78c6c;
+
+      /* SCX Spacing Scale - Compressed Ratios */
+      --⟁s1: 4px;
+      --⟁s2: 8px;
+      --⟁s3: 12px;
+      --⟁s4: 16px;
+      --⟁s5: 24px;
+      --⟁s6: 32px;
+      --⟁s7: 48px;
+
+      /* SCX Border Radius - Compressed Progression */
+      --⟁r1: 4px;
+      --⟁r2: 8px;
+      --⟁r3: 12px;
+      --⟁r4: 16px;
+      --⟁r5: 24px;
+
+      /* SCX Typography - Compressed Scale */
+      --⟁fs1: 11px;
+      --⟁fs2: 12px;
+      --⟁fs3: 14px;
+      --⟁fs4: 16px;
+      --⟁fs5: 20px;
+      --⟁fs6: 24px;
+
+      /* Atomic runtime variables */
+      --entropy: 0.5;
+      --innovation: 0.6;
+      --stability: 0.8;
+      --energy: 0.3;
+      --pulse: 0.5;
+      --glow: 0.0;
+
+      --time-factor: 1.0;
+      --time-phase: 0deg;
+      --time-tick: 0s;
+    }
+
+    /* ============================================================
+       K'UHUL EXECUTION PATTERNS - ATOMIC CSS OPERATIONS
+       ============================================================ */
+
+    /* [Pop] - Layout Container Operations */
+    [⟁flex] { display: flex; }
+    [⟁grid] { display: grid; }
+    [⟁block] { display: block; }
+    [⟁inline] { display: inline; }
+    [⟁hidden] { display: none; }
+
+    /* [Wo] - Direction & Flow Operations */
+    [⟁row] { flex-direction: row; }
+    [⟁col] { flex-direction: column; }
+    [⟁wrap] { flex-wrap: wrap; }
+    [⟁nowrap] { flex-wrap: nowrap; }
+
+    /* [Yax] - Alignment Operations */
+    [⟁center] {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    [⟁acenter] { align-items: center; }
+    [⟁jcenter] { justify-content: center; }
+    [⟁aleft] { align-items: flex-start; }
+    [⟁aright] { align-items: flex-end; }
+    [⟁jleft] { justify-content: flex-start; }
+    [⟁jright] { justify-content: flex-end; }
+    [⟁jbetween] { justify-content: space-between; }
+    [⟁jaround] { justify-content: space-around; }
+
+    /* [Sek] - Spacing Operations */
+    [⟁p1] { padding: var(--⟁s1); }
+    [⟁p2] { padding: var(--⟁s2); }
+    [⟁p3] { padding: var(--⟁s3); }
+    [⟁p4] { padding: var(--⟁s4); }
+    [⟁p5] { padding: var(--⟁s5); }
+
+    [⟁px1] { padding-left: var(--⟁s1); padding-right: var(--⟁s1); }
+    [⟁px2] { padding-left: var(--⟁s2); padding-right: var(--⟁s2); }
+    [⟁px3] { padding-left: var(--⟁s3); padding-right: var(--⟁s3); }
+    [⟁px4] { padding-left: var(--⟁s4); padding-right: var(--⟁s4); }
+
+    [⟁py1] { padding-top: var(--⟁s1); padding-bottom: var(--⟁s1); }
+    [⟁py2] { padding-top: var(--⟁s2); padding-bottom: var(--⟁s2); }
+    [⟁py3] { padding-top: var(--⟁s3); padding-bottom: var(--⟁s3); }
+    [⟁py4] { padding-top: var(--⟁s4); padding-bottom: var(--⟁s4); }
+
+    [⟁m1] { margin: var(--⟁s1); }
+    [⟁m2] { margin: var(--⟁s2); }
+    [⟁m3] { margin: var(--⟁s3); }
+    [⟁m4] { margin: var(--⟁s4); }
+
+    [⟁mx-auto] { margin-left: auto; margin-right: auto; }
+
+    /* [Ch'en] - Gap Operations */
+    [⟁g1] { gap: var(--⟁s1); }
+    [⟁g2] { gap: var(--⟁s2); }
+    [⟁g3] { gap: var(--⟁s3); }
+    [⟁g4] { gap: var(--⟁s4); }
+    [⟁g5] { gap: var(--⟁s5); }
+
+    /* [K'ayab'] - Border & Radius Operations */
+    [⟁border] { border: 1px solid var(--⟁fg3); }
+    [⟁border-soft] { border: 1px solid rgba(255, 255, 255, 0.05); }
+    [⟁border-ac1] { border: 1px solid var(--⟁ac1); }
+    [⟁border-ac2] { border: 1px solid var(--⟁ac2); }
+    [⟁border-ac4] { border: 1px solid var(--⟁ac4); }
+
+    [⟁rounded] { border-radius: var(--⟁r2); }
+    [⟁rounded-lg] { border-radius: var(--⟁r4); }
+    [⟁rounded-full] { border-radius: 9999px; }
+
+    /* [Kumk'u] - Background Operations */
+    [⟁bg1] { background: radial-gradient(circle at top, #0b1120 0, #020617 45%, #000 100%); }
+    [⟁bg2] { background: linear-gradient(135deg, #050816, #020617); }
+    [⟁bg3] { background: linear-gradient(135deg, #0b1220, #020617); }
+    [⟁bg4] { background: #020617; }
+
+    [⟁bg-ac1] { background: var(--⟁ac1); color: #020617; }
+    [⟁bg-ac2] { background: var(--⟁ac2); color: #020617; }
+    [⟁bg-ac3] { background: var(--⟁ac3); color: #020617; }
+    [⟁bg-ac4] { background: var(--⟁ac4); color: #020617; }
+
+    [⟁glass] {
+      background: rgba(10, 16, 32, 0.96);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+    }
+
+    /* [Xul] - Text & Typography Operations */
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      color: var(--⟁fg);
+      background: var(--⟁bg1);
+    }
+
+    [⟁text] { color: var(--⟁fg); }
+    [⟁text2] { color: var(--⟁fg2); }
+    [⟁text3] { color: var(--⟁fg3); }
+
+    [⟁text-ac1] { color: var(--⟁ac1); }
+    [⟁text-ac2] { color: var(--⟁ac2); }
+    [⟁text-ac3] { color: var(--⟁ac3); }
+    [⟁text-ac4] { color: var(--⟁ac4); }
+
+    [⟁fs1] { font-size: var(--⟁fs1); }
+    [⟁fs2] { font-size: var(--⟁fs2); }
+    [⟁fs3] { font-size: var(--⟁fs3); }
+    [⟁fs4] { font-size: var(--⟁fs4); }
+    [⟁fs5] { font-size: var(--⟁fs5); }
+    [⟁fs6] { font-size: var(--⟁fs6); }
+
+    [⟁bold] { font-weight: 700; }
+    [⟁semibold] { font-weight: 600; }
+    [⟁medium] { font-weight: 500; }
+
+    [⟁text-center] { text-align: center; }
+    [⟁text-left] { text-align: left; }
+    [⟁text-right] { text-align: right; }
+
+    /* ============================================================
+       SCX COMPRESSION PATTERNS - COMPOUND OPERATIONS
+       ============================================================ */
+
+    /* Panel Components - Compressed UI Patterns */
+    [⟁panel] {
+      display: flex;
+      flex-direction: column;
+      padding: var(--⟁s4);
+      background: var(--⟁bg3);
+      border-radius: var(--⟁r3);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    [⟁card] {
+      display: flex;
+      flex-direction: column;
+      padding: var(--⟁s3);
+      background: #020617;
+      border-radius: var(--⟁r2);
+      border: 1px solid rgba(148,163,184,0.35);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.9);
+    }
+
+    [⟁button] {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--⟁s2) var(--⟁s4);
+      background: var(--⟁ac1);
+      color: #020617;
+      border-radius: var(--⟁r2);
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease-out;
+      font-size: var(--⟁fs2);
+    }
+
+    [⟁button]:hover {
+      background: var(--⟁ac2);
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(34,211,238,0.35);
+    }
+
+    [⟁button-alt] {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--⟁s2) var(--⟁s4);
+      background: #020617;
+      color: var(--⟁fg2);
+      border-radius: var(--⟁r2);
+      border: 1px solid rgba(148,163,184,0.4);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.16s ease-out;
+      font-size: var(--⟁fs2);
+    }
+
+    [⟁button-alt]:hover {
+      border-color: var(--⟁ac3);
+      color: var(--⟁ac3);
+      transform: translateY(-1px);
+    }
+
+    /* Grid System */
+    [⟁grid-2] {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+      gap: var(--⟁s4);
+    }
+
+    [⟁grid-3] {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: var(--⟁s4);
+    }
+
+    [⟁grid-auto] {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--⟁s4);
+    }
+
+    /* Inputs */
+    [⟁input] {
+      width: 100%;
+      padding: var(--⟁s2) var(--⟁s3);
+      background: #020617;
+      border: 1px solid rgba(148,163,184,0.45);
+      border-radius: var(--⟁r2);
+      color: var(--⟁fg);
+      font-size: var(--⟁fs2);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    [⟁input]:focus {
+      outline: none;
+      border-color: var(--⟁ac1);
+      box-shadow: 0 0 0 1px rgba(45,212,191,0.5);
+    }
+
+    textarea[⟁input] {
+      resize: vertical;
+      min-height: 120px;
+      max-height: 220px;
+      line-height: 1.4;
+      white-space: pre;
+      overflow-wrap: normal;
+      overflow-x: auto;
+    }
+
+    /* Editor Shell */
+    .editor-root {
+      min-height: 100vh;
+      padding: var(--⟁s4);
+      box-sizing: border-box;
+    }
+
+    .editor-shell {
+      border-radius: var(--⟁r4);
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,0.4);
+      background:
+        radial-gradient(circle at top left, rgba(56,189,248,0.18), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(45,212,191,0.18), transparent 55%),
+        #020617;
+      box-shadow:
+        0 32px 80px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+    }
+
+    .editor-header {
+      background: linear-gradient(90deg, #020617, #020617);
+      border-bottom: 1px solid rgba(148,163,184,0.4);
+      padding: var(--⟁s2) var(--⟁s4);
+    }
+
+    .editor-tabs {
+      background: linear-gradient(90deg, #020617, #020617);
+      border-bottom: 1px solid rgba(15,23,42,1);
+      padding: 0 var(--⟁s4);
+    }
+
+    .editor-main {
+      background: radial-gradient(circle at top, #020617 0, #020617 40%, #020617 100%);
+    }
+
+    /* Code gutter + content */
+    .code-pane {
+      background: #020617;
+      border-radius: var(--⟁r2);
+      border: 1px solid rgba(15,23,42,0.9);
+      overflow: hidden;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: var(--⟁fs1);
+    }
+
+    .code-header {
+      background: #020617;
+      border-bottom: 1px solid rgba(15,23,42,1);
+      padding: var(--⟁s2) var(--⟁s3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--⟁fg2);
+    }
+
+    .code-body {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      max-height: 280px;
+      overflow: hidden;
+    }
+
+    .code-gutter {
+      background: var(--⟁gutter);
+      padding: var(--⟁s2) var(--⟁s2);
+      color: var(--⟁fg3);
+      text-align: right;
+      user-select: none;
+      border-right: 1px solid rgba(15,23,42,1);
+      min-width: 40px;
+    }
+
+    .code-lines {
+      padding: var(--⟁s2) var(--⟁s3);
+      color: var(--⟁fg);
+      overflow: auto;
+      white-space: pre;
+    }
+
+    .code-comment { color: var(--⟁code-com); }
+    .code-key { color: var(--⟁code-key); }
+    .code-str { color: var(--⟁code-str); }
+    .code-fn { color: var(--⟁code-fn); }
+    .code-num { color: var(--⟁code-num); }
+
+    /* Energy + Temporal Animations */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.82; transform: scale(1.04); }
+    }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 0px rgba(45,212,191,0); }
+      50% { box-shadow: 0 0 calc(var(--glow) * 42px) rgba(45,212,191,0.72); }
+    }
+
+    @keyframes entropy-pulse {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(calc(var(--entropy) * 360deg)); }
+    }
+
+    @keyframes time-orbit {
+      0% { transform: rotate(0deg) translateX(0); }
+      100% { transform: rotate(360deg) translateX(0); }
+    }
+
+    .energy-pulse { animation: pulse calc(1.2s / max(var(--pulse),0.1)) infinite; }
+    .energy-glow { animation: glow 2.4s infinite; }
+    .energy-entropy { animation: entropy-pulse 3.2s infinite linear; }
+
+    .time-orbit {
+      animation: time-orbit calc(12s / max(var(--time-factor),0.25)) infinite linear;
+      transform-origin: center;
+    }
+
+    /* API State Tags */
+    .api-tag {
+      border-radius: 9999px;
+      padding: 2px 10px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid rgba(148,163,184,0.5);
+    }
+
+    .api-tag-online {
+      color: var(--⟁ac1);
+      border-color: rgba(45,212,191,0.7);
+      background: radial-gradient(circle at top left, rgba(45,212,191,0.20), transparent 55%);
+    }
+
+    .api-tag-micronaut {
+      color: var(--⟁ac3);
+      border-color: rgba(168,85,247,0.8);
+      background: radial-gradient(circle at bottom right, rgba(168,85,247,0.20), transparent 55%);
+    }
+
+    /* Energy Bars */
+    .energy-bar {
+      width: 100%;
+      height: 8px;
+      background: #020617;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(15,23,42,0.9);
+    }
+
+    .energy-fill {
+      height: 100%;
+      transition: width 0.3s ease;
+      border-radius: 999px;
+    }
+
+    /* API log + feed */
+    .scroll-pane {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      background: #020617;
+      border-radius: var(--⟁r2);
+      border: 1px solid rgba(15,23,42,1);
+      padding: var(--⟁s2);
+      overflow-y: auto;
+    }
+
+    /* Responsive */
+    @media (max-width: 1080px) {
+      [⟁grid-2] {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      [⟁mobile-col] { flex-direction: column; }
+      [⟁mobile-stack] > * { margin-bottom: var(--⟁s3); }
+      [⟁mobile-center] { text-align: center; align-items: center; }
+    }
+  </style>
+</head>
+
+<body ⟁flex ⟁col class="editor-root">
+  <!-- ========================= TOP-LEVEL EDITOR SHELL ========================= -->
+  <div class="editor-shell" ⟁flex ⟁col>
+
+    <!-- Header Bar -->
+    <header class="editor-header" ⟁flex ⟁row ⟁jbetween ⟁acenter ⟁g3>
+      <div ⟁flex ⟁row ⟁acenter ⟁g2>
+        <div ⟁flex ⟁row ⟁acenter ⟁g1>
+          <span style="width:10px;height:10px;border-radius:999px;background:#ef4444;"></span>
+          <span style="width:10px;height:10px;border-radius:999px;background:#f59e0b;"></span>
+          <span style="width:10px;height:10px;border-radius:999px;background:#22c55e;"></span>
+        </div>
+        <div ⟁flex ⟁row ⟁acenter ⟁g2>
+          <span ⟁text2 ⟁fs2 ⟁semibold>ASXR / MICRONAUT</span>
+          <span ⟁text-ac1 ⟁fs2>v∞ — Single File Atomic Portal</span>
+        </div>
+      </div>
+
+      <div ⟁flex ⟁row ⟁acenter ⟁g2>
+        <div class="api-tag api-tag-micronaut">MICRONAUT TAPE ONLINE</div>
+        <div class="api-tag api-tag-online">LOCAL API · JSON → DOM</div>
+      </div>
+    </header>
+
+    <!-- Tab Bar -->
+    <div class="editor-tabs" ⟁flex ⟁row ⟁g2 ⟁acenter style="height:36px;">
+      <button ⟁button-alt data-tab="portal" id="tab-portal" style="padding:4px 10px;border-radius:999px;border-color:var(--⟁ac1);color:var(--⟁ac1);background:#020617;">
+        index.html
+      </button>
+      <button ⟁button-alt data-tab="tape" id="tab-tape" style="padding:4px 10px;border-radius:999px;">
+        tape_asxr_micronaut.json
+      </button>
+      <button ⟁button-alt data-tab="api" id="tab-api" style="padding:4px 10px;border-radius:999px;">
+        atomic_api.json
+      </button>
+      <button ⟁button-alt data-tab="brain" id="tab-brain" style="padding:4px 10px;border-radius:999px;">
+        micronaut_brain
+      </button>
+    </div>
+
+    <!-- Main Content -->
+    <main class="editor-main" ⟁flex ⟁row ⟁g3 style="padding:16px;box-sizing:border-box;">
+
+      <!-- LEFT: CODE / TAPE / BRAIN VIEW -->
+      <section id="left-pane" ⟁flex ⟁col ⟁g3 style="flex:0 0 40%;max-width:40%;min-width:320px;">
+
+        <!-- CODE VIEW: TAPE (ASXR MICRONAUT) -->
+        <div id="view-tape" class="code-pane">
+          <div class="code-header">
+            <span>tape_asxr_micronaut.json</span>
+            <span ⟁text2 ⟁fs1>ASXR Tape · Micronaut Shard</span>
+          </div>
+          <div class="code-body">
+            <div class="code-gutter" id="gutter-tape"></div>
+            <pre class="code-lines" id="code-tape"></pre>
+          </div>
+        </div>
+
+        <!-- CODE VIEW: ATOMIC API -->
+        <div id="view-api" class="code-pane" style="display:none;">
+          <div class="code-header">
+            <span>atomic_api.json</span>
+            <span ⟁text2 ⟁fs1>JSON API · Endpoints · State</span>
+          </div>
+          <div class="code-body">
+            <div class="code-gutter" id="gutter-api"></div>
+            <pre class="code-lines" id="code-api"></pre>
+          </div>
+        </div>
+
+        <!-- CODE VIEW: MICRONAUT BRAIN -->
+        <div id="view-brain" class="code-pane" style="display:none;">
+          <div class="code-header">
+            <span>micronaut_brain</span>
+            <span ⟁text2 ⟁fs1>Virtual Agent · Tasks · Lexicon Hooks</span>
+          </div>
+          <div class="code-body">
+            <div class="code-gutter" id="gutter-brain"></div>
+            <pre class="code-lines" id="code-brain"></pre>
+          </div>
+        </div>
+
+        <!-- CODE VIEW: PORTAL (READONLY SNAPSHOT) -->
+        <div id="view-portal" class="code-pane" style="display:none;">
+          <div class="code-header">
+            <span>index.html (portal snapshot)</span>
+            <span ⟁text2 ⟁fs1>Atomic Portal · JSON → DOM</span>
+          </div>
+          <div class="code-body">
+            <div class="code-gutter" id="gutter-portal"></div>
+            <pre class="code-lines" id="code-portal"></pre>
+          </div>
+        </div>
+
+        <!-- MICRONAUT CONSOLE -->
+        <div ⟁panel ⟁g2 style="margin-top:16px;">
+          <div ⟁flex ⟁row ⟁jbetween ⟁acenter>
+            <span ⟁text-ac2 ⟁fs3 ⟁semibold>🤖 Micronaut Console</span>
+            <span ⟁text2 ⟁fs1 id="micronaut-status">IDLE</span>
+          </div>
+          <div ⟁flex ⟁row ⟁g2 style="margin-top:8px;">
+            <input id="micronaut-task-input" ⟁input placeholder="Describe a task for Micronaut (e.g. 'analyze prompt', 'suggest n-gram buckets')" />
+            <button ⟁button-alt onclick="sendMicronautTask()">RUN</button>
+          </div>
+          <div class="scroll-pane" id="micronaut-log" style="margin-top:8px;height:110px;">
+            <!-- Micronaut task logs -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT: PORTAL UI (ATOMIC API + STATE VISUALIZER) -->
+      <section id="portal-pane" ⟁flex ⟁col ⟁g3 style="flex:1;">
+
+        <!-- PORTAL HEADER + ENERGY HUD -->
+        <div ⟁panel ⟁g3>
+          <div ⟁flex ⟁row ⟁jbetween ⟁acenter>
+            <div ⟁flex ⟁row ⟁acenter ⟁g2>
+              <span ⟁text-ac1 ⟁fs5 ⟁bold>⚡ ATOMIC PORTAL — ASXR MICRONAUT</span>
+              <span ⟁text2 ⟁fs2>Single-file runtime · JSON → DOM · Micronaut tape</span>
+            </div>
+            <div ⟁flex ⟁row ⟁acenter ⟁g2>
+              <div ⟁flex ⟁row ⟁acenter ⟁g2 ⟁px3 ⟁py1 ⟁bg3 ⟁rounded-full>
+                <div class="energy-pulse" style="width:10px;height:10px;border-radius:999px;background:var(--⟁ac1);"></div>
+                <span ⟁text2 ⟁fs2>Energy <span id="energy-value">0.30</span></span>
+              </div>
+              <div ⟁flex ⟁row ⟁acenter ⟁g2 ⟁px3 ⟁py1 ⟁bg3 ⟁rounded-full>
+                <div class="energy-entropy" style="width:10px;height:10px;border-radius:999px;background:var(--⟁ac2);"></div>
+                <span ⟁text2 ⟁fs2>Entropy <span id="entropy-value">0.50</span></span>
+              </div>
+              <div class="time-orbit" style="width:18px;height:18px;border-radius:999px;border:1px dashed rgba(148,163,184,0.6);display:flex;align-items:center;justify-content:center;">
+                <div style="width:6px;height:6px;border-radius:999px;background:var(--⟁ac3);"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MAIN GRID: API COMMANDER + STATE VISUALIZER -->
+        <div ⟁grid-2 ⟁g4 style="margin-top:8px;">
+
+          <!-- LEFT: API COMMANDER -->
+          <div ⟁panel ⟁g3 ⟁bg3>
+            <div ⟁flex ⟁row ⟁jbetween ⟁acenter>
+              <span ⟁text-ac2 ⟁fs4 ⟁semibold>🔌 API Commander</span>
+              <span ⟁text2 ⟁fs1>Commands: <span id="api-count">0</span></span>
+            </div>
+
+            <textarea id="api-command" ⟁input rows="9" spellcheck="false"
+              placeholder='{"@control":"@render","@data":{"type":"welcome","message":"Atomic Portal Active"}}'>
+{
+  "@control": "@render",
+  "@data": {
+    "type": "welcome",
+    "message": "Atomic Portal Active",
+    "subtitle": "ASXR Micronaut listening.",
+    "energy": 0.7
+  }
+}</textarea>
+
+            <div ⟁flex ⟁row ⟁g2>
+              <button ⟁button onclick="executeAPI()">▶ EXECUTE</button>
+              <button ⟁button-alt onclick="clearCommands()">🗑 CLEAR</button>
+              <button ⟁button-alt onclick="loadExample()">📋 EXAMPLE</button>
+            </div>
+
+            <!-- Quick Commands -->
+            <div ⟁flex ⟁row ⟁wrap ⟁g2 style="margin-top:8px;">
+              <button ⟁button-alt class="quick-command"
+                data-command='{"@control":"@update_energy","@data":{"energy":0.9,"entropy":0.7}}'>
+                ⚡ HIGH ENERGY
+              </button>
+              <button ⟁button-alt class="quick-command"
+                data-command='{"@control":"@render_block","@data":{"type":"grid","columns":3,"rows":2}}'>
+                🌀 3×2 GRID
+              </button>
+              <button ⟁button-alt class="quick-command"
+                data-command='{"@control":"@animate","@data":{"animation":"pulse","speed":2}}'>
+                🎨 PULSE
+              </button>
+              <button ⟁button-alt class="quick-command"
+                data-command='{"@control":"@micronaut_task","@data":{"agent":"planner","task":"summarize portal state"}}'>
+                🤖 MICRONAUT
+              </button>
+              <button ⟁button-alt class="quick-command"
+                data-command='{"@control":"@lexicon_ingest","@data":{"text":"Atomic portal online. Micronaut ready for tasks."}}'>
+                🧠 INGEST TEXT
+              </button>
+            </div>
+          </div>
+
+          <!-- RIGHT: STATE VISUALIZER -->
+          <div ⟁panel ⟁g3 ⟁bg3>
+            <div ⟁flex ⟁row ⟁jbetween ⟁acenter>
+              <span ⟁text-ac3 ⟁fs4 ⟁semibold>📊 State Visualizer</span>
+              <span ⟁text2 ⟁fs1 id="system-status">ACTIVE</span>
+            </div>
+
+            <!-- System Stats -->
+            <div ⟁flex ⟁col ⟁g2>
+              <div ⟁flex ⟁row ⟁jbetween>
+                <span ⟁text2 ⟁fs2>System Status</span>
+                <span ⟁text-ac1 ⟁fs2 id="system-status-tag">ONLINE</span>
+              </div>
+              <div ⟁flex ⟁row ⟁jbetween>
+                <span ⟁text2 ⟁fs2>Last Update</span>
+                <span ⟁text2 ⟁fs2 id="last-update">--:--:--</span>
+              </div>
+              <div ⟁flex ⟁row ⟁jbetween>
+                <span ⟁text2 ⟁fs2>Micronaut Tasks</span>
+                <span ⟁text-ac2 ⟁fs2 id="micronaut-task-count">0</span>
+              </div>
+            </div>
+
+            <!-- Energy Bars -->
+            <div style="margin-top:8px;" ⟁flex ⟁col ⟁g2>
+              <div>
+                <div ⟁flex ⟁row ⟁jbetween>
+                  <span ⟁text2 ⟁fs2>Entropy</span>
+                  <span ⟁text2 ⟁fs2 id="entropy-display">0.50</span>
+                </div>
+                <div class="energy-bar">
+                  <div class="energy-fill" id="entropy-bar" style="width:50%;background:var(--⟁ac2);"></div>
+                </div>
+              </div>
+
+              <div>
+                <div ⟁flex ⟁row ⟁jbetween>
+                  <span ⟁text2 ⟁fs2>Innovation</span>
+                  <span ⟁text2 ⟁fs2 id="innovation-display">0.60</span>
+                </div>
+                <div class="energy-bar">
+                  <div class="energy-fill" id="innovation-bar" style="width:60%;background:var(--⟁ac1);"></div>
+                </div>
+              </div>
+
+              <div>
+                <div ⟁flex ⟁row ⟁jbetween>
+                  <span ⟁text2 ⟁fs2>Stability</span>
+                  <span ⟁text2 ⟁fs2 id="stability-display">0.80</span>
+                </div>
+                <div class="energy-bar">
+                  <div class="energy-fill" id="stability-bar" style="width:80%;background:var(--⟁ac3);"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Feed -->
+            <div style="margin-top:12px;">
+              <span ⟁text-ac4 ⟁fs3>📡 Live Feed</span>
+              <div class="scroll-pane" id="live-feed" style="margin-top:4px;height:110px;">
+                <!-- Live feed events -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RENDER ZONE -->
+        <div ⟁panel ⟁g3 ⟁bg3 style="margin-top:8px;">
+          <div ⟁flex ⟁row ⟁jbetween ⟁acenter>
+            <span ⟁text-ac4 ⟁fs4 ⟁semibold>🎨 Render Zone</span>
+            <span ⟁text2 ⟁fs1>DOM rendered from JSON API</span>
+          </div>
+          <div id="render-output" ⟁flex ⟁col ⟁g3 ⟁p3 ⟁bg2 ⟁rounded style="margin-top:6px;">
+            <div ⟁flex ⟁col ⟁center ⟁p4 ⟁border-ac1 ⟁rounded class="energy-glow">
+              <h3 ⟁text-ac1 ⟁fs4>Welcome to ASXR Micronaut Portal</h3>
+              <p ⟁text-center ⟁text2 ⟁fs2>
+                JSON → API → Micronaut → DOM — all inside a single atomic file.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- API LOG -->
+        <div ⟁panel ⟁g2 ⟁bg3 style="margin-top:8px;">
+          <div ⟁flex ⟁row ⟁jbetween ⟁acenter>
+            <span ⟁text2 ⟁fs3>📝 API Log</span>
+            <span ⟁text2 ⟁fs1>Init: <span id="init-time">--:--:--</span></span>
+          </div>
+          <div class="scroll-pane" id="api-log" style="margin-top:4px;height:130px;">
+            <!-- Log entries -->
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- ========================= EMBEDDED TAPE (ASXR MICRONAUT) ========================= -->
+  <script type="application/json" id="asxr-tape">
+  {
+    "@context": "asxr://tape/micronaut/v1",
+    "@name": "tape_asxr_micronaut_single_file",
+    "@description": "Single-file ASXR Micronaut tape: JSON → API → DOM, with virtual Micronaut agents and lexicon hooks.",
+    "@mode": "micro-asxr",
+    "@shard_id": "mx2_micronaut_portal",
+    "@atomic_law": "ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK",
+
+    "runtime": {
+      "entry": "@atomic_portal",
+      "api_dom_bridge": "@atomic_api",
+      "lexicon_enabled": true,
+      "micronaut_enabled": true
+    },
+
+    "micronauts": [
+      {
+        "id": "mn_planner",
+        "name": "Micronaut Planner",
+        "role": "planning_and_commentary",
+        "state": {
+          "tasks_received": 0,
+          "last_task": null,
+          "last_summary": null
+        }
+      },
+      {
+        "id": "mn_lexicon",
+        "name": "Lexicon Keeper",
+        "role": "word_stats_n_grams",
+        "state": {
+          "tokens_seen": 0,
+          "bigrams_seen": 0,
+          "trigrams_seen": 0
+        }
+      }
+    ],
+
+    "lexicon": {
+      "tables": [
+        "lexicon_words",
+        "lexicon_bigrams",
+        "lexicon_trigrams",
+        "lexicon_stats"
+      ],
+      "schema": {
+        "lexicon_words": {
+          "token": "string",
+          "freq": "number",
+          "categories": "array[string]",
+          "last_seen": "number"
+        },
+        "lexicon_bigrams": {
+          "pair": "string",
+          "freq": "number",
+          "confidence": "number",
+          "semantic_link": "string"
+        },
+        "lexicon_trigrams": {
+          "chain": "string",
+          "freq": "number",
+          "reason_type": "string"
+        },
+        "lexicon_stats": {
+          "total_tokens": "number",
+          "unique_words": "number",
+          "updated": "number",
+          "entropy": "number"
+        }
+      }
+    },
+
+    "pipelines": {
+      "lexicon_ingest": {
+        "input": "@text",
+        "steps": [
+          "@tokenize_words",
+          "@update_unigrams",
+          "@update_bigrams",
+          "@update_trigrams",
+          "@update_stats"
+        ],
+        "output": "@lexicon_update_summary"
+      }
+    }
+  }
+  </script>
+
+  <!-- ========================= EMBEDDED ATOMIC API DEFINITION ========================= -->
+  <script type="application/json" id="atomic-api">
+  {
+    "@context": "atomic://portal/api/v∞",
+    "@name": "ATOMIC_PORTAL_API",
+    "@state": "active",
+
+    "endpoints": {
+      "@render": {
+        "description": "Render content into the DOM Render Zone",
+        "handler": "renderHandler"
+      },
+      "@update_energy": {
+        "description": "Update entropy / innovation / stability / energy CSS vars",
+        "handler": "energyHandler"
+      },
+      "@animate": {
+        "description": "Apply portal animations to the render output",
+        "handler": "animateHandler"
+      },
+      "@render_block": {
+        "description": "Render block-level components (grid, card, metric)",
+        "handler": "blockHandler"
+      },
+      "@execute_sequence": {
+        "description": "Execute a sequence of API commands over time",
+        "handler": "sequenceHandler"
+      },
+      "@micronaut_task": {
+        "description": "Send a virtual task to Micronaut and log the result",
+        "handler": "micronautHandler"
+      },
+      "@lexicon_ingest": {
+        "description": "Ingest text into an in-memory lexicon (word / n-gram stats)",
+        "handler": "lexiconHandler"
+      }
+    },
+
+    "state": {
+      "entropy": 0.5,
+      "innovation": 0.6,
+      "stability": 0.8,
+      "energy": 0.3,
+      "pulse": 0.5,
+      "glow": 0.0,
+      "api_calls": 0,
+      "last_command": null,
+      "system_status": "active",
+      "micronaut_tasks": 0
+    },
+
+    "render_templates": {
+      "welcome": {
+        "html": "<div ⟁flex ⟁col ⟁center ⟁g2 ⟁p4 ⟁bg2 ⟁rounded ⟁border-ac1 class='energy-glow'><h3 ⟁text-ac1 ⟁fs4>{{message}}</h3><p ⟁text-center ⟁text2 ⟁fs2>{{subtitle}}</p></div>",
+        "css_vars": { "--glow": "{{energy}}" }
+      },
+      "grid": {
+        "html": "<div ⟁grid-{{columns}} ⟁g4 ⟁p3 ⟁bg2 ⟁rounded>{{#cells}}<div ⟁p3 ⟁bg3 ⟁rounded ⟁center>Cell {{.}}</div>{{/cells}}</div>"
+      },
+      "metric": {
+        "html": "<div ⟁flex ⟁row ⟁jbetween ⟁p3 ⟁bg2 ⟁rounded ⟁border><span ⟁text2>{{label}}</span><span ⟁text-ac1>{{value}}</span></div>"
+      }
+    }
+  }
+  </script>
+
+  <!-- ========================= ASXR MICRONAUT PORTAL ENGINE ========================= -->
+  <script>
+    // Simple in-memory "MX2DB-like" lexicon tables for this single-file tape
+    const Lexicon = {
+      words: new Map(),
+      bigrams: new Map(),
+      trigrams: new Map(),
+      stats: {
+        total_tokens: 0,
+        unique_words: 0,
+        updated: Date.now(),
+        entropy: 0
+      }
+    };
+
+    // Utility: tokenize words very simply
+    function tokenizeWords(text) {
+      return (text || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]+/g, " ")
+        .split(/\s+/)
+        .filter(Boolean);
+    }
+
+    function updateLexicon(text) {
+      const words = tokenizeWords(text);
+      const n = words.length;
+      Lexicon.stats.total_tokens += n;
+      const uniqueSet = new Set();
+
+      // unigrams
+      for (let i = 0; i < n; i++) {
+        const w = words[i];
+        uniqueSet.add(w);
+        const prev = Lexicon.words.get(w) || { token: w, freq: 0, last_seen: 0 };
+        prev.freq += 1;
+        prev.last_seen = Date.now();
+        Lexicon.words.set(w, prev);
+      }
+
+      // bigrams
+      for (let i = 0; i < n - 1; i++) {
+        const pair = `${words[i]} ${words[i+1]}`;
+        const prev = Lexicon.bigrams.get(pair) || { pair, freq: 0, confidence: 0, semantic_link: "sequence" };
+        prev.freq += 1;
+        Lexicon.bigrams.set(pair, prev);
+      }
+
+      // trigrams
+      for (let i = 0; i < n - 2; i++) {
+        const chain = `${words[i]} ${words[i+1]} ${words[i+2]}`;
+        const prev = Lexicon.trigrams.get(chain) || { chain, freq: 0, reason_type: "sequence" };
+        prev.freq += 1;
+        Lexicon.trigrams.set(chain, prev);
+      }
+
+      Lexicon.stats.unique_words = Lexicon.words.size;
+      Lexicon.stats.updated = Date.now();
+
+      // toy entropy: log(unique)/log(total+1)
+      if (Lexicon.stats.total_tokens > 0) {
+        const u = Lexicon.stats.unique_words || 1;
+        const t = Lexicon.stats.total_tokens;
+        Lexicon.stats.entropy = Math.log(u) / Math.log(t + 1);
+      }
+
+      return {
+        tokens: n,
+        unique: Lexicon.stats.unique_words,
+        entropy: Lexicon.stats.entropy
+      };
+    }
+
+    // ===================== ASXR Micronaut Single-File Runtime =====================
+    const ASXR = {
+      tape: null,
+      apiDef: null,
+      micronauts: {},
+      state: {
+        micronautTasks: 0
+      },
+
+      init() {
+        this.tape = JSON.parse(document.getElementById('asxr-tape').textContent);
+        this.apiDef = JSON.parse(document.getElementById('atomic-api').textContent);
+
+        // Initialize Micronaut agents from tape
+        if (this.tape.micronauts) {
+          for (const m of this.tape.micronauts) {
+            this.micronauts[m.id] = {
+              meta: m,
+              state: Object.assign({}, m.state)
+            };
+          }
+        }
+      },
+
+      // Send a virtual "task" to Micronaut planner
+      micronautTask(task, agentId = "mn_planner") {
+        const agent = this.micronauts[agentId];
+        if (!agent) {
+          return {
+            ok: false,
+            message: `Micronaut agent not found: ${agentId}`
+          };
+        }
+
+        agent.state.tasks_received += 1;
+        agent.state.last_task = task;
+
+        // Cheap "summary" — in real runtime this is where MX2LM would think
+        const length = task.length;
+        const words = tokenizeWords(task).length;
+        const summary = `Task#${agent.state.tasks_received}: ${words} words, ${length} chars, mode=virtual`;
+
+        agent.state.last_summary = summary;
+        this.state.micronautTasks += 1;
+
+        return {
+          ok: true,
+          agent: agentId,
+          summary,
+          tasks: agent.state.tasks_received
+        };
+      }
+    };
+
+    // ========================== Atomic API Engine ==========================
+    const AtomicAPI = {
+      api: null,
+      state: {
+        entropy: 0.5,
+        innovation: 0.6,
+        stability: 0.8,
+        energy: 0.3,
+        pulse: 0.5,
+        glow: 0.0,
+        apiCalls: 0,
+        lastCommand: null,
+        systemStatus: 'active',
+        micronautTasks: 0
+      },
+      history: [],
+
+      init() {
+        this.api = JSON.parse(document.getElementById('atomic-api').textContent);
+        Object.assign(this.state, {
+          entropy: this.api.state.entropy,
+          innovation: this.api.state.innovation,
+          stability: this.api.state.stability,
+          energy: this.api.state.energy,
+          pulse: this.api.state.pulse,
+          glow: this.api.state.glow,
+          apiCalls: this.api.state.api_calls,
+          lastCommand: this.api.state.last_command,
+          systemStatus: this.api.state.system_status,
+          micronautTasks: this.api.state.micronaut_tasks
+        });
+
+        // Hook quick commands
+        document.querySelectorAll('.quick-command').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const raw = e.currentTarget.getAttribute('data-command');
+            try {
+              const cmd = JSON.parse(raw);
+              this.execute(cmd);
+            } catch (err) {
+              this.log(`Quick command JSON error: ${err.message}`, 'error');
+            }
+          });
+        });
+
+        document.getElementById('init-time').textContent = new Date().toLocaleTimeString();
+        this.updateUI();
+        this.startEnergyPulse();
+        this.initTabs();
+        this.initCodeSnapshots();
+
+        this.log('System initialized');
+        return this;
+      },
+
+      // --------------------- Command Execution ---------------------
+      async execute(command) {
+        try {
+          if (!command || typeof command !== 'object') {
+            throw new Error('Command must be an object');
+          }
+          if (!command['@control']) {
+            throw new Error('Command missing @control field');
+          }
+
+          const ctl = command['@control'];
+          const data = command['@data'] || {};
+
+          this.state.apiCalls++;
+          this.state.lastCommand = ctl;
+          this.log(`Executing: ${ctl}`, 'info');
+
+          const endpoint = this.api.endpoints[ctl];
+          if (!endpoint) {
+            throw new Error(`Unknown command: ${ctl}`);
+          }
+
+          const handlerName = endpoint.handler;
+          const handler = this[handlerName];
+          if (typeof handler !== 'function') {
+            throw new Error(`Handler not implemented: ${handlerName}`);
+          }
+
+          const result = await handler.call(this, data);
+          this.updateUI();
+          this.log(`✓ ${ctl} completed`, 'success');
+          return result;
+        } catch (err) {
+          this.log(`✗ Error: ${err.message}`, 'error');
+          throw err;
+        }
+      },
+
+      // --------------------- Handlers ---------------------
+
+      renderHandler(data) {
+        const templateName = data.type || 'welcome';
+        const template = this.api.render_templates[templateName];
+        if (!template) {
+          throw new Error(`Template not found: ${templateName}`);
+        }
+
+        let html = template.html;
+        // simple substitutions
+        Object.keys(data).forEach(key => {
+          const val = data[key];
+          const placeholder = `{{${key}}}`;
+          html = html.replace(new RegExp(placeholder, 'g'), val);
+        });
+
+        // simple array support for "cells"
+        if (data.cells && Array.isArray(data.cells)) {
+          const cellsHtml = data.cells.map((c, idx) =>
+            `<div ⟁p3 ⟁bg3 ⟁rounded ⟁center>Cell ${c || idx + 1}</div>`
+          ).join('');
+          html = html.replace(/{{#cells}}.*{{\/cells}}/, cellsHtml);
+        }
+
+        if (template.css_vars) {
+          Object.entries(template.css_vars).forEach(([key, val]) => {
+            const resolved = this.resolveValue(val, data);
+            document.documentElement.style.setProperty(key, resolved);
+          });
+        }
+
+        const out = document.getElementById('render-output');
+        out.innerHTML = html;
+        return { rendered: templateName };
+      },
+
+      energyHandler(data) {
+        for (const [key, val] of Object.entries(data)) {
+          if (this.state.hasOwnProperty(key)) {
+            this.state[key] = Number(val);
+          }
+        }
+        return { updated: Object.keys(data) };
+      },
+
+      animateHandler(data) {
+        const { animation, speed = 1, target = '#render-output' } = data;
+        const el = document.querySelector(target) || document.getElementById('render-output');
+
+        if (!el) return { animated: false };
+
+        switch (animation) {
+          case 'pulse':
+            el.style.animation = `pulse ${1 / Math.max(speed,0.1)}s infinite`;
+            break;
+          case 'glow':
+            el.classList.add('energy-glow');
+            break;
+          case 'entropy':
+            el.classList.add('energy-entropy');
+            break;
+        }
+        return { animated: animation, target };
+      },
+
+      blockHandler(data) {
+        const { type, columns = 3, rows = 3, content } = data;
+        let html = '';
+
+        if (type === 'grid') {
+          html = `<div ⟁grid-${columns} ⟁g4 ⟁p3 ⟁bg2 ⟁rounded>`;
+          for (let i = 0; i < columns * rows; i++) {
+            html += `<div ⟁p3 ⟁bg3 ⟁rounded ⟁center>Cell ${i + 1}</div>`;
+          }
+          html += `</div>`;
+        } else if (type === 'card') {
+          html = `<div ⟁flex ⟁col ⟁g2 ⟁p3 ⟁bg2 ⟁rounded ⟁border-ac1>
+            <h3 ⟁text-ac1>${content?.title || 'Card'}</h3>
+            <p ⟁text2>${content?.body || 'Content goes here.'}</p>
+          </div>`;
+        } else if (type === 'metric') {
+          html = `<div ⟁flex ⟁row ⟁jbetween ⟁p3 ⟁bg2 ⟁rounded ⟁border>
+            <span ⟁text2>${content?.label || 'Metric'}</span>
+            <span ⟁text-ac1>${content?.value || '0'}</span>
+          </div>`;
+        }
+
+        const out = document.getElementById('render-output');
+        out.innerHTML = html;
+        return { block: type, rendered: true };
+      },
+
+      sequenceHandler(data) {
+        const cmds = data.commands || [];
+        if (!Array.isArray(cmds) || cmds.length === 0) {
+          throw new Error('commands must be non-empty array');
+        }
+        cmds.forEach((cmd, idx) => {
+          setTimeout(() => {
+            this.execute(cmd).catch(() => {});
+          }, idx * 120);
+        });
+        return { sequence: 'started', length: cmds.length };
+      },
+
+      micronautHandler(data) {
+        const task = data.task || '(empty task)';
+        const agentId = data.agent || 'mn_planner';
+
+        const res = ASXR.micronautTask(task, agentId);
+        if (!res.ok) {
+          this.log(`Micronaut error: ${res.message}`, 'error');
+          return res;
+        }
+
+        this.state.micronautTasks = ASXR.state.micronautTasks;
+        const consoleEl = document.getElementById('micronaut-log');
+        const time = new Date().toLocaleTimeString();
+
+        const entry = document.createElement('div');
+        entry.style.color = 'var(--⟁fg2)';
+        entry.textContent = `[${time}] ${res.summary}`;
+        consoleEl.prepend(entry);
+
+        const statusEl = document.getElementById('micronaut-status');
+        statusEl.textContent = `TASKS: ${res.tasks}`;
+        statusEl.style.color = 'var(--⟁ac3)';
+
+        this.log(`Micronaut (${agentId}) accepted task`, 'success');
+        return res;
+      },
+
+      lexiconHandler(data) {
+        const text = data.text || '';
+        const res = updateLexicon(text);
+
+        this.log(`Lexicon ingested ${res.tokens} tokens (entropy=${res.entropy.toFixed(3)})`, 'info');
+
+        const consoleEl = document.getElementById('micronaut-log');
+        const time = new Date().toLocaleTimeString();
+        const entry = document.createElement('div');
+        entry.style.color = 'var(--⟁ac2)';
+        entry.textContent = `[${time}] Lexicon: tokens=${res.tokens}, unique=${res.unique}, H=${res.entropy.toFixed(3)}`;
+        consoleEl.prepend(entry);
+
+        return res;
+      },
+
+      // --------------------- Utilities ---------------------
+      resolveValue(template, data) {
+        return String(template).replace(/\{\{(\w+)\}\}/g, (m, key) => {
+          if (data && key in data) return data[key];
+          if (key in this.state) return this.state[key];
+          return m;
+        });
+      },
+
+      updateUI() {
+        document.getElementById('energy-value').textContent = this.state.energy.toFixed(2);
+        document.getElementById('entropy-value').textContent = this.state.entropy.toFixed(2);
+
+        document.getElementById('entropy-display').textContent = this.state.entropy.toFixed(2);
+        document.getElementById('innovation-display').textContent = this.state.innovation.toFixed(2);
+        document.getElementById('stability-display').textContent = this.state.stability.toFixed(2);
+
+        document.getElementById('api-count').textContent = this.state.apiCalls;
+        document.getElementById('system-status').textContent = this.state.systemStatus.toUpperCase();
+        document.getElementById('system-status-tag').textContent = this.state.systemStatus.toUpperCase();
+        document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+        document.getElementById('micronaut-task-count').textContent = this.state.micronautTasks;
+
+        document.getElementById('entropy-bar').style.width = (this.state.entropy * 100) + '%';
+        document.getElementById('innovation-bar').style.width = (this.state.innovation * 100) + '%';
+        document.getElementById('stability-bar').style.width = (this.state.stability * 100) + '%';
+
+        const root = document.documentElement;
+        root.style.setProperty('--entropy', this.state.entropy);
+        root.style.setProperty('--innovation', this.state.innovation);
+        root.style.setProperty('--stability', this.state.stability);
+        root.style.setProperty('--energy', this.state.energy);
+        root.style.setProperty('--pulse', this.state.pulse);
+        root.style.setProperty('--glow', this.state.glow);
+      },
+
+      startEnergyPulse() {
+        let t = 0;
+        setInterval(() => {
+          t += 0.08;
+          const pulse = 0.4 + Math.sin(t) * 0.14;
+          this.state.pulse = pulse;
+          document.documentElement.style.setProperty('--pulse', pulse);
+        }, 80);
+      },
+
+      log(message, type = 'info') {
+        const el = document.getElementById('api-log');
+        if (!el) return;
+        const time = new Date().toLocaleTimeString();
+        const color = (
+          type === 'error' ? 'var(--⟁ac4)' :
+          type === 'success' ? 'var(--⟁ac1)' :
+          'var(--⟁fg2)'
+        );
+
+        const line = document.createElement('div');
+        line.style.color = color;
+        line.style.margin = '2px 0';
+        line.textContent = `> ${time}: ${message}`;
+        el.prepend(line);
+
+        const feed = document.getElementById('live-feed');
+        if (feed) {
+          const fline = document.createElement('div');
+          fline.style.color = color;
+          fline.style.fontSize = '11px';
+          fline.textContent = `${time}: ${message}`;
+          feed.prepend(fline);
+          while (feed.children.length > 16) {
+            feed.removeChild(feed.lastChild);
+          }
+        }
+      },
+
+      // Tabs + code views
+      initTabs() {
+        const tabs = ['portal','tape','api','brain'];
+        tabs.forEach(name => {
+          const btn = document.getElementById(`tab-${name}`);
+          if (!btn) return;
+          btn.addEventListener('click', () => {
+            tabs.forEach(n2 => {
+              const b2 = document.getElementById(`tab-${n2}`);
+              if (b2) {
+                b2.style.borderColor = 'rgba(148,163,184,0.4)';
+                b2.style.color = 'var(--⟁fg2)';
+              }
+              const viewId =
+                n2 === 'portal' ? 'view-portal' :
+                n2 === 'tape' ? 'view-tape' :
+                n2 === 'api' ? 'view-api' : 'view-brain';
+              const pane = document.getElementById(viewId);
+              if (pane) pane.style.display = 'none';
+            });
+            btn.style.borderColor = 'var(--⟁ac1)';
+            btn.style.color = 'var(--⟁ac1)';
+            const showId =
+              name === 'portal' ? 'view-portal' :
+              name === 'tape' ? 'view-tape' :
+              name === 'api' ? 'view-api' : 'view-brain';
+            const pane = document.getElementById(showId);
+            if (pane) pane.style.display = 'block';
+          });
+        });
+
+        // default: show tape
+        document.getElementById('tab-tape').click();
+      },
+
+      // Fill left code windows with pretty-printed snapshots
+      initCodeSnapshots() {
+        const tapeJson = JSON.parse(document.getElementById('asxr-tape').textContent);
+        const apiJson = this.api;
+        const brainSnapshot = {
+          micronauts: Object.keys(ASXR.micronauts),
+          lexicon_tables: Array.from([
+            ...Lexicon.words.keys()
+          ]).slice(0, 6),
+          tape_shard: ASXR.tape['@shard_id'] || ASXR.tape['@shardId'] || 'mx2_micronaut_portal'
+        };
+
+        function fillCode(gutterId, codeId, obj) {
+          const gutter = document.getElementById(gutterId);
+          const code = document.getElementById(codeId);
+          if (!gutter || !code) return;
+          const text = JSON.stringify(obj, null, 2);
+          const lines = text.split('\n');
+          gutter.textContent = lines.map((_, idx) => String(idx+1).padStart(3,' ')).join('\n');
+
+          // simple highlighting
+          const highlighted = text
+            .replace(/"(.*?)":/g, '<span class="code-key">"$1"</span>:')
+            .replace(/"([^"]*)"/g, '<span class="code-str">"$1"</span>')
+            .replace(/\b(true|false|null)\b/g, '<span class="code-num">$1</span>')
+            .replace(/\b(\d+(\.\d+)?)\b/g, '<span class="code-num">$1</span>');
+          code.innerHTML = highlighted;
+        }
+
+        fillCode('gutter-tape', 'code-tape', tapeJson);
+        fillCode('gutter-api', 'code-api', apiJson);
+
+        // brain pseudo-view
+        const brainText = [
+          "// Micronaut Brain — virtual cortex (client-side)",
+          "const MicronautBrain = {",
+          "  agents: [",
+          "    'mn_planner // planning_and_commentary',",
+          "    'mn_lexicon // word_stats_n_grams'",
+          "  ],",
+          "  hooks: {",
+          "    lexicon_ingest: 'updateLexicon(text)',",
+          "    plan_task: 'micronautTask(task, agentId)'",
+          "  }",
+          "};",
+          "",
+          "// Tape shard:",
+          "// " + (ASXR.tape['@shard_id'] || 'mx2_micronaut_portal')
+        ].join('\n');
+
+        const brainLines = brainText.split('\n');
+        const gb = document.getElementById('gutter-brain');
+        const cb = document.getElementById('code-brain');
+        if (gb && cb) {
+          gb.textContent = brainLines.map((_,i)=>String(i+1).padStart(3,' ')).join('\n');
+          cb.textContent = brainText;
+        }
+
+        // tiny snapshot for "portal"
+        const portalView = {
+          file: "index.html",
+          sections: ["Header", "API Commander", "State Visualizer", "Render Zone", "API Log"],
+          api_bridge: "AtomicAPI.execute(cmd)",
+          micronaut_bridge: "@micronaut_task via AtomicAPI → ASXR.micronautTask()"
+        };
+        fillCode('gutter-portal', 'code-portal', portalView);
+      }
+    };
+
+    // ---------------------- Global helpers for UI buttons ----------------------
+    function executeAPI() {
+      const textarea = document.getElementById('api-command');
+      try {
+        const cmd = JSON.parse(textarea.value);
+        AtomicAPI.execute(cmd);
+      } catch (err) {
+        AtomicAPI.log(`JSON parse error: ${err.message}`, 'error');
+      }
+    }
+
+    function clearCommands() {
+      document.getElementById('api-command').value = '';
+      AtomicAPI.log('Command buffer cleared');
+    }
+
+    function loadExample() {
+      const examples = [
+        {
+          "@control": "@render",
+          "@data": {
+            "type": "welcome",
+            "message": "ASXR Micronaut Online",
+            "subtitle": "JSON tape mounted. Micronaut listening.",
+            "energy": 0.9
+          }
+        },
+        {
+          "@control": "@update_energy",
+          "@data": {
+            "entropy": 0.7,
+            "innovation": 0.9,
+            "stability": 0.65,
+            "energy": 0.85
+          }
+        },
+        {
+          "@control": "@render_block",
+          "@data": {
+            "type": "grid",
+            "columns": 4,
+            "rows": 2
+          }
+        },
+        {
+          "@control": "@micronaut_task",
+          "@data": {
+            "agent": "mn_planner",
+            "task": "summarize current Atomic Portal state and suggest next experiment."
+          }
+        },
+        {
+          "@control": "@lexicon_ingest",
+          "@data": {
+            "text": "The Atomic Portal is a single-file ASXR Micronaut tape. JSON drives the DOM, and Micronaut drives the lexicon."
+          }
+        }
+      ];
+      const choice = examples[Math.floor(Math.random() * examples.length)];
+      document.getElementById('api-command').value = JSON.stringify(choice, null, 2);
+      AtomicAPI.log('Loaded example command');
+    }
+
+    function sendMicronautTask() {
+      const input = document.getElementById('micronaut-task-input');
+      const task = input.value.trim();
+      if (!task) {
+        AtomicAPI.log('Micronaut task is empty', 'error');
+        return;
+      }
+      AtomicAPI.execute({
+        "@control": "@micronaut_task",
+        "@data": {
+          "agent": "mn_planner",
+          "task": task
+        }
+      });
+      input.value = '';
+    }
+
+    // Boot sequence
+    document.addEventListener('DOMContentLoaded', () => {
+      ASXR.init();
+      window.AtomicAPI = AtomicAPI.init();
+
+      // auto welcome
+      setTimeout(() => {
+        AtomicAPI.execute({
+          "@control": "@render",
+          "@data": {
+            "type": "welcome",
+            "message": "ATOMIC PORTAL ONLINE",
+            "subtitle": "ASXR Micronaut tape mounted. Issue commands via JSON.",
+            "energy": 0.9
+          }
+        }).then(() => {
+          AtomicAPI.log('Ready for commands. Type JSON in the Commander or use quick buttons.');
+        });
+      }, 800);
+    });
+  </script>
+</body>
+</html>

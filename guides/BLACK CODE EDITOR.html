@@ -1,0 +1,1246 @@
+<!doctype html>
+<html lang="en" data-theme="matrix">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BLACK CODE EDITOR — ATOMIC ⟁ GLYPH CODEX Ω (Forge Suite)</title>
+
+  <!-- ============================================================
+    ATOMIC 4-BLOCK CSS RULE (Universal Layout / Atomic Classes / Variables / Control Vectors)
+    This single HTML contains:
+      - ATOMIC+GLYPH.css (canonical)
+      - Full Glyph Codex (A–Z / 0–9 / UI / RPG + ⟁ star)
+      - Glyph Editor + Gallery + Insert helpers
+      - Lint rules (CSS + glyph map integrity)
+      - MX2LEX Binding (4-language vocab API)
+      - SCXQ2_COMPRESS mock (base64 + header) + decompress
+      - MICRO_ASXR_SINGLE_HTML live preview
+  ============================================================ -->
+
+  <style id="atomic_vars">
+    :root{
+      /* ===== Variables as State ===== */
+      --bg-0:#020409;
+      --bg-1:#050912;
+      --bg-2:#081022;
+      --panel:rgba(255,255,255,.04);
+      --panel2:rgba(255,255,255,.06);
+      --border:rgba(97,231,255,.35);
+      --border-soft:rgba(97,231,255,.18);
+
+      --accent:#16f2aa;
+      --accent2:#61e7ff;
+
+      --fg-0:#e9fbff;
+      --fg-1:rgba(233,251,255,.78);
+      --muted:rgba(233,251,255,.6);
+
+      --danger:#ff6b6b;
+      --hazard:#ffb300;
+      --success:#00d9a6;
+
+      --r1:8px; --r2:12px; --r3:18px;
+      --s0:4px; --s1:8px; --s2:12px; --s3:16px; --s4:20px; --s5:28px;
+
+      --fs0:12px; --fs1:13px; --fs2:14px; --fs3:16px; --fs4:18px; --fs5:22px;
+
+      /* ===== Physics vectors (CSS runtime state) ===== */
+      --px:0; --py:0; --vx:0; --vy:0;
+      --rot:0;
+      --gravity:0.98;
+      --drag:0.985;
+      --velocity:1;
+      --entropy:0.15;
+
+      /* ===== Glyph runtime ===== */
+      --g-size:24;
+      --g-filter:none;
+      --g-data:none;
+      --g-anim-name:none;
+      --g-anim-dur:1s;
+    }
+
+    /* Theme variants */
+    [data-theme="emerald"]{ --accent:#16f2aa; --accent2:#00ffa3; --border:rgba(22,242,170,.35); --border-soft:rgba(22,242,170,.18); }
+    [data-theme="night"]{ --accent:#6366f1; --accent2:#8b5cf6; --border:rgba(139,92,246,.35); --border-soft:rgba(139,92,246,.18); }
+    [data-theme="cyber"]{ --accent:#00ff9d; --accent2:#00ffff; --border:rgba(0,255,255,.35); --border-soft:rgba(0,255,255,.18); }
+    [data-theme="matrix"]{ --accent:#16f2aa; --accent2:#61e7ff; --border:rgba(97,231,255,.35); --border-soft:rgba(97,231,255,.18); }
+  </style>
+
+  <style id="atomic_layout">
+    /* ===== Universal Layout ===== */
+    html,body{height:100%;}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(22,242,170,.08), transparent 60%),
+                  radial-gradient(1200px 800px at 80% 30%, rgba(97,231,255,.07), transparent 55%),
+                  var(--bg-0);
+      color:var(--fg-0);
+      font: 500 var(--fs2)/1.4 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      overflow:hidden;
+    }
+    .grid{
+      height:100%;
+      display:grid;
+      grid-template-columns: 340px 1fr 420px;
+      gap: var(--s2);
+      padding: var(--s2);
+      box-sizing:border-box;
+    }
+    .panel{
+      background: var(--panel);
+      border:1px solid var(--border-soft);
+      border-radius: var(--r3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    .titlebar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: var(--s2);
+      padding: var(--s2) var(--s3);
+      border-bottom: 1px solid var(--border-soft);
+      background: rgba(0,0,0,.18);
+    }
+    .title{
+      display:flex;
+      align-items:center;
+      gap: var(--s2);
+      font-size: var(--fs4);
+      letter-spacing:.4px;
+      white-space:nowrap;
+    }
+    .sub{
+      font-size: var(--fs1);
+      color: var(--fg-1);
+      opacity:.95;
+      white-space:nowrap;
+    }
+    .content{
+      padding: var(--s2);
+      overflow:auto;
+      min-height:0;
+    }
+    /* invisible scrollbars */
+    .content::-webkit-scrollbar{width:0;height:0}
+    .content{scrollbar-width:none}
+    .row{display:flex;gap:var(--s2);align-items:center}
+    .col{display:flex;flex-direction:column;gap:var(--s2)}
+    .spacer{flex:1}
+  </style>
+
+  <style id="atomic_classes">
+    /* ===== Atomic Classes ===== */
+    .btn{
+      appearance:none;
+      border:1px solid var(--border-soft);
+      background: rgba(255,255,255,.04);
+      color: var(--fg-0);
+      border-radius: var(--r2);
+      padding: 9px 12px;
+      cursor:pointer;
+      font-weight:700;
+      font-size: var(--fs1);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: var(--s1);
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+      user-select:none;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.07);}
+    .btn.accent{border-color: rgba(22,242,170,.45); color: var(--accent);}
+    .btn.danger{border-color: rgba(255,107,107,.45); color: var(--danger);}
+    .btn.hazard{border-color: rgba(255,179,0,.55); color: var(--hazard);}
+    .btn.soft{font-weight:650; opacity:.95}
+
+    .pill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border:1px solid var(--border-soft);
+      background: rgba(255,255,255,.03);
+      font-size: var(--fs0);
+      color: var(--fg-1);
+      white-space:nowrap;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Cascadia Code", monospace;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid var(--border-soft);
+      background: rgba(0,0,0,.25);
+      color: var(--fg-0);
+    }
+    .input, .select{
+      width:100%;
+      box-sizing:border-box;
+      padding: 10px 12px;
+      border-radius: var(--r2);
+      border:1px solid var(--border-soft);
+      background: rgba(0,0,0,.25);
+      color: var(--fg-0);
+      outline:none;
+      font: 600 var(--fs2)/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, "Cascadia Code", monospace;
+    }
+    .input:focus, .select:focus{border-color: rgba(22,242,170,.55); box-shadow: 0 0 0 3px rgba(22,242,170,.10);}
+    .muted{color: var(--muted);}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Cascadia Code", monospace;}
+    .chip{
+      display:inline-flex; align-items:center; gap:6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: rgba(255,255,255,.03);
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease, border-color .12s ease;
+      font-weight:800;
+      font-size: var(--fs0);
+    }
+    .chip:hover{transform: translateY(-1px); border-color: rgba(255,255,255,.24);}
+    .chip.active{border-color: rgba(22,242,170,.55); box-shadow: 0 0 0 3px rgba(22,242,170,.08);}
+    .hr{height:1px;background: var(--border-soft); margin: var(--s2) 0;}
+    .grid2{display:grid;grid-template-columns: 1fr 1fr; gap: var(--s2);}
+    .grid3{display:grid;grid-template-columns: 1fr 1fr 1fr; gap: var(--s2);}
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight:900;
+      border: 1px solid rgba(22,242,170,.35);
+      background: rgba(22,242,170,.10);
+      color: var(--accent);
+      white-space:nowrap;
+    }
+    .badge.warn{border-color: rgba(255,179,0,.45); background: rgba(255,179,0,.10); color: var(--hazard);}
+    .badge.dng{border-color: rgba(255,107,107,.45); background: rgba(255,107,107,.10); color: var(--danger);}
+    .small{font-size: var(--fs0);}
+    .tiny{font-size: 11px;}
+    .shadow{box-shadow: 0 18px 60px rgba(0,0,0,.35);}
+  </style>
+
+  <!-- ============================================================
+    ATOMIC+GLYPH.css (Canonical, compressed, includes physics + XCFE + folds + ⟁ + glyph runtime)
+  ============================================================ -->
+  <style id="ATOMIC_GLYPH_CSS">
+    /* ==================== K'UHUL EXECUTION PATTERNS (Atomic Ops) ==================== */
+    [⟁flex],.b-f{display:flex}[⟁grid],.b-g{display:grid}[⟁block],.b-b{display:block}[⟁inline],.b-i{display:inline}
+    [⟁row],.b-fr{flex-direction:row}[⟁col],.b-fc{flex-direction:column}[⟁wrap],.b-wrap{flex-wrap:wrap}
+    [⟁center],.b-gc{display:flex;align-items:center;justify-content:center}[⟁acenter],.b-aic{align-items:center}[⟁jcenter],.b-jcc{justify-content:center}
+    [⟁p1],.p-1{padding:var(--s1)}[⟁p2],.p-2{padding:var(--s2)}[⟁p3],.p-3{padding:var(--s3)}[⟁p4],.p-4{padding:var(--s4)}
+    [⟁m1],.m-1{margin:var(--s1)}[⟁m2],.m-2{margin:var(--s2)}[⟁m3],.m-3{margin:var(--s3)}[⟁m4],.m-4{margin:var(--s4)}
+    [⟁g1],.gap-1{gap:var(--s1)}[⟁g2],.gap-2{gap:var(--s2)}[⟁g3],.gap-3{gap:var(--s3)}[⟁g4],.gap-4{gap:var(--s4)}
+    [⟁border],.border{border:1px solid var(--border)}[⟁border-accent],.border-accent{border:1px solid var(--accent)}[⟁rounded],.rounded{border-radius:var(--r2)}
+    [⟁bg0],.bg-0{background:var(--bg-0)}[⟁bg1],.bg-1{background:var(--bg-1)}[⟁bg2],.bg-2{background:var(--bg-2)}[⟁bg-accent],.bg-accent{background:var(--accent)}
+    [⟁text],.text{color:var(--fg-0)}[⟁muted],.text-muted{color:var(--fg-1)}[⟁accent],.text-accent{color:var(--accent)}
+
+    /* ==================== XCFE CONTROL FLOW (C@@L primitives) ==================== */
+    [atomic-block="@if_then_else"],.flow-if{--control-flow:"conditional";--evaluation-state:"pending";display:none;padding:var(--s3);border-left:3px solid var(--accent);background:rgba(22,242,170,.05);border-radius:var(--r2)}
+    [atomic-block="@if_then_else"][data-condition="true"],.flow-if.active{display:block;animation:block-activate .3s ease-out}
+    [atomic-block="@loop"],.flow-loop{--control-flow:"recursive";--iteration-count:0;--max-iterations:100;animation:loop-pulse calc(1s/var(--velocity,1)) infinite;padding:var(--s3);border-left:3px solid rgba(22,242,170,.7);background:rgba(22,242,170,.05);border-radius:var(--r2)}
+    [atomic-block="@dispatch"],.flow-dispatch{--control-flow:"routing";--route-target:"";--route-state:"idle";cursor:pointer;transition:all .2s ease;padding:var(--s3);border:1px solid var(--border);border-radius:var(--r2);background:var(--panel)}
+    [atomic-block="@dispatch"]:hover,.flow-dispatch:hover{--route-state:"hover";background:rgba(22,242,170,.10);border-color:var(--accent);transform:translateX(2px)}
+    [atomic-block="@microagent"],.agent-micro{--agent-type:"micro";--agent-state:"idle";--agent-processing:0;position:relative;overflow:hidden;padding:var(--s3);border:1px solid var(--border);border-radius:var(--r2);background:var(--panel)}
+    .agent-micro::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(22,242,170,.1),transparent);transform:translateX(-100%);animation:agent-process calc(2s*var(--agent-processing,0)) ease-out}
+
+    /* ==================== Execution Folds ==================== */
+    [execution-fold="Pop"],.fold-pop{--execution-phase:"loading";--fold-state:"entering";opacity:0;transform:translateY(-20px);animation:fold-pop .3s ease-out forwards}
+    [execution-fold="Wo"],.fold-wo{--execution-phase:"binding";--fold-state:"contextualizing";border-left:3px solid rgba(22,242,170,.5);padding-left:var(--s3);background:rgba(22,242,170,.05)}
+    [execution-fold="Sek"],.fold-sek{--execution-phase:"executing";--fold-state:"processing";animation:fold-sek .4s ease-in-out infinite;background:linear-gradient(90deg,transparent,rgba(22,242,170,.1),transparent)}
+
+    /* ==================== Agents (kernel/runtime/physics) ==================== */
+    .agent-kernel{--agent-capability:"system_governance";--agent-priority:"highest";border:2px solid var(--accent);background:linear-gradient(135deg,rgba(22,242,170,.1),rgba(22,242,170,.05));padding:var(--s4);border-radius:var(--r3)}
+    .agent-runtime{--agent-capability:"resource_distribution";--resource-cpu:var(--runtime-cpu);--resource-gpu:var(--runtime-gpu);--resource-tpu:var(--runtime-tpu);padding:var(--s4);border-radius:var(--r3);background:var(--panel)}
+    .agent-physics{
+      --agent-capability:"motion_simulation";
+      transform:translate(calc(var(--px,0)*1px),calc(var(--py,0)*1px)) rotate(calc(var(--rot,0)*1deg));
+      transition:transform calc(.1s/var(--velocity,1));
+      padding:var(--s4);border-radius:var(--r3);background:var(--panel)
+    }
+
+    /* ==================== SPECIAL EFFECTS ==================== */
+    .text-gradient{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    .electric-border{border:2px solid transparent;background:linear-gradient(var(--bg-0),var(--bg-0)) padding-box,linear-gradient(90deg,var(--accent),var(--accent2)) border-box}
+    .neon{text-shadow:0 0 10px var(--accent),0 0 20px var(--accent),0 0 30px var(--accent)}
+
+    /* ==================== GAME UI ==================== */
+    .health-bar{width:100%;height:4px;border-radius:2px;background:var(--bg-1);overflow:hidden}
+    .health-fill{height:100%;background:var(--danger);transition:width .3s ease}
+    .health-bar-pulse{animation:health-pulse 2s ease-in-out infinite}
+
+    /* ==================== OS Window ==================== */
+    .os-window{background:var(--bg-0);border-radius:var(--r3);border:1px solid var(--border);box-shadow:0 18px 60px rgba(0,0,0,.35);overflow:hidden}
+    .os-titlebar{background:var(--panel);border-bottom:1px solid var(--border);padding:var(--s2) var(--s3);display:flex;align-items:center;justify-content:space-between}
+    .os-controls{display:flex;gap:var(--s1)}
+    .os-control{width:12px;height:12px;border-radius:50%}
+    .os-control.close{background:var(--danger)}.os-control.minimize{background:var(--hazard)}.os-control.maximize{background:var(--success)}
+
+    /* ==================== Data viz ==================== */
+    .signal-strength{display:flex;align-items:flex-end;gap:2px;height:20px}
+    .signal-bar{width:3px;background:var(--accent);opacity:.3;border-radius:1px}
+    .signal-bar.active{opacity:1}
+    .entropy-visual{width:100%;height:2px;background:linear-gradient(90deg,var(--bg-1) 0%,var(--accent) calc(var(--entropy,0)*100%),var(--bg-1) 100%);border-radius:1px}
+
+    /* ==================== Accessibility ==================== */
+    @media (prefers-reduced-motion: reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+    /* ==================== Animations ==================== */
+    @keyframes block-activate{0%{opacity:0;transform:translateY(-10px)}100%{opacity:1;transform:translateY(0)}}
+    @keyframes loop-pulse{0%,100%{background:rgba(22,242,170,.05)}50%{background:rgba(22,242,170,.15)}}
+    @keyframes agent-process{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+    @keyframes fold-pop{0%{opacity:0;transform:translateY(-20px)}100%{opacity:1;transform:translateY(0)}}
+    @keyframes fold-sek{0%,100%{background-position:-200% 0}100%{background-position:200% 0}}
+    @keyframes health-pulse{0%,100%{opacity:1}50%{opacity:.7}}
+
+    /* ==================== GLYPH RUNTIME (universal) ==================== */
+    [data-g]{
+      --g-size:24;
+      --g-w:calc(var(--g-size)*1px);
+      --g-h:calc(var(--g-size)*1px);
+      display:inline-block;width:var(--g-w);height:var(--g-h);
+      background:var(--g-data) center/contain no-repeat;
+      flex-shrink:0;vertical-align:middle;
+      filter:var(--g-filter);
+    }
+    [data-g][data-size="xs"]{--g-size:12}[data-g][data-size="sm"]{--g-size:16}[data-g][data-size="md"]{--g-size:24}[data-g][data-size="lg"]{--g-size:32}[data-g][data-size="xl"]{--g-size:48}
+    [data-g-animate]{animation:var(--g-anim-name) var(--g-anim-dur,1s) var(--g-anim-timing,ease) var(--g-anim-count,infinite)}
+    [data-g-animate="spin"]{--g-anim-name:g-spin}[data-g-animate="pulse"]{--g-anim-name:g-pulse;--g-anim-dur:2s}[data-g-animate="bounce"]{--g-anim-name:g-bounce;--g-anim-dur:.5s}[data-g-animate="float"]{--g-anim-name:g-float;--g-anim-dur:3s}
+    @keyframes g-spin{to{transform:rotate(360deg)}}@keyframes g-pulse{0%,100%{opacity:1}50%{opacity:.5}}@keyframes g-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes g-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+    [data-g-color="accent"]{--g-filter:drop-shadow(0 0 10px rgba(22,242,170,.35))}
+    [data-g-color="danger"]{--g-filter:drop-shadow(0 0 10px rgba(255,107,107,.35))}
+    [data-g-color="hazard"]{--g-filter:drop-shadow(0 0 10px rgba(255,179,0,.35))}
+    [data-theme="dark"] [data-g]{filter:invert(100%) brightness(200%)}
+  </style>
+
+  <style id="editor_extras">
+    textarea.code{
+      width:100%;
+      height: calc(100vh - 240px);
+      min-height: 380px;
+      resize:none;
+      border-radius: var(--r3);
+      border:1px solid var(--border-soft);
+      background: rgba(0,0,0,.35);
+      color: var(--fg-0);
+      padding: var(--s3);
+      box-sizing:border-box;
+      outline:none;
+      font: 650 12.5px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, "Cascadia Code", monospace;
+      letter-spacing:.15px;
+      tab-size: 2;
+      white-space: pre;
+    }
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .log{
+      border-radius: var(--r3);
+      border:1px solid var(--border-soft);
+      background: rgba(0,0,0,.25);
+      padding: var(--s2);
+      font: 650 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, "Cascadia Code", monospace;
+      color: var(--fg-1);
+      white-space: pre-wrap;
+    }
+    .glyphGrid{
+      display:grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+    .glyphTile{
+      border-radius: 14px;
+      border:1px solid var(--border-soft);
+      background: rgba(255,255,255,.03);
+      padding: 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+    .glyphTile:hover{transform:translateY(-1px); border-color: rgba(22,242,170,.5); background: rgba(22,242,170,.06);}
+    .glyphKey{font-weight:950;}
+    iframe.preview{
+      width:100%;
+      height: calc(100vh - 210px);
+      border:1px solid var(--border-soft);
+      border-radius: var(--r3);
+      background:#000;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="grid">
+
+  <!-- ================= LEFT: GLYPH + MX2LEX + LINT ================= -->
+  <section class="panel shadow">
+    <div class="titlebar">
+      <div class="title">
+        <span data-g="⟁" data-size="lg" data-g-color="accent" data-g-animate="pulse"></span>
+        <span class="text-gradient">FORGE SUITE</span>
+      </div>
+      <span class="pill"><span class="kbd">Ω</span> ATOMIC ⟁ GLYPH</span>
+    </div>
+
+    <div class="content col">
+      <div class="col">
+        <div class="row">
+          <button class="btn accent" id="btnForgeAll">
+            <span data-g="⚒" data-size="sm"></span> FORGE ALL
+          </button>
+          <button class="btn soft" id="btnTheme">
+            <span data-g="☼" data-size="sm"></span> THEME
+          </button>
+        </div>
+
+        <div class="row">
+          <button class="btn" id="btnLint"><span data-g="✓" data-size="sm"></span> LINT</button>
+          <button class="btn" id="btnMX2LEX"><span data-g="m" data-size="sm"></span> MX2LEX MAP</button>
+          <button class="btn hazard" id="btnCompress"><span data-g="◆" data-size="sm"></span> SCXQ2</button>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="col">
+          <div class="row">
+            <input class="input" id="glyphSearch" placeholder="Search glyphs (A, 7, ui:close, rpg:hp, ⟁, etc.)" />
+          </div>
+          <div class="glyphGrid" id="glyphGrid"></div>
+          <div class="tiny muted">Click a glyph to insert into demo HTML at cursor.</div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="col">
+          <div class="row">
+            <span class="badge">⟁ LAW</span>
+            <span class="tiny muted">⟁ is an ATOMIC CONTROL OPERATOR (not hazard). Rendered as a base64 glyph too.</span>
+          </div>
+          <div class="log" id="log">Ready. Use <span class="mono">FORGE ALL</span> to rebuild canonical outputs.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CENTER: BLACK CODE EDITOR ================= -->
+  <section class="panel shadow">
+    <div class="titlebar">
+      <div class="title">
+        <span data-g="f" data-size="md"></span>
+        <span>BLACK CODE EDITOR</span>
+      </div>
+      <div class="tabs" id="tabs"></div>
+    </div>
+
+    <div class="content col">
+      <div class="row">
+        <span class="pill"><span class="kbd">CTRL</span>+<span class="kbd">S</span> apply → live preview</span>
+        <span class="pill"><span class="kbd">CTRL</span>+<span class="kbd">E</span> export bundle</span>
+        <span class="spacer"></span>
+        <span class="pill">Cursor insert: <span class="kbd">click glyph</span></span>
+      </div>
+
+      <textarea class="code" id="editor" spellcheck="false"></textarea>
+
+      <div class="row">
+        <button class="btn accent" id="btnApply"><span data-g="→" data-size="sm"></span> APPLY → PREVIEW</button>
+        <button class="btn" id="btnExport"><span data-g="d" data-size="sm"></span> EXPORT BUNDLE</button>
+        <button class="btn danger" id="btnReset"><span data-g="x" data-size="sm"></span> RESET</button>
+        <span class="spacer"></span>
+        <span class="pill">File: <span class="mono" id="fileName">—</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RIGHT: LIVE PREVIEW (MICRO-ASXR SINGLE HTML) ================= -->
+  <section class="panel shadow">
+    <div class="titlebar">
+      <div class="title">
+        <span data-g="▶" data-size="md"></span>
+        <span>MICRO-ASXR LIVE PREVIEW</span>
+      </div>
+      <span class="pill"><span class="kbd">API↔DOM</span> + CSS Runtime</span>
+    </div>
+
+    <div class="content col">
+      <iframe class="preview" id="preview"></iframe>
+
+      <div class="row">
+        <button class="btn" id="btnPhysics"><span data-g="⚡" data-size="sm"></span> PHYSICS TICK</button>
+        <button class="btn" id="btnDemo"><span data-g="h" data-size="sm"></span> LOAD DEMO</button>
+        <span class="spacer"></span>
+        <span class="pill">Entropy <span class="kbd" id="entropyVal">0.15</span></span>
+      </div>
+
+      <div class="log" id="outbox"></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+  BLACK CODE EDITOR — Single File Forge Suite
+  Contains:
+    - Canonical ATOMIC+GLYPH.css generator
+    - Full glyph codex generator (A–Z / 0–9 + UI + RPG + ⟁)
+    - Lint rules
+    - MX2LEX 4-language mapping (CSS / @GRAMS / XCFE / API JSON)
+    - SCXQ2_COMPRESS mock (header + base64) + decompress
+    - MICRO-ASXR single html preview
+============================================================ */
+
+const $ = (q)=>document.querySelector(q);
+const logEl = $("#log");
+const outbox = $("#outbox");
+const preview = $("#preview");
+const editor = $("#editor");
+const tabsEl = $("#tabs");
+const fileNameEl = $("#fileName");
+const glyphGrid = $("#glyphGrid");
+const glyphSearch = $("#glyphSearch");
+const entropyVal = $("#entropyVal");
+
+const STATE = {
+  themeIndex: 0,
+  themes: ["matrix","emerald","cyber","night"],
+  activeFile: "MICRO_ASXR_SINGLE_HTML",
+  files: {},
+  codex: null,
+  mx2lex: null,
+  lastApplyHTML: "",
+  physics: { px:0, py:0, vx:0.0, vy:0.0, rot:0, gravity:0.98, drag:0.985, entropy:0.15 }
+};
+
+function stamp(msg, kind="info"){
+  const icon = kind==="ok" ? "✓" : kind==="warn" ? "⚠" : kind==="err" ? "x" : "→";
+  logEl.textContent = `[${icon}] ${msg}\n` + logEl.textContent;
+}
+
+function setOut(msg){
+  outbox.textContent = msg;
+}
+
+/* =========================
+   Glyph generation
+   - For A–Z / 0–9 we generate SVG TEXT -> base64 for compact completeness.
+   - UI / RPG / ⟁ use inline SVG paths (and can be extended).
+========================= */
+
+function b64(s){ return btoa(unescape(encodeURIComponent(s))); }
+
+function svgTextGlyph(ch){
+  // bold mono-ish glyph inside 24x24
+  const svg =
+`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <rect x="1.5" y="1.5" width="21" height="21" rx="6" fill="rgba(0,0,0,0)"/>
+  <text x="12" y="16" text-anchor="middle" font-size="12.5" font-weight="900"
+        font-family="ui-monospace,Menlo,Consolas,Cascadia Code,monospace"
+        fill="currentColor">${escapeXML(ch)}</text>
+</svg>`;
+  return `url("data:image/svg+xml;base64,${b64(svg)}")`;
+}
+
+function escapeXML(s){
+  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&apos;");
+}
+
+// Some iconic SVG paths for UI/RPG/⟁. (Extendable: add more entries.)
+const FIXED_GLYPHS = {
+  // ⟁ as "star of the show": hazard pyramid silhouette but defined as ATOMIC control
+  "⟁": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M12 2 2 21h20L12 2zm0 4.2L18.5 19h-13L12 6.2z"/>
+          <path fill="currentColor" d="M11 10h2v5h-2zm0 6.6h2V18h-2z"/>
+        </svg>`,
+
+  // UI basics
+  "h": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M3 13h1v7c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-7h1a1 1 0 0 0 .707-1.707l-9-9a1 1 0 0 0-1.414 0l-9 9A1 1 0 0 0 3 13z"/></svg>`,
+  "m": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/></svg>`,
+  "s": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M10 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm-8 6a8 8 0 1 1 14.32 4.906l5.387 5.387a1 1 0 0 1-1.414 1.414l-5.387-5.387A8 8 0 0 1 2 10z"/></svg>`,
+  "u": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a5 5 0 1 0 5 5 5 5 0 0 0-5-5zm0 8a3 3 0 1 1 3-3 3 3 0 0 1-3 3zm9 11v-1a7 7 0 0 0-7-7h-4a7 7 0 0 0-7 7v1h2v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1z"/></svg>`,
+  "+": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>`,
+  "x": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 10.586 16.95 5.636l1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></svg>`,
+  "✓": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M10 15.172 19.192 5.98l1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"/></svg>`,
+  "→": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M16.172 11 10.808 5.636l1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z"/></svg>`,
+  "←": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M7.828 13H20v-2H7.828l5.364-5.364-1.414-1.414L4 12l7.778 7.778 1.414-1.414z"/></svg>`,
+  "▶": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>`,
+  "⏸": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>`,
+  "⚒": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M7 2l3 3-2 2 3 3-2 2-3-3-2 2-3-3 2-2L0 4l2-2 3 3 2-2zm12 4l5 5-2 2-2-2-7 7-2-2 7-7-2-2 3-3z"/></svg>`,
+  "☼": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12zm0-16h2v3h-2V2zm0 17h2v3h-2v-3zM2 11h3v2H2v-2zm17 0h3v2h-3v-2zM4.2 4.2l2.1-2.1 2.1 2.1-2.1 2.1-2.1-2.1zm11.5 11.5 2.1-2.1 2.1 2.1-2.1 2.1-2.1-2.1zM19.8 4.2l-2.1-2.1-2.1 2.1 2.1 2.1 2.1-2.1zM8.3 15.7l-2.1-2.1-2.1 2.1 2.1 2.1 2.1-2.1z"/></svg>`,
+  "◆": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 22 12 12 22 2 12z"/></svg>`,
+
+  // RPG set (compact)
+  "❤": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21.35 10.55 20.03C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54z"/></svg>`,
+  "⚡": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>`,
+  "⚔": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M3 3l7 7-2 2-2-2-2 2-2-2 2-2-2-2zm18 0-7 7 2 2 2-2 2 2 2-2-2-2 2-2zM9 14l1 1-6 6H2v-2zm6 0-1 1 6 6h2v-2z"/></svg>`,
+  "🛡": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 3 7v6c0 5 3.84 9.74 9 11 5.16-1.26 9-6 9-11V7z"/></svg>`,
+  "🗡": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M14 3 3 14l7 7L21 10V3zM6.5 13.5 14 6l4 4-7.5 7.5-4-4z"/></svg>`
+};
+
+function buildCodex(){
+  const codex = {
+    meta:{
+      id:"GLYPH_CODEX_Ω",
+      version:"1.0.0",
+      sets:["ALNUM","UI","RPG","ATOMIC_CONTROL"],
+      law:"⟁ is ATOMIC CONTROL OPERATOR (not hazard).",
+      size:"24x24 baseline",
+    },
+    glyphs:{}
+  };
+
+  // A–Z
+  for(let c=65;c<=90;c++){
+    const ch = String.fromCharCode(c);
+    codex.glyphs[ch] = { set:"ALNUM", kind:"text", css:`[data-g="${ch}"]`, data: svgTextGlyph(ch) };
+  }
+  // 0–9
+  for(let c=48;c<=57;c++){
+    const ch = String.fromCharCode(c);
+    codex.glyphs[ch] = { set:"ALNUM", kind:"text", css:`[data-g="${ch}"]`, data: svgTextGlyph(ch) };
+  }
+
+  // fixed
+  for(const k of Object.keys(FIXED_GLYPHS)){
+    codex.glyphs[k] = {
+      set: k==="⟁" ? "ATOMIC_CONTROL" : (["❤","⚡","⚔","🛡","🗡"].includes(k) ? "RPG" : "UI"),
+      kind:"svg",
+      css:`[data-g="${escapeCSSAttr(k)}"]`,
+      data: `url("data:image/svg+xml;base64,${b64(FIXED_GLYPHS[k])}")`
+    };
+  }
+
+  // Minimal RPG “stats” tags as text glyphs (so RPG can be used in HTML quickly)
+  const rpgTags = ["HP","MP","XP","LVL","DMG","DEF","CRIT","SKILL","QUEST"];
+  for(const t of rpgTags){
+    codex.glyphs[t] = {
+      set:"RPG",
+      kind:"text",
+      css:`[data-g="${t}"]`,
+      data: svgTextGlyph(t.length>3 ? t.slice(0,3) : t)
+    };
+  }
+
+  return codex;
+}
+
+function escapeCSSAttr(s){
+  // safest: backslash quotes where needed; keep simple for our codex
+  return String(s).replaceAll('"','\\"');
+}
+
+function codexToCSS(codex){
+  const lines = [];
+  lines.push("/* ===== GLYPH CODEX Ω — A–Z / 0–9 / UI / RPG / ⟁ ===== */");
+  // deterministic order
+  const keys = Object.keys(codex.glyphs).sort((a,b)=>a.localeCompare(b));
+  for(const k of keys){
+    const g = codex.glyphs[k];
+    const sel = g.css;
+    lines.push(`${sel}{--g-data:${g.data}}`);
+  }
+  return lines.join("\n");
+}
+
+/* =========================
+   MX2LEX 4-language binding map
+   - CSS selector token
+   - @GRAMS token
+   - XCFE/C@@L token
+   - API JSON token
+========================= */
+function buildMX2LEX(codex){
+  const map = {
+    meta:{
+      id:"MX2LEX_BINDING_Ω",
+      version:"1.0.0",
+      languages:["css","@grams","xcfe","api_json"],
+      note:"All entries map to identical intent (Atomic Block)."
+    },
+    entries:[]
+  };
+
+  // Core atomic ops map
+  const ops = [
+    { key:"flex", css:"[⟁flex]", grams:"⟁:layout:flex", xcfe:"@Pop.flex", api:{layout:"flex"} },
+    { key:"grid", css:"[⟁grid]", grams:"⟁:layout:grid", xcfe:"@Pop.grid", api:{layout:"grid"} },
+    { key:"row", css:"[⟁row]",  grams:"⟁:flow:row",   xcfe:"@Wo.row",   api:{flow:"row"} },
+    { key:"col", css:"[⟁col]",  grams:"⟁:flow:col",   xcfe:"@Wo.col",   api:{flow:"col"} },
+    { key:"center", css:"[⟁center]", grams:"⟁:align:center", xcfe:"@Yax.center", api:{align:"center"} },
+
+    { key:"if_then_else", css:'[atomic-block="@if_then_else"]', grams:"⟁:flow:if", xcfe:"@if/@then/@else", api:{control:"if_then_else"} },
+    { key:"loop", css:'[atomic-block="@loop"]', grams:"⟁:flow:loop", xcfe:"@loop", api:{control:"loop"} },
+    { key:"dispatch", css:'[atomic-block="@dispatch"]', grams:"⟁:flow:dispatch", xcfe:"@dispatch", api:{control:"dispatch"} },
+    { key:"microagent", css:'[atomic-block="@microagent"]', grams:"⟁:agent:micro", xcfe:"@microagent", api:{agent:"micro"} },
+  ];
+
+  for(const o of ops){
+    map.entries.push({
+      type:"atomic_op",
+      key:o.key,
+      css:o.css,
+      "@grams":o.grams,
+      xcfe:o.xcfe,
+      api_json:o.api
+    });
+  }
+
+  // Glyph entries map
+  for(const k of Object.keys(codex.glyphs).sort((a,b)=>a.localeCompare(b))){
+    map.entries.push({
+      type:"glyph",
+      key:k,
+      css: codex.glyphs[k].css,
+      "@grams": `g:${k}`,
+      xcfe: `@glyph("${k}")`,
+      api_json: { glyph:k }
+    });
+  }
+
+  // ⟁ special override
+  map.entries.push({
+    type:"law",
+    key:"⟁",
+    css:'[data-g="⟁"]',
+    "@grams":"⟁:operator:atomic_control",
+    xcfe:"@control.operator = ⟁",
+    api_json:{ operator:"⟁", meaning:"atomic_control", hazard:false }
+  });
+
+  return map;
+}
+
+/* =========================
+   Lint rules
+========================= */
+function lintAll(){
+  const problems = [];
+
+  // 1) codex must exist
+  if(!STATE.codex) problems.push({level:"err", msg:"Glyph codex not built. Click FORGE ALL."});
+
+  // 2) duplicates in codex keys
+  if(STATE.codex){
+    const keys = Object.keys(STATE.codex.glyphs);
+    const uniq = new Set(keys);
+    if(uniq.size !== keys.length) problems.push({level:"err", msg:"Duplicate glyph keys detected in codex."});
+  }
+
+  // 3) CSS selectors sanity in generated glyph CSS
+  const css = STATE.files["ATOMIC+GLYPH.css"] || "";
+  if(!css.includes("[data-g]")) problems.push({level:"warn", msg:"ATOMIC+GLYPH.css missing [data-g] runtime."});
+  if(!css.includes("[atomic-block=\"@if_then_else\"]")) problems.push({level:"warn", msg:"Missing XCFE @if_then_else selector."});
+
+  // 4) ⟁ hazard override present
+  if(STATE.mx2lex){
+    const law = STATE.mx2lex.entries.find(e=>e.type==="law" && e.key==="⟁");
+    if(!law) problems.push({level:"err", msg:"⟁ override law missing in MX2LEX map."});
+  } else {
+    problems.push({level:"warn", msg:"MX2LEX map not built yet (run MX2LEX MAP)."});
+  }
+
+  // 5) Demo HTML should reference [data-g] usage
+  const demo = STATE.files["MICRO_ASXR_SINGLE_HTML"] || "";
+  if(!demo.includes('data-g="⟁"')) problems.push({level:"warn", msg:'Demo HTML does not include ⟁ glyph usage.'});
+
+  const report = problems.length
+    ? problems.map(p=>`${p.level.toUpperCase()}: ${p.msg}`).join("\n")
+    : "OK: No lint issues detected.";
+
+  setOut(report);
+  stamp(problems.length ? "Lint finished (see outbox)." : "Lint OK.", problems.length ? "warn" : "ok");
+}
+
+/* =========================
+   SCXQ2 mock compress/decompress
+   (We cannot implement true SCXQ2 here, so we produce a deterministic “SCXQ2-LITE” envelope.)
+========================= */
+function scxq2LiteCompress(str){
+  const payload = btoa(unescape(encodeURIComponent(str)));
+  const header = {
+    "@codec":"SCXQ2_LITE",
+    "@version":"0.1",
+    "@law":"PAYLOADS_TINY_ENGINE_HEAVY",
+    "@len_in": str.length,
+    "@len_b64": payload.length
+  };
+  return `SCXQ2_LITE::${btoa(JSON.stringify(header))}::${payload}`;
+}
+function scxq2LiteDecompress(blob){
+  const parts = blob.split("::");
+  if(parts.length !== 3 || parts[0] !== "SCXQ2_LITE") throw new Error("Not SCXQ2_LITE envelope.");
+  const payload = parts[2];
+  return decodeURIComponent(escape(atob(payload)));
+}
+
+/* =========================
+   MICRO-ASXR demo HTML (single file)
+========================= */
+function buildMicroASXRHTML(){
+  const css = (STATE.files["ATOMIC+GLYPH.css"]||"") + "\n\n" + (STATE.files["GLYPH_CODEX.css"]||"");
+  return `<!doctype html>
+<html lang="en" data-theme="matrix">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MICRO-ASXR — Demo</title>
+<style>
+${css}
+
+/* demo-only scaffold */
+:root{ --bg-0:#020409; --bg-1:#050912; --panel:rgba(255,255,255,.04); --border:rgba(97,231,255,.35); --fg-0:#e9fbff; --fg-1:rgba(233,251,255,.78); --accent:#16f2aa; --accent2:#61e7ff; --r2:12px; --r3:18px; --s1:8px; --s2:12px; --s3:16px; --s4:20px; --hazard:#ffb300; --danger:#ff6b6b; --success:#00d9a6; --entropy:.15; }
+body{margin:0;background:var(--bg-0);color:var(--fg-0);font:600 14px/1.35 ui-monospace,Menlo,Consolas,"Cascadia Code",monospace;}
+.wrap{display:grid;grid-template-columns: 1fr;gap:12px;padding:12px;}
+.card{background:var(--panel);border:1px solid rgba(255,255,255,.12);border-radius:var(--r3);padding:16px;}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);font-size:12px;color:var(--fg-1)}
+.btn{appearance:none;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);color:var(--fg-0);border-radius:12px;padding:9px 12px;cursor:pointer;font-weight:900;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:rgba(22,242,170,.55);transform:translateY(-1px)}
+.meter{height:2px;border-radius:2px;background:linear-gradient(90deg,var(--bg-1) 0%, var(--accent) calc(var(--entropy,0)*100%), var(--bg-1) 100%)}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="row">
+        <span data-g="⟁" data-size="lg" data-g-animate="pulse" data-g-color="accent"></span>
+        <div style="font-weight:950;font-size:16px" class="text-gradient">MICRO-ASXR — API↔DOM + CSS Runtime</div>
+        <span class="pill"><span data-g="A"></span> Atomic</span>
+        <span class="pill"><span data-g="Q"></span> Quantum</span>
+        <span class="pill"><span data-g="C"></span> Codex</span>
+      </div>
+      <div style="margin-top:12px" class="meter"></div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="btnPing"><span data-g="→"></span> API PING</button>
+        <button class="btn" id="btnToggle"><span data-g="m"></span> TOGGLE @if</button>
+        <button class="btn" id="btnQuest"><span data-g="QUEST"></span> QUEST</button>
+        <span class="pill"><span data-g="❤" data-g-color="danger"></span> HP</span>
+        <span class="pill"><span data-g="⚡" data-g-animate="spin"></span> ENERGY</span>
+        <span class="pill"><span data-g="🗡"></span> DMG</span>
+      </div>
+    </div>
+
+    <div class="card" atomic-block="@if_then_else" id="ifBlock" data-condition="true">
+      <div class="row">
+        <span data-g="✓" data-g-color="accent"></span>
+        <div style="font-weight:950">XCFE @if_then_else is ACTIVE</div>
+      </div>
+      <div style="margin-top:10px;color:var(--fg-1)">
+        This is a pure CSS runtime gate. Flip it to prove control-flow is declarative.
+      </div>
+    </div>
+
+    <div class="card agent-micro" atomic-block="@microagent" style="--agent-processing:.9">
+      <div class="row">
+        <span data-g="u"></span>
+        <div style="font-weight:950">MICROAGENT</div>
+        <span class="pill"><span data-g="0"></span><span data-g="1"></span><span data-g="2"></span> shards</span>
+      </div>
+      <div style="margin-top:10px;color:var(--fg-1)">
+        Agent shimmer is CSS-only. Physics vectors exist as variables (<span style="color:var(--accent)">--px --py --vx --vy</span>).
+      </div>
+    </div>
+
+    <div class="card os-window">
+      <div class="os-titlebar">
+        <div class="row">
+          <div class="os-controls">
+            <div class="os-control close"></div>
+            <div class="os-control minimize"></div>
+            <div class="os-control maximize"></div>
+          </div>
+          <span class="pill"><span data-g="f"></span> ATOMIC+GLYPH.css</span>
+        </div>
+        <span class="pill"><span data-g="⚠" data-g-color="hazard"></span> Entropy</span>
+      </div>
+      <div style="padding:14px">
+        <div class="row">
+          <span data-g="s"></span>
+          <span class="pill">Search glyphs: <span data-g="A"></span> <span data-g="7"></span> <span data-g="x"></span> <span data-g="❤"></span></span>
+        </div>
+        <div style="margin-top:10px" class="entropy-visual"></div>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+  // demo-only: pretend API↔DOM ping and control flow toggle
+  const ifBlock = document.getElementById('ifBlock');
+  document.getElementById('btnToggle').onclick = () => {
+    const v = ifBlock.getAttribute('data-condition') === 'true';
+    ifBlock.setAttribute('data-condition', v ? 'false' : 'true');
+  };
+  document.getElementById('btnPing').onclick = () => {
+    document.documentElement.style.setProperty('--entropy', String(Math.random().toFixed(2)));
+  };
+  document.getElementById('btnQuest').onclick = () => {
+    alert('QUEST ACCEPTED: Forge the tapes. ⟁');
+  };
+<\/script>
+
+</body>
+</html>`;
+}
+
+/* =========================
+   Files + Tabs
+========================= */
+function setActiveFile(name){
+  STATE.activeFile = name;
+  editor.value = STATE.files[name] ?? "";
+  fileNameEl.textContent = name;
+  for(const b of tabsEl.querySelectorAll(".chip")){
+    b.classList.toggle("active", b.dataset.file===name);
+  }
+}
+
+function buildTabs(){
+  tabsEl.innerHTML = "";
+  const order = [
+    "MICRO_ASXR_SINGLE_HTML",
+    "ATOMIC+GLYPH.css",
+    "GLYPH_CODEX.css",
+    "glyph.codex.json",
+    "mx2lex.map.json",
+    "SCXQ2_LITE.blob"
+  ];
+  for(const name of order){
+    const chip = document.createElement("div");
+    chip.className = "chip";
+    chip.dataset.file = name;
+    chip.innerHTML = `<span data-g="f" data-size="sm"></span> ${name}`;
+    chip.onclick = ()=> setActiveFile(name);
+    tabsEl.appendChild(chip);
+  }
+}
+
+/* =========================
+   Build everything (FORGE ALL)
+========================= */
+function forgeAll(){
+  // 1) Codex
+  STATE.codex = buildCodex();
+  STATE.files["glyph.codex.json"] = JSON.stringify(STATE.codex, null, 2);
+
+  // 2) Glyph CSS
+  const glyphCSS = codexToCSS(STATE.codex);
+  STATE.files["GLYPH_CODEX.css"] = glyphCSS;
+
+  // 3) ATOMIC+GLYPH.css is already present in <style>, but we export it as a file too:
+  STATE.files["ATOMIC+GLYPH.css"] = document.getElementById("ATOMIC_GLYPH_CSS").textContent.trim();
+
+  // 4) MX2LEX
+  STATE.mx2lex = buildMX2LEX(STATE.codex);
+  STATE.files["mx2lex.map.json"] = JSON.stringify(STATE.mx2lex, null, 2);
+
+  // 5) Micro-ASXR single HTML (with both css blocks merged)
+  STATE.files["MICRO_ASXR_SINGLE_HTML"] = buildMicroASXRHTML();
+
+  // 6) SCXQ2 blob (default compress the micro-asxr html)
+  STATE.files["SCXQ2_LITE.blob"] = scxq2LiteCompress(STATE.files["MICRO_ASXR_SINGLE_HTML"]);
+
+  // 7) Refresh glyph gallery
+  renderGlyphGrid();
+
+  // 8) Make sure tabs exist
+  buildTabs();
+  setActiveFile(STATE.activeFile);
+
+  stamp("Forge complete: ATOMIC+GLYPH.css + Codex + MX2LEX + SCXQ2 + MICRO-ASXR HTML.", "ok");
+  applyPreview();
+}
+
+function applyPreview(){
+  const name = STATE.activeFile;
+  const val = editor.value;
+
+  // Save edit into file
+  STATE.files[name] = val;
+
+  // If editing CSS files, rebuild demo HTML so preview stays accurate
+  if(name === "ATOMIC+GLYPH.css" || name === "GLYPH_CODEX.css"){
+    // Keep live by patching the <style> inside buildMicroASXRHTML() (we simply rebuild)
+    STATE.files["MICRO_ASXR_SINGLE_HTML"] = buildMicroASXRHTML();
+    STATE.files["SCXQ2_LITE.blob"] = scxq2LiteCompress(STATE.files["MICRO_ASXR_SINGLE_HTML"]);
+  }
+
+  const html = STATE.files["MICRO_ASXR_SINGLE_HTML"];
+  STATE.lastApplyHTML = html;
+  preview.srcdoc = html;
+
+  stamp(`Applied changes. Preview updated. (active: ${name})`, "ok");
+}
+
+/* =========================
+   Export bundle
+========================= */
+function exportBundle(){
+  const bundle = {
+    id:"BLACK_CODE_EDITOR_FORGE_BUNDLE_Ω",
+    ts: Date.now(),
+    files: {
+      "ATOMIC+GLYPH.css": STATE.files["ATOMIC+GLYPH.css"],
+      "GLYPH_CODEX.css": STATE.files["GLYPH_CODEX.css"],
+      "glyph.codex.json": STATE.files["glyph.codex.json"],
+      "mx2lex.map.json": STATE.files["mx2lex.map.json"],
+      "MICRO_ASXR_SINGLE_HTML": STATE.files["MICRO_ASXR_SINGLE_HTML"],
+      "SCXQ2_LITE.blob": STATE.files["SCXQ2_LITE.blob"]
+    }
+  };
+  const out = JSON.stringify(bundle, null, 2);
+  // write into editor as an export artifact
+  STATE.files["EXPORT.bundle.json"] = out;
+  // create a temporary download
+  const blob = new Blob([out], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "BLACK_CODE_EDITOR_FORGE_BUNDLE_Ω.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+
+  stamp("Exported bundle JSON (download started).", "ok");
+}
+
+/* =========================
+   Glyph grid + insert
+========================= */
+function renderGlyphGrid(){
+  glyphGrid.innerHTML = "";
+  if(!STATE.codex) return;
+
+  const q = (glyphSearch.value||"").trim().toLowerCase();
+  const keys = Object.keys(STATE.codex.glyphs).sort((a,b)=>a.localeCompare(b));
+  const filtered = keys.filter(k=>{
+    if(!q) return true;
+    const g = STATE.codex.glyphs[k];
+    const tag = `${k} ${g.set} ${g.kind}`.toLowerCase();
+    return tag.includes(q) || (q.startsWith("ui:") && g.set==="UI" && tag.includes(q.slice(3)))
+        || (q.startsWith("rpg:") && g.set==="RPG" && tag.includes(q.slice(4)));
+  }).slice(0, 180); // keep grid responsive
+
+  for(const k of filtered){
+    const g = STATE.codex.glyphs[k];
+    const tile = document.createElement("div");
+    tile.className = "glyphTile";
+    tile.title = `Insert: <span data-g="${k}"></span>\nSet: ${g.set}`;
+    tile.innerHTML = `
+      <div class="row" style="gap:10px">
+        <span data-g="${escapeHTMLAttr(k)}" data-size="sm"></span>
+        <div class="col" style="gap:2px">
+          <div class="glyphKey">${escapeHTML(k)}</div>
+          <div class="tiny muted">${g.set}</div>
+        </div>
+      </div>
+      <span class="badge">${g.kind}</span>
+    `;
+    tile.onclick = ()=> insertGlyphIntoDemo(k);
+    glyphGrid.appendChild(tile);
+  }
+}
+
+function escapeHTML(s){
+  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+}
+function escapeHTMLAttr(s){ return escapeHTML(s).replaceAll('"',"&quot;"); }
+
+function insertGlyphIntoDemo(key){
+  // Insert into MICRO_ASXR_SINGLE_HTML file at cursor if it is open; otherwise insert into current file.
+  const targetFile = "MICRO_ASXR_SINGLE_HTML";
+  const insert = `<span data-g="${key}"></span>`;
+  const file = STATE.activeFile === targetFile ? targetFile : STATE.activeFile;
+
+  const text = (file === STATE.activeFile) ? editor.value : (STATE.files[file] || "");
+  const pos = (file === STATE.activeFile) ? editor.selectionStart : text.length;
+
+  const next = text.slice(0,pos) + insert + text.slice(pos);
+  STATE.files[file] = next;
+
+  if(file === STATE.activeFile){
+    editor.value = next;
+    editor.focus();
+    editor.selectionStart = editor.selectionEnd = pos + insert.length;
+  }
+
+  stamp(`Inserted glyph ${key} into ${file}.`, "ok");
+  // refresh preview if demo changed
+  if(file === "MICRO_ASXR_SINGLE_HTML") applyPreview();
+}
+
+/* =========================
+   Theme cycling
+========================= */
+function cycleTheme(){
+  STATE.themeIndex = (STATE.themeIndex + 1) % STATE.themes.length;
+  document.documentElement.setAttribute("data-theme", STATE.themes[STATE.themeIndex]);
+  stamp(`Theme: ${STATE.themes[STATE.themeIndex]}`, "ok");
+}
+
+/* =========================
+   Physics tick (updates variables, demo entropy)
+========================= */
+function physicsTick(){
+  const p = STATE.physics;
+  // simple deterministic pseudo-physics
+  p.vy = (p.vy + p.gravity);
+  p.vx = (p.vx * p.drag);
+  p.vy = (p.vy * p.drag);
+
+  p.px += p.vx;
+  p.py += p.vy;
+
+  // bounce
+  if(p.py > 36){ p.py = 36; p.vy *= -0.78; }
+  if(p.py < -6){ p.py = -6; p.vy *= -0.78; }
+
+  // entropy drift
+  p.entropy = Math.max(0, Math.min(1, p.entropy + (Math.random()*0.06 - 0.03)));
+  entropyVal.textContent = p.entropy.toFixed(2);
+
+  // reflect into preview (if loaded)
+  try{
+    const doc = preview.contentDocument;
+    if(doc){
+      doc.documentElement.style.setProperty("--entropy", p.entropy.toFixed(2));
+      doc.documentElement.style.setProperty("--px", String(p.px.toFixed(2)));
+      doc.documentElement.style.setProperty("--py", String(p.py.toFixed(2)));
+      doc.documentElement.style.setProperty("--vx", String(p.vx.toFixed(2)));
+      doc.documentElement.style.setProperty("--vy", String(p.vy.toFixed(2)));
+    }
+  }catch(e){}
+  stamp(`Physics tick: px=${p.px.toFixed(1)} py=${p.py.toFixed(1)} entropy=${p.entropy.toFixed(2)}`, "ok");
+}
+
+/* =========================
+   Button wiring
+========================= */
+$("#btnForgeAll").onclick = forgeAll;
+$("#btnApply").onclick = applyPreview;
+$("#btnExport").onclick = exportBundle;
+$("#btnReset").onclick = () => { localStorage.removeItem("BLACK_CODE_EDITOR_Ω"); location.reload(); };
+$("#btnTheme").onclick = cycleTheme;
+$("#btnLint").onclick = lintAll;
+$("#btnMX2LEX").onclick = () => {
+  if(!STATE.mx2lex){ stamp("MX2LEX not built yet. Forge all first.", "warn"); return; }
+  setActiveFile("mx2lex.map.json");
+  stamp("Opened MX2LEX map.", "ok");
+};
+$("#btnCompress").onclick = () => {
+  const name = STATE.activeFile;
+  const data = editor.value;
+  try{
+    const blob = scxq2LiteCompress(data);
+    STATE.files["SCXQ2_LITE.blob"] = blob;
+    setActiveFile("SCXQ2_LITE.blob");
+    stamp(`SCXQ2_LITE compressed: ${name} → SCXQ2_LITE.blob`, "ok");
+  }catch(e){
+    stamp("Compress failed: " + e.message, "err");
+  }
+};
+$("#btnPhysics").onclick = physicsTick;
+$("#btnDemo").onclick = () => { setActiveFile("MICRO_ASXR_SINGLE_HTML"); stamp("Loaded demo HTML in editor.", "ok"); };
+
+glyphSearch.addEventListener("input", renderGlyphGrid);
+
+/* =========================
+   Keyboard shortcuts
+========================= */
+window.addEventListener("keydown", (e)=>{
+  if(e.ctrlKey && e.key.toLowerCase()==="s"){
+    e.preventDefault();
+    applyPreview();
+  }
+  if(e.ctrlKey && e.key.toLowerCase()==="e"){
+    e.preventDefault();
+    exportBundle();
+  }
+});
+
+/* =========================
+   Persistence
+========================= */
+function saveState(){
+  const pack = {
+    theme: document.documentElement.getAttribute("data-theme"),
+    active: STATE.activeFile,
+    files: STATE.files,
+    physics: STATE.physics
+  };
+  localStorage.setItem("BLACK_CODE_EDITOR_Ω", JSON.stringify(pack));
+}
+setInterval(saveState, 1500);
+
+function loadState(){
+  const raw = localStorage.getItem("BLACK_CODE_EDITOR_Ω");
+  if(!raw) return false;
+  try{
+    const pack = JSON.parse(raw);
+    if(pack.theme) document.documentElement.setAttribute("data-theme", pack.theme);
+    if(pack.files) STATE.files = pack.files;
+    if(pack.physics) STATE.physics = pack.physics;
+    if(pack.active) STATE.activeFile = pack.active;
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+/* =========================
+   Boot
+========================= */
+(function boot(){
+  const restored = loadState();
+  if(!restored){
+    // first run: forge
+    forgeAll();
+    stamp("First boot: forged defaults.", "ok");
+  }else{
+    // ensure critical assets exist; otherwise re-forge
+    if(!STATE.files["MICRO_ASXR_SINGLE_HTML"] || !STATE.files["glyph.codex.json"]){
+      forgeAll();
+      stamp("Restored state incomplete → re-forged.", "warn");
+    }else{
+      // reconstruct codex/mx2lex from stored JSON
+      try{ STATE.codex = JSON.parse(STATE.files["glyph.codex.json"]); }catch(e){}
+      try{ STATE.mx2lex = JSON.parse(STATE.files["mx2lex.map.json"]); }catch(e){}
+      buildTabs();
+      setActiveFile(STATE.activeFile);
+      renderGlyphGrid();
+      preview.srcdoc = STATE.files["MICRO_ASXR_SINGLE_HTML"];
+      stamp("Restored from local state.", "ok");
+    }
+  }
+})();
+</script>
+
+<script>
+/* ============================================================
+  Bootstrap a few glyphs immediately so UI has icons even before forge
+============================================================ */
+(function seedGlyphs(){
+  const css = [];
+  // Use your examples (kept exact), plus ⟁ + a few UI defaults
+  css.push('[data-g="+"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTExIDVoMnY2aDZ2MmgtNnY2aC0ydi02SDV2LTJoNnoiLz48L3N2Zz4=")}');
+  css.push('[data-g="x"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTEyIDEwLjU4Nmw0Ljk1LTQuOTUgMS40MTQgMS40MTQtNC45NSA0Ljk1IDQuOTUgNC45NS0xLjQxNCAxLjQxNC00Ljk1LTQuOTUtNC45NSA0Ljk1LTEuNDE0LTEuNDE0IDQuOTUtNC45NS00Ljk1LTQuOTV6Ii8+PC9zdmc+")}');
+  // ⟁ seed
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 2 21h20L12 2zm0 4.2L18.5 19h-13L12 6.2z"/><path fill="currentColor" d="M11 10h2v5h-2zm0 6.6h2V18h-2z"/></svg>`;
+  css.push(`[data-g="⟁"]{--g-data:url("data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}")}`);
+  const style = document.createElement("style");
+  style.textContent = css.join("\n");
+  document.head.appendChild(style);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,268 @@
+{
+  "@context": "xjson://lm/control_flow/grams/v1",
+  "@n": "CONTROL_FLOW_LM_ATOMIC_PACK",
+  "@d": "Control/flow/action/execution lexical set turned into @GRAM tables, XCFE vectors, tokenizer spec, and LM tape.",
+  "@version": "1.0.0",
+
+  "grams": {
+    "@unigram": {
+      "tokens": [
+        "control","command","govern","regulate","oversee","steer","direct","manage",
+        "flow","stream","channel","route","transition","propagate","cascade","vector",
+        "action","trigger","initiate","activate","perform","operate","respond",
+        "execution","implement","deliver","complete","finalize","enact","resolve",
+        "resist","adapt","reflect","escalate",
+        "absorb","reroute","invert","amplify",
+        "productive","effective","procedural","decisive","precise","flawed","chaotic"
+      ]
+    },
+
+    "@bigram": {
+      "examples": [
+        { "gram": "assert control",        "role": "control_action" },
+        { "gram": "regulate flow",         "role": "control_flow" },
+        { "gram": "trigger action",        "role": "action_start" },
+        { "gram": "execute command",       "role": "execution_direct" },
+        { "gram": "manage transition",     "role": "flow_management" },
+        { "gram": "adapt response",        "role": "reaction_adjust" },
+        { "gram": "amplify signal",        "role": "flow_amplify" },
+        { "gram": "complete execution",    "role": "execution_finalize" },
+        { "gram": "resist control",        "role": "reaction_resistance" },
+        { "gram": "productive action",     "role": "value_positive" }
+      ]
+    },
+
+    "@trigram": {
+      "examples": [
+        { "gram": "initiate control sequence", "role": "control_start_pipeline" },
+        { "gram": "regulate system flow",      "role": "control_flow_system" },
+        { "gram": "trigger reactive response", "role": "action_to_reaction" },
+        { "gram": "complete execution cycle",  "role": "execution_cycle_end" },
+        { "gram": "amplify output signal",     "role": "flow_amplify_output" },
+        { "gram": "adapt control strategy",    "role": "control_meta_update" }
+      ]
+    }
+  },
+
+  "xcfe_vectors": {
+    "@control": {
+      "@control.start":      ["initiate","trigger","activate","start","launch","invoke"],
+      "@control.stop":       ["halt","cease","terminate","abort","stop"],
+      "@control.adjust":     ["modulate","calibrate","tune","refine","adapt"],
+      "@control.route":      ["steer","direct","navigate","route","reroute","channel"],
+      "@control.enforce":    ["control","command","govern","regulate","enforce"],
+      "@control.escalate":   ["escalate","amplify","intensify"],
+      "@control.deescalate": ["dampen","reduce","soften"]
+    },
+
+    "@flow": {
+      "@flow.forward":   ["flow","stream","move","propagate","cascade","transfer"],
+      "@flow.loop":      ["cycle","loop","iterate","recur"],
+      "@flow.branch":    ["split","fork","diverge","branch"],
+      "@flow.merge":     ["merge","join","converge"],
+      "@flow.reverse":   ["reverse","invert","flip"],
+      "@flow.disrupt":   ["block","interrupt","obstruct","break"],
+      "@flow.stabilize": ["stabilize","smooth","normalize"]
+    },
+
+    "@action": {
+      "@action.perform":   ["act","do","perform","execute","carry","apply","operate"],
+      "@action.plan":      ["plan","design","outline","specify"],
+      "@action.review":    ["review","inspect","audit","analyze"],
+      "@action.respond":   ["respond","reply","counteract","react"],
+      "@action.deploy":    ["deploy","ship","release","publish"]
+    },
+
+    "@execution": {
+      "@execution.begin":      ["execute","invoke","run","start"],
+      "@execution.process":    ["process","compute","calculate","evaluate"],
+      "@execution.finalize":   ["finalize","complete","resolve","close"],
+      "@execution.validate":   ["verify","validate","check","test"],
+      "@execution.rollback":   ["rollback","revert","undo","restore"]
+    },
+
+    "@reaction": {
+      "@reaction.resist":    ["resist","oppose","defy","counter"],
+      "@reaction.absorb":    ["absorb","take","ingest","capture"],
+      "@reaction.redirect":  ["reroute","redirect","pivot","shift"],
+      "@reaction.reflect":   ["reflect","echo","mirror"],
+      "@reaction.amplify":   ["amplify","magnify","boost"]
+    },
+
+    "@value": {
+      "@value.positive": ["productive","effective","decisive","precise","stable","smooth"],
+      "@value.neutral":  ["procedural","standard","functional"],
+      "@value.negative": ["flawed","chaotic","turbulent","wasteful","reckless"]
+    }
+  },
+
+  "tokenizer": {
+    "vocab": {
+      "[PAD]": 0,
+      "[UNK]": 1,
+      "[BOS]": 2,
+      "[EOS]": 3,
+
+      "control": 10,
+      "command": 11,
+      "govern": 12,
+      "regulate": 13,
+      "oversee": 14,
+      "steer": 15,
+      "direct": 16,
+      "manage": 17,
+
+      "flow": 20,
+      "stream": 21,
+      "channel": 22,
+      "route": 23,
+      "transition": 24,
+      "propagate": 25,
+      "cascade": 26,
+      "vector": 27,
+
+      "action": 30,
+      "trigger": 31,
+      "initiate": 32,
+      "activate": 33,
+      "perform": 34,
+      "operate": 35,
+      "respond": 36,
+
+      "execution": 40,
+      "implement": 41,
+      "deliver": 42,
+      "complete": 43,
+      "finalize": 44,
+      "enact": 45,
+      "resolve": 46,
+
+      "resist": 50,
+      "adapt": 51,
+      "reflect": 52,
+      "escalate": 53,
+      "absorb": 54,
+      "reroute": 55,
+      "invert": 56,
+      "amplify": 57,
+
+      "productive": 60,
+      "effective": 61,
+      "procedural": 62,
+      "decisive": 63,
+      "precise": 64,
+      "flawed": 65,
+      "chaotic": 66
+    },
+
+    "merges": [
+      "initiate control",
+      "assert control",
+      "regulate flow",
+      "manage flow",
+      "trigger action",
+      "execute command",
+      "complete execution",
+      "amplify signal",
+      "adapt response",
+      "productive action"
+    ],
+
+    "tokenizer_config": {
+      "model_type": "xjson-bpe",
+      "do_lower_case": true,
+      "strip_accents": true,
+      "bos_token": "[BOS]",
+      "eos_token": "[EOS]",
+      "unk_token": "[UNK]",
+      "pad_token": "[PAD]",
+      "max_length": 128,
+      "vocab_size": 128
+    },
+
+    "special_tokens_map": {
+      "bos_token": "[BOS]",
+      "eos_token": "[EOS]",
+      "unk_token": "[UNK]",
+      "pad_token": "[PAD]"
+    }
+  },
+
+  "mx2lm_tape": {
+    "@context": "xjson://tape/mx2lm/control_flow_lm/v1",
+    "n": "tape_mx2lm_control_flow_lm_v1",
+    "d": "MX2LM @GRAM-based language model for control/flow/action/execution semantics.",
+    "role": "lm_tape",
+
+    "tokenizer_ref": "CONTROL_FLOW_TOKENIZER",
+    "grams_ref": "CONTROL_FLOW_LM_ATOMIC_PACK/grams",
+    "xcfe_vectors_ref": "xcfe/control_flow/vectors/v1",
+
+    "lm_config": {
+      "family": "mx2lm-ngrams",
+      "ngram_levels": ["@unigram","@bigram","@trigram"],
+      "context_window_tokens": 64,
+      "backoff_strategy": "kneser_ney_like",
+      "smoothing": "add_k",
+      "k": 0.5,
+      "use_glyphgram": false,
+      "value_bias": {
+        "positive": 0.2,
+        "negative": -0.2
+      }
+    },
+
+    "xcfe_bindings": {
+      "@control_tokens": ["control","command","govern","regulate","manage"],
+      "@flow_tokens":    ["flow","stream","channel","route","transition","propagate"],
+      "@action_tokens":  ["action","trigger","initiate","activate","perform"],
+      "@execution_tokens": ["execution","implement","complete","finalize","resolve"],
+      "@reaction_tokens": ["resist","adapt","reflect","escalate","absorb","reroute","invert","amplify"],
+      "@value_positive_tokens": ["productive","effective","decisive","precise"],
+      "@value_negative_tokens": ["flawed","chaotic"]
+    },
+
+    "mx2lm_runtime": {
+      "modes": {
+        "completion": {
+          "description": "Predict next control/flow/action/execution token.",
+          "default_temperature": 0.3,
+          "max_tokens": 32
+        },
+        "classification": {
+          "description": "Classify input into control/flow/action/execution/reaction/value buckets.",
+          "labels": ["control","flow","action","execution","reaction","value_positive","value_negative"]
+        }
+      },
+
+      "examples": {
+        "completion": [
+          {
+            "prompt": "regulate",
+            "expected_next": ["flow","system","channel"],
+            "@xcfe_hint": "@control.route"
+          },
+          {
+            "prompt": "trigger",
+            "expected_next": ["action","response"],
+            "@xcfe_hint": "@action.perform"
+          },
+          {
+            "prompt": "complete",
+            "expected_next": ["execution","cycle"],
+            "@xcfe_hint": "@execution.finalize"
+          }
+        ],
+        "classification": [
+          { "input": "assert control",          "label": "control" },
+          { "input": "stabilize flow",          "label": "flow" },
+          { "input": "trigger action",          "label": "action" },
+          { "input": "finalize execution",      "label": "execution" },
+          { "input": "resist control",          "label": "reaction" },
+          { "input": "productive action",       "label": "value_positive" },
+          { "input": "chaotic execution",       "label": "value_negative" }
+        ]
+      }
+    }
+  }
+}

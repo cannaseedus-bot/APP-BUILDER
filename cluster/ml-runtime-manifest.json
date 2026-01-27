@@ -1,0 +1,670 @@
+{
+  "@xjson_version": "4.0",
+  "@runtime": "xjson-ml-trainer",
+  "@description": "Browser-based AI model training with WebGPU - No Colab needed",
+  
+  "state": {
+    "gpu": {
+      "available": false,
+      "type": null,
+      "memory": 0,
+      "vendor": null,
+      "adapter": null,
+      "device": null
+    },
+    "model": {
+      "name": "xjson-model-v1",
+      "type": null,
+      "architecture": null,
+      "parameters": 0,
+      "initialized": false,
+      "weights": null,
+      "optimizer_state": null
+    },
+    "dataset": {
+      "loaded": false,
+      "size": 0,
+      "train_split": 0.8,
+      "val_split": 0.2,
+      "batches": 0,
+      "tokenizer": null
+    },
+    "training": {
+      "active": false,
+      "epoch": 0,
+      "batch": 0,
+      "total_epochs": 10,
+      "loss_history": [],
+      "val_loss_history": [],
+      "accuracy_history": [],
+      "learning_rate": 0.0001,
+      "start_time": null,
+      "elapsed_time": 0
+    },
+    "hyperparams": {
+      "learning_rate": 0.0001,
+      "batch_size": 32,
+      "epochs": 10,
+      "optimizer": "adam",
+      "loss_function": "cross_entropy",
+      "gradient_clip": 1.0,
+      "warmup_steps": 1000,
+      "weight_decay": 0.01,
+      "dropout": 0.1,
+      "label_smoothing": 0.1
+    },
+    "ui": {
+      "active_tab": "config",
+      "show_advanced": false,
+      "auto_save": true,
+      "theme": "dark"
+    }
+  },
+
+  "model_templates": {
+    "transformer_gpt": {
+      "name": "GPT-style Transformer",
+      "icon": "🧠",
+      "architecture": {
+        "input_dim": 768,
+        "vocab_size": 50000,
+        "max_seq_length": 2048,
+        "layers": [
+          {
+            "type": "embedding",
+            "vocab_size": 50000,
+            "dim": 768,
+            "max_position": 2048
+          },
+          {
+            "type": "transformer_block",
+            "num_layers": 6,
+            "num_heads": 12,
+            "dim": 768,
+            "ff_dim": 3072,
+            "dropout": 0.1,
+            "attention_dropout": 0.1
+          },
+          {
+            "type": "layer_norm",
+            "dim": 768
+          },
+          {
+            "type": "linear",
+            "in_features": 768,
+            "out_features": 50000
+          }
+        ]
+      },
+      "estimated_params": 85000000,
+      "use_cases": ["text_generation", "code_completion", "chat"]
+    },
+    
+    "transformer_bert": {
+      "name": "BERT-style Encoder",
+      "icon": "📖",
+      "architecture": {
+        "input_dim": 768,
+        "vocab_size": 30000,
+        "max_seq_length": 512,
+        "layers": [
+          {
+            "type": "embedding",
+            "vocab_size": 30000,
+            "dim": 768,
+            "max_position": 512
+          },
+          {
+            "type": "transformer_encoder",
+            "num_layers": 12,
+            "num_heads": 12,
+            "dim": 768,
+            "ff_dim": 3072,
+            "dropout": 0.1
+          },
+          {
+            "type": "pooler",
+            "dim": 768
+          },
+          {
+            "type": "classifier",
+            "in_features": 768,
+            "num_classes": 2
+          }
+        ]
+      },
+      "estimated_params": 110000000,
+      "use_cases": ["classification", "sentiment_analysis", "nli"]
+    },
+
+    "vision_transformer": {
+      "name": "Vision Transformer (ViT)",
+      "icon": "👁️",
+      "architecture": {
+        "image_size": 224,
+        "patch_size": 16,
+        "num_patches": 196,
+        "layers": [
+          {
+            "type": "patch_embedding",
+            "image_size": 224,
+            "patch_size": 16,
+            "in_channels": 3,
+            "dim": 768
+          },
+          {
+            "type": "transformer_encoder",
+            "num_layers": 12,
+            "num_heads": 12,
+            "dim": 768,
+            "ff_dim": 3072,
+            "dropout": 0.1
+          },
+          {
+            "type": "mlp_head",
+            "dim": 768,
+            "num_classes": 1000
+          }
+        ]
+      },
+      "estimated_params": 86000000,
+      "use_cases": ["image_classification", "object_detection"]
+    },
+
+    "lstm": {
+      "name": "LSTM Network",
+      "icon": "🔄",
+      "architecture": {
+        "input_dim": 128,
+        "layers": [
+          {
+            "type": "embedding",
+            "vocab_size": 10000,
+            "dim": 128
+          },
+          {
+            "type": "lstm",
+            "input_size": 128,
+            "hidden_size": 256,
+            "num_layers": 2,
+            "dropout": 0.2,
+            "bidirectional": true
+          },
+          {
+            "type": "linear",
+            "in_features": 512,
+            "out_features": 10000
+          }
+        ]
+      },
+      "estimated_params": 5000000,
+      "use_cases": ["sequence_modeling", "time_series"]
+    },
+
+    "cnn": {
+      "name": "Convolutional Neural Network",
+      "icon": "🖼️",
+      "architecture": {
+        "input_channels": 3,
+        "layers": [
+          {
+            "type": "conv2d",
+            "in_channels": 3,
+            "out_channels": 64,
+            "kernel_size": 7,
+            "stride": 2,
+            "padding": 3
+          },
+          {
+            "type": "batch_norm",
+            "num_features": 64
+          },
+          {
+            "type": "relu"
+          },
+          {
+            "type": "max_pool",
+            "kernel_size": 3,
+            "stride": 2
+          },
+          {
+            "type": "residual_block",
+            "in_channels": 64,
+            "out_channels": 128,
+            "num_blocks": 3
+          },
+          {
+            "type": "global_avg_pool"
+          },
+          {
+            "type": "linear",
+            "in_features": 128,
+            "out_features": 1000
+          }
+        ]
+      },
+      "estimated_params": 25000000,
+      "use_cases": ["image_classification", "object_detection"]
+    },
+
+    "vae": {
+      "name": "Variational Autoencoder",
+      "icon": "🎨",
+      "architecture": {
+        "input_dim": 784,
+        "latent_dim": 128,
+        "encoder": [
+          {"type": "linear", "in_features": 784, "out_features": 512},
+          {"type": "relu"},
+          {"type": "linear", "in_features": 512, "out_features": 256},
+          {"type": "relu"}
+        ],
+        "latent": [
+          {"type": "linear", "in_features": 256, "out_features": 128, "name": "mu"},
+          {"type": "linear", "in_features": 256, "out_features": 128, "name": "logvar"}
+        ],
+        "decoder": [
+          {"type": "linear", "in_features": 128, "out_features": 256},
+          {"type": "relu"},
+          {"type": "linear", "in_features": 256, "out_features": 512},
+          {"type": "relu"},
+          {"type": "linear", "in_features": 512, "out_features": 784},
+          {"type": "sigmoid"}
+        ]
+      },
+      "estimated_params": 1500000,
+      "use_cases": ["generation", "compression", "anomaly_detection"]
+    },
+
+    "gan": {
+      "name": "Generative Adversarial Network",
+      "icon": "🎭",
+      "architecture": {
+        "latent_dim": 100,
+        "generator": [
+          {"type": "linear", "in_features": 100, "out_features": 256},
+          {"type": "leaky_relu", "negative_slope": 0.2},
+          {"type": "linear", "in_features": 256, "out_features": 512},
+          {"type": "leaky_relu", "negative_slope": 0.2},
+          {"type": "linear", "in_features": 512, "out_features": 1024},
+          {"type": "leaky_relu", "negative_slope": 0.2},
+          {"type": "linear", "in_features": 1024, "out_features": 784},
+          {"type": "tanh"}
+        ],
+        "discriminator": [
+          {"type": "linear", "in_features": 784, "out_features": 512},
+          {"type": "leaky_relu", "negative_slope": 0.2},
+          {"type": "dropout", "p": 0.3},
+          {"type": "linear", "in_features": 512, "out_features": 256},
+          {"type": "leaky_relu", "negative_slope": 0.2},
+          {"type": "dropout", "p": 0.3},
+          {"type": "linear", "in_features": 256, "out_features": 1},
+          {"type": "sigmoid"}
+        ]
+      },
+      "estimated_params": 2000000,
+      "use_cases": ["image_generation", "data_augmentation"]
+    }
+  },
+
+  "training_presets": {
+    "quick_test": {
+      "name": "Quick Test (Fast)",
+      "icon": "⚡",
+      "hyperparams": {
+        "learning_rate": 0.001,
+        "batch_size": 64,
+        "epochs": 3,
+        "optimizer": "sgd",
+        "warmup_steps": 100
+      }
+    },
+    "standard": {
+      "name": "Standard Training",
+      "icon": "🎯",
+      "hyperparams": {
+        "learning_rate": 0.0001,
+        "batch_size": 32,
+        "epochs": 10,
+        "optimizer": "adam",
+        "warmup_steps": 1000,
+        "gradient_clip": 1.0
+      }
+    },
+    "fine_tuning": {
+      "name": "Fine-Tuning (Small LR)",
+      "icon": "🔧",
+      "hyperparams": {
+        "learning_rate": 0.00001,
+        "batch_size": 16,
+        "epochs": 5,
+        "optimizer": "adamw",
+        "warmup_steps": 500,
+        "weight_decay": 0.01
+      }
+    },
+    "aggressive": {
+      "name": "Aggressive (Large LR)",
+      "icon": "🚀",
+      "hyperparams": {
+        "learning_rate": 0.01,
+        "batch_size": 128,
+        "epochs": 20,
+        "optimizer": "adam",
+        "warmup_steps": 2000,
+        "gradient_clip": 5.0
+      }
+    }
+  },
+
+  "iconic_compression": {
+    "enabled": true,
+    "compression_ratio": 0.87,
+    "layer_mappings": {
+      "embedding": "📚",
+      "transformer_block": "🧠",
+      "transformer_encoder": "🔄",
+      "conv2d": "🖼️",
+      "linear": "➡️",
+      "lstm": "🔁",
+      "attention": "👁️",
+      "layer_norm": "⚖️",
+      "batch_norm": "📊",
+      "dropout": "💧",
+      "relu": "⚡",
+      "sigmoid": "📈",
+      "tanh": "〰️",
+      "softmax": "🎯"
+    },
+    "operation_mappings": {
+      "forward": "▶️",
+      "backward": "◀️",
+      "update": "🔄",
+      "compute_loss": "📉",
+      "compute_accuracy": "✅",
+      "save_checkpoint": "💾",
+      "load_checkpoint": "📥",
+      "export_model": "📤"
+    }
+  },
+
+  "webgpu_config": {
+    "preferred_adapter": "high-performance",
+    "enable_timestamp_query": true,
+    "max_buffer_size": 2147483648,
+    "workgroup_size": [256, 1, 1],
+    "compute_shader_path": "/shaders/",
+    "shader_modules": {
+      "matmul": "matrix_multiply.wgsl",
+      "attention": "scaled_dot_product_attention.wgsl",
+      "layer_norm": "layer_normalization.wgsl",
+      "gelu": "gelu_activation.wgsl",
+      "adam": "adam_optimizer.wgsl",
+      "cross_entropy": "cross_entropy_loss.wgsl"
+    }
+  },
+
+  "optimization_strategies": {
+    "mixed_precision": {
+      "enabled": true,
+      "compute_dtype": "float16",
+      "storage_dtype": "float32"
+    },
+    "gradient_accumulation": {
+      "enabled": false,
+      "accumulation_steps": 4
+    },
+    "gradient_checkpointing": {
+      "enabled": false,
+      "checkpoint_every_n_layers": 2
+    },
+    "flash_attention": {
+      "enabled": true,
+      "block_size": 128
+    },
+    "model_parallelism": {
+      "enabled": false,
+      "num_partitions": 1
+    }
+  },
+
+  "dataset_loaders": {
+    "json": {
+      "parser": "json_parse",
+      "fields": {
+        "text": "text",
+        "label": "label",
+        "input": "input",
+        "output": "output"
+      }
+    },
+    "jsonl": {
+      "parser": "jsonl_parse",
+      "fields": {
+        "text": "text",
+        "label": "label"
+      }
+    },
+    "csv": {
+      "parser": "csv_parse",
+      "delimiter": ",",
+      "has_header": true
+    },
+    "txt": {
+      "parser": "text_parse",
+      "encoding": "utf-8",
+      "split_by": "\\n\\n"
+    },
+    "huggingface": {
+      "parser": "hf_parse",
+      "api_url": "https://datasets-server.huggingface.co"
+    }
+  },
+
+  "tokenizers": {
+    "bpe": {
+      "type": "byte_pair_encoding",
+      "vocab_size": 50000,
+      "special_tokens": ["<pad>", "<unk>", "<s>", "</s>", "<mask>"]
+    },
+    "wordpiece": {
+      "type": "wordpiece",
+      "vocab_size": 30000,
+      "special_tokens": ["[PAD]", "[UNK]", "[CLS]", "[SEP]", "[MASK]"]
+    },
+    "sentencepiece": {
+      "type": "sentencepiece",
+      "vocab_size": 32000,
+      "model_type": "unigram"
+    }
+  },
+
+  "export_formats": {
+    "onnx": {
+      "enabled": true,
+      "opset_version": 14,
+      "optimize": true
+    },
+    "xjson": {
+      "enabled": true,
+      "include_weights": true,
+      "compress": true,
+      "iconic": true
+    },
+    "json_weights": {
+      "enabled": true,
+      "precision": "float32",
+      "compress": false
+    },
+    "webgpu_buffers": {
+      "enabled": true,
+      "format": "binary"
+    },
+    "tensorflowjs": {
+      "enabled": true,
+      "quantization": "uint8"
+    }
+  },
+
+  "monitoring": {
+    "metrics": [
+      "loss",
+      "accuracy",
+      "perplexity",
+      "learning_rate",
+      "gradient_norm",
+      "parameter_norm"
+    ],
+    "log_interval": 10,
+    "eval_interval": 100,
+    "save_interval": 1000,
+    "tensorboard": {
+      "enabled": false,
+      "log_dir": "./logs"
+    },
+    "wandb": {
+      "enabled": false,
+      "project": "xjson-ml-training"
+    }
+  },
+
+  "checkpointing": {
+    "enabled": true,
+    "save_best_only": true,
+    "save_last": true,
+    "monitor": "val_loss",
+    "mode": "min",
+    "save_dir": "./checkpoints"
+  },
+
+  "routes": {
+    "/": {
+      "component": "training_dashboard",
+      "title": "XJSON ML Runtime"
+    },
+    "/config": {
+      "component": "model_config",
+      "title": "Model Configuration"
+    },
+    "/dataset": {
+      "component": "dataset_manager",
+      "title": "Dataset Manager"
+    },
+    "/training": {
+      "component": "training_monitor",
+      "title": "Training Monitor"
+    },
+    "/export": {
+      "component": "model_export",
+      "title": "Export Model"
+    }
+  },
+
+  "components": {
+    "training_dashboard": {
+      "@html": {
+        "@body": {
+          "@node": "div",
+          "@attrs": {"class": "dashboard-grid"},
+          "@children": [
+            {
+              "@component": "gpu_status_card",
+              "@bind": "state.gpu"
+            },
+            {
+              "@component": "model_card",
+              "@bind": "state.model"
+            },
+            {
+              "@component": "training_chart",
+              "@bind": "state.training"
+            },
+            {
+              "@component": "metrics_panel",
+              "@bind": "state.training"
+            }
+          ]
+        }
+      }
+    }
+  },
+
+  "ai_config": {
+    "micronaut_ai": {
+      "enabled": true,
+      "auto_tune_hyperparams": true,
+      "learning_rate_schedule": "cosine_with_warmup",
+      "early_stopping": {
+        "enabled": true,
+        "patience": 3,
+        "min_delta": 0.001
+      },
+      "auto_batch_size": {
+        "enabled": true,
+        "start_size": 32,
+        "max_size": 128,
+        "oom_backoff": 0.5
+      }
+    }
+  },
+
+  "advanced_features": {
+    "distributed_training": {
+      "enabled": false,
+      "backend": "webrtc",
+      "num_workers": 1
+    },
+    "quantization": {
+      "enabled": false,
+      "method": "dynamic",
+      "bits": 8
+    },
+    "pruning": {
+      "enabled": false,
+      "method": "magnitude",
+      "sparsity": 0.5
+    },
+    "knowledge_distillation": {
+      "enabled": false,
+      "teacher_model": null,
+      "temperature": 2.0,
+      "alpha": 0.5
+    }
+  },
+
+  "security": {
+    "csp": "default-src 'self'; worker-src 'self' blob:; script-src 'self' 'wasm-unsafe-eval';",
+    "cors": {
+      "allowed_origins": ["*"],
+      "allowed_methods": ["GET", "POST"]
+    },
+    "rate_limiting": {
+      "enabled": false,
+      "max_requests": 1000,
+      "window_ms": 60000
+    }
+  },
+
+  "pwa": {
+    "enabled": true,
+    "name": "XJSON ML Runtime",
+    "short_name": "ML Runtime",
+    "description": "Browser-based AI model training",
+    "theme_color": "#16f2aa",
+    "background_color": "#020617",
+    "display": "standalone",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "/icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
+}

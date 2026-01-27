@@ -1,0 +1,235 @@
+{
+  "@context": "xjson://asxr/mx2/models/registry/v1",
+  "@version": "1.0.0",
+  "@law": "MODEL_REGISTRY = @models ⊗ @optimizers ⊗ @config → MX2GYM × MX2QF1 × XCFE",
+
+  "description": "MX2 Model Registry - Qwen-ASX and MX2LM models hosted at mx2lm.app",
+
+  "models": {
+    "qwen_asx_main": {
+      "name": "Qwen-ASX Main Model",
+      "url": "https://mx2lm.app/Qwen-ASX/model.safetensors",
+      "size": "1.8GB",
+      "format": "safetensors",
+      "type": "qwen-asx",
+      "parameters": "~1.8B",
+      "status": "active",
+      "trained_with": "MX2GYM fold-deltas",
+      "compression": "scxq2_enabled",
+      "description": "Primary Qwen-ASX model trained with MX2GYM fold-delta system",
+      "usage": {
+        "inference": "POST /mx2qf1 {action: 'inference', model_url: 'https://mx2lm.app/Qwen-ASX/model.safetensors'}",
+        "training": "POST /mx2gym {action: 'train_fold', model_url: 'https://mx2lm.app/Qwen-ASX/model.safetensors'}",
+        "download": "curl -O https://mx2lm.app/Qwen-ASX/model.safetensors"
+      }
+    },
+
+    "mx2lm_main": {
+      "name": "MX2LM Main Model",
+      "url": "https://mx2lm.app/model.safetensors",
+      "size": "1.8GB",
+      "format": "safetensors",
+      "type": "mx2lm",
+      "parameters": "~1.8B",
+      "status": "active",
+      "trained_with": "MX2GYM + MX2LEX symbolic training",
+      "compression": "scxq2_quantum_lattice",
+      "description": "MX2LM symbolic brain with tensor hybrid architecture",
+      "usage": {
+        "inference": "POST /mx2qf1 {action: 'inference', model_url: 'https://mx2lm.app/model.safetensors'}",
+        "training": "POST /mx2gym {action: 'evolve_mx2lm', model_url: 'https://mx2lm.app/model.safetensors'}",
+        "download": "curl -O https://mx2lm.app/model.safetensors"
+      }
+    }
+  },
+
+  "optimizers": {
+    "main_optimizer": {
+      "name": "Main Optimizer State",
+      "url": "https://mx2lm.app/optimizer.pt",
+      "size": "3.8GB",
+      "format": "pytorch",
+      "type": "AdamW",
+      "status": "active",
+      "compatible_with": ["qwen_asx_main", "mx2lm_main"],
+      "description": "AdamW optimizer state for continuing training",
+      "config": {
+        "beta1": 0.9,
+        "beta2": 0.999,
+        "lr": 0.0001,
+        "weight_decay": 0.01,
+        "epsilon": 1e-8
+      },
+      "usage": {
+        "continue_training": "POST /mx2gym {action: 'train_fold', optimizer_url: 'https://mx2lm.app/optimizer.pt'}",
+        "download": "curl -O https://mx2lm.app/optimizer.pt"
+      }
+    }
+  },
+
+  "model_specs": {
+    "qwen_asx": {
+      "architecture": "Qwen-based transformer",
+      "layers": 24,
+      "hidden_size": 1024,
+      "attention_heads": 16,
+      "vocab_size": 151662,
+      "max_position_embeddings": 8192,
+      "trained_on": "Fold-delta updates via MX2GYM",
+      "tokenizer": "Can use MX2LEX (24KB) instead of standard Qwen tokenizer (3MB)",
+      "inference_engine": "MX2QF1 with 128-qubit optimization"
+    },
+
+    "mx2lm": {
+      "architecture": "Symbolic-tensor hybrid",
+      "mode": "MX2 n-gram + tensor fusion",
+      "compression": "SCXQ2 quantum lattice",
+      "symbolic_tokens": 2048,
+      "tensor_dimensions": 1024,
+      "max_context": 8192,
+      "trained_on": "MX2GYM + MX2LEX symbolic corpus",
+      "inference_engine": "MX2QF1 quantum inference"
+    }
+  },
+
+  "training_pipeline": {
+    "step_1_tokenization": {
+      "tool": "MX2LEX",
+      "action": "Replace Qwen's 3MB tokenizer with MX2LEX 24KB lexicon",
+      "endpoint": "POST /mx2lex {action: 'train_lexicon', corpus: [...]}"
+    },
+
+    "step_2_fold_generation": {
+      "tool": "MX2GYM",
+      "action": "Generate fold-deltas from training data",
+      "endpoint": "POST /mx2gym {action: 'train_fold', fold_id: 'fold_custom_v1', model_url: 'https://mx2lm.app/Qwen-ASX/model.safetensors'}"
+    },
+
+    "step_3_training": {
+      "tool": "MX2GYM",
+      "action": "Train with fold-deltas + optimizer state",
+      "endpoint": "POST /mx2gym {action: 'train_fold', model_url: 'https://mx2lm.app/Qwen-ASX/model.safetensors', optimizer_url: 'https://mx2lm.app/optimizer.pt'}"
+    },
+
+    "step_4_inference": {
+      "tool": "MX2QF1",
+      "action": "Run quantum-optimized inference",
+      "endpoint": "POST /mx2qf1 {action: 'inference', model_url: 'https://mx2lm.app/model.safetensors', prompt: '...'}"
+    }
+  },
+
+  "download_commands": {
+    "download_all": [
+      "# Download Qwen-ASX model (1.8GB)",
+      "curl -O https://mx2lm.app/Qwen-ASX/model.safetensors",
+      "",
+      "# Download MX2LM model (1.8GB)",
+      "curl -O https://mx2lm.app/model.safetensors",
+      "",
+      "# Download optimizer state (3.8GB)",
+      "curl -O https://mx2lm.app/optimizer.pt",
+      "",
+      "# Total: 7.4GB"
+    ],
+
+    "download_minimal": [
+      "# Download only inference model (1.8GB)",
+      "curl -O https://mx2lm.app/model.safetensors",
+      "",
+      "# Use MX2QF1 for inference without optimizer"
+    ]
+  },
+
+  "compression_savings": {
+    "traditional_approach": {
+      "model": "1.8GB (safetensors)",
+      "tokenizer_vocab": "3MB (vocab.json)",
+      "tokenizer_config": "500KB (tokenizer.json)",
+      "total": "~1.803GB"
+    },
+
+    "mx2_approach": {
+      "model": "1.8GB (safetensors, can be fold-compressed)",
+      "tokenizer_mx2lex": "24KB (SCXQ2 compressed)",
+      "tokenizer_config": "12KB (atomic.xjson)",
+      "total": "~1.800GB",
+      "savings": "~3.5MB on tokenizer (87% reduction)"
+    },
+
+    "with_fold_compression": {
+      "model_folds": "~24MB (100 fold-deltas, SCXQ2 compressed)",
+      "tokenizer": "24KB (MX2LEX)",
+      "total": "~24MB for incremental updates",
+      "full_model_generation": "Expand folds → 1.8GB model on demand"
+    }
+  },
+
+  "integration_examples": {
+    "example_1_inference": {
+      "description": "Run inference on Qwen-ASX model",
+      "code": "curl -X POST https://your-gas-endpoint/mx2qf1 \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"action\": \"inference\",\n    \"model_url\": \"https://mx2lm.app/Qwen-ASX/model.safetensors\",\n    \"prompt\": \"Explain quantum computing\",\n    \"max_tokens\": 256\n  }'"
+    },
+
+    "example_2_continue_training": {
+      "description": "Continue training with fold-deltas",
+      "code": "curl -X POST https://your-gas-endpoint/mx2gym \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"action\": \"train_fold\",\n    \"model_url\": \"https://mx2lm.app/Qwen-ASX/model.safetensors\",\n    \"optimizer_url\": \"https://mx2lm.app/optimizer.pt\",\n    \"fold_id\": \"fold_mathfix_v1\",\n    \"config\": {\n      \"epochs\": 5,\n      \"learning_rate\": 0.0001\n    }\n  }'"
+    },
+
+    "example_3_tokenize_with_mx2lex": {
+      "description": "Use MX2LEX instead of Qwen tokenizer",
+      "code": "curl -X POST https://your-gas-endpoint/mx2lex \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"action\": \"tokenize\",\n    \"text\": \"Hello quantum world\"\n  }'\n\n# Then use tokens for inference:\ncurl -X POST https://your-gas-endpoint/mx2qf1 \\\n  -d '{\n    \"action\": \"inference\",\n    \"model_url\": \"https://mx2lm.app/model.safetensors\",\n    \"tokens\": [token_ids_from_mx2lex]\n  }'"
+    },
+
+    "example_4_evolve_mx2lm": {
+      "description": "Train MX2LM symbolic brain",
+      "code": "curl -X POST https://your-gas-endpoint/mx2gym \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"action\": \"evolve_mx2lm\",\n    \"base_model_url\": \"https://mx2lm.app/model.safetensors\",\n    \"training_data\": \"mx2db://training/corpus\",\n    \"config\": {\n      \"epochs\": 10,\n      \"fold_count\": 8,\n      \"compression\": \"scxq2_enabled\"\n    }\n  }'"
+    }
+  },
+
+  "deployment_notes": {
+    "local_deployment": [
+      "1. Download models using curl commands above",
+      "2. Place models in local directory",
+      "3. Update plugin endpoints to use local paths or serve via local server",
+      "4. Run inference: python -m uvicorn mx2qf1_server:app --port 8000"
+    ],
+
+    "cloud_deployment": [
+      "1. Deploy plugins to Google Apps Script",
+      "2. Models remain hosted at mx2lm.app",
+      "3. Plugins fetch models via HTTPS",
+      "4. Use SCXQ2 compression for transfer optimization"
+    ],
+
+    "hybrid_deployment": [
+      "1. MX2LEX + MX2GYM on GAS (lightweight fold operations)",
+      "2. MX2QF1 on GPU server (heavy inference)",
+      "3. Models cached locally on GPU server",
+      "4. Fold-deltas synced via mesh network"
+    ]
+  },
+
+  "performance_expectations": {
+    "inference_mx2qf1": {
+      "model": "1.8GB safetensors",
+      "engine": "128-qubit quantum optimization",
+      "latency": "<100ms per token",
+      "throughput": "~10 tokens/second",
+      "memory": "~2.5GB GPU VRAM"
+    },
+
+    "training_mx2gym": {
+      "fold_size": "~240KB compressed per fold",
+      "training_speed": "~5 minutes per epoch with 8 folds",
+      "memory": "~4GB GPU VRAM (fold expansion)",
+      "compression_ratio": "87% (SCXQ2)"
+    },
+
+    "tokenization_mx2lex": {
+      "lexicon_size": "24KB (vs 3MB Qwen)",
+      "tokenization_speed": "<1ms per sentence",
+      "memory": "~100KB RAM",
+      "compression": "0.00012× ratio"
+    }
+  }
+}

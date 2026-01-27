@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="asx" data-os="prime">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ASX OS - Complete 3-File Architecture</title>
+<style>
+/* ===== ASX OS CORE VARIABLES ===== */
+:root {
+  /* Core Colors */
+  --asx-bg: #0a0a0f;
+  --asx-panel: #151522;
+  --asx-surface: #1e1e2e;
+  --asx-text: #e8fff6;
+  --asx-muted: #7e8a92;
+  --asx-accent: #00ffff;
+  --asx-flow: #16f2aa;
+  --asx-warning: #ff6b6b;
+  
+  /* System Colors */
+  --dns-color: #9d4edd;
+  --rest-color: #00f5ff;
+  --kuhul-color: #16f2aa;
+  --scx-color: #ff6b6b;
+  --klh-color: #f9a826;
+  --npx-color: #4361ee;
+  
+  /* Typography */
+  --asx-font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --asx-font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  
+  /* Spacing */
+  --asx-space-xs: 4px;
+  --asx-space-sm: 8px;
+  --asx-space-md: 16px;
+  --asx-space-lg: 24px;
+  --asx-space-xl: 32px;
+  
+  /* Borders */
+  --asx-radius-sm: 4px;
+  --asx-radius-md: 8px;
+  --asx-radius-lg: 12px;
+  
+  /* Animations */
+  --asx-transition: all 0.3s ease;
+}
+
+/* ===== ASX LAYOUT SYSTEM ===== */
+.asx-body {
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(22, 242, 170, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(0, 245, 255, 0.1) 0%, transparent 50%),
+    linear-gradient(135deg, #0a0a0f 0%, #151522 50%, #1e1e2e 100%);
+  color: var(--asx-text);
+  font-family: var(--asx-font-sans);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.asx-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--asx-space-md);
+}
+
+.asx-panel {
+  background: rgba(21, 21, 34, 0.9);
+  border: 1px solid rgba(22, 242, 170, 0.3);
+  border-radius: var(--asx-radius-lg);
+  padding: var(--asx-space-lg);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  transition: var(--asx-transition);
+}
+
+.asx-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--asx-flow), transparent);
+}
+
+.asx-panel:hover {
+  border-color: rgba(22, 242, 170, 0.6);
+  box-shadow: 0 0 30px rgba(22, 242, 170, 0.2);
+}
+
+/* ===== 3-FILE ARCHITECTURE VISUAL ===== */
+.architecture-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--asx-space-lg);
+  margin: var(--asx-space-xl) 0;
+}
+
+.architecture-file {
+  background: rgba(30, 30, 46, 0.8);
+  border-radius: var(--asx-radius-lg);
+  padding: var(--asx-space-lg);
+  text-align: center;
+  position: relative;
+  transition: var(--asx-transition);
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.architecture-file:hover {
+  transform: translateY(-5px);
+  border-color: var(--asx-flow);
+}
+
+.architecture-file::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--asx-flow);
+}
+
+.file-icon {
+  font-size: 3em;
+  margin-bottom: var(--asx-space-md);
+}
+
+.file-title {
+  font-size: 1.2em;
+  font-weight: 700;
+  margin-bottom: var(--asx-space-sm);
+  color: var(--asx-flow);
+}
+
+.file-description {
+  color: var(--asx-muted);
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+/* ===== SYSTEM COMPONENTS GRID ===== */
+.system-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--asx-space-lg);
+  margin: var(--asx-space-xl) 0;
+}
+
+.system-component {
+  background: rgba(30, 30, 46, 0.8);
+  border-radius: var(--asx-radius-lg);
+  padding: var(--asx-space-lg);
+  position: relative;
+  transition: var(--asx-transition);
+  border-left: 4px solid;
+}
+
+.system-component.klh { border-left-color: var(--klh-color); }
+.system-component.dns { border-left-color: var(--dns-color); }
+.system-component.rest { border-left-color: var(--rest-color); }
+.system-component.kuhul { border-left-color: var(--kuhul-color); }
+.system-component.scx { border-left-color: var(--scx-color); }
+.system-component.npx { border-left-color: var(--npx-color); }
+
+.system-component:hover {
+  transform: translateX(5px);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.component-header {
+  display: flex;
+  align-items: center;
+  gap: var(--asx-space-md);
+  margin-bottom: var(--asx-space-md);
+}
+
+.component-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--asx-bg);
+}
+
+.klh .component-icon { background: var(--klh-color); }
+.dns .component-icon { background: var(--dns-color); }
+.rest .component-icon { background: var(--rest-color); }
+.kuhul .component-icon { background: var(--kuhul-color); }
+.scx .component-icon { background: var(--scx-color); }
+.npx .component-icon { background: var(--npx-color); }
+
+.component-title {
+  font-size: 1.1em;
+  font-weight: 600;
+  margin: 0;
+}
+
+.component-description {
+  color: var(--asx-muted);
+  font-size: 0.9em;
+  margin-bottom: var(--asx-space-md);
+  line-height: 1.4;
+}
+
+/* ===== CODE DISPLAY ===== */
+.asx-code {
+  font-family: var(--asx-font-mono);
+  font-size: 11px;
+  background: rgba(10, 10, 15, 0.9);
+  border-radius: var(--asx-radius-md);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  padding: var(--asx-space-md);
+  white-space: pre;
+  overflow-x: auto;
+  margin: var(--asx-space-sm) 0;
+  color: #d5f5ff;
+  transition: var(--asx-transition);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.asx-code:hover {
+  border-color: rgba(0, 255, 255, 0.4);
+}
+
+/* ===== CONTROL PANEL ===== */
+.control-panel {
+  display: flex;
+  gap: var(--asx-space-sm);
+  margin-bottom: var(--asx-space-lg);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.asx-button {
+  background: rgba(30, 30, 46, 0.8);
+  border: 1px solid var(--asx-flow);
+  color: var(--asx-text);
+  padding: 10px 20px;
+  border-radius: var(--asx-radius-sm);
+  cursor: pointer;
+  transition: var(--asx-transition);
+  font-family: var(--asx-font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+}
+
+.asx-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(22, 242, 170, 0.2), transparent);
+  transition: var(--asx-transition);
+}
+
+.asx-button:hover::before {
+  left: 100%;
+}
+
+.asx-button:hover {
+  background: rgba(22, 242, 170, 0.1);
+  transform: translateY(-2px);
+}
+
+.asx-button.primary {
+  background: var(--asx-flow);
+  color: var(--asx-bg);
+  font-weight: 700;
+}
+
+/* ===== STATUS INDICATORS ===== */
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--asx-space-md);
+  margin: var(--asx-space-lg) 0;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: var(--asx-space-sm);
+  padding: var(--asx-space-sm);
+  background: rgba(30, 30, 46, 0.6);
+  border-radius: var(--asx-radius-md);
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--asx-muted);
+}
+
+.status-indicator.active {
+  background: var(--asx-flow);
+  box-shadow: 0 0 8px var(--asx-flow);
+  animation: statusPulse 2s infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ===== LIVE CONSOLE ===== */
+.live-console {
+  background: rgba(10, 10, 15, 0.9);
+  border-radius: var(--asx-radius-lg);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  padding: var(--asx-space-md);
+  margin: var(--asx-space-lg) 0;
+  font-family: var(--asx-font-mono);
+  font-size: 12px;
+  color: var(--asx-flow);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.console-line {
+  margin-bottom: 2px;
+  padding: 2px 0;
+}
+
+.console-line.info::before {
+  content: 'ℹ️ ';
+}
+
+.console-line.success::before {
+  content: '✅ ';
+}
+
+.console-line.error::before {
+  content: '❌ ';
+}
+
+.console-line.warning::before {
+  content: '⚠️ ';
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .architecture-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .system-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .control-panel {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .asx-button {
+    width: 200px;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes systemGlow {
+  0%, 100% { 
+    box-shadow: 0 0 5px currentColor;
+  }
+  50% { 
+    box-shadow: 0 0 20px currentColor;
+  }
+}
+
+.system-component.active {
+  animation: systemGlow 3s infinite;
+}
+</style>
+</head>
+<body class="asx-body">
+<div class="asx-container">
+  
+  <!-- HEADER SECTION -->
+  <section class="asx-panel" style="text-align: center; margin-bottom: var(--asx-space-xl);">
+    <h1 style="font-size: 3.5em; margin-bottom: var(--asx-space-sm); background: linear-gradient(135deg, var(--asx-flow), var(--asx-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+      ASX OS BACKEND KERNEL
+    </h1>
+    <p style="font-size: 1.2em; color: var(--asx-muted); max-width: 600px; margin: 0 auto;">
+      Complete 3-File Architecture • Service Worker Kernel • Virtual REST Mesh
+    </p>
+    
+    <!-- Control Panel -->
+    <div class="control-panel" style="margin-top: var(--asx-space-lg);">
+      <button id="boot-kernel" class="asx-button primary">Boot Kernel</button>
+      <button id="start-services" class="asx-button">Start Services</button>
+      <button id="test-apis" class="asx-button">Test APIs</button>
+      <button id="clear-console" class="asx-button">Clear Console</button>
+    </div>
+    
+    <!-- Status Grid -->
+    <div class="status-grid">
+      <div class="status-item">
+        <div class="status-indicator" id="sw-status"></div>
+        <span>Service Worker: <span id="sw-status-text">Checking...</span></span>
+      </div>
+      <div class="status-item">
+        <div class="status-indicator" id="dns-status"></div>
+        <span>DNS Authority: <span id="dns-status-text">Offline</span></span>
+      </div>
+      <div class="status-item">
+        <div class="status-indicator" id="rest-status"></div>
+        <span>REST Mesh: <span id="rest-status-text">Offline</span></span>
+      </div>
+      <div class="status-item">
+        <div class="status-indicator" id="kuhul-status"></div>
+        <span>K'uhul Engine: <span id="kuhul-status-text">Offline</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3-FILE ARCHITECTURE -->
+  <section class="asx-panel">
+    <h2 style="margin-bottom: var(--asx-space-lg); text-align: center; color: var(--asx-flow);">📁 3-FILE ARCHITECTURE</h2>
+    
+    <div class="architecture-grid">
+      <div class="architecture-file" data-file="sw">
+        <div class="file-icon">🔧</div>
+        <div class="file-title">sw.js</div>
+        <div class="file-description">
+          Service Worker Backend Kernel<br>
+          Handles all API routing, DNS authority, and system coordination
+        </div>
+        <div class="asx-code" style="margin-top: var(--asx-space-md); font-size: 10px;">
+// ASX OS Backend Kernel
+const ASX_PORT_ROOT = 61680;
+let manifest = {};
+let activeShards = new Map();
+        </div>
+      </div>
+      
+      <div class="architecture-file" data-file="index">
+        <div class="file-icon">👻</div>
+        <div class="file-title">index.html</div>
+        <div class="file-description">
+          Ghost Shell Interface<br>
+          Provides the user interface and client-side runtime environment
+        </div>
+        <div class="asx-code" style="margin-top: var(--asx-space-md); font-size: 10px;">
+<!-- Ghost Shell -->
+<div id="asx-interface">
+  <!-- Dynamic content loaded from XJSON -->
+</div>
+        </div>
+      </div>
+      
+      <div class="architecture-file" data-file="manifest">
+        <div class="file-icon">🗄️</div>
+        <div class="file-title">manifest.json</div>
+        <div class="file-description">
+          Universal Database<br>
+          Stores system state, configurations, and persistent data
+        </div>
+        <div class="asx-code" style="margin-top: var(--asx-space-md); font-size: 10px;">
+{
+  "dns_zones": {
+    "asx.prime": "localhost:61680"
+  },
+  "shard_registry": {},
+  "system_config": {}
+}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SYSTEM COMPONENTS -->
+  <section class="asx-panel">
+    <h2 style="margin-bottom: var(--asx-space-lg); text-align: center; color: var(--asx-flow);">⚡ SYSTEM COMPONENTS</h2>
+    
+    <div class="system-grid">
+      <!-- DNS Authority -->
+      <div class="system-component dns" data-component="dns">
+        <div class="component-header">
+          <div class="component-icon">🌐</div>
+          <div class="component-title">DNS Authority System</div>
+        </div>
+        <div class="component-description">
+          Manages virtual DNS zones and hostname resolution for the local backend mesh network.
+        </div>
+        <div class="asx-code">
+// DNS Resolution
+DNSAuthority.resolve('asx.prime')
+// → 'localhost:61680'
+
+DNSAuthority.registerZone('api.asx', 'localhost:61681')
+        </div>
+        <button class="asx-button" style="width: 100%; margin-top: var(--asx-space-sm);" onclick="testDNS()">Test DNS</button>
+      </div>
+      
+      <!-- REST Mesh -->
+      <div class="system-component rest" data-component="rest">
+        <div class="component-header">
+          <div class="component-icon">🔄</div>
+          <div class="component-title">REST Mesh Router</div>
+        </div>
+        <div class="component-description">
+          Handles all API routing with virtual endpoints for XJSON, K'uhul, SCX, and hive operations.
+        </div>
+        <div class="asx-code">
+// API Endpoints
+/xjson/boot
+/hive/detect  
+/kuhul/execute
+/scxq2/compress
+/trainer/submit
+/system/ports
+        </div>
+        <button class="asx-button" style="width: 100%; margin-top: var(--asx-space-sm);" onclick="testREST()">Test REST</button>
+      </div>
+      
+      <!-- K'uhul Engine -->
+      <div class="system-component kuhul" data-component="kuhul">
+        <div class="component-header">
+          <div class="component-icon">🧠</div>
+          <div class="component-title">K'uhul Execution Engine</div>
+        </div>
+        <div class="component-description">
+          Symbolic execution engine that processes K'uhul glyph scripts with stack-based operations.
+        </div>
+        <div class="asx-code">
+[Pop main]
+[Wo "Hello ASX OS"]
+[Sek print]
+[Xul]
+
+// Stack: ["Hello ASX OS"]
+// Output: "Printed: Hello ASX OS"
+        </div>
+        <button class="asx-button" style="width: 100%; margin-top: var(--asx-space-sm);" onclick="testKuhul()">Test K'uhul</button>
+      </div>
+    </div>
+    
+    <!-- Second Row -->
+    <div class="system-grid" style="margin-top: var(--asx-space-lg);">
+      <!-- SCXQ2 Engine -->
+      <div class="system-component scx" data-component="scx">
+        <div class="component-header">
+          <div class="component-icon">🗜️</div>
+          <div class="component-title">SCXQ2 Compression Engine</div>
+        </div>
+        <div class="component-description">
+          Provides compression and decompression services with efficiency analysis and optimization.
+        </div>
+        <div class="asx-code">
+// Compression Example
+Input: "Hello World" (11 bytes)
+Output: "SGVsbG8gV29ybGQ=" (16 bytes)
+Ratio: 0.69
+
+// Real compression would be more efficient
+        </div>
+        <button class="asx-button" style="width: 100%; margin-top: var(--asx-space-sm);" onclick="testSCX()">Test SCX</button>
+      </div>
+      
+      <!-- KLH Router -->
+      <div class="system-component klh" data-component="klh">
+        <div class="component-header">
+          <div class="component-icon">🐝</div>
+          <div class="component-title">KLH Hive Router</div>
+        </div>
+        <div class="component-description">
+          Routes requests to appropriate shards (CPU, GPU, TPU) and manages hive coordination.
+        </div>
+        <div class="asx-code">
+// Shard Routing
+KLHRouter.routeRequest({
+  target: 'tpu',
+  operation: 'training',
+  data: model_config
+})
+
+// → { routed: true, target: 'tpu', port: 61682 }
+        </div>
+        <button class="asx-button" style="width: 100%; margin-top: var(--asx-space-sm);" onclick="testKLH()">Test KLH</button>
+      </div>
+      
+      <!-- KUHUL-NPX -->
+      <div class="system-component npx" data-component="npx">
+        <div class="component-header">
+          <div class="component-icon">🚀</div>
+          <div class="component-title">KUHUL-NPX Launcher</div>
+        </div>
+        <div class="component-description">
+          Auto-port assignment and shard launching system with local API detection capabilities.
+        </div>
+        <div class="asx-code">
+// Launch Shard
+KUHULNPX.launchShard('gpu', {
+  type: 'asxr-gpu-v4',
+  memory: '8GB'
+})
+
+// → { shard: 'gpu', port: 61681, status: 'launched' }
+        </div>
+        <button class="asx-button" style="width: 100%; margin-top: var(--asx-space-sm);" onclick="testNPX()">Test NPX</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE CONSOLE OUTPUT -->
+  <section class="asx-panel">
+    <h2 style="margin-bottom: var(--asx-space-md); color: var(--asx-flow);">📟 LIVE KERNEL CONSOLE</h2>
+    <div id="kernel-console" class="live-console">
+      <div class="console-line info">ASX OS Backend Kernel Ready</div>
+      <div class="console-line info">Service Worker: Checking registration...</div>
+      <div class="console-line info">3-File Architecture: Loaded</div>
+      <div class="console-line info">Click "Boot Kernel" to initialize system</div>
+    </div>
+  </section>
+
+  <!-- PORT MAPPING -->
+  <section class="asx-panel">
+    <h2 style="margin-bottom: var(--asx-space-md); color: var(--asx-flow);">🔌 PORT MAPPING & DNS ZONES</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--asx-space-lg);">
+      <div>
+        <h3 style="color: var(--dns-color);">DNS Zones</h3>
+        <div class="asx-code">
+asx.prime    → localhost:61680
+asx.gpu      → localhost:61681  
+asx.tpu      → localhost:61682
+asx.hive     → localhost:61683
+asx.api      → localhost:61684
+*.asx        → localhost:61680+
+        </div>
+      </div>
+      <div>
+        <h3 style="color: var(--npx-color);">Service Ports</h3>
+        <div class="asx-code">
+Root Port: 61680
+CPU Shard: 61680
+GPU Shard: 61681
+TPU Shard: 61682
+Hive Router: 61683
+API Gateway: 61684
+Dynamic: 61685+
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+// ===== ASX OS FRONTEND RUNTIME =====
+class ASXFrontend {
+  constructor() {
+    this.console = document.getElementById('kernel-console');
+    this.isKernelBooted = false;
+    this.serviceWorker = null;
+  }
+  
+  // Initialize the frontend runtime
+  async initialize() {
+    this.log('🔧 Initializing ASX OS Frontend Runtime...');
+    
+    try {
+      // Register Service Worker
+      this.serviceWorker = await navigator.serviceWorker.register('/sw.js');
+      this.log('✅ Service Worker registered');
+      this.updateStatus('sw', 'active', 'Registered');
+      
+      // Wait for service worker to be ready
+      if (this.serviceWorker.installing) {
+        await new Promise(resolve => {
+          this.serviceWorker.installing.addEventListener('statechange', () => {
+            if (this.serviceWorker.installing.state === 'activated') {
+              resolve();
+            }
+          });
+        });
+      }
+      
+      this.log('🚀 ASX OS Frontend Ready');
+    } catch (error) {
+      this.log(`❌ Service Worker registration failed: ${error.message}`, 'error');
+      this.updateStatus('sw', 'inactive', 'Failed');
+    }
+  }
+  
+  // Boot the kernel
+  async bootKernel() {
+    if (this.isKernelBooted) {
+      this.log('⚠️ Kernel already booted', 'warning');
+      return;
+    }
+    
+    this.log('🚀 Booting ASX OS Kernel...');
+    
+    try {
+      // Test DNS Authority
+      const dnsResult = await this.testAPI('/xjson/status');
+      if (dnsResult) {
+        this.log('✅ DNS Authority: Online');
+        this.updateStatus('dns', 'active', 'Online');
+      }
+      
+      // Test REST Mesh
+      const restResult = await this.testAPI('/system/ports');
+      if (restResult) {
+        this.log('✅ REST Mesh: Online');
+        this.updateStatus('rest', 'active', 'Online');
+      }
+      
+      // Test K'uhul Engine
+      const kuhulResult = await this.testAPI('/kuhul/execute', {
+        script: '[Pop test][Wo "Kernel Booted"][Sek print][Xul]'
+      });
+      if (kuhulResult && kuhulResult.success) {
+        this.log('✅ K\'uhul Engine: Online');
+        this.updateStatus('kuhul', 'active', 'Online');
+      }
+      
+      this.isKernelBooted = true;
+      this.log('🎉 ASX OS Kernel Boot Complete!');
+      
+      // Activate system components visually
+      document.querySelectorAll('.system-component').forEach(comp => {
+        comp.classList.add('active');
+      });
+      
+    } catch (error) {
+      this.log(`❌ Kernel boot failed: ${error.message}`, 'error');
+    }
+  }
+  
+  // Test API endpoint
+  async testAPI(endpoint, data = null) {
+    try {
+      const options = {
+        method: data ? 'POST' : 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      };
+      
+      if (data) {
+        options.body = JSON.stringify(data);
+      }
+      
+      const response = await fetch(endpoint, options);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      this.log(`❌ API ${endpoint} failed: ${error.message}`, 'error');
+      return null;
+    }
+  }
+  
+  // Add log to console
+  log(message, type = 'info') {
+    const line = document.createElement('div');
+    line.className = `console-line ${type}`;
+    line.textContent = message;
+    this.console.appendChild(line);
+    this.console.scrollTop = this.console.scrollHeight;
+  }
+  
+  // Update status indicator
+  updateStatus(system, state, text) {
+    const indicator = document.getElementById(`${system}-status`);
+    const textElement = document.getElementById(`${system}-status-text`);
+    
+    if (indicator) {
+      indicator.className = `status-indicator ${state}`;
+    }
+    if (textElement) {
+      textElement.textContent = text;
+    }
+  }
+  
+  // Clear console
+  clearConsole() {
+    this.console.innerHTML = '';
+    this.log('🧹 Console cleared');
+  }
+}
+
+// ===== GLOBAL TEST FUNCTIONS =====
+async function testDNS() {
+  const asx = window.asxRuntime;
+  asx.log('🌐 Testing DNS Authority...');
+  
+  const result = await asx.testAPI('/xjson/manifest');
+  if (result && result.manifest) {
+    asx.log(`✅ DNS zones: ${Object.keys(result.manifest.dns_zones || {}).length} registered`);
+  }
+}
+
+async function testREST() {
+  const asx = window.asxRuntime;
+  asx.log('🔄 Testing REST Mesh...');
+  
+  const result = await asx.testAPI('/system/shards');
+  if (result && result.shards) {
+    asx.log(`✅ REST endpoints: ${Object.keys(result.shards).length} shards detected`);
+  }
+}
+
+async function testKuhul() {
+  const asx = window.asxRuntime;
+  asx.log('🧠 Testing K\'uhul Engine...');
+  
+  const result = await asx.testAPI('/kuhul/execute', {
+    script: '[Pop demo][Wo "Hello from K\'uhul"][Sek print][Xul]'
+  });
+  
+  if (result && result.success) {
+    asx.log(`✅ K'uhul executed: ${result.results.length} operations`);
+  }
+}
+
+async function testSCX() {
+  const asx = window.asxRuntime;
+  asx.log('🗜️ Testing SCX Compression...');
+  
+  const result = await asx.testAPI('/scxq2/compress', {
+    data: 'ASX OS Compression Test Data - This should be compressed efficiently'
+  });
+  
+  if (result) {
+    asx.log(`✅ SCX compression: ${result.ratio} ratio (${result.original_size} → ${result.compressed_size})`);
+  }
+}
+
+async function testKLH() {
+  const asx = window.asxRuntime;
+  asx.log('🐝 Testing KLH Hive Router...');
+  
+  const result = await asx.testAPI('/hive/detect');
+  if (result && result.shards) {
+    asx.log(`✅ KLH detected: ${result.count} active shards`);
+  }
+}
+
+async function testNPX() {
+  const asx = window.asxRuntime;
+  asx.log('🚀 Testing KUHUL-NPX...');
+  
+  const result = await asx.testAPI('/system/ports');
+  if (result && result.ports) {
+    asx.log(`✅ NPX ports: ${Object.keys(result.ports).length} assignments`);
+  }
+}
+
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize ASX runtime
+  window.asxRuntime = new ASXFrontend();
+  await window.asxRuntime.initialize();
+  
+  // Set up button handlers
+  document.getElementById('boot-kernel').addEventListener('click', () => {
+    window.asxRuntime.bootKernel();
+  });
+  
+  document.getElementById('start-services').addEventListener('click', () => {
+    window.asxRuntime.log('🔧 Starting all services...');
+    testDNS();
+    testREST();
+    testKuhul();
+    testSCX();
+    testKLH();
+    testNPX();
+  });
+  
+  document.getElementById('test-apis').addEventListener('click', () => {
+    window.asxRuntime.log('🧪 Testing all APIs...');
+    // Test all components
+    setTimeout(testDNS, 100);
+    setTimeout(testREST, 300);
+    setTimeout(testKuhul, 500);
+    setTimeout(testSCX, 700);
+    setTimeout(testKLH, 900);
+    setTimeout(testNPX, 1100);
+  });
+  
+  document.getElementById('clear-console').addEventListener('click', () => {
+    window.asxRuntime.clearConsole();
+  });
+  
+  // Architecture file click handlers
+  document.querySelectorAll('.architecture-file').forEach(file => {
+    file.addEventListener('click', function() {
+      const fileType = this.getAttribute('data-file');
+      window.asxRuntime.log(`📁 ${fileType} architecture component selected`);
+    });
+  });
+});
+</script>
+</body>
+</html>

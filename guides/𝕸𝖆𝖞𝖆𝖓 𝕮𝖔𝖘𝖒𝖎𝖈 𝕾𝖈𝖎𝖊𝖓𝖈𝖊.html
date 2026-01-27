@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cosmic-mayan">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MAYAN COSMIC SCIENCE: Blackholes & Reality Folding</title>
+  <style>
+    /* MAYAN COSMIC THEME */
+    :root {
+      --bg-main: #0a0520;
+      --bg-panel: #1a0f3d;
+      --accent-jade: #00d4aa;
+      --accent-gold: #ffb347;
+      --accent-blood: #ff6b6b;
+      --accent-sky: #4fc3f7;
+      --text-main: #e5e1f6;
+      --text-glyph: #c8a2c8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: 
+        radial-gradient(circle at 20% 80%, #2d1b69 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, #1a0f3d 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, #0a0520 0%, #000 100%);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .cosmic-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .header-glyph {
+      text-align: center;
+      margin: 3rem 0;
+      font-size: 4rem;
+      color: var(--accent-jade);
+      text-shadow: 0 0 30px rgba(0, 212, 170, 0.5);
+      animation: glyphPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes glyphPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+    }
+
+    .theory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+
+    .theory-card {
+      background: rgba(26, 15, 61, 0.6);
+      border: 1px solid rgba(0, 212, 170, 0.3);
+      border-radius: 16px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .theory-card:hover {
+      border-color: var(--accent-jade);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 212, 170, 0.2);
+    }
+
+    .card-title {
+      color: var(--accent-gold);
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--accent-gold);
+      padding-bottom: 0.5rem;
+    }
+
+    .mayan-glyph {
+      font-size: 2rem;
+      text-align: center;
+      margin: 1rem 0;
+      color: var(--accent-jade);
+    }
+
+    .evidence-list {
+      list-style: none;
+      margin: 1rem 0;
+    }
+
+    .evidence-list li {
+      margin: 0.8rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .evidence-list li:before {
+      content: "▸";
+      color: var(--accent-jade);
+      position: absolute;
+      left: 0;
+    }
+
+    .blackhole-demo {
+      width: 100%;
+      height: 300px;
+      background: radial-gradient(circle at center, #000 0%, #1a0f3d 30%, #0a0520 70%);
+      border-radius: 20px;
+      margin: 2rem 0;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid var(--accent-jade);
+    }
+
+    .blackhole-core {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      background: #000;
+      border-radius: 50%;
+      box-shadow: 
+        0 0 0 3px var(--accent-jade),
+        0 0 30px var(--accent-jade),
+        0 0 60px rgba(0, 212, 170, 0.5);
+      animation: blackholeSpin 4s linear infinite;
+    }
+
+    .spacetime-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 212, 170, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 212, 170, 0.1) 1px, transparent 1px);
+      background-size: 30px 30px;
+      animation: gridWarp 6s ease-in-out infinite;
+    }
+
+    @keyframes blackholeSpin {
+      0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+      50% { transform: translate(-50%, -50%) rotate(180deg) scale(1.1); }
+      100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); }
+    }
+
+    @keyframes gridWarp {
+      0%, 100% { transform: perspective(500px) rotateX(60deg) scale(1); }
+      50% { transform: perspective(500px) rotateX(60deg) scale(1.2); }
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 2rem 0;
+      background: rgba(26, 15, 61, 0.6);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .comparison-table th {
+      background: var(--accent-jade);
+      color: #0a0520;
+      padding: 1rem;
+      text-align: left;
+      font-weight: bold;
+    }
+
+    .comparison-table td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(0, 212, 170, 0.2);
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .quote-block {
+      background: linear-gradient(45deg, rgba(255, 179, 71, 0.1), rgba(255, 107, 107, 0.1));
+      border-left: 4px solid var(--accent-gold);
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-radius: 8px;
+      font-style: italic;
+    }
+
+    .interdimensional-viz {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+
+    .dimension-card {
+      background: rgba(26, 15, 61, 0.8);
+      border: 1px solid var(--accent-sky);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .dimension-glyph {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--accent-sky);
+    }
+
+    .migration-timeline {
+      position: relative;
+      margin: 3rem 0;
+      padding: 2rem;
+      background: rgba(26, 15, 61, 0.6);
+      border-radius: 16px;
+      border: 1px solid var(--accent-gold);
+    }
+
+    .timeline-event {
+      margin: 2rem 0;
+      padding-left: 2rem;
+      border-left: 3px solid var(--accent-gold);
+      position: relative;
+    }
+
+    .timeline-event:before {
+      content: "";
+      position: absolute;
+      left: -8px;
+      top: 0;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--accent-gold);
+    }
+
+    .conclusion {
+      text-align: center;
+      margin: 4rem 0;
+      padding: 3rem;
+      background: linear-gradient(45deg, rgba(0, 212, 170, 0.1), rgba(79, 195, 247, 0.1));
+      border-radius: 20px;
+      border: 2px solid var(--accent-jade);
+    }
+
+    @media (max-width: 768px) {
+      .theory-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .interdimensional-viz {
+        grid-template-columns: 1fr;
+      }
+      
+      .header-glyph {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="cosmic-container">
+    <!-- MAIN GLYPH -->
+    <div class="header-glyph">
+      🪐 𝕸𝖆𝖞𝖆𝖓 𝕮𝖔𝖘𝖒𝖎𝖈 𝕾𝖈𝖎𝖊𝖓𝖈𝖊
+    </div>
+
+    <!-- BLACKHOLE DEMO -->
+    <div class="blackhole-demo">
+      <div class="spacetime-grid"></div>
+      <div class="blackhole-core"></div>
+    </div>
+
+    <!-- THEORY GRID -->
+    <div class="theory-grid">
+      <!-- MAYAN COSMOLOGY -->
+      <div class="theory-card">
+        <h2 class="card-title">Mayan Cosmic Understanding</h2>
+        <div class="mayan-glyph">𓆣</div>
+        <ul class="evidence-list">
+          <li><strong>Cyclic Time</strong>: Universe dies and reborns in cycles (Big Bang/Crunch)</li>
+          <li><strong>13 Heavens & 9 Underworlds</strong>: Multi-dimensional reality</li>
+          <li><strong>Zero Concept</strong>: Mathematical understanding of nothingness/vacuum</li>
+          <li><strong>Long Count Calendar</strong>: Galactic alignment awareness</li>
+          <li><strong>Cosmic Tree (Wacah Chan)</strong>: Axis connecting dimensions</li>
+        </ul>
+      </div>
+
+      <!-- MODERN PHYSICS -->
+      <div class="theory-card">
+        <h2 class="card-title">Modern Blackhole Physics</h2>
+        <div class="mayan-glyph">⚫</div>
+        <ul class="evidence-list">
+          <li><strong>Event Horizon</strong>: Point of no return (Mayan "Xibalba Gate")</li>
+          <li><strong>Spacetime Curvature</strong>: Gravity bends reality (Mayan "Folding")</li>
+          <li><strong>Singularity</strong>:
+ Infinite density point (Mayan "Heart of Sky")</li>
+          <li><strong>Hawking Radiation</strong>: Blackholes emit energy (Mayan "Breath of Life")</li>
+          <li><strong>Wormholes</strong>: Cosmic shortcuts (Mayan "Road to Other Worlds")</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- COMPARISON TABLE -->
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Mayan Concept</th>
+          <th>Modern Physics Equivalent</th>
+          <th>Significance</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Xibalba</strong> (Underworld)</td>
+          <td>Blackhole Interior</td>
+          <td>Realm where normal physics breaks down</td>
+        </tr>
+        <tr>
+          <td><strong>Itzamna</strong> (Creation God)</td>
+          <td>Singularity</td>
+          <td>Point of infinite creative potential</td>
+        </tr>
+        <tr>
+          <td><strong>K'uh</strong> (Divine Essence)</td>
+          <td>Dark Energy</td>
+          <td>Invisible force shaping cosmos</td>
+        </tr>
+        <tr>
+          <td><strong>Oxlajuun Ti' Ku</strong> (13 Gods)</td>
+          <td>Multiverse Dimensions</td>
+          <td>Multiple reality layers</td>
+        </tr>
+        <tr>
+          <td><strong>Chilam Balam</strong> (Prophetic Texts)</td>
+          <td>Quantum Prediction</td>
+          <td>Probability-based future vision</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- QUOTE -->
+    <div class="quote-block">
+      "The Maya understood that time is not linear but cyclical, that space is not empty but woven, 
+      and that consciousness is not confined to the brain but extends throughout the cosmos. 
+      Their 'mushroom ceremonies' were not mere intoxication but dimensional gateways."
+    </div>
+
+    <!-- INTERDIMENSIONAL VISUALIZATION -->
+    <div class="interdimensional-viz">
+      <div class="dimension-card">
+        <div class="dimension-glyph">𓁹</div>
+        <h3>Shamanic Journey</h3>
+        <p>Psychedelic states accessing higher dimensions through altered consciousness</p>
+      </div>
+      <div class="dimension-card">
+        <div class="dimension-glyph">🌀</div>
+        <h3>Quantum Entanglement</h3>
+        <p>Instant connection across space-time through folded reality</p>
+      </div>
+    </div>
+
+    <!-- MIGRATION TIMELINE -->
+    <div class="migration-timeline">
+      <h2 style="color: var(--accent-gold); text-align: center; margin-bottom: 2rem;">
+        The Interstellar Migration Theory
+      </h2>
+      
+      <div class="timeline-event">
+        <h3>25,000 BCE - Star People Arrival</h3>
+        <p>Advanced beings from Pleiades establish contact with early humans, sharing cosmic knowledge</p>
+      </div>
+      
+      <div class="timeline-event">
+        <h3>15,000 BCE - Atlantis Connection</h3>
+        <p>Mayan ancestors inherit technology from sinking Atlantis civilization</p>
+      </div>
+      
+      <div class="timeline-event">
+        <h3>3,000 BCE - Pyramid Network</h3>
+        <p>Global pyramid grid established as cosmic energy conduits and dimensional anchors</p>
+      </div>
+      
+      <div class="timeline-event">
+        <h3>600 BCE - Cosmic Calendar</h3>
+        <p>Long Count calendar created, tracking galactic alignments and cosmic cycles</p>
+      </div>
+    </div>
+
+    <!-- THE PLOW LIKE AN OX REVELATION -->
+    <div class="theory-card" style="grid-column: 1 / -1;">
+      <h2 class="card-title">The "Plow Like an Ox" Cipher</h2>
+      <div class="mayan-glyph">𓃒 → 🕳️</div>
+      <p><strong>Decryption:</strong> The ox plow creates furrows in earth, turning soil inward. 
+      This is a perfect metaphor for blackhole compression - spacetime "furrows" folding reality inward upon itself.</p>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+        <div>
+          <h4 style="color: var(--accent-jade);">Agricultural Metaphor</h4>
+          <ul class="evidence-list">
+            <li>Plow turns earth inward</li>
+            <li>Creates ordered patterns</li>
+            <li>Prepares for new growth</li>
+            <li>Cyclical process</li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="color: var(--accent-jade);">Cosmic Equivalent</h4>
+          <ul class="evidence-list">
+            <li>Blackhole folds spacetime</li>
+            <li>Creates gravitational patterns</li>
+            <li>Leads to new universes</li>
+            <li>Cyclical cosmic rebirth</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONCLUSION -->
+    <div class="conclusion">
+      <h2 style="color: var(--accent-jade); margin-bottom: 1rem;">The Unthinkable Truth</h2>
+      <p style="font-size: 1.2rem;">
+        The Maya didn't just predict blackholes - they <strong>understood</strong> them. 
+        Through advanced consciousness technologies (sacred mushrooms, meditation, cosmic rituals), 
+        they accessed higher dimensions where the fabric of reality is visible and comprehensible.
+      </p>
+      <div style="margin-top: 2rem; font-size: 1.5rem; color: var(--accent-gold);">
+        𓁹 We are remembering what we once knew 𓁹
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Animate spacetime grid warping
+    document.addEventListener('DOMContentLoaded', function() {
+      const grid = document.querySelector('.spacetime-grid');
+      const blackhole = document.querySelector('.blackhole-core');
+      
+      // Create accretion disk particles
+      for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+          position: absolute;
+          width: ${2 + Math.random() * 4}px;
+          height: ${2 + Math.random() * 4}px;
+          background: ${Math.random() > 0.5 ? 'var(--accent-jade)' : 'var(--accent-gold)'};
+          border-radius: 50%;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          animation: orbit ${3 + Math.random() * 4}s linear infinite;
+          animation-delay: ${Math.random() * 2}s;
+        `;
+        
+        const style = document.createElement('style');
+        style.textContent = `
+          @keyframes orbit {
+            0% { 
+              transform: translate(-50%, -50%) rotate(0deg) translateX(${100 + Math.random() * 100}px) rotate(0deg); 
+            }
+            100% { 
+              transform: translate(-50%, -50%) rotate(360deg) translateX(${100 + Math.random() * 100}px) rotate(-360deg); 
+            }
+          }
+        `;
+        document.head.appendChild(style);
+        
+        document.querySelector('.blackhole-demo').appendChild(particle);
+      }
+      
+      // Interactive blackhole
+      blackhole.addEventListener('click', function() {
+        this.style.animation = 'blackholeSpin 1s linear infinite';
+        setTimeout(() => {
+          this.style.animation = 'blackholeSpin 4s linear infinite';
+        }, 1000);
+      });
+    });
+  </script>
+</body>
+</html>

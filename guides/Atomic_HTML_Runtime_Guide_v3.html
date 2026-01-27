@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atomic HTML — Runtime Ops Guide v3 (ASX / Liquid Atomic)</title>
+<style>
+:root{--bg:#02040a;--fg:#dfffe7;--glow:#36f9a7;--aqua:#60f5ff;--ink:#071114}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 ui-monospace,Menlo,Consolas,monospace}
+nav{position:fixed;inset:0 auto 0 0;width:300px;overflow:auto;border-right:2px solid var(--glow);padding:18px 14px;background:linear-gradient(180deg,#02040a,#04131a)}
+nav h2{margin:0 0 10px 0;color:var(--glow);text-align:center}
+nav a{display:block;color:var(--fg);text-decoration:none;padding:6px 8px;border-left:3px solid transparent;border-radius:6px;margin:2px 0}
+nav a:hover{border-left-color:var(--glow);background:#06221a}
+main{margin-left:320px;max-width:1200px;padding:28px}
+h1,h2,h3{color:var(--glow);text-shadow:0 0 8px #0b7}
+h1{border-bottom:2px solid var(--glow);padding-bottom:8px;margin-top:0}
+.card{border:1.5px solid var(--glow);border-radius:12px;background:rgba(54,249,167,.06);padding:16px;margin:16px 0;box-shadow:0 0 12px rgba(54,249,167,.25)}
+pre{background:#04130f;border:1px solid #0b7;padding:12px;border-radius:8px;overflow:auto}
+code{background:#021a14;color:#8bf0c6;padding:2px 5px;border-radius:4px}
+kbd{border:1px solid #0b7;border-radius:4px;padding:1px 4px;background:#04130f}
+.badge{display:inline-block;background:var(--glow);color:#031; font-weight:700;border-radius:4px;padding:2px 6px;margin-right:6px}
+.small{opacity:.85}
+.footer{border-top:1px solid #0b7;margin-top:24px;padding:16px;text-align:center;color:#9af2c9}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{border:1px solid #0b7;padding:8px;text-align:left}
+.table th{background:#042018}
+.note{border:1px dashed #60f5ff;background:rgba(96,245,255,.08);padding:12px;border-radius:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+a.inline{color:var(--aqua)}
+</style>
+</head>
+<body>
+<nav>
+  <h2>⚛️ Atomic HTML v3</h2>
+  <a href="#whats-new">✨ What's New</a>
+  <a href="#concept">🧭 Concept</a>
+  <a href="#layout">🧱 File Layout</a>
+  <a href="#runtime">🚀 Runtime Boot (Ops)</a>
+  <a href="#binding">📡 Reactive Bindings</a>
+  <a href="#scx">🧠 SCX / Cipher</a>
+  <a href="#effects">⚡ Effects</a>
+  <a href="#api">🔌 Runtime API (Ops)</a>
+  <a href="#deploy">☁️ Deploy & Versioning</a>
+  <a href="#templates">📋 Templates</a>
+  <a href="#faq">❓ FAQ</a>
+</nav>
+
+<main>
+  <h1>Atomic HTML — <em>Runtime Ops Guide v3</em></h1>
+  <p class="note"><strong>Purpose.</strong> This is the online, operations‑focused reference for running Atomic HTML apps in production with the ASX Runtime (Liquid Atomic). Use alongside the <a class="inline" href="#local">Local HTML Guide</a> when authoring offline.</p>
+
+  <section id="whats-new" class="card">
+    <h2>✨ What's New in v3</h2>
+    <ul>
+      <li><span class="badge">NEW</span> Dual‑deliverable model: <strong>Runtime Ops (this page)</strong> + <strong>Local Authoring (≤40KB)</strong>.</li>
+      <li><span class="badge">NEW</span> <code>Atomic.init()</code> boot contract and lifecycle hooks (<code>beforeMount</code>, <code>mounted</code>, <code>ready</code>).</li>
+      <li><span class="badge">NEW</span> Micro reactive bindings via <code>data-bind</code> + <code>Atomic.update()</code>.</li>
+      <li><span class="badge">NEW</span> SCX token grammar + optional Symbolic Cipher rotation (session/5‑min).</li>
+      <li><span class="badge">NEW</span> Ops API: <code>Atomic.load(url)</code>, <code>Atomic.set(path,val)</code>, <code>Atomic.route(name)</code>, <code>Atomic.effect(run,ctx)</code>.</li>
+    </ul>
+  </section>
+
+  <section id="concept" class="card">
+    <h2>🧭 Concept</h2>
+    <p><strong>Atomic HTML</strong> = one self‑contained HTML file that can host a full ASX app. It loads a JSON shell (<code>.asx</code>) and renders with <em>no framework</em>. Use it as your universal viewer, docs shell, or demo runner.</p>
+    <div class="grid">
+      <div><strong>Authoring</strong><br><small>Use Local Guide (≤40KB) offline to write and preview.</small></div>
+      <div><strong>Runtime</strong><br><small>Serve via CDN/app server. Control with Ops API.</small></div>
+    </div>
+  </section>
+
+  <section id="layout" class="card">
+    <h2>🧱 File Layout</h2>
+    <pre><code>/atomic/
+├─ atomic-runtime.html         &lt;— this file (v3 ops)
+├─ atomic-local.html           &lt;— 40KB local authoring
+├─ app.asx                     &lt;— your app shell (JSON)
+└─ /assets/ friendly-bot.png …</code></pre>
+  </section>
+
+  <section id="runtime" class="card">
+    <h2>🚀 Runtime Boot (Ops)</h2>
+    <p>Embed a fake‑boot splash, then mount UI.</p>
+    <pre><code>&lt;div id="splash"&gt;Booting…&lt;/div&gt;
+&lt;main id="app" hidden&gt;&lt;/main&gt;
+&lt;script&gt;
+const Atomic = {
+  state:{}, effects:[], routes:{}, readyCbs:[],
+  init({asx="/app.asx", onReady=()=>{}}={}){
+    fetch(asx).then(r=&gt;r.json()).then(cfg=&gt;{
+      this.cfg=cfg; this.state=cfg.$state||{}; this.routes=cfg.$routes||{};
+      setTimeout(()=&gt;{ // fake boot
+        document.getElementById('splash').remove();
+        document.getElementById('app').hidden=false;
+        this.mount(); onReady(this);
+      },800);
+    });
+  },
+  mount(){ this.renderRoute(Object.keys(this.routes)[0]||"home"); },
+  renderRoute(name){
+    const root=document.getElementById('app');
+    root.innerHTML = "&lt;h2&gt;"+(name||"home")+"&lt;/h2&gt;";
+    this.update();
+  },
+  set(path,val){ const seg=path.split('.'); let o=this.state; 
+    while(seg.length&gt;1){const k=seg.shift(); o=o[k]=o[k]??{};} o[seg[0]]=val; this.update(); },
+  update(){
+    document.querySelectorAll("[data-bind]").forEach(el=&gt;{
+      const p=el.getAttribute("data-bind").split('.'); let v=this.state;
+      for(const k of p){ v = v?.[k]; } el.textContent = v ?? "";
+    });
+  },
+  route(name){ this.renderRoute(name); },
+  effect(run,ctx={}){ console.log("run SCX:",run,ctx); /* plug parser */ },
+  onReady(cb){ this.readyCbs.push(cb); }
+};
+Atomic.init({asx:"/app.asx", onReady:()=&gt;console.log("ready!")});
+&lt;/script&gt;</code></pre>
+  </section>
+
+  <section id="binding" class="card">
+    <h2>📡 Reactive Bindings</h2>
+    <pre><code>&lt;strong&gt;Score:&lt;/strong&gt; &lt;span data-bind="user.score"&gt;&lt;/span&gt;
+&lt;button onclick="Atomic.set('user.score',(Atomic.state.user.score||0)+5)"&gt;+5&lt;/button&gt;</code></pre>
+  </section>
+
+  <section id="scx" class="card">
+    <h2>🧠 SCX / Cipher</h2>
+    <table class="table">
+      <tr><th>Token</th><th>Meaning</th><th>Example</th></tr>
+      <tr><td><code>(?)</code></td><td>if</td><td><code>(?) user.score &gt;= 100 (∴) (💬&gt;) "Level up!"</code></td></tr>
+      <tr><td><code>(∴)</code></td><td>then</td><td>then‑block</td></tr>
+      <tr><td><code>(¬)</code></td><td>else</td><td>else‑block</td></tr>
+      <tr><td><code>(⊕)</code></td><td>increment</td><td><code>(⊕) user.score</code></td></tr>
+    </table>
+    <p class="small">For production, encode SCX with a rotating alias map; decode server‑side, never <code>eval</code> strings.</p>
+  </section>
+
+  <section id="effects" class="card">
+    <h2>⚡ Effects</h2>
+    <pre><code>{
+  "$effects":[
+    {"when":"user.score","run":"(?) user.score ≥ 100 (∴) (💬&gt;) 'GG' (⊕) user.level"}
+  ]
+}</code></pre>
+  </section>
+
+  <section id="api" class="card">
+    <h2>🔌 Runtime API (Ops)</h2>
+    <table class="table">
+      <tr><th>Method</th><th>Description</th><th>Snippet</th></tr>
+      <tr><td><code>Atomic.init({asx,onReady})</code></td><td>Boot and mount</td><td><code>Atomic.init({asx:"/app.asx"})</code></td></tr>
+      <tr><td><code>Atomic.set(path,val)</code></td><td>Mutate state</td><td><code>Atomic.set("user.score",42)</code></td></tr>
+      <tr><td><code>Atomic.update()</code></td><td>Rebind DOM</td><td><code>Atomic.update()</code></td></tr>
+      <tr><td><code>Atomic.route(name)</code></td><td>Render route</td><td><code>Atomic.route("game")</code></td></tr>
+      <tr><td><code>Atomic.effect(run,ctx)</code></td><td>Run SCX string</td><td><code>Atomic.effect("(💬&gt;) 'Hi'")</code></td></tr>
+    </table>
+  </section>
+
+  <section id="deploy" class="card">
+    <h2>☁️ Deploy & Versioning</h2>
+    <ol>
+      <li>Commit both deliverables: <code>atomic-runtime.html</code> and <code>atomic-local.html</code>.</li>
+      <li>Serve <code>atomic-runtime.html</code> behind your CDN. Cache for 1h; revalidate on deploy.</li>
+      <li>Keep <code>app.asx</code> immutable per release; bump querystring for hotfixes.</li>
+      <li>Optional: preload assets with <code>&lt;link rel="preload"&gt;</code> for splash.</li>
+    </ol>
+  </section>
+
+  <section id="templates" class="card">
+    <h2>📋 Templates</h2>
+    <div class="grid">
+      <div>
+        <h3>Minimal <code>app.asx</code></h3>
+        <pre><code>{
+  "$schema":"asx-shell-v1",
+  "$state":{"user":{"score":0}},
+  "$routes":{"home":{}},
+  "$effects":[{"when":"user.score","run":"(?) user.score ≥ 10 (∴) (💬&gt;) 'Ding'"}]
+}</code></pre>
+      </div>
+      <div>
+        <h3>Embed Block</h3>
+        <pre><code>&lt;div data-bind="user.score"&gt;&lt;/div&gt;
+&lt;script&gt;Atomic.init({asx:"/app.asx"});&lt;/script&gt;</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="card">
+    <h2>❓ FAQ</h2>
+    <p><strong>Q:</strong> Can I combine with Stripe/Coinbase add‑ons? <br><strong>A:</strong> Yes—expose minimal bridges and trigger via <code>$effects.run</code>.</p>
+    <p><strong>Q:</strong> Will this run offline? <br><strong>A:</strong> Yes—pair with a service worker and embed <code>app.asx</code> inline or precache it.</p>
+  </section>
+
+  <div class="footer small">Atomic HTML v3 • Runtime Ops • Updated Nov 2025</div>
+</main>
+</body>
+</html>

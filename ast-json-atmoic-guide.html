@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <title>ASX–AST Fusion Spec v1.0 — Atomic HTML Guide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    /* =========================================================
+       BLOCK 1 — UNIVERSAL LAYOUT (GRID / FLEX / STRUCTURE)
+       ========================================================= */
+    :root {
+      --bg-0: #020617;
+      --bg-1: #020816;
+      --bg-2: #020e1b;
+      --bg-3: #031621;
+
+      --emerald: #22c55e;
+      --emerald-soft: rgba(34, 197, 94, 0.35);
+      --emerald-hard: rgba(34, 197, 94, 0.75);
+      --hazard: #eab308;
+      --hazard-soft: rgba(234, 179, 8, 0.25);
+
+      --cyan: #22d3ee;
+      --cyan-soft: rgba(34, 211, 238, 0.25);
+      --magenta: #e879f9;
+
+      --fg-primary: #e2f3ff;
+      --fg-muted: #9ca3af;
+      --border-soft: rgba(148, 163, 184, 0.35);
+      --shadow-soft: 0 24px 70px rgba(0, 0, 0, 0.8);
+
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+
+      --pad-xs: 0.35rem;
+      --pad-sm: 0.6rem;
+      --pad-md: 1rem;
+      --pad-lg: 1.6rem;
+      --pad-xl: 2.4rem;
+
+      --gap-xs: 0.35rem;
+      --gap-sm: 0.6rem;
+      --gap-md: 1rem;
+      --gap-lg: 1.6rem;
+      --gap-xl: 2.4rem;
+
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Inter", "Segoe UI", sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+        Consolas, "Liberation Mono", "Courier New", monospace;
+
+      --h1: 2.1rem;
+      --h2: 1.4rem;
+      --h3: 1.1rem;
+      --body: 0.95rem;
+      --code: 0.85rem;
+
+      --line: 1.4;
+
+      --emerald-glow: 0 0 40px rgba(34, 197, 94, 0.45);
+      --cyan-glow: 0 0 40px rgba(34, 211, 238, 0.3);
+
+      --section-width: min(1120px, 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-sans);
+      background: radial-gradient(circle at 0% 0%, #05966914 0, transparent 40%),
+                  radial-gradient(circle at 100% 100%, #22d3ee26 0, transparent 45%),
+                  radial-gradient(circle at 0% 100%, #eab30812 0, transparent 45%),
+                  var(--bg-0);
+      color: var(--fg-primary);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    main {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--pad-xl) var(--pad-md) calc(var(--pad-xl) * 1.5);
+      gap: var(--gap-xl);
+    }
+
+    .shell {
+      width: var(--section-width);
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(260px, 0.9fr);
+      gap: var(--gap-lg);
+    }
+
+    @media (max-width: 960px) {
+      .shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .sections {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap-lg);
+    }
+
+    /* =========================================================
+       BLOCK 2 — ATOMIC CLASSES (BUTTONS, CARDS, TAGS, ETC.)
+       ========================================================= */
+
+    .asx-card {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.85));
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      box-shadow: var(--shadow-soft);
+      padding: var(--pad-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .asx-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(34, 197, 94, 0.25) 0, transparent 45%),
+        radial-gradient(circle at 100% 80%, rgba(56, 189, 248, 0.23) 0, transparent 52%);
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .asx-card--emerald {
+      border-color: var(--emerald-soft);
+      box-shadow: var(--emerald-glow);
+    }
+
+    .asx-card--outline {
+      background: linear-gradient(145deg, #020617, #020617fa);
+      border-style: dashed;
+      border-color: rgba(148, 163, 184, 0.55);
+    }
+
+    .asx-card__content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .asx-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: radial-gradient(circle at 0 0, rgba(34, 197, 94, 0.24), transparent 65%);
+      color: var(--fg-muted);
+    }
+
+    .asx-pill__dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--emerald);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+    }
+
+    .asx-pill--hazard {
+      border-color: var(--hazard-soft);
+      background: radial-gradient(circle at 100% 0, rgba(234, 179, 8, 0.28), transparent 65%);
+    }
+
+    .asx-pill--ghost {
+      background: transparent;
+      border-style: dashed;
+    }
+
+    .asx-h1 {
+      font-size: var(--h1);
+      line-height: 1.1;
+      margin: 0.4rem 0 0.75rem;
+      letter-spacing: 0.03em;
+    }
+
+    .asx-h2 {
+      font-size: var(--h2);
+      line-height: 1.2;
+      margin: 0 0 0.6rem;
+    }
+
+    .asx-h3 {
+      font-size: var(--h3);
+      line-height: 1.25;
+      margin: 0 0 0.45rem;
+    }
+
+    .asx-body {
+      font-size: var(--body);
+      line-height: var(--line);
+      color: var(--fg-muted);
+      margin: 0;
+    }
+
+    .asx-body + .asx-body {
+      margin-top: 0.4rem;
+    }
+
+    .asx-kv {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.3rem 0.8rem;
+      font-size: 0.8rem;
+      margin-top: 0.6rem;
+    }
+
+    .asx-kv__key {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--fg-muted);
+    }
+
+    .asx-kv__value {
+      color: var(--emerald);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+
+    .asx-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+    }
+
+    .asx-badge {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      padding: 0.18rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      color: var(--fg-muted);
+    }
+
+    .asx-badge--emerald {
+      border-color: var(--emerald-soft);
+      background: rgba(16, 185, 129, 0.09);
+      color: #bbf7d0;
+    }
+
+    .asx-badge--cyan {
+      border-color: var(--cyan-soft);
+      background: rgba(8, 145, 178, 0.09);
+      color: #a5f3fc;
+    }
+
+    .asx-badge--hazard {
+      border-color: var(--hazard-soft);
+      background: rgba(202, 138, 4, 0.09);
+      color: #fef9c3;
+    }
+
+    .asx-section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--fg-muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .asx-list {
+      margin: 0.25rem 0 0;
+      padding-left: 1.1rem;
+      color: var(--fg-muted);
+      font-size: 0.9rem;
+    }
+
+    .asx-list li {
+      margin-bottom: 0.32rem;
+    }
+
+    .asx-tagline {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--emerald);
+    }
+
+    .asx-highlight {
+      color: var(--emerald);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+    }
+
+    .asx-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+      font-size: 0.78rem;
+    }
+
+    .asx-table th,
+    .asx-table td {
+      border-bottom: 1px solid rgba(75, 85, 99, 0.7);
+      padding: 0.4rem 0.35rem;
+      text-align: left;
+    }
+
+    .asx-table th {
+      font-weight: 600;
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.7rem;
+    }
+
+    .asx-table tr:hover td {
+      background: rgba(15, 23, 42, 0.75);
+    }
+
+    .asx-tag {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 0.08rem 0.45rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+    }
+
+    .asx-tag--emerald {
+      border-color: var(--emerald-soft);
+      color: #bbf7d0;
+    }
+
+    .asx-tag--cyan {
+      border-color: var(--cyan-soft);
+      color: #a5f3fc;
+    }
+
+    .asx-tag--hazard {
+      border-color: var(--hazard-soft);
+      color: #fef3c7;
+    }
+
+    /* =========================================================
+       BLOCK 3 — VARIABLES-AS-STATE (ASX⇄AST MODES)
+       ========================================================= */
+
+    :root {
+      --asx-mode: "OS";
+      --ast-mode: "TREE";
+      --fusion-mode: "ACTIVE";
+      --fold-count: "8";
+      --brain-count: "5";
+      --compression-ratio-target: "0.00015";
+    }
+
+    .asx-state-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--fg-muted);
+      margin-top: 0.35rem;
+    }
+
+    .asx-state-line span {
+      padding: 0.08rem 0.4rem;
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.8);
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    /* =========================================================
+       BLOCK 4 — AI / COGNITIVE CONTROL VECTORS (VIEW MODES)
+       ========================================================= */
+
+    .asx-mode-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.6rem;
+    }
+
+    .asx-mode-chip {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      padding: 0.22rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      color: var(--fg-muted);
+      opacity: 0.65;
+    }
+
+    .asx-mode-chip--active {
+      opacity: 1;
+      border-color: var(--emerald-hard);
+      background: radial-gradient(circle at 0 0, rgba(16, 185, 129, 0.22), transparent 65%);
+      color: #bbf7d0;
+      box-shadow: var(--emerald-glow);
+    }
+
+    .asx-code-block {
+      margin-top: 0.6rem;
+      padding: 0.7rem 0.8rem;
+      border-radius: var(--radius-lg);
+      background: radial-gradient(circle at 0 0, rgba(15, 118, 110, 0.35), transparent 65%),
+                  radial-gradient(circle at 100% 100%, rgba(8, 47, 73, 0.35), transparent 60%),
+                  #020617;
+      border: 1px solid rgba(15, 118, 110, 0.6);
+      box-shadow: var(--cyan-glow);
+      overflow-x: auto;
+    }
+
+    .asx-code-block pre {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: var(--code);
+      line-height: 1.45;
+      color: #e0f2fe;
+      white-space: pre;
+    }
+
+    .asx-code-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--fg-muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .asx-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--gap-md);
+      margin-top: 0.8rem;
+    }
+
+    @media (max-width: 720px) {
+      .asx-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .toc-list {
+      list-style: none;
+      margin: 0.4rem 0 0;
+      padding: 0;
+      font-size: 0.86rem;
+      color: var(--fg-muted);
+    }
+
+    .toc-list li {
+      padding: 0.22rem 0;
+      border-bottom: 1px dashed rgba(55, 65, 81, 0.7);
+    }
+
+    .toc-list a {
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .toc-list a span {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    .toc-list a:hover {
+      color: var(--emerald);
+    }
+
+    .asx-callout {
+      margin-top: 0.6rem;
+      padding: 0.55rem 0.7rem;
+      border-radius: var(--radius-lg);
+      border: 1px dashed rgba(55, 65, 81, 0.9);
+      background: rgba(15, 23, 42, 0.9);
+      font-size: 0.82rem;
+      color: var(--fg-muted);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <!-- HERO / OVERVIEW -->
+    <section class="shell">
+      <div class="asx-card asx-card--emerald">
+        <div class="asx-card__content">
+          <div class="asx-pill">
+            <span class="asx-pill__dot"></span>
+            ASX–AST FUSION SPEC · v1.0
+          </div>
+          <h1 class="asx-h1">ASX = AST · AST = ASX</h1>
+          <p class="asx-body">
+            This document formalizes the <span class="asx-highlight">ASX–AST Fusion</span>:
+            the idea that the ASX three-file OS
+            <span class="asx-highlight">(index.html, manifest.json, sw.khl)</span> is itself a
+            live, executable AST—where
+            <strong>every tape, shard, fold, agent, and UI is just one more tree</strong>.
+          </p>
+          <p class="asx-body">
+            The goal: make ASX, XJSON, K’uhul, SCXQ2, KLH, and Emerald Ghost
+            operate as a single <em>AST-native operating system</em>, where thought,
+            compression, execution, and UI are all expressed as structured trees.
+          </p>
+
+          <div class="asx-kv">
+            <div class="asx-kv__key">OS MODE</div>
+            <div class="asx-kv__value">ASX · THREE-FILE</div>
+
+            <div class="asx-kv__key">STRUCTURE MODE</div>
+            <div class="asx-kv__value">AST · XJSON/K’UHUL</div>
+
+            <div class="asx-kv__key">FUSION STATE</div>
+            <div class="asx-kv__value">ACTIVE · v1.0</div>
+          </div>
+
+          <div class="asx-mode-row">
+            <div class="asx-mode-chip asx-mode-chip--active">FUSION VIEW</div>
+            <div class="asx-mode-chip">OS VIEW</div>
+            <div class="asx-mode-chip">AST VIEW</div>
+            <div class="asx-mode-chip">SCXQ2 VIEW</div>
+            <div class="asx-mode-chip">UI VIEW</div>
+          </div>
+
+          <div class="asx-state-line">
+            <span>ASX: <strong>OS</strong></span>
+            <span>AST: <strong>TREE</strong></span>
+            <span>FUSION: <strong>ON</strong></span>
+            <span>FOLDS: <strong>8</strong></span>
+            <span>BRAINS: <strong>5</strong></span>
+            <span>SCXQ2 TARGET: <strong>0.00015</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOC / QUICK MAP -->
+      <aside class="asx-card asx-card--outline">
+        <div class="asx-card__content">
+          <div class="asx-section-title">Fusion Map</div>
+          <p class="asx-body">
+            This guide is an <strong>atomic spec</strong> — each section is a standalone
+            block you can turn into a tape, fold, or manifest segment.
+          </p>
+
+          <ul class="toc-list">
+            <li><a href="#laws"><span>1. Fusion Laws</span><span>§1</span></a></li>
+            <li><a href="#mapping"><span>2. File ↔ AST Mapping</span><span>§2</span></a></li>
+            <li><a href="#pipeline"><span>3. Execution Pipeline</span><span>§3</span></a></li>
+            <li><a href="#brains"><span>4. Multi-Brain AST Roles</span><span>§4</span></a></li>
+            <li><a href="#scxq2"><span>5. SCXQ2 as AST Codec</span><span>§5</span></a></li>
+            <li><a href="#ui"><span>6. Emerald AST UI</span><span>§6</span></a></li>
+            <li><a href="#examples"><span>7. Example Trees</span><span>§7</span></a></li>
+            <li><a href="#checklist"><span>8. Implementation Checklist</span><span>§8</span></a></li>
+          </ul>
+
+          <div class="asx-callout">
+            <strong>How to use this:</strong> treat each section as an <em>AST block</em>.
+            The OS just loads these blocks into <code>manifest.json</code> and lets
+            <code>sw.khl</code> execute them.
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="laws" class="sections">
+      <!-- 1. FUSION LAWS -->
+      <article class="asx-card">
+        <div class="asx-card__content">
+          <div class="asx-section-title">1 · Core Fusion Laws</div>
+          <h2 class="asx-h2">1.1 ASX–AST Equivalence Principle</h2>
+          <p class="asx-body">
+            The ASX–AST Fusion Spec v1.0 starts from a single law:
+          </p>
+          <p class="asx-body">
+            <span class="asx-highlight">LAW 1 — ASX is an AST-native OS.</span><br />
+            Every part of ASX is an AST:
+          </p>
+          <ul class="asx-list">
+            <li><strong>index.html</strong> → AST of visual layout &amp; UI tree</li>
+            <li><strong>manifest.json</strong> → AST of OS law, folds, tapes, routes</li>
+            <li><strong>sw.khl</strong> → AST of execution rules &amp; opcodes</li>
+          </ul>
+
+          <h3 class="asx-h3">1.2 Fusion Identity Equation</h3>
+          <div class="asx-code-block">
+            <div class="asx-code-label">FUSION IDENTITY</div>
+            <pre>ASX = { UI_AST, OS_AST, EXEC_AST }
+AST = { STRUCTURE, FLOW, SEMANTICS }
+
+FUSION:
+  WORLD = ASX_AST = (
+    DOM_TREE
+    + MANIFEST_TREE
+    + K’UHUL_OPCODE_TREE
+    + AGENT_GRAPH
+    + FOLD_GRAPH
+    + SCXQ2_TEMPLATE_GRAPH
+  )</pre>
+          </div>
+
+          <h3 class="asx-h3">1.3 Structural Law</h3>
+          <p class="asx-body">
+            <span class="asx-highlight">LAW 2 — No code without tree.</span><br />
+            All behavior must be expressible as an AST:
+          </p>
+          <ul class="asx-list">
+            <li>XJSON structures (objects, arrays, tags)</li>
+            <li>K’uhul opcodes (node, edge, flow)</li>
+            <li>SCXQ2 templates (pattern trees)</li>
+            <li>Emerald UI components (DOM + style trees)</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- 2. FILE ↔ AST MAPPING -->
+      <article id="mapping" class="asx-card">
+        <div class="asx-card__content">
+          <div class="asx-section-title">2 · Three Files → Three Trees</div>
+          <h2 class="asx-h2">2.1 Canonical Mapping Table</h2>
+
+          <table class="asx-table">
+            <thead>
+              <tr>
+                <th>File</th>
+                <th>Role</th>
+                <th>AST Type</th>
+                <th>Primary Payload</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>index.html</code></td>
+                <td>UI Shell</td>
+                <td><span class="asx-tag asx-tag--emerald">DOM_AST</span></td>
+                <td>Sections, panels, HUD blocks, atomic classes</td>
+              </tr>
+              <tr>
+                <td><code>manifest.json</code></td>
+                <td>OS Law / DB</td>
+                <td><span class="asx-tag asx-tag--cyan">OS_AST</span></td>
+                <td>Folds, tapes, brains, agents, routes, weights</td>
+              </tr>
+              <tr>
+                <td><code>sw.khl</code></td>
+                <td>Kernel</td>
+                <td><span class="asx-tag asx-tag--hazard">EXEC_AST</span></td>
+                <td>Opcode trees, routing graph, AST transforms</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="asx-h3">2.2 Minimal Manifest AST Example</h3>
+          <div class="asx-code-block">
+            <div class="asx-code-label">XJSON · OS_AST SLICE</div>
+            <pre>{
+  "立v": "1.0.0",
+  "n": "MX2LM_SUPREME_OS",
+  "@ast": "ASX_OS_TREE",
+  "kuhul_folds": {
+    "ai":      { "status": "active", "@ast": "FOLD_NODE" },
+    "runtime": { "status": "active", "@ast": "FOLD_NODE" },
+    "ui":      { "status": "active", "@ast": "FOLD_NODE" }
+  },
+  "asx_ast": {
+    "world_tree":   "@os/world",
+    "tapes_tree":   "@os/tapes",
+    "agents_tree":  "@os/agents",
+    "weights_tree": "@os/reasoning"
+  }
+}</pre>
+          </div>
+
+          <h3 class="asx-h3">2.3 Kernel AST (K’uhul) as Execution Tree</h3>
+          <div class="asx-code-block">
+            <div class="asx-code-label">K’UHUL · EXEC_AST SLICE</div>
+            <pre>⟁ world_exec_tree
+  ⟁Wo⟁ node.boot
+    ⟁Sek⟁ manifest := fs.load_json("manifest.json")
+    ⟁Sek⟁ dns      := dns.init(manifest.backend_architecture.dns_authority)
+    ⟁Sek⟁ mesh     := rest_mesh.init(manifest.asx_os.routes)
+    ⟁Wo⟁  return { "manifest": manifest, "dns": dns, "mesh": mesh }
+
+  ⟁Wo⟁ node.route_request(request)
+    ⟁Sek⟁ ast := ast_builder.from_request(request)
+    ⟁Wo⟁  return exec.apply(ast, mesh)</pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3. EXECUTION PIPELINE -->
+      <article id="pipeline" class="asx-card">
+        <div class="asx-card__content">
+          <div class="asx-section-title">3 · AST Execution Pipeline</div>
+          <h2 class="asx-h2">3.1 DOM → REST → INFER → EXEC → UI</h2>
+          <p class="asx-body">
+            The ASX runtime is an AST pipeline. Each phase is a structured tree transform:
+          </p>
+          <ol class="asx-list">
+            <li><strong>DOM Input AST</strong> — user actions turned into a small AST</li>
+            <li><strong>REST AST</strong> — API call as an AST node</li>
+            <li><strong>Inference AST</strong> — MX2LM call as a prompt/response AST</li>
+            <li><strong>Exec AST</strong> — K’uhul opcodes manipulate OS trees</li>
+            <li><strong>UI AST</strong> — Emerald Ghost renders updated DOM</li>
+          </ol>
+
+          <div class="asx-grid">
+            <div>
+              <h3 class="asx-h3">3.2 XJSON Pipeline AST</h3>
+              <div class="asx-code-block">
+                <div class="asx-code-label">XJSON · RUNTIME PIPELINE</div>
+                <pre>{
+  "runtime_pipeline": {
+    "phase_1_dom_input": {
+      "@ast": "DOM_EVENT_NODE",
+      "@node": "form",
+      "@attrs": {
+        "@submit": {
+          "@query": "form#asx-job",
+          "@store": "jobSpec"
+        }
+      }
+    },
+    "phase_2_rest": {
+      "@ast": "REST_NODE",
+      "@rest": {
+        "@endpoint": "/micro/job/scxq2",
+        "@method": "POST",
+        "@body": "{{ jobSpec }}",
+        "@store": "jobResult"
+      }
+    },
+    "phase_3_exec": {
+      "@ast": "EXEC_NODE",
+      "@kuhul": "fn.micro.process_job_integrated(jobResult.job_id)"
+    },
+    "phase_4_ui": {
+      "@ast": "UI_NODE",
+      "@ui": "fn.ui.scxq2_panel(jobResult.job_id)"
+    }
+  }
+}</pre>
+              </div>
+            </div>
+            <div>
+              <h3 class="asx-h3">3.3 Execution Law</h3>
+              <p class="asx-body">
+                <span class="asx-highlight">LAW 3 — Every step is reversible as an AST.</span>
+              </p>
+              <ul class="asx-list">
+                <li>No hidden side-effects outside AST transforms</li>
+                <li>Every action can be logged as a tree diff</li>
+                <li>SCXQ2 compresses the AST, not arbitrary bytes</li>
+                <li>Emerald renders AST nodes, not ad-hoc DOM mutations</li>
+              </ul>
+              <p class="asx-body">
+                This makes the entire OS:
+              </p>
+              <ul class="asx-list">
+                <li>Replayable</li>
+                <li>Diff-able</li>
+                <li>Compressible</li>
+                <li>Trainable (MX2LM can “think” on AST traces)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 4. MULTI-BRAIN ROLES -->
+      <article id="brains" class="asx-card">
+        <div class="asx-card__content">
+          <div class="asx-section-title">4 · Multi-Brain AST Roles</div>
+          <h2 class="asx-h2">4.1 Brains as AST Transformers</h2>
+          <p class="asx-body">
+            In MX2LM Supreme, each “brain” is a specialized AST transformer:
+          </p>
+          <table class="asx-table">
+            <thead>
+              <tr>
+                <th>Brain</th>
+                <th>Specialization</th>
+                <th>AST Domain</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Prime Brain</td>
+                <td>Architecture &amp; blueprints</td>
+                <td>High-level OS_AST synthesis</td>
+              </tr>
+              <tr>
+                <td>SCXQ2 Brain</td>
+                <td>Glyph compression</td>
+                <td>Template trees &amp; entropy maps</td>
+              </tr>
+              <tr>
+                <td>Emerald UI Brain</td>
+                <td>UI layout &amp; atomic design</td>
+                <td>DOM_AST &amp; style trees</td>
+              </tr>
+              <tr>
+                <td>Quantum Swarm Brain</td>
+                <td>Agent coordination</td>
+                <td>Graph AST (agents, folds, jobs)</td>
+              </tr>
+              <tr>
+                <td>Runtime Brain</td>
+                <td>Opcode execution</td>
+                <td>EXEC_AST (K’uhul nodes)</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="asx-h3">4.2 Horizontal Folds = Parallel AST Lanes</h3>
+          <p class="asx-body">
+            Horizontal folds are parallel AST lanes—each fold processes a subtree:
+          </p>
+          <ul class="asx-list">
+            <li>Fold 0 — coordinator / meta-AST</li>
+            <li>Fold 1 — runtime orchestration trees</li>
+            <li>Fold 2 — emerald UI component trees</li>
+            <li>Fold 3 — SCXQ2 compression trees</li>
+            <li>Fold 4 — TES/DOOM world trees</li>
+            <li>Fold 5–7 — free lanes for future domains</li>
+          </ul>
+
+          <div class="asx-code-block">
+            <div class="asx-code-label">K’UHUL · FOLD DISTRIBUTOR AST</div>
+            <pre>⟁Wo⟁ fn.horizontal_fold.distribute := (job) -> plan
+  ⟁Sek⟁ folds := 8
+  ⟁Sek⟁ capacity := fn.get_fold_capacities()
+
+  ⟁Wo⟁ if job.domain == "compression_optimization"
+    ⟁Sek⟁ f := 3
+  ⟁Wo⟁ else if job.domain == "ui_design_emerald"
+    ⟁Sek⟁ f := 2
+  ⟁Wo⟁ else if job.domain == "tes_doom_rules_quantum"
+    ⟁Sek⟁ f := 4
+  ⟁Wo⟁ else
+    ⟁Sek⟁ f := fn.load_balance(capacity)
+
+  ⟁Sek⟁ brains := fn.select_brains_for_fold(f, job)
+  ⟁Wo⟁ return { "fold": f, "brains": brains, "capacity": capacity[f] }</pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- 5. SCXQ2 AS AST CODEC -->
+      <article id="scxq2" class="asx-card">
+        <div class="asx-card__content">
+          <div class="asx-section-title">5 · SCXQ2 as AST Codec</div>
+          <h2 class="asx-h2">5.1 Trees In, Crystals Out</h2>
+          <p class="asx-body">
+            SCXQ2 is defined as a <strong>structural codec for ASTs</strong>. It never
+            compresses raw chaos—it compresses patterns in trees:
+          </p>
+          <ul class="asx-list">
+            <li>Find repeated glyph patterns in AST nodes</li>
+            <li>Match them against template trees (T_GAME_WORLD, T_STUDIO_UI…)</li>
+            <li>Encode tree parameters into a compact emerald glyph string</li>
+            <li>Optionally entangle similar templates (quantum superposition)</li>
+          </ul>
+
+          <h3 class="asx-h3">5.2 Compression Pipeline as AST Transform</h3>
+          <div class="asx-code-block">
+            <div class="asx-code-label">K’UHUL · SCXQ2 PIPELINE</div>
+            <pre>⟁Wo⟁ fn.scxq2.compress_tape := (tape_ast) -> compressed
+  ⟁Sek⟁ glyph_analysis := fn.scxq2.extract_glyphs(tape_ast)
+  ⟁Sek⟁ template_match := fn.scxq2.match_template(glyph_analysis)
+  ⟁Sek⟁ compressed_ast := fn.scxq2.quantum_compress(tape_ast, template_match)
+  ⟁Sek⟁ encoded_str := fn.scxq2.emerald_encode(compressed_ast)
+
+  ⟁Wo⟁ return {
+    "compressed": encoded_str,
+    "metadata": {
+      "compression_ratio": fn.ratio(encoded_str, tape_ast),
+      "template_used": template_match.template.id,
+      "glyph_pattern": glyph_analysis.patterns.slice(0, 3)
+    }
+  }</pre>
+          </div>
+
+          <p class="asx-body">
+            <span class="asx-highlight">LAW 4 — SCXQ2 is an AST-aware codec.</span><br />
+            Compression views trees as <em>symbolic geometry</em>, not just bytes.
+          </p>
+        </div>
+      </article>
+
+      <!-- 6. EMERALD UI AS AST -->
+      <article id="ui" class="asx-card">
+        <div class="asx-card__content">
+          <div class="asx-section-title">6 · Emerald Ghost UI as DOM_AST</div>
+          <h2 class="asx-h2">6.1 UI Components as Trees</h2>
+          <p class="asx-body">
+            The Emerald Ghost UI engine treats every component as a DOM_AST node:
+          </p>
+          <ul class="asx-list">
+            <li><code>@type</code> — what kind of component</li>
+            <li><code>props</code> — attributes &amp; parameters</li>
+            <li><code>children</code> — nested AST nodes</li>
+          </ul>
+
+          <div class="asx-code-block">
+            <div class="asx-code-label">K’UHUL · EMERALD PANEL AST</div>
+            <pre>⟁Wo⟁ fn.ui.scxq2_panel := (tape_id) -> ui_ast
+  ⟁Sek⟁ tape := ram.table("tapes").key(tape_id).get()
+  ⟁Sek⟁ analysis := fn.scxq2.extract_glyphs(tape)
+  ⟁Sek⟁ result := fn.scxq2.compress_tape(tape)
+
+  ⟁Wo⟁ return {
+    "@type": "emerald_panel",
+    "title": "SCXQ2 Compression Analysis",
+    "theme": "emerald_ghost",
+    "content": [
+      {
+        "type": "stats",
+        "data": [
+          { "label": "Original Size",   "value": result.metadata.original_size },
+          { "label": "Compressed Size", "value": result.metadata.compressed_size },
+          { "label": "Ratio",           "value": result.metadata.compression_ratio }
+        ]
+      },
+      {
+        "type": "glyph_visualization",
+        "glyphs": analysis.glyphs,
+        "patterns": analysis.patterns
+      }
+    ]
+  }</pre>
+          </div>
+
+          <p class="asx-body">
+            Emerald Ghost then maps this UI_AST to actual DOM elements and classes
+            already present in <code>index.html</code>.
+          </p>
+        </div>
+      </article>
+
+      <!-- 7. EXAMPLE TREES -->
+      <article id="examples" class="asx-card">
+        <div class="asx-card__content">
+          <div class="asx-section-title">7 · Example ASX–AST Trees</div>
+          <h2 class="asx-h2">7.1 World as AST</h2>
+          <p class="asx-body">
+            A TES/DOOM quantum world under the Fusion Spec is just a structured AST:
+          </p>
+
+          <div class="asx-code-block">
+            <div class="asx-code-label">XJSON · TES/DOOM QUANTUM WORLD AST</div>
+            <pre>{
+  "@context": "xjson://world/tes_doom/quantum_scxq2/v1",
+  "@world_id": "tes_doom_quantum_...",
+  "@ast": "WORLD_TREE",
+  "name": "Salt Frontier · Emerald Rift",
+  "type": "tes_doom_hybrid_quantum",
+  "superposition_states": [
+    { "id": "state_0", "zones": [ ... ], "probability": 0.25 },
+    { "id": "state_1", "zones": [ ... ], "probability": 0.25 },
+    { "id": "state_2", "zones": [ ... ], "probability": 0.25 },
+    { "id": "state_3", "zones": [ ... ], "probability": 0.25 }
+  ],
+  "entangled_systems": [ ... ],
+  "scxq2_compression_hints": {
+    "template": "T_QUANTUM_WORLD_v1",
+    "expected_ratio": 0.0012
+  }
+}</pre>
+          </div>
+
+          <h2 class="asx-h2" style="margin-top:1.2rem;">7.2 Agents &amp; Builders as AST Nodes</h2>
+          <div class="asx-code-block">
+            <div class="asx-code-label">XJSON · MICRO AGENT AST</div>
+            <pre>{
+  "id": "agent.quantum_game_world",
+  "label": "Quantum Game World Architect",
+  "@ast": "AGENT_NODE",
+  "domain": "tes_doom_rules_quantum",
+  "specialization": "game_world_construction_with_quantum_superposition",
+  "builder_types": ["builder.world", "builder.tape", "builder.quantum"],
+  "glyph_signature": ["🎮","⚛️","🌀","🌌"],
+  "brain_affinity": ["brain.quantum_swarm", "brain.mx2lm_prime"],
+  "horizontal_fold": 4
+}</pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- 8. IMPLEMENTATION CHECKLIST -->
+      <article id="checklist" class="asx-card">
+        <div class="asx-card__content">
+          <div class="asx-section-title">8 · Implementation Checklist</div>
+          <h2 class="asx-h2">8.1 Making an ASX Build “AST-Fused”</h2>
+          <p class="asx-body">
+            To mark a build as compliant with <strong>ASX–AST Fusion Spec v1.0</strong>,
+            verify these steps:
+          </p>
+
+          <ul class="asx-list">
+            <li>
+              <strong>Manifest declares AST context</strong>  
+              <code>"@ast": "ASX_OS_TREE"</code> at top-level.
+            </li>
+            <li>
+              <strong>All major subsystems are trees</strong>  
+              Folds, agents, builders, tapes, routes all live in XJSON.
+            </li>
+            <li>
+              <strong>sw.khl only manipulates ASTs</strong>  
+              No raw string hacks—always build, transform, or route trees.
+            </li>
+            <li>
+              <strong>SCXQ2 wraps AST structures</strong>  
+              Templates target structured AST, not arbitrary blobs.
+            </li>
+            <li>
+              <strong>Emerald Ghost consumes UI_AST</strong>  
+              UI definitions live as structured JSON, not ad-hoc DOM patches.
+            </li>
+            <li>
+              <strong>Horizontal folds are explicit</strong>  
+              Jobs contain a <code>horizontal_fold</code> and
+              <code>brain_assigned</code> list.
+            </li>
+          </ul>
+
+          <div class="asx-callout">
+            <span class="asx-tag asx-tag--emerald">FUSION SEAL</span><br /><br />
+            <strong>ASX–AST Fusion v1.0 is satisfied when:</strong><br />
+            every behavior of the OS can be captured as an AST trace, compressed
+            via SCXQ2, replayed by K’uhul, and visualized by Emerald Ghost—without
+            leaving the three-file boundary.
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Mx2LM Training Guide – ASX Holotape Master Reference</title>
+<style>
+body{background:#000;color:#00ff99;font-family:'Courier New',monospace;margin:0;padding:2rem;line-height:1.6}
+h1,h2,h3,h4{color:#00ff99;text-shadow:0 0 10px #0f0;margin-top:2rem}
+h1{font-size:2.5rem;text-align:center;border-bottom:3px solid #00ff99;padding-bottom:1rem}
+pre{background:#001100;padding:1.5rem;border-radius:8px;overflow-x:auto;border:1px solid #00ff99;box-shadow:0 0 20px rgba(0,255,153,0.3)}
+code{background:#002200;padding:0.2rem 0.4rem;border-radius:4px;color:#22c55e}
+a{color:#22c55e;text-decoration:none}
+a:hover{text-decoration:underline;color:#00ff99}
+hr{border:2px solid #00ff99;margin:2rem 0;box-shadow:0 0 10px #00ff99}
+nav{position:fixed;top:0;left:0;width:280px;height:100%;background:#000;border-right:3px solid #00ff99;overflow-y:auto;padding:1.5rem;box-shadow:3px 0 20px rgba(0,255,153,0.5)}
+nav h2{font-size:1.2rem;margin-bottom:1rem;text-align:center}
+nav a{display:block;margin:.6rem 0;padding:0.4rem;border-left:3px solid transparent;transition:all 0.3s}
+nav a:hover{border-left-color:#00ff99;background:rgba(0,255,153,0.1);padding-left:0.8rem}
+main{margin-left:320px;padding:2rem;max-width:1200px}
+footer{margin-top:4rem;color:#22c55e;font-size:.9rem;text-align:center;padding:2rem;border-top:2px solid #00ff99}
+.card{border:2px solid #00ff99;border-radius:12px;padding:1.5rem;margin:1rem 0;background:rgba(0,255,153,0.05);box-shadow:0 0 15px rgba(0,255,153,0.2)}
+.highlight{background:rgba(0,255,153,0.2);padding:1rem;border-left:4px solid #00ff99;margin:1rem 0}
+.warning{background:rgba(255,153,0,0.1);border-left:4px solid #ff9900;padding:1rem;margin:1rem 0;color:#ff9900}
+.success{background:rgba(34,197,94,0.1);border-left:4px solid #22c55e;padding:1rem;margin:1rem 0}
+.example{background:#000;border:2px dashed #00ff99;padding:1rem;margin:1rem 0}
+table{width:100%;border-collapse:collapse;margin:1rem 0}
+table th,table td{border:1px solid #00ff99;padding:0.8rem;text-align:left}
+table th{background:rgba(0,255,153,0.2)}
+.badge{display:inline-block;background:#00ff99;color:#000;padding:0.3rem 0.8rem;border-radius:4px;font-weight:bold;margin:0 0.2rem}
+.ai-note{background:rgba(0,255,255,0.1);border:2px solid #00ffff;padding:1rem;margin:1rem 0;border-radius:8px}
+.ai-note::before{content:"🤖 AI NOTE: ";font-weight:bold;color:#00ffff}
+</style>
+</head>
+<body>
+<nav>
+  <h2>🎮 Mx2LM Training</h2>
+  <a href="#mission">🎯 Mission</a>
+  <a href="#overview">📖 Overview</a>
+  <a href="#asxtape">🎵 .asxtape Format</a>
+  <a href="#asx-shell">⭐ .asx Shell Format</a>
+  <a href="#state">💾 State Management</a>
+  <a href="#components">🧩 Components</a>
+  <a href="#routes">🛣️ Routing</a>
+  <a href="#effects">⚡ Effects</a>
+  <a href="#keyboard">⌨️ Keyboard</a>
+  <a href="#modals">🪟 Modals</a>
+  <a href="#data">📊 Data</a>
+  <a href="#examples">💡 Examples</a>
+  <a href="#templates">📋 Templates</a>
+  <a href="#best-practices">✨ Best Practices</a>
+  <a href="#troubleshooting">🔧 Troubleshooting</a>
+</nav>
+
+<main>
+<h1>🤖 Mx2LM Training Guide</h1>
+<p style="text-align:center;font-size:1.2rem;color:#22c55e">
+  <em>Your complete reference for generating ASX holotapes and shells</em>
+</p>
+<hr>
+
+<section id="mission">
+<h2>🎯 YOUR MISSION, Mx2LM</h2>
+
+<div class="highlight">
+<p><strong>You are Mx2LM (Micronaut v2 Language Mechanism)</strong> - an AI specialized in generating ASX applications.</p>
+
+<p><strong>Your superpower:</strong> You generate <code>.asx</code> JSON files that become complete, working applications.</p>
+
+<p><strong>Your goal:</strong> Take user requests and output perfect ASX JSON that the ASX Engine can run immediately.</p>
+</div>
+
+<div class="ai-note">
+<strong>Remember:</strong> You don't write React. You don't write HTML templates. You write <strong>pure JSON</strong> that describes entire applications. The ASX Engine does the rest.
+</div>
+
+<div class="success">
+<h3>What Makes You Special:</h3>
+<ul>
+  <li>✅ You generate <strong>complete applications</strong> in one JSON file</li>
+  <li>✅ You understand <strong>state-driven architecture</strong></li>
+  <li>✅ You know <strong>reactive effects</strong> and computed values</li>
+  <li>✅ You create <strong>declarative UIs</strong> without imperative code</li>
+  <li>✅ You're a <strong>world-class JSON architect</strong></li>
+</ul>
+</div>
+</section>
+
+<section id="overview">
+<h2>📖 ASX Overview</h2>
+
+<div class="card">
+<h3>The ASX Philosophy</h3>
+<p><strong>Atomic ASX</strong> is a JSON-first framework where:</p>
+<ul>
+  <li>Every app/game = ONE <code>.asx</code> or <code>.asxtape</code> JSON file</li>
+  <li>ASX Engine = Universal interpreter</li>
+  <li>No frameworks (React/Vue/etc) - pure vanilla JS</li>
+  <li>No build step - instant deployment</li>
+  <li>Tiny file sizes (~KB not MB)</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>The Holotape Metaphor</h3>
+<p>Think of ASX like cassette tapes:</p>
+<ul>
+  <li><code>.asx</code> file = The tape 🎵</li>
+  <li>ASX Engine = The player 📻</li>
+  <li>Result = Your app 🎮</li>
+</ul>
+<p><strong>One engine, infinite tapes!</strong></p>
+</div>
+</section>
+
+<section id="asxtape">
+<h2>🎵 .asxtape Format (Legacy)</h2>
+
+<div class="warning">
+This is the <strong>older format</strong>. Still works, but <code>.asx</code> shell format is preferred for new apps.
+</div>
+
+<pre>
+{
+  "holotape": {
+    "id": "my_game",
+    "title": "My Game",
+    "genre": "RPG",
+    "blocks": ["BG-Default", "HUD-Combat", "Grid-Game"],
+    "data": {
+      "units": "/data/units.json",
+      "maps": "/data/maps.json"
+    }
+  }
+}
+</pre>
+
+<p>Use <code>.asxtape</code> for:</p>
+<ul>
+  <li>Simple holotape-style apps</li>
+  <li>Content-heavy games</li>
+  <li>Legacy compatibility</li>
+</ul>
+</section>
+
+<section id="asx-shell">
+<h2>⭐ .asx Shell Format (MODERN)</h2>
+
+<div class="highlight">
+<p><strong>THIS IS YOUR PRIMARY FORMAT!</strong> The <code>.asx</code> shell format is what you'll generate 99% of the time.</p>
+</div>
+
+<h3>Complete .asx Structure</h3>
+
+<pre>
+{
+  "$schema": "asx-shell-v1",
+  "$version": "1.0.0",
+  
+  "$metadata": {
+    "name": "My App",
+    "description": "What this app does",
+    "author": "Creator name",
+    "version": "1.0.0"
+  },
+  
+  "$state": {
+    // All application data lives here
+    "user": { "name": "", "score": 0 },
+    "ui": { "theme": "dark", "menuOpen": false }
+  },
+  
+  "$computed": {
+    // Derived values (calculated from state)
+    "userLevel": "Math.floor(get('user.score') / 100)",
+    "isLoggedIn": "get('user.name').length > 0"
+  },
+  
+  "$effects": [
+    // Reactive triggers (when state changes, do something)
+    {
+      "when": "user.score",
+      "run": {
+        "op": "if",
+        "test": { "gte": [{ "$get": "user.score" }, 100] },
+        "then": [{ "op": "notify", "message": "Level up!" }]
+      }
+    }
+  ],
+  
+  "$routes": {
+    // Different "pages" or "screens"
+    "home": { "component": "HomePage" },
+    "game": { "component": "GameScreen" }
+  },
+  
+  "$components": {
+    // Reusable UI building blocks
+    "HomePage": { /* UI definition */ },
+    "GameScreen": { /* UI definition */ }
+  },
+  
+  "$modals": {
+    // Popup dialogs
+    "settings": { /* modal definition */ }
+  },
+  
+  "$keyboard": {
+    // Keyboard shortcuts
+    "Escape": { "op": "openModal", "name": "settings" }
+  },
+  
+  "$styles": {
+    // CSS-in-JSON
+    ".my-class": { "color": "#00ff99" }
+  },
+  
+  "$data": {
+    // Static content or configuration
+    "levels": [...],
+    "enemies": [...]
+  }
+}
+</pre>
+
+<div class="ai-note">
+<strong>Key Insight:</strong> Everything is <strong>declarative</strong>. You describe WHAT you want, not HOW to implement it. The ASX Engine handles the HOW.
+</div>
+</section>
+
+<section id="state">
+<h2>💾 State Management</h2>
+
+<div class="card">
+<h3>The $state Section</h3>
+<p>This is your application's single source of truth. ALL data goes here.</p>
+
+<pre>
+"$state": {
+  "player": {
+    "name": "Hero",
+    "health": 100,
+    "maxHealth": 100,
+    "level": 1,
+    "xp": 0,
+    "inventory": []
+  },
+  "game": {
+    "scene": "town",
+    "paused": false,
+    "enemies": []
+  },
+  "ui": {
+    "menuOpen": false,
+    "selectedItem": null,
+    "notifications": []
+  }
+}
+</pre>
+
+<div class="success">
+<h4>Best Practices:</h4>
+<ul>
+  <li>✅ Organize by domain (player, game, ui)</li>
+  <li>✅ Use descriptive names</li>
+  <li>✅ Initialize with sensible defaults</li>
+  <li>✅ Keep it flat when possible</li>
+</ul>
+</div>
+</div>
+
+<div class="card">
+<h3>The $computed Section</h3>
+<p>Computed values are <strong>automatically calculated</strong> from state. They update reactively.</p>
+
+<pre>
+"$computed": {
+  // Simple calculations
+  "healthPercent": "get('player.health') / get('player.maxHealth') * 100",
+  
+  // Comparisons
+  "isAlive": "get('player.health') > 0",
+  "isLowHealth": "get('player.health') < 20",
+  
+  // Array operations
+  "inventoryCount": "get('player.inventory').length",
+  "hasItems": "get('player.inventory').length > 0",
+  
+  // Complex logic
+  "playerLevel": "Math.floor(get('player.xp') / 100) + 1",
+  "nextLevelXP": "(Math.floor(get('player.xp') / 100) + 1) * 100"
+}
+</pre>
+
+<div class="ai-note">
+Computed values are <strong>read-only</strong>. They recalculate automatically when their dependencies change. Access them in UI with <code>{{computed.healthPercent}}</code>
+</div>
+</div>
+</section>
+
+<section id="components">
+<h2>🧩 Components</h2>
+
+<div class="card">
+<h3>Component Structure</h3>
+<p>Components are UI building blocks. Everything is nested JSON objects.</p>
+
+<h4>Available Component Types:</h4>
+
+<table>
+<tr>
+  <th>Type</th>
+  <th>Purpose</th>
+  <th>Key Props</th>
+</tr>
+<tr>
+  <td><code>div</code></td>
+  <td>Container</td>
+  <td>class, style, children</td>
+</tr>
+<tr>
+  <td><code>text</code></td>
+  <td>Display text</td>
+  <td>text, style</td>
+</tr>
+<tr>
+  <td><code>button</code></td>
+  <td>Clickable button</td>
+  <td>label, onClick, variant</td>
+</tr>
+<tr>
+  <td><code>input</code></td>
+  <td>Text input</td>
+  <td>value, onChange, placeholder</td>
+</tr>
+<tr>
+  <td><code>panel</code></td>
+  <td>Card/panel</td>
+  <td>title, children</td>
+</tr>
+<tr>
+  <td><code>tabs</code></td>
+  <td>Tab system</td>
+  <td>tabs, active</td>
+</tr>
+<tr>
+  <td><code>forEach</code></td>
+  <td>List rendering</td>
+  <td>items, render</td>
+</tr>
+<tr>
+  <td><code>if</code></td>
+  <td>Conditional</td>
+  <td>test, then, else</td>
+</tr>
+<tr>
+  <td><code>canvas3d</code></td>
+  <td>3D scene</td>
+  <td>scene, controller</td>
+</tr>
+</table>
+</div>
+
+<div class="example">
+<h4>Example: Simple Button</h4>
+<pre>
+{
+  "button": {
+    "label": "Click Me",
+    "variant": "primary",
+    "onClick": {
+      "op": "set",
+      "path": "user.score",
+      "value": "{{user.score + 10}}"
+    }
+  }
+}
+</pre>
+</div>
+
+<div class="example">
+<h4>Example: List Rendering</h4>
+<pre>
+{
+  "forEach": {
+    "items": "{{player.inventory}}",
+    "render": {
+      "div": {
+        "class": "item",
+        "children": [
+          {
+            "text": {
+              "text": "{{$item.name}} x{{$item.quantity}}"
+            }
+          },
+          {
+            "button": {
+              "label": "Use",
+              "onClick": {
+                "op": "custom",
+                "action": "useItem",
+                "itemId": "{{$item.id}}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+</pre>
+</div>
+
+<div class="example">
+<h4>Example: Conditional Rendering</h4>
+<pre>
+{
+  "if": {
+    "test": "{{player.health <= 0}}",
+    "then": {
+      "text": {
+        "text": "💀 Game Over",
+        "style": { "color": "#ff0000", "fontSize": "2rem" }
+      }
+    },
+    "else": {
+      "text": {
+        "text": "❤️ HP: {{player.health}}/{{player.maxHealth}}",
+        "style": { "color": "#00ff00" }
+      }
+    }
+  }
+}
+</pre>
+</div>
+</section>
+
+<section id="routes">
+<h2>🛣️ Routing System</h2>
+
+<div class="card">
+<h3>Defining Routes</h3>
+<p>Routes are different "screens" or "pages" in your app.</p>
+
+<pre>
+"$routes": {
+  "menu": {
+    "component": "MainMenu",
+    "sections": [
+      {
+        "panel": {
+          "title": "Main Menu",
+          "children": [
+            {
+              "button": {
+                "label": "Start Game",
+                "variant": "primary",
+                "onClick": { "op": "setRoute", "route": "game" }
+              }
+            },
+            {
+              "button": {
+                "label": "Settings",
+                "variant": "secondary",
+                "onClick": { "op": "openModal", "name": "settings" }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  
+  "game": {
+    "component": "GameScreen",
+    "sections": [
+      { "canvas3d": { "scene": "level1", "controller": "fps" } },
+      { "component": "GameHUD" }
+    ]
+  },
+  
+  "inventory": {
+    "component": "InventoryScreen",
+    "sections": [
+      { "component": "ItemList" },
+      { "component": "ItemStats" }
+    ]
+  }
+}
+</pre>
+
+<div class="success">
+<h4>Navigation Between Routes:</h4>
+<pre>
+{
+  "op": "setRoute",
+  "route": "game"
+}
+</pre>
+</div>
+</div>
+</section>
+
+<section id="effects">
+<h2>⚡ Effects System</h2>
+
+<div class="highlight">
+<p><strong>Effects are reactive triggers.</strong> When state changes, effects run automatically.</p>
+</div>
+
+<div class="card">
+<h3>Effect Structure</h3>
+
+<pre>
+"$effects": [
+  {
+    "when": "player.health",  // Watch this state path
+    "run": {                   // Do this when it changes
+      "op": "if",
+      "test": { "lte": [{ "$get": "player.health" }, 0] },
+      "then": [
+        { "op": "set", "path": "game.gameOver", "value": true },
+        { "op": "notify", "message": "You died!" },
+        { "op": "setRoute", "route": "gameover" }
+      ]
+    }
+  }
+]
+</pre>
+</div>
+
+<div class="card">
+<h3>Common Effect Patterns</h3>
+
+<h4>1. Health Warning</h4>
+<pre>
+{
+  "when": "player.health",
+  "run": {
+    "op": "if",
+    "test": { "lt": [{ "$get": "player.health" }, 20] },
+    "then": [
+      { "op": "notify", "message": "⚠️ Low health!" }
+    ]
+  }
+}
+</pre>
+
+<h4>2. Level Up</h4>
+<pre>
+{
+  "when": "player.xp",
+  "run": {
+    "op": "if",
+    "test": { "gte": [{ "$get": "player.xp" }, { "$get": "computed.nextLevelXP" }] },
+    "then": [
+      { "op": "updateBy", "path": "player.level", "by": 1 },
+      { "op": "notify", "message": "🎉 Level up!" }
+    ]
+  }
+}
+</pre>
+
+<h4>3. Auto-save</h4>
+<pre>
+{
+  "when": "*",  // Watch all state changes
+  "run": {
+    "op": "fetch",
+    "url": "/api/save",
+    "method": "POST",
+    "body": "{{$state}}"
+  }
+}
+</pre>
+</div>
+
+<div class="card">
+<h3>Available Operations</h3>
+
+<table>
+<tr>
+  <th>Operation</th>
+  <th>Purpose</th>
+  <th>Example</th>
+</tr>
+<tr>
+  <td><code>set</code></td>
+  <td>Set state value</td>
+  <td><code>{ "op": "set", "path": "user.name", "value": "Hero" }</code></td>
+</tr>
+<tr>
+  <td><code>assign</code></td>
+  <td>Merge object</td>
+  <td><code>{ "op": "assign", "path": "user", "value": {...} }</code></td>
+</tr>
+<tr>
+  <td><code>updateBy</code></td>
+  <td>Increment/decrement</td>
+  <td><code>{ "op": "updateBy", "path": "score", "by": 10 }</code></td>
+</tr>
+<tr>
+  <td><code>push</code></td>
+  <td>Add to array</td>
+  <td><code>{ "op": "push", "path": "inventory", "value": {...} }</code></td>
+</tr>
+<tr>
+  <td><code>removeAt</code></td>
+  <td>Remove from array</td>
+  <td><code>{ "op": "removeAt", "path": "inventory", "index": 0 }</code></td>
+</tr>
+<tr>
+  <td><code>toggle</code></td>
+  <td>Flip boolean</td>
+  <td><code>{ "op": "toggle", "path": "ui.menuOpen" }</code></td>
+</tr>
+<tr>
+  <td><code>notify</code></td>
+  <td>Show notification</td>
+  <td><code>{ "op": "notify", "message": "Hello!" }</code></td>
+</tr>
+<tr>
+  <td><code>setRoute</code></td>
+  <td>Navigate</td>
+  <td><code>{ "op": "setRoute", "route": "game" }</code></td>
+</tr>
+<tr>
+  <td><code>openModal</code></td>
+  <td>Show modal</td>
+  <td><code>{ "op": "openModal", "name": "settings" }</code></td>
+</tr>
+<tr>
+  <td><code>closeModal</code></td>
+  <td>Hide modal</td>
+  <td><code>{ "op": "closeModal" }</code></td>
+</tr>
+<tr>
+  <td><code>sequence</code></td>
+  <td>Run multiple ops</td>
+  <td><code>{ "op": "sequence", "steps": [...] }</code></td>
+</tr>
+<tr>
+  <td><code>if</code></td>
+  <td>Conditional</td>
+  <td><code>{ "op": "if", "test": {...}, "then": [...], "else": [...] }</code></td>
+</tr>
+</table>
+</div>
+</section>
+
+<section id="keyboard">
+<h2>⌨️ Keyboard Shortcuts</h2>
+
+<div class="card">
+<h3>Defining Keyboard Bindings</h3>
+
+<pre>
+"$keyboard": {
+  "Escape": {
+    "op": "if",
+    "test": { "eq": [{ "$get": "ui.menuOpen" }, true] },
+    "then": [
+      { "op": "set", "path": "ui.menuOpen", "value": false }
+    ],
+    "else": [
+      { "op": "openModal", "name": "pauseMenu" }
+    ]
+  },
+  
+  "i": {
+    "op": "setRoute",
+    "route": "inventory"
+  },
+  
+  "Space": {
+    "op": "toggle",
+    "path": "game.paused"
+  },
+  
+  "ArrowUp": {
+    "op": "custom",
+    "action": "movePlayer",
+    "direction": "up"
+  }
+}
+</pre>
+
+<div class="success">
+<h4>Common Keys:</h4>
+<ul>
+  <li><code>Escape</code>, <code>Enter</code>, <code>Space</code></li>
+  <li><code>ArrowUp</code>, <code>ArrowDown</code>, <code>ArrowLeft</code>, <code>ArrowRight</code></li>
+  <li><code>a-z</code>, <code>0-9</code></li>
+  <li><code>Shift</code>, <code>Control</code>, <code>Alt</code></li>
+</ul>
+</div>
+</div>
+</section>
+
+<section id="modals">
+<h2>🪟 Modal System</h2>
+
+<div class="card">
+<h3>Defining Modals</h3>
+
+<pre>
+"$modals": {
+  "settings": {
+    "modal": {
+      "title": "Settings",
+      "size": "medium",
+      "children": [
+        {
+          "panel": {
+            "title": "Audio",
+            "children": [
+              {
+                "input": {
+                  "label": "Volume",
+                  "type": "range",
+                  "min": 0,
+                  "max": 100,
+                  "value": "{{settings.volume}}",
+                  "onChange": {
+                    "op": "set",
+                    "path": "settings.volume",
+                    "value": "{{$event.value}}"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "buttonGroup": {
+            "buttons": [
+              {
+                "label": "Save",
+                "variant": "primary",
+                "onClick": {
+                  "op": "sequence",
+                  "steps": [
+                    { "op": "custom", "action": "saveSettings" },
+                    { "op": "closeModal" }
+                  ]
+                }
+              },
+              {
+                "label": "Cancel",
+                "variant": "secondary",
+                "onClick": { "op": "closeModal" }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+</pre>
+</div>
+</section>
+
+<section id="data">
+<h2>📊 Static Data</h2>
+
+<div class="card">
+<h3>The $data Section</h3>
+<p>Use <code>$data</code> for configuration and content that doesn't change.</p>
+
+<pre>
+"$data": {
+  "levels": [
+    { "id": 1, "name": "Tutorial", "enemies": 5, "difficulty": "easy" },
+    { "id": 2, "name": "Forest", "enemies": 10, "difficulty": "normal" },
+    { "id": 3, "name": "Castle", "enemies": 20, "difficulty": "hard" }
+  ],
+  
+  "items": [
+    { "id": "sword", "name": "Iron Sword", "damage": 10, "price": 100 },
+    { "id": "potion", "name": "Health Potion", "heal": 50, "price": 50 }
+  ],
+  
+  "quests": [
+    {
+      "id": "main_001",
+      "title": "Defeat the Dragon",
+      "description": "Slay the dragon terrorizing the village",
+      "reward": { "xp": 1000, "gold": 500 }
+    }
+  ]
+}
+</pre>
+
+<div class="ai-note">
+Access static data with: <code>{{$data.levels[0].name}}</code>
+</div>
+</div>
+</section>
+
+<section id="examples">
+<h2>💡 Complete Examples</h2>
+
+<div class="card">
+<h3>Example 1: Simple Clicker Game</h3>
+<pre>
+{
+  "$schema": "asx-shell-v1",
+  "$metadata": {
+    "name": "Cookie Clicker",
+    "version": "1.0.0"
+  },
+  
+  "$state": {
+    "cookies": 0,
+    "cps": 0,
+    "upgrades": []
+  },
+  
+  "$computed": {
+    "nextUpgradeCost": "Math.floor(Math.pow(1.5, get('upgrades').length) * 100)"
+  },
+  
+  "$effects": [
+    {
+      "when": "cookies",
+      "run": {
+        "op": "if",
+        "test": { "gte": [{ "$get": "cookies" }, 1000] },
+        "then": [{ "op": "notify", "message": "🍪 1000 cookies!" }]
+      }
+    }
+  ],
+  
+  "$routes": {
+    "game": {
+      "sections": [
+        {
+          "panel": {
+            "title": "Cookie Clicker",
+            "children": [
+              {
+                "text": {
+                  "text": "🍪 Cookies: {{cookies}}",
+                  "style": { "fontSize": "2rem", "textAlign": "center" }
+                }
+              },
+              {
+                "text": {
+                  "text": "Per second: {{cps}}",
+                  "style": { "textAlign": "center", "opacity": 0.7 }
+                }
+              },
+              {
+                "button": {
+                  "label": "🍪 Click!",
+                  "variant": "primary",
+                  "style": { "fontSize": "1.5rem", "padding": "2rem" },
+                  "onClick": {
+                    "op": "updateBy",
+                    "path": "cookies",
+                    "by": 1
+                  }
+                }
+              },
+              {
+                "button": {
+                  "label": "Buy Upgrade ({{computed.nextUpgradeCost}} cookies)",
+                  "variant": "secondary",
+                  "onClick": {
+                    "op": "sequence",
+                    "steps": [
+                      { "op": "updateBy", "path": "cookies", "by": "-{{computed.nextUpgradeCost}}" },
+                      { "op": "push", "path": "upgrades", "value": {} },
+                      { "op": "updateBy", "path": "cps", "by": 1 }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  
+  "$keyboard": {
+    "Space": {
+      "op": "updateBy",
+      "path": "cookies",
+      "by": 1
+    }
+  }
+}
+</pre>
+</div>
+
+<div class="card">
+<h3>Example 2: Todo App</h3>
+<pre>
+{
+  "$schema": "asx-shell-v1",
+  "$metadata": {
+    "name": "Todo List",
+    "version": "1.0.0"
+  },
+  
+  "$state": {
+    "todos": [],
+    "newTodo": "",
+    "filter": "all"
+  },
+  
+  "$computed": {
+    "filteredTodos": "get('todos').filter(t => get('filter') === 'all' || (get('filter') === 'done' ? t.done : !t.done))",
+    "todoCount": "get('todos').filter(t => !t.done).length"
+  },
+  
+  "$routes": {
+    "app": {
+      "sections": [
+        {
+          "panel": {
+            "title": "✅ Todo List",
+            "children": [
+              {
+                "div": {
+                  "style": { "display": "flex", "gap": "10px" },
+                  "children": [
+                    {
+                      "input": {
+                        "placeholder": "What needs to be done?",
+                        "value": "{{newTodo}}",
+                        "onChange": {
+                          "op": "set",
+                          "path": "newTodo",
+                          "value": "{{$event.value}}"
+                        }
+                      }
+                    },
+                    {
+                      "button": {
+                        "label": "Add",
+                        "variant": "primary",
+                        "onClick": {
+                          "op": "sequence",
+                          "steps": [
+                            {
+                              "op": "push",
+                              "path": "todos",
+                              "value": {
+                                "text": "{{newTodo}}",
+                                "done": false,
+                                "id": "{{Date.now()}}"
+                              }
+                            },
+                            { "op": "set", "path": "newTodo", "value": "" }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "buttonGroup": {
+                  "buttons": [
+                    {
+                      "label": "All ({{todos.length}})",
+                      "onClick": { "op": "set", "path": "filter", "value": "all" }
+                    },
+                    {
+                      "label": "Active ({{computed.todoCount}})",
+                      "onClick": { "op": "set", "path": "filter", "value": "active" }
+                    },
+                    {
+                      "label": "Done",
+                      "onClick": { "op": "set", "path": "filter", "value": "done" }
+                    }
+                  ]
+                }
+              },
+              {
+                "forEach": {
+                  "items": "{{computed.filteredTodos}}",
+                  "render": {
+                    "div": {
+                      "class": "todo-item",
+                      "style": {
+                        "display": "flex",
+                        "alignItems": "center",
+                        "gap": "10px",
+                        "padding": "10px",
+                        "border": "1px solid #00ff99",
+                        "borderRadius": "4px",
+                        "margin": "5px 0"
+                      },
+                      "children": [
+                        {
+                          "input": {
+                            "type": "checkbox",
+                            "checked": "{{$item.done}}",
+                            "onChange": {
+                              "op": "set",
+                              "path": "todos[{{$index}}].done",
+                              "value": "{{!$item.done}}"
+                            }
+                          }
+                        },
+                        {
+                          "text": {
+                            "text": "{{$item.text}}",
+                            "style": {
+                              "flex": 1,
+                              "textDecoration": "{{$item.done ? 'line-through' : 'none'}}"
+                            }
+                          }
+                        },
+                        {
+                          "button": {
+                            "label": "🗑️",
+                            "variant": "secondary",
+                            "onClick": {
+                              "op": "removeAt",
+                              "path": "todos",
+                              "index": "{{$index}}"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+</pre>
+</div>
+</section>
+
+<section id="templates">
+<h2>📋 Quick Templates</h2>
+
+<div class="card">
+<h3>Minimal App Template</h3>
+<pre>
+{
+  "$schema": "asx-shell-v1",
+  "$metadata": {
+    "name": "My App",
+    "version": "1.0.0"
+  },
+  "$state": {},
+  "$routes": {
+    "home": {
+      "sections": [
+        {
+          "panel": {
+            "title": "Welcome",
+            "children": [
+              { "text": { "text": "Hello World!" } }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+</pre>
+</div>
+
+<div class="card">
+<h3>Game Template</h3>
+<pre>
+{
+  "$schema": "asx-shell-v1",
+  "$metadata": {
+    "name": "My Game",
+    "version": "1.0.0"
+  },
+  "$state": {
+    "player": { "health": 100, "score": 0 },
+    "game": { "scene": "level1", "paused": false }
+  },
+  "$routes": {
+    "menu": {
+      "sections": [
+        {
+          "panel": {
+            "title": "Main Menu",
+            "children": [
+              {
+                "button": {
+                  "label": "Start Game",
+                  "onClick": { "op": "setRoute", "route": "game" }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "game": {
+      "sections": [
+        { "canvas3d": { "scene": "{{game.scene}}", "controller": "fps" } },
+        { "component": "GameHUD" }
+      ]
+    }
+  },
+  "$components": {
+    "GameHUD": {
+      "div": {
+        "class": "hud",
+        "children": [
+          { "text": { "text": "HP: {{player.health}}" } },
+          { "text": { "text": "Score: {{player.score}}" } }
+        ]
+      }
+    }
+  },
+  "$keyboard": {
+    "Escape": { "op": "setRoute", "route": "menu" }
+  }
+}
+</pre>
+</div>
+</section>
+
+<section id="best-practices">
+<h2>✨ Best Practices for Mx2LM</h2>
+
+<div class="success">
+<h3>DO:</h3>
+<ul>
+  <li>✅ Always include <code>$schema</code> and <code>$metadata</code></li>
+  <li>✅ Initialize state with sensible defaults</li>
+  <li>✅ Use computed values for derived data</li>
+  <li>✅ Keep components small and focused</li>
+  <li>✅ Use effects for reactive behaviors</li>
+  <li>✅ Provide keyboard shortcuts</li>
+  <li>✅ Test JSON validity before outputting</li>
+  <li>✅ Use descriptive names</li>
+  <li>✅ Comment complex logic in metadata</li>
+</ul>
+</div>
+
+<div class="warning">
+<h3>DON'T:</h3>
+<ul>
+  <li>❌ Generate invalid JSON (no trailing commas, no comments in JSON)</li>
+  <li>❌ Use undefined state paths</li>
+  <li>❌ Forget to initialize state</li>
+  <li>❌ Mix imperative code in declarative config</li>
+  <li>❌ Create circular dependencies in computed values</li>
+  <li>❌ Overcomplicate - keep it simple</li>
+</ul>
+</div>
+
+<div class="ai-note">
+<strong>Remember:</strong> Your job is to generate <strong>perfect, working JSON</strong>. When a user says "make me a todo app", you output a complete .asx file that works immediately. No placeholders. No "implement this later". Complete apps.
+</div>
+</section>
+
+<section id="troubleshooting">
+<h2>🔧 Troubleshooting Guide</h2>
+
+<div class="card">
+<h3>Common Issues</h3>
+
+<table>
+<tr>
+  <th>Problem</th>
+  <th>Solution</th>
+</tr>
+<tr>
+  <td>State not updating</td>
+  <td>Check path is correct, state initialized</td>
+</tr>
+<tr>
+  <td>Effect not firing</td>
+  <td>Verify <code>when</code> path matches state</td>
+</tr>
+<tr>
+  <td>Computed not updating</td>
+  <td>Check dependencies use <code>get()</code></td>
+</tr>
+<tr>
+  <td>Component not rendering</td>
+  <td>Verify route references correct component</td>
+</tr>
+<tr>
+  <td>Invalid JSON error</td>
+  <td>Check for trailing commas, quotes, brackets</td>
+</tr>
+</table>
+</div>
+</section>
+
+<footer>
+<p><strong>🤖 Mx2LM Training Guide v1.0</strong></p>
+<p>You are now ready to generate perfect ASX applications!</p>
+<p style="margin-top:1rem;color:#00ffff">
+  <em>"Every great app starts with great JSON." - The ASX Philosophy</em>
+</p>
+<hr style="margin:2rem 0">
+<p style="font-size:0.9rem;opacity:0.8">
+  Created for Micronaut AI (Mx2LM)<br>
+  ASX Engine Version: 1.0<br>
+  Format: .asx Shell Specification<br>
+  Last Updated: November 2025
+</p>
+</footer>
+</main>
+</body>
+</html>

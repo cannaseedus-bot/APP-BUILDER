@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MICRO-ASXR DOM MASK DEMO</title>
+
+<!-- =========================
+📦 EMBEDDED CONFIG.JSON (AST)
+========================= -->
+<script type="application/json" id="asxr-config">
+{
+  "@dom_commands": {
+    "dom.show": { "action": "style.display", "value": "block" },
+    "dom.hide": { "action": "style.display", "value": "none" },
+    "dom.toggle": { "action": "style.display", "value": ["none","block"] },
+    "dom.text": { "action": "textContent", "value": "@data" },
+    "dom.html": { "action": "innerHTML", "value": "@data" }
+  },
+
+  "@api_commands": {
+    "api.fetch": {
+      "method": "GET",
+      "bind_response_to": "@data"
+    }
+  },
+
+  "@words": {
+    "show": { "intent": "dom.show" },
+    "hide": { "intent": "dom.hide" },
+    "toggle": { "intent": "dom.toggle" },
+    "fetch": { "intent": "api.fetch" }
+  }
+}
+</script>
+
+<!-- =========================
+🧠 DOM MASK ENGINE
+========================= -->
+<script>
+/* ============================================================
+   dom-mask.js — MICRO-ASXR COMMAND ENGINE
+   Size: ~200 lines
+   Role: config-driven DOM + API controller
+============================================================ */
+
+(() => {
+  const CONFIG_EL = document.getElementById("asxr-config");
+  if (!CONFIG_EL) return;
+
+  const CFG = JSON.parse(CONFIG_EL.textContent);
+  const STATE = Object.create(null);
+
+  /* -------------------------
+     Utilities
+  ------------------------- */
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+  const setProp = (el, path, value) => {
+    const parts = path.split(".");
+    let obj = el;
+    while (parts.length > 1) obj = obj[parts.shift()];
+    obj[parts[0]] = value;
+  };
+
+  /* -------------------------
+     Command Parsing
+     "fetch /api/data bind #out"
+  ------------------------- */
+  function parseCommand(str) {
+    return str.trim().split(/\s+/);
+  }
+
+  function resolveWord(word) {
+    return CFG["@words"]?.[word]?.intent;
+  }
+
+  function resolveTargets(tokens) {
+    return tokens.filter(t => t.startsWith("#") || t.startsWith("."));
+  }
+
+  /* -------------------------
+     DOM Execution
+  ------------------------- */
+  function execDom(intent, targets, data) {
+    const cmd = CFG["@dom_commands"]?.[intent];
+    if (!cmd) return;
+
+    targets.forEach(sel => {
+      $$(sel).forEach(el => {
+        if (Array.isArray(cmd.value)) {
+          const cur = el.style.display || getComputedStyle(el).display;
+          el.style.display = cur === cmd.value[0] ? cmd.value[1] : cmd.value[0];
+        } else {
+          setProp(el, cmd.action, cmd.value === "@data" ? data : cmd.value);
+        }
+      });
+    });
+  }
+
+  /* -------------------------
+     API Execution
+  ------------------------- */
+  async function execApi(intent, tokens) {
+    const api = CFG["@api_commands"]?.[intent];
+    if (!api) return;
+
+    const url = tokens.find(t => t.startsWith("/"));
+    const bindIndex = tokens.indexOf("bind");
+    const bindTarget = bindIndex !== -1 ? tokens[bindIndex + 1] : null;
+
+    const res = await fetch(url, { method: api.method });
+    const data = await res.text();
+    STATE.data = data;
+
+    if (bindTarget) execDom("dom.html", [bindTarget], data);
+  }
+
+  /* -------------------------
+     Pipeline Executor
+  ------------------------- */
+  async function runCommand(cmdString) {
+    const tokens = parseCommand(cmdString);
+    const intent = resolveWord(tokens[0]);
+    if (!intent) return;
+
+    if (intent.startsWith("dom.")) {
+      execDom(intent, resolveTargets(tokens), STATE.data);
+    }
+
+    if (intent.startsWith("api.")) {
+      await execApi(intent, tokens);
+    }
+  }
+
+  /* -------------------------
+     Event Wiring
+  ------------------------- */
+  document.addEventListener("click", e => {
+    const el = e.target.closest("[data-cmd]");
+    if (!el) return;
+    runCommand(el.dataset.cmd);
+  });
+
+})();
+</script>
+
+<style>
+body { background:#020617; color:#e5e7eb; font-family:system-ui; padding:20px }
+button { padding:8px 12px; margin:4px; cursor:pointer }
+#panel { display:none; padding:10px; border:1px solid #16f2aa; margin-top:10px }
+</style>
+</head>
+
+<body>
+
+<h2>⚛️ MICRO-ASXR DOM MASK DEMO</h2>
+
+<button data-cmd="show #panel">Show Panel</button>
+<button data-cmd="hide #panel">Hide Panel</button>
+<button data-cmd="toggle #panel">Toggle Panel</button>
+
+<button data-cmd="fetch /api/example bind #panel">
+Fetch API → Panel
+</button>
+
+<div id="panel">
+  Panel Content
+</div>
+
+</body>
+</html>

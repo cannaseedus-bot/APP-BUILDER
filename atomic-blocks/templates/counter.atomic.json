@@ -1,0 +1,59 @@
+{
+  "@id": "counter.atomic",
+  "@version": "1.0.0",
+  "@description": "Basic counter with entropy and mode tracking",
+
+  "@state": {
+    "--count": 0,
+    "--mode": "idle",
+    "--entropy": 0.10,
+    "--level": "ok"
+  },
+
+  "@control": {
+    "@on_inc": {
+      "@pi": "counter.inc",
+      "@description": "Increment count, increase entropy"
+    },
+    "@on_dec": {
+      "@pi": "counter.dec",
+      "@description": "Decrement count, decrease entropy"
+    },
+    "@on_reset": {
+      "@pi": "counter.reset",
+      "@description": "Reset to initial state"
+    },
+    "@derive": {
+      "@pi": "counter.derive",
+      "@description": "Compute derived state (level from entropy)"
+    },
+    "@persist": {
+      "@io": "idb.put",
+      "@key": "counter_state",
+      "@description": "Save state to IndexedDB"
+    },
+    "@restore": {
+      "@io": "idb.get",
+      "@key": "counter_state",
+      "@description": "Load state from IndexedDB"
+    }
+  },
+
+  "@flow": {
+    "@boot": ["@restore", "@derive"],
+    "@after_action": ["@derive", "@persist"]
+  },
+
+  "@css": {
+    "vars": ["--count", "--mode", "--entropy", "--level"],
+    "attrs": {
+      "#card": { "data-level": "--level", "data-mode": "--mode" }
+    }
+  },
+
+  "@events": {
+    "#inc-btn": { "click": "@on_inc" },
+    "#dec-btn": { "click": "@on_dec" },
+    "#reset-btn": { "click": "@on_reset" }
+  }
+}

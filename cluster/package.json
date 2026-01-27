@@ -1,0 +1,100 @@
+{
+  "name": "@xjson/ml-runtime",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Browser-based AI model training runtime with WebGPU - Launch with one command",
+  "main": "index.js",
+  "bin": {
+    "xjson-ml": "./cli.js",
+    "xjson-train": "./cli.js",
+    "xml": "./cli.js"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js --dev",
+    "test": "node test.js",
+    "sw": "node run-sw.js",
+    "cluster": "node run-sw.js --cluster --workers 4",
+    "cluster:8": "node run-sw.js --cluster --workers 8",
+    "cluster:16": "node run-sw.js --cluster --workers 16",
+    "hive": "node cluster-os.js --hive --workers 8",
+    "mesh": "node cluster-os.js --hive --mesh --workers 16"
+  },
+  "keywords": [
+    "xjson",
+    "machine-learning",
+    "webgpu",
+    "ai-training",
+    "transformer",
+    "neural-network",
+    "deep-learning",
+    "browser-ml",
+    "npx"
+  ],
+  "author": "XJSON Community",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xjson/ml-runtime"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "chokidar": "^3.5.3",
+    "chalk": "^5.3.0",
+    "ora": "^7.0.1",
+    "boxen": "^7.1.1",
+    "commander": "^11.1.0",
+    "open": "^9.1.0",
+    "portfinder": "^1.0.32",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "preferGlobal": false,
+  "files": [
+    "cli.js",
+    "server.js",
+    "index.js",
+    "run-sw.js",
+    "cluster-os.js",
+    "xjson.sh",
+    "lib/",
+    "public/",
+    "README.md",
+    "CLUSTER-README.md",
+    "CLUSTER-GUIDE.md",
+    "CLUSTER-SUMMARY.md"
+  ],
+  "xjson": {
+    "runtime": "ml-training",
+    "version": "4.0",
+    "features": [
+      "webgpu",
+      "service-worker",
+      "auto-port-detection",
+      "hot-reload",
+      "multi-shard",
+      "iconic-compression"
+    ],
+    "ports": {
+      "main": "auto",
+      "api": "auto",
+      "websocket": "auto",
+      "shards": {
+        "training": "auto",
+        "inference": "auto",
+        "export": "auto"
+      }
+    },
+    "auto_launch": {
+      "browser": true,
+      "service_worker": true,
+      "api_server": true
+    }
+  }
+}

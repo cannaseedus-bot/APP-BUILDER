@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASX SUB-GHOST TAPE v4 — Power of 3</title>
+
+  <!-- INLINE MANIFEST (SUB-GHOST TAPE DB) -->
+  <script type="application/json" id="manifest-data">
+  {
+    "asx_os": {
+      "version": "4.0-subghost-v4",
+      "doctrine": "power_of_3",
+      "ghost_role": "sub_ghost_tape",
+      "dns_zones": {
+        "xjson.app": "127.0.0.1:61680",
+        "rig.xjson.app": "127.0.0.1:61681",
+        "hive.xjson.app": "127.0.0.1:61682",
+        "trainer.xjson.app": "127.0.0.1:61683",
+        "prime.xjson.app": "127.0.0.1:61684",
+        "scx.xjson.app": "127.0.0.1:61685",
+        "basher.xjson.app": "127.0.0.1:61686"
+      },
+      "shards": {
+        "users":   { "port": 61687, "status": "online" },
+        "hive":    { "port": 61688, "status": "online" },
+        "trainer": { "port": 61689, "status": "online" },
+        "prime":   { "port": 61690, "status": "online" },
+        "scx":     { "port": 61691, "status": "online" },
+        "gpu":     { "port": 61692, "status": "online" },
+        "tpu":     { "port": 61693, "status": "online" }
+      },
+      "tapes": {
+        "prime_cockpit": {
+          "version": "2.0",
+          "status": "loaded",
+          "type": "ghost_main",
+          "routes": { "/": "home" }
+        },
+        "subghost_template_v4": {
+          "version": "4.0",
+          "status": "active",
+          "type": "sub_ghost",
+          "routes": { "/": "builder" },
+          "domains": ["subghost.local"]
+        }
+      },
+      "domains": {
+        "subghost.local": "subghost_template_v4",
+        "demo.app.local": "demo_blog_tape"
+      },
+      "tape_templates": {
+        "basic_app": {
+          "blocks": ["hero", "grid", "footer"],
+          "default_theme": "neon_dark"
+        },
+        "shopfront": {
+          "blocks": ["hero", "products_grid", "cart_panel", "footer"],
+          "default_theme": "emerald_store"
+        },
+        "ai_assistant": {
+          "blocks": ["chat_panel", "history_log", "footer"],
+          "default_theme": "terminal_ai"
+        }
+      },
+      "ram_db": {
+        "blocks": {},
+        "codex": {},
+        "training_data": {},
+        "neural_geometry": {},
+        "tape_forge_log": []
+      }
+    }
+  }
+  </script>
+
+  <style>
+    :root {
+      --bg-primary: #04070a;
+      --bg-secondary: #050b12;
+      --bg-tertiary: #101820;
+
+      --glass-primary: rgba(255, 255, 255, 0.07);
+      --glass-secondary: rgba(255, 255, 255, 0.05);
+      --glass-tertiary: rgba(255, 255, 255, 0.03);
+
+      --stroke-primary: rgba(255, 255, 255, 0.16);
+      --stroke-secondary: rgba(255, 255, 255, 0.10);
+      --stroke-accent: rgba(97, 231, 255, 0.5);
+
+      --text-primary: #e6f6ff;
+      --text-secondary: #a7c2cf;
+      --text-muted: #7a99a8;
+
+      --accent-primary: #61e7ff;
+      --accent-secondary: #00ffa3;
+      --accent-warning: #ffd166;
+      --accent-danger: #ff3366;
+      --accent-success: #00d9a6;
+      --accent-ghost: #ff00ff;
+
+      --gradient-primary: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      --gradient-ghost: linear-gradient(135deg, var(--accent-ghost), var(--accent-primary));
+
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+      --font-primary: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+
+      --transition-fast: 0.16s ease-out;
+      --transition-normal: 0.28s ease-out;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      background: radial-gradient(circle at 10% 0%, #062626 0, #020509 45%, #000000 100%);
+      color: var(--text-primary);
+      font-family: var(--font-primary);
+      overflow-x: hidden;
+    }
+
+    #matrix {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      filter: contrast(1.25) saturate(1.3);
+      opacity: 0.9;
+    }
+
+    .app-frame {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: var(--space-md);
+    }
+
+    header.subghost-header {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--stroke-accent);
+      background: linear-gradient(135deg, rgba(12, 248, 192, 0.15), rgba(26, 21, 66, 0.92));
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-lg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .logo-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(97, 231, 255, 0.6);
+      box-shadow: 0 0 16px rgba(0, 255, 163, 0.5);
+    }
+
+    .logo-glyph {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: var(--gradient-ghost);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(8, 15, 26, 0.9);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--stroke-primary);
+      background: var(--glass-primary);
+      color: var(--text-primary);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition-fast);
+      font-family: inherit;
+    }
+    .btn:hover {
+      border-color: var(--stroke-accent);
+      background: rgba(0, 255, 163, 0.15);
+      transform: translateY(-1px);
+      box-shadow: 0 0 18px rgba(97, 231, 255, 0.4);
+    }
+    .btn.primary {
+      background: var(--gradient-primary);
+      border-color: transparent;
+      color: #020617;
+      font-weight: 600;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    }
+    .btn.ghost-link {
+      background: transparent;
+      border-color: rgba(255,255,255,0.2);
+      font-size: 0.8rem;
+      opacity: 0.85;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+      gap: var(--space-lg);
+    }
+
+    .panel {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--stroke-primary);
+      background: radial-gradient(circle at 0 0, rgba(97,231,255,0.18), transparent 60%),
+                  radial-gradient(circle at 100% 100%, rgba(255,0,255,0.12), transparent 55%),
+                  rgba(6, 11, 20, 0.96);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--space-md);
+    }
+    .panel h2 {
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: var(--space-sm);
+      color: var(--text-secondary);
+    }
+    .panel h3 {
+      font-size: 0.92rem;
+      margin-bottom: 4px;
+    }
+    .panel p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-md);
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(2, 6, 23, 0.9);
+      color: var(--text-secondary);
+    }
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent-success);
+      box-shadow: 0 0 10px rgba(0,255,163,0.7);
+    }
+    .dot.warning {
+      background: var(--accent-warning);
+      box-shadow: 0 0 10px rgba(255,209,102,0.7);
+    }
+    .dot.danger {
+      background: var(--accent-danger);
+      box-shadow: 0 0 10px rgba(255,51,102,0.7);
+    }
+
+    details {
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(5, 10, 20, 0.96);
+      margin-bottom: var(--space-md);
+      overflow: hidden;
+    }
+    summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      background: linear-gradient(90deg, rgba(97,231,255,0.12), transparent);
+    }
+    summary::-webkit-details-marker { display:none; }
+    .glyph-label {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      opacity: 0.8;
+    }
+    .details-body {
+      padding: 10px 14px 14px;
+      border-top: 1px solid rgba(255,255,255,0.14);
+    }
+
+    textarea.code {
+      width: 100%;
+      min-height: 90px;
+      background: #020617;
+      color: var(--accent-primary);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 8px;
+      resize: vertical;
+    }
+
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      margin-top: 6px;
+    }
+    .mini-table th,
+    .mini-table td {
+      border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+      padding: 4px 6px;
+      text-align: left;
+    }
+    .mini-table th {
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .mini-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pill-input {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.95);
+      color: var(--text-primary);
+      font-size: 0.78rem;
+      padding: 6px 10px;
+      font-family: inherit;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .switch {
+      position: relative;
+      width: 34px;
+      height: 18px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: rgba(30,64,175,0.7);
+      border-radius: 999px;
+      transition: .2s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 2px;
+      bottom: 2px;
+      background: white;
+      border-radius: 999px;
+      transition: .2s;
+    }
+    .switch input:checked + .slider {
+      background: rgba(34,197,94,0.85);
+    }
+    .switch input:checked + .slider:before {
+      transform: translateX(16px);
+    }
+
+    .log-panel {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      background: #020617;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(148,163,184,0.7);
+      padding: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      margin-top: 8px;
+    }
+    .log-line {
+      margin-bottom: 3px;
+      color: #9ca3af;
+    }
+
+    @media (max-width: 980px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix" aria-hidden="true"></canvas>
+
+  <div class="app-frame">
+    <header class="subghost-header">
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div class="logo-chip">
+          <div class="logo-glyph">⟁</div>
+          <div>
+            <div style="font-size:0.8rem;opacity:0.9;">ASX SUB-GHOST TAPE v4</div>
+            <div style="font-size:0.72rem;opacity:0.7;">Self-contained Ghost Frame · Power of 3</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="pill"><span class="dot"></span> Sub-Ghost Kernel Active</span>
+          <span class="pill">3 Files · 3 Engines · 3 Realms</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+        <button class="btn primary" id="bootOs">
+          <span>BOOT SUB-GHOST</span>
+        </button>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+          <button class="btn ghost-link" id="toggleFrameMode">Switch to FRAME Mode</button>
+          <button class="btn ghost-link" id="showParentHint">Show Ghost↔SubGhost Hint</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- LEFT: Builder + Forge + Router -->
+      <section>
+        <div class="panel">
+          <h2>⟁Pop⟁ SUB-GHOST TAPE TEMPLATE v4</h2>
+          <p style="margin-bottom:10px;">
+            This tape is a fully self-contained sub-OS that can be mapped to its own domain and run as an independent
+            site with its own header, footer, blocks and backend.
+          </p>
+          <details open>
+            <summary>
+              <span class="glyph-label">⟁Pop⟁ /⟁Wo⟁ /⟁Sek⟁ /⟁Ch'en⟁</span>
+              <span class="status-chip"><span class="dot"></span> K'uhul Unfold View</span>
+            </summary>
+            <div class="details-body">
+              <textarea id="kuhul-input" class="code" placeholder="⟁Pop⟁ tape_forge&#10;⟁Wo⟁ x 5&#10;⟁Sek⟁ multiply x 3&#10;⟁Ch'en⟁ x"></textarea>
+              <div style="display:flex;gap:8px;margin-top:6px;">
+                <button class="btn" id="runKuhul">Run K'uhul</button>
+                <button class="btn ghost-link" id="clearKuhul">Clear</button>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px;">
+                <div>
+                  <div style="font-size:0.78rem;margin-bottom:4px;opacity:0.8;">Execution Log</div>
+                  <div id="kuhul-exec-log" class="log-panel"></div>
+                </div>
+                <div>
+                  <div style="font-size:0.78rem;margin-bottom:4px;opacity:0.8;">Context</div>
+                  <div id="kuhul-exec-context" class="log-panel"></div>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <!-- TapeForge generator -->
+        <div class="panel">
+          <h2>⚒️ TapeForge — Generate New Tapes</h2>
+          <p>Forge new tapes that can later be bound to domains and deployed as independent sub-ghost sites.</p>
+
+          <details open>
+            <summary>
+              <span class="glyph-label">⟁Pop⟁ tape.forge</span>
+              <span class="status-chip"><span class="dot"></span> Forge Online</span>
+            </summary>
+            <div class="details-body">
+              <div class="grid-2">
+                <div>
+                  <label style="font-size:0.78rem;">Tape ID</label>
+                  <input id="forge-tape-id" class="pill-input" placeholder="my_cool_app">
+                  <label style="font-size:0.78rem;margin-top:6px;display:block;">Display Name</label>
+                  <input id="forge-tape-name" class="pill-input" placeholder="My Cool App">
+                  <label style="font-size:0.78rem;margin-top:6px;display:block;">Base Template</label>
+                  <select id="forge-tape-template" class="pill-input">
+                    <option value="basic_app">basic_app</option>
+                    <option value="shopfront">shopfront</option>
+                    <option value="ai_assistant">ai_assistant</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:0.78rem;">Initial Route</label>
+                  <input id="forge-tape-route" class="pill-input" placeholder="/app">
+                  <label style="font-size:0.78rem;margin-top:6px;display:block;">Theme</label>
+                  <input id="forge-tape-theme" class="pill-input" placeholder="auto (or neon_dark, emerald_store, ... )">
+                  <div class="toggle-row">
+                    <span style="font-size:0.78rem;">GPU Runtime</span>
+                    <label class="switch">
+                      <input id="forge-gpu" type="checkbox" checked>
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div class="toggle-row">
+                    <span style="font-size:0.78rem;">TPU Runtime</span>
+                    <label class="switch">
+                      <input id="forge-tpu" type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top:8px;display:flex;gap:8px;">
+                <button class="btn primary" id="forge-create">Forge Tape</button>
+                <button class="btn ghost-link" id="forge-preview">Preview JSON</button>
+              </div>
+              <div style="margin-top:8px;">
+                <textarea id="forge-output" class="code" placeholder="// Tape JSON will appear here"></textarea>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <!-- Multi-Domain Router + deployment panel -->
+        <div class="panel">
+          <h2>🌐 Multi-Domain Router + Deployment</h2>
+          <p>Map domains to tapes so each tape behaves like its own self-contained site.</p>
+
+          <details open>
+            <summary>
+              <span class="glyph-label">⟁Sek⟁ router.domains</span>
+              <span class="status-chip"><span class="dot warning"></span> Live Mapping</span>
+            </summary>
+            <div class="details-body">
+              <div class="grid-2">
+                <div>
+                  <table class="mini-table" id="domain-table">
+                    <thead>
+                      <tr>
+                        <th>Domain</th>
+                        <th>Tape</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                  <div style="font-size:0.72rem;margin-top:4px;opacity:0.8;">
+                    These mappings are live inside this sub-ghost manifest.
+                  </div>
+                </div>
+                <div>
+                  <label style="font-size:0.78rem;">Add / Update Domain</label>
+                  <input id="domain-input" class="pill-input" placeholder="myapp.local or seeds.app">
+                  <label style="font-size:0.78rem;margin-top:6px;display:block;">Target Tape ID</label>
+                  <input id="domain-tape-input" class="pill-input" placeholder="my_cool_app">
+                  <div style="margin-top:8px;display:flex;gap:8px;">
+                    <button class="btn" id="domain-save">Save Mapping</button>
+                    <button class="btn ghost-link" id="domain-refresh">Refresh Table</button>
+                  </div>
+                  <div style="font-size:0.72rem;margin-top:6px;">
+                    When hosted, your main Ghost OS or DNS can bind these to real domains.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details>
+            <summary>
+              <span class="glyph-label">⟁Ch'en⟁ deploy.site</span>
+              <span class="status-chip"><span class="dot"></span> Tape-to-Domain Deploy</span>
+            </summary>
+            <div class="details-body">
+              <div class="grid-2">
+                <div>
+                  <label style="font-size:0.78rem;">Select Tape</label>
+                  <select id="deploy-tape" class="pill-input"></select>
+                  <label style="font-size:0.78rem;margin-top:6px;display:block;">Deploy Domain</label>
+                  <input id="deploy-domain" class="pill-input" placeholder="example.com">
+                  <div style="margin-top:8px;display:flex;gap:8px;">
+                    <button class="btn" id="deploy-button">Deploy Mapping</button>
+                    <button class="btn ghost-link" id="deploy-snippet">Show DNS Snippet</button>
+                  </div>
+                </div>
+                <div>
+                  <textarea id="deploy-output" class="code" placeholder="// Deployment notes and DNS hints will appear here"></textarea>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- RIGHT: Sandbox Builder + Ghost/SubGhost Switcher + Logs -->
+      <section>
+        <div class="panel">
+          <h2>🧩 Tape Sandbox Builder (Visual)</h2>
+          <p>Design tape layouts with blocks. This config is saved into the sub-ghost manifest RAM DB.</p>
+
+          <details open>
+            <summary>
+              <span class="glyph-label">⟁Wo⟁ blocks.builder</span>
+              <span class="status-chip"><span class="dot"></span> Sandbox Live</span>
+            </summary>
+            <div class="details-body">
+              <label style="font-size:0.78rem;">Target Tape ID</label>
+              <input id="builder-tape-id" class="pill-input" placeholder="my_cool_app">
+              <div style="margin-top:6px;font-size:0.78rem;">Blocks</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">
+                <label class="pill">
+                  <input type="checkbox" class="builder-block" value="hero" checked> hero
+                </label>
+                <label class="pill">
+                  <input type="checkbox" class="builder-block" value="grid"> grid
+                </label>
+                <label class="pill">
+                  <input type="checkbox" class="builder-block" value="blog_list"> blog_list
+                </label>
+                <label class="pill">
+                  <input type="checkbox" class="builder-block" value="products_grid"> products_grid
+                </label>
+                <label class="pill">
+                  <input type="checkbox" class="builder-block" value="cart_panel"> cart_panel
+                </label>
+                <label class="pill">
+                  <input type="checkbox" class="builder-block" value="chat_panel"> chat_panel
+                </label>
+                <label class="pill">
+                  <input type="checkbox" class="builder-block" value="footer" checked> footer
+                </label>
+              </div>
+              <div class="toggle-row">
+                <span style="font-size:0.78rem;">Use Sub-Ghost Header/Footer</span>
+                <label class="switch">
+                  <input id="builder-use-subghost-frame" type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div style="margin-top:8px;display:flex;gap:8px;">
+                <button class="btn" id="builder-apply">Apply Layout</button>
+                <button class="btn ghost-link" id="builder-view">View Layout JSON</button>
+              </div>
+              <textarea id="builder-output" class="code" style="margin-top:8px;" placeholder="// Layout JSON will appear here"></textarea>
+            </div>
+          </details>
+        </div>
+
+        <div class="panel">
+          <h2>🌀 Ghost ↔ Sub-Ghost Switching Engine</h2>
+          <p>Simulate how the main Ghost OS mounts this tape either as a full-page site or as a framed sub-OS.</p>
+
+          <details open>
+            <summary>
+              <span class="glyph-label">⟁Sek⟁ frame.switch</span>
+              <span class="status-chip"><span class="dot warning"></span> Simulation</span>
+            </summary>
+            <div class="details-body">
+              <div class="grid-2">
+                <div>
+                  <div style="font-size:0.78rem;margin-bottom:4px;">Mode</div>
+                  <div class="toggle-row">
+                    <span style="font-size:0.78rem;">Standalone Site</span>
+                    <label class="switch">
+                      <input id="frame-mode-toggle" type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                    <span style="font-size:0.78rem;">Embedded Frame</span>
+                  </div>
+                  <div style="font-size:0.72rem;margin-top:6px;">
+                    Toggle to see how Ghost OS would treat this tape: full-page navigation vs sub-ghost iframe.
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size:0.78rem;margin-bottom:4px;">Mount Snippet</div>
+                  <textarea id="frame-snippet" class="code" style="min-height:110px;"></textarea>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details>
+            <summary>
+              <span class="glyph-label">⟁Ch'en⟁ os.state</span>
+              <span class="status-chip"><span class="dot"></span> Kernel Log</span>
+            </summary>
+            <div class="details-body">
+              <div id="system-status" class="log-panel"></div>
+            </div>
+          </details>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // MATRIX BACKGROUND
+    (function initMatrix() {
+      const canvas = document.getElementById('matrix');
+      const ctx = canvas.getContext('2d');
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const columns = () => Math.floor(window.innerWidth / 20);
+      let drops = new Array(columns()).fill(0);
+
+      setInterval(() => {
+        if (drops.length !== columns()) drops = new Array(columns()).fill(0);
+        ctx.fillStyle = 'rgba(0,0,0,0.08)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#22d3ee';
+        ctx.font = '14px "JetBrains Mono", monospace';
+
+        drops.forEach((y, i) => {
+          const text = String.fromCharCode(0x30A0 + Math.random() * 96);
+          const x = i * 20;
+          ctx.fillText(text, x, y * 20);
+          if (y * 20 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+          else drops[i]++;
+        });
+      }, 60);
+    })();
+
+    // ASX SUB-GHOST OS CORE
+    const ASX_OS = {
+      manifest: null,
+      files: {
+        index: { status: 'loaded', role: 'ghost_shell' },
+        sw: { status: 'inline_kernel', role: 'kernel' },
+        manifest: { status: 'loaded', role: 'database' }
+      },
+      engines: {
+        xjson: { status: 'offline' },
+        kuhul: { status: 'offline' },
+        scxq2: { status: 'offline' }
+      },
+      realms: {
+        cpu: { status: 'offline' },
+        gpu: { status: 'offline' },
+        tpu: { status: 'offline' }
+      },
+
+      log(msg) {
+        console.log('SUB-GHOST:', msg);
+        const panel = document.getElementById('system-status');
+        if (!panel) return;
+        const line = document.createElement('div');
+        line.className = 'log-line';
+        line.textContent = '> ' + msg;
+        panel.appendChild(line);
+        panel.scrollTop = panel.scrollHeight;
+      },
+
+      loadManifest() {
+        if (this.manifest) return this.manifest;
+        try {
+          const raw = document.getElementById('manifest-data').textContent;
+          this.manifest = JSON.parse(raw);
+          this.log('Manifest loaded: ' + this.manifest.asx_os.version);
+        } catch (e) {
+          this.log('Manifest parse error: ' + e.message);
+          this.manifest = { asx_os: { dns_zones: {}, shards: {}, tapes: {}, domains: {}, ram_db: {} } };
+        }
+        return this.manifest;
+      },
+
+      saveManifest() {
+        // In real OS, KLH/K'uhul would persist to manifest.json;
+        // here we just stringify back into the inline script for demo.
+        const script = document.getElementById('manifest-data');
+        if (!script || !this.manifest) return;
+        script.textContent = JSON.stringify(this.manifest, null, 2);
+        this.log('Manifest snapshot updated in inline script');
+      },
+
+      boot() {
+        this.loadManifest();
+        this.log('=== SUB-GHOST BOOT SEQUENCE START ===');
+        this.engines.xjson.status = 'online';
+        this.engines.kuhul.status = 'online';
+        this.engines.scxq2.status = 'online';
+        this.log('3 Engines online: XJSON, K\'uhul, SCXQ2');
+
+        this.realms.cpu.status = 'online';
+        this.realms.gpu.status = 'probing';
+        this.realms.tpu.status = 'warming';
+
+        // GPU probe (light)
+        try {
+          const canvas = document.createElement('canvas');
+          const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+          if (gl) {
+            this.realms.gpu.status = 'online';
+            this.log('GPU realm online (WebGL detected)');
+          } else {
+            this.realms.gpu.status = 'offline';
+            this.log('GPU realm offline (no WebGL)');
+          }
+        } catch {
+          this.realms.gpu.status = 'offline';
+          this.log('GPU realm probe error');
+        }
+
+        setTimeout(() => {
+          this.realms.tpu.status = 'online';
+          this.log('TPU realm online (simulated QLoRA trainers ready)');
+          this.log('=== SUB-GHOST READY · POWER OF 3 ACTIVE ===');
+        }, 1200);
+
+        this.refreshDomainTable();
+        this.refreshDeployTapeList();
+        this.updateFrameSnippet(false);
+      },
+
+      // K'uhul engine (simple demo)
+      runKuhulProgram(code) {
+        const lines = code.split('\n').map(l => l.trim()).filter(Boolean);
+        const ctx = {};
+        const log = [];
+
+        for (const line of lines) {
+          if (line.startsWith('⟁Pop⟁')) {
+            const name = line.replace('⟁Pop⟁', '').trim();
+            log.push('⟁Pop⟁ declare ' + name);
+          } else if (line.startsWith('⟁Wo⟁')) {
+            const m = line.match(/⟁Wo⟁\s+(\w+)\s+([\w.-]+)/);
+            if (m) {
+              const [, k, v] = m;
+              ctx[k] = isNaN(Number(v)) ? v : Number(v);
+              log.push(`⟁Wo⟁ ${k} = ${ctx[k]}`);
+            }
+          } else if (line.startsWith('⟁Sek⟁')) {
+            const op = line.replace('⟁Sek⟁', '').trim();
+            log.push('⟁Sek⟁ ' + op);
+            const m = op.match(/multiply\s+(\w+)\s+(\d+)/);
+            if (m) {
+              const [, k, mul] = m;
+              if (typeof ctx[k] === 'number') {
+                ctx[k] = ctx[k] * Number(mul);
+                log.push(`   → ${k} = ${ctx[k]}`);
+              }
+            }
+          } else if (line.startsWith('⟁Ch\'en⟁')) {
+            const k = line.replace('⟁Ch\'en⟁', '').trim();
+            log.push(`⟁Ch'en⟁ store ${k} = ${ctx[k]}`);
+          } else {
+            log.push('?? ' + line);
+          }
+        }
+        return { ctx, log };
+      },
+
+      // Domain router helpers
+      refreshDomainTable() {
+        const manifest = this.loadManifest();
+        const dom = manifest.asx_os.domains || {};
+        const tbody = document.querySelector('#domain-table tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        Object.entries(dom).forEach(([domain, tape]) => {
+          const tr = document.createElement('tr');
+          const td1 = document.createElement('td');
+          const td2 = document.createElement('td');
+          td1.textContent = domain;
+          td2.textContent = tape;
+          tr.appendChild(td1);
+          tr.appendChild(td2);
+          tbody.appendChild(tr);
+        });
+        this.log('Domain table refreshed (' + Object.keys(dom).length + ' mappings)');
+      },
+
+      saveDomain(domain, tapeId) {
+        const manifest = this.loadManifest();
+        manifest.asx_os.domains = manifest.asx_os.domains || {};
+        manifest.asx_os.domains[domain] = tapeId;
+        this.saveManifest();
+        this.refreshDomainTable();
+        this.refreshDeployTapeList();
+        this.log(`Domain mapping updated: ${domain} → ${tapeId}`);
+      },
+
+      refreshDeployTapeList() {
+        const manifest = this.loadManifest();
+        const tapes = manifest.asx_os.tapes || {};
+        const select = document.getElementById('deploy-tape');
+        if (!select) return;
+        select.innerHTML = '';
+        Object.keys(tapes).forEach(tapeId => {
+          const opt = document.createElement('option');
+          opt.value = tapeId;
+          opt.textContent = tapeId;
+          select.appendChild(opt);
+        });
+      },
+
+      deployMapping(tapeId, domain) {
+        this.saveDomain(domain, tapeId);
+        const out = document.getElementById('deploy-output');
+        if (out) {
+          out.value =
+`// Deploy instructions
+
+1) Add DNS (or hosts entry) pointing domain to your ASX host:
+   ${domain} → 127.0.0.1  (for local dev)
+
+2) In main Ghost OS, make sure KLH router knows this sub-ghost tape:
+   klh.registerTape("${tapeId}", { domain: "${domain}" });
+
+3) When a user opens:
+   https://${domain}
+   → KLH resolves to tape "${tapeId}" and boots this sub-ghost tape.
+
+4) This sub-ghost template will render its own header/footer and blocks.`;
+        }
+        this.log(`Deploy mapping set: ${domain} → ${tapeId}`);
+      },
+
+      // TapeForge
+      forgeTape(config) {
+        const manifest = this.loadManifest();
+        manifest.asx_os.tapes = manifest.asx_os.tapes || {};
+        const tapeId = config.id;
+        manifest.asx_os.tapes[tapeId] = {
+          version: "1.0",
+          status: "forged",
+          type: config.template,
+          display_name: config.name,
+          routes: { [config.route || "/"]: "main" },
+          theme: config.theme || "auto",
+          gpu: !!config.gpu,
+          tpu: !!config.tpu,
+          blocks: config.blocks || []
+        };
+        manifest.asx_os.ram_db = manifest.asx_os.ram_db || {};
+        manifest.asx_os.ram_db.tape_forge_log = manifest.asx_os.ram_db.tape_forge_log || [];
+        manifest.asx_os.ram_db.tape_forge_log.push({
+          id: tapeId,
+          ts: Date.now(),
+          template: config.template
+        });
+        this.saveManifest();
+        this.refreshDeployTapeList();
+        this.log('Tape forged: ' + tapeId);
+        return manifest.asx_os.tapes[tapeId];
+      },
+
+      // Sandbox Builder
+      applyLayout(tapeId, blocks, useSubGhostFrame) {
+        const manifest = this.loadManifest();
+        manifest.asx_os.ram_db = manifest.asx_os.ram_db || {};
+        manifest.asx_os.ram_db.layout = manifest.asx_os.ram_db.layout || {};
+        manifest.asx_os.ram_db.layout[tapeId] = {
+          blocks,
+          use_subghost_frame: !!useSubGhostFrame,
+          updated_at: Date.now()
+        };
+        this.saveManifest();
+        this.log(`Layout applied for tape "${tapeId}" with ${blocks.length} blocks`);
+        return manifest.asx_os.ram_db.layout[tapeId];
+      },
+
+      // Ghost <-> SubGhost switch snippet generator
+      updateFrameSnippet(embedded) {
+        const field = document.getElementById('frame-snippet');
+        if (!field) return;
+        const manifest = this.loadManifest();
+        const defaultDomain = Object.keys(manifest.asx_os.domains || {})[0] || 'subghost.local';
+        const tapeId = 'subghost_template_v4';
+
+        if (!embedded) {
+          field.value =
+`// Standalone mode (Ghost hands full page to sub-ghost tape)
+ghostRouter.registerDomain("${defaultDomain}", "${tapeId}");
+
+window.location.href = "https://${defaultDomain}/";`;
+        } else {
+          field.value =
+`// Embedded mode (Ghost mounts sub-ghost as a frame)
+<div class="ghost-frame">
+  <iframe src="https://${defaultDomain}/"
+          title="ASX Sub-Ghost: ${tapeId}"
+          loading="lazy"
+          referrerpolicy="no-referrer"
+          style="width:100%;height:100%;border:none;border-radius:18px;"></iframe>
+</div>`;
+        }
+        this.log('Frame snippet updated: ' + (embedded ? 'embedded' : 'standalone'));
+      }
+    };
+
+    // Wire UI
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('bootOs').addEventListener('click', () => {
+        ASX_OS.log('BOOT button pressed');
+        ASX_OS.boot();
+      });
+
+      // K'uhul section
+      document.getElementById('runKuhul').addEventListener('click', () => {
+        const code = document.getElementById('kuhul-input').value;
+        const { ctx, log } = ASX_OS.runKuhulProgram(code);
+        const execLog = document.getElementById('kuhul-exec-log');
+        const ctxLog = document.getElementById('kuhul-exec-context');
+        execLog.innerHTML = '';
+        ctxLog.innerHTML = '';
+        log.forEach(line => {
+          const div = document.createElement('div');
+          div.textContent = line;
+          execLog.appendChild(div);
+        });
+        Object.entries(ctx).forEach(([k, v]) => {
+          const div = document.createElement('div');
+          div.textContent = `${k} = ${v}`;
+          ctxLog.appendChild(div);
+        });
+        ASX_OS.log('K\'uhul program executed');
+      });
+
+      document.getElementById('clearKuhul').addEventListener('click', () => {
+        document.getElementById('kuhul-input').value = '';
+        document.getElementById('kuhul-exec-log').innerHTML = '';
+        document.getElementById('kuhul-exec-context').innerHTML = '';
+        ASX_OS.log('K\'uhul console cleared');
+      });
+
+      // Domain router
+      document.getElementById('domain-save').addEventListener('click', () => {
+        const d = document.getElementById('domain-input').value.trim();
+        const t = document.getElementById('domain-tape-input').value.trim();
+        if (!d || !t) {
+          ASX_OS.log('Domain or tape ID missing');
+          return;
+        }
+        ASX_OS.saveDomain(d, t);
+      });
+
+      document.getElementById('domain-refresh').addEventListener('click', () => {
+        ASX_OS.refreshDomainTable();
+      });
+
+      // Deploy panel
+      document.getElementById('deploy-button').addEventListener('click', () => {
+        const tapeId = document.getElementById('deploy-tape').value;
+        const domain = document.getElementById('deploy-domain').value.trim();
+        if (!tapeId || !domain) {
+          ASX_OS.log('Deploy requires tape + domain');
+          return;
+        }
+        ASX_OS.deployMapping(tapeId, domain);
+      });
+
+      document.getElementById('deploy-snippet').addEventListener('click', () => {
+        const tapeId = document.getElementById('deploy-tape').value;
+        const domain = document.getElementById('deploy-domain').value.trim() || 'example.com';
+        const out = document.getElementById('deploy-output');
+        out.value =
+`// Example Nginx / reverse-proxy snippet
+
+server {
+    server_name ${domain};
+
+    location / {
+        proxy_pass http://127.0.0.1:61680;
+        proxy_set_header X-ASX-TAPE "${tapeId}";
+    }
+}
+
+// KLH will route X-ASX-TAPE="${tapeId}" to this sub-ghost.`;
+        ASX_OS.log('Deploy snippet generated');
+      });
+
+      // TapeForge
+      document.getElementById('forge-create').addEventListener('click', () => {
+        const id = document.getElementById('forge-tape-id').value.trim();
+        if (!id) {
+          ASX_OS.log('Forge needs a tape ID');
+          return;
+        }
+        const cfg = {
+          id,
+          name: document.getElementById('forge-tape-name').value.trim() || id,
+          template: document.getElementById('forge-tape-template').value,
+          route: document.getElementById('forge-tape-route').value.trim() || '/',
+          theme: document.getElementById('forge-tape-theme').value.trim() || 'auto',
+          gpu: document.getElementById('forge-gpu').checked,
+          tpu: document.getElementById('forge-tpu').checked
+        };
+        const tape = ASX_OS.forgeTape(cfg);
+        document.getElementById('forge-output').value = JSON.stringify(tape, null, 2);
+      });
+
+      document.getElementById('forge-preview').addEventListener('click', () => {
+        const cfg = {
+          id: document.getElementById('forge-tape-id').value.trim() || 'my_cool_app',
+          name: document.getElementById('forge-tape-name').value.trim() || 'My Cool App',
+          template: document.getElementById('forge-tape-template').value,
+          route: document.getElementById('forge-tape-route').value.trim() || '/',
+          theme: document.getElementById('forge-tape-theme').value.trim() || 'auto',
+          gpu: document.getElementById('forge-gpu').checked,
+          tpu: document.getElementById('forge-tpu').checked,
+          blocks: []
+        };
+        document.getElementById('forge-output').value = JSON.stringify(cfg, null, 2);
+        ASX_OS.log('TapeForge preview JSON generated');
+      });
+
+      // Sandbox Builder
+      document.getElementById('builder-apply').addEventListener('click', () => {
+        const tapeId = document.getElementById('builder-tape-id').value.trim();
+        if (!tapeId) {
+          ASX_OS.log('Sandbox builder requires a target tape ID');
+          return;
+        }
+        const checks = Array.from(document.querySelectorAll('.builder-block'));
+        const blocks = checks.filter(c => c.checked).map(c => c.value);
+        const useSubGhost = document.getElementById('builder-use-subghost-frame').checked;
+        const layout = ASX_OS.applyLayout(tapeId, blocks, useSubGhost);
+        document.getElementById('builder-output').value = JSON.stringify(layout, null, 2);
+      });
+
+      document.getElementById('builder-view').addEventListener('click', () => {
+        const tapeId = document.getElementById('builder-tape-id').value.trim();
+        const manifest = ASX_OS.loadManifest();
+        const layout = manifest.asx_os.ram_db &&
+                       manifest.asx_os.ram_db.layout &&
+                       manifest.asx_os.ram_db.layout[tapeId];
+        document.getElementById('builder-output').value =
+          layout ? JSON.stringify(layout, null, 2) : '// No layout stored for tape "' + tapeId + '"';
+        ASX_OS.log('Sandbox layout view for ' + tapeId);
+      });
+
+      // Frame mode toggle
+      document.getElementById('frame-mode-toggle').addEventListener('change', (e) => {
+        const embedded = e.target.checked;
+        ASX_OS.updateFrameSnippet(embedded);
+      });
+
+      document.getElementById('toggleFrameMode').addEventListener('click', () => {
+        const toggle = document.getElementById('frame-mode-toggle');
+        toggle.checked = !toggle.checked;
+        ASX_OS.updateFrameSnippet(toggle.checked);
+      });
+
+      document.getElementById('showParentHint').addEventListener('click', () => {
+        ASX_OS.log('Ghost↔SubGhost: main Ghost OS treats this tape as a mount point. In standalone mode it owns the full viewport; in embedded mode it lives inside a ghost-frame div/iframe.');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASX COMMAND COCKPIT — Atomic HTML Runtime (.ASXR Embedded)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --cyan:#00ffff; --lime:#00ff00; --yellow:#ffff00; --ink:#00ff99;
+      --bg:#000; --hud:rgba(0,255,255,.18); --hud2:rgba(0,255,0,.12);
+      --glow:0 0 10px var(--cyan), 0 0 20px var(--cyan), 0 0 40px var(--cyan);
+      --panel:rgba(0,0,0,.75); --line:rgba(0,255,255,.6); --grid:rgba(0,255,255,.08);
+      --term-bg:#000; --term-ink:#0f0; --term-accent:#afff00;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:#000;color:var(--cyan);font-family:'Orbitron','Courier New',monospace;overflow:hidden}
+    a{color:var(--yellow);text-decoration:none}
+    /* ==== Starfield ==== */
+    #star-field{position:fixed;inset:0;z-index:0;background:#000}
+    .star-layer{position:absolute;inset:0;animation:starScroll 20s linear infinite}
+    @keyframes starScroll{from{transform:translateY(0)}to{transform:translateY(100%)}}
+    .star{position:absolute;border-radius:50%;background:#fff;box-shadow:0 0 6px #fff}
+    .star.cyan{background:#0ff;box-shadow:0 0 10px #0ff}
+    .star.yellow{background:#ff0;box-shadow:0 0 10px #ff0}
+    .star.white{background:#fff;box-shadow:0 0 6px #fff}
+
+    /* ==== Cockpit HUD Frame ==== */
+    .hud-frame{position:fixed;inset:40px;border:3px solid var(--line);box-shadow:inset 0 0 30px rgba(0,255,255,.3),0 0 30px rgba(0,255,255,.3);z-index:1;pointer-events:none;animation:framePulse 3s ease-in-out infinite}
+    @keyframes framePulse{0%,100%{border-color:rgba(0,255,255,.6)}50%{border-color:rgba(0,255,255,.9)}}
+    .hud-frame::before,.hud-frame::after{content:"";position:absolute;width:40px;height:40px;border:3px solid #0ff;box-shadow:0 0 10px #0ff}
+    .hud-frame::before{top:-3px;left:-3px;border-right:none;border-bottom:none}
+    .hud-frame::after{bottom:-3px;right:-3px;border-left:none;border-top:none}
+
+    .scanlines{position:fixed;inset:0;background:linear-gradient(transparent 0%, rgba(0,255,255,.04) 50%, transparent 100%);background-size:100% 5px;z-index:999;pointer-events:none;animation:scanline 10s linear infinite}
+    @keyframes scanline{0%{background-position:0 0}100%{background-position:0 100%}}
+
+    /* ==== Center Branding ==== */
+    .asx-logo{position:absolute;top:10%;left:50%;transform:translateX(-50%);text-align:center;z-index:2;user-select:none;pointer-events:none}
+    .asx-title{font-size:120px;font-weight:900;letter-spacing:16px;color:#0ff;text-shadow:var(--glow);animation:titlePulse 2s ease-in-out infinite}
+    .asx-subtitle{font-size:20px;letter-spacing:10px;color:#ff0;text-shadow:0 0 10px #ff0,0 0 20px #ff0;margin-top:8px;font-weight:700}
+    @media (max-width: 900px){ .asx-title{font-size:64px;letter-spacing:8px} .asx-subtitle{font-size:14px} }
+    @keyframes titlePulse{0%,100%{text-shadow:var(--glow)}50%{text-shadow:0 0 20px #0ff,0 0 40px #0ff,0 0 80px #0ff,0 0 120px #0ff}}
+
+    /* ==== Crosshair & Radar ==== */
+    .crosshair{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:70px;height:70px;z-index:2;pointer-events:none}
+    .crosshair::before,.crosshair::after{content:"";position:absolute;background:#0ff;box-shadow:0 0 8px #0ff}
+    .crosshair::before{left:0;right:0;top:50%;height:2px;transform:translateY(-50%)}
+    .crosshair::after{top:0;bottom:0;left:50%;width:2px;transform:translateX(-50%)}
+
+    .radar{position:absolute;top:90px;right:90px;width:220px;height:220px;border:3px solid #0ff;border-radius:50%;box-shadow:inset 0 0 30px rgba(0,255,255,.4);z-index:2;pointer-events:none}
+    .radar::before,.radar::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:2px solid rgba(0,255,255,.3);border-radius:50%}
+    .radar::before{width:70%;height:70%} .radar::after{width:40%;height:40%}
+    .radar-sweep{position:absolute;left:50%;top:50%;width:50%;height:3px;background:linear-gradient(to right,#0ff,transparent);transform-origin:left center;animation:radarSweep 3s linear infinite;box-shadow:0 0 10px #0ff}
+    @keyframes radarSweep{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+    .radar-dot{position:absolute;width:8px;height:8px;background:#ff0;border-radius:50%;box-shadow:0 0 15px #ff0;animation:radarBlip 2s ease-in-out infinite}
+    @keyframes radarBlip{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+
+    /* ==== Stats & Dials ==== */
+    .hud-stats{position:absolute;top:90px;left:90px;color:#0ff;font-size:15px;line-height:2;text-shadow:0 0 8px #0ff;z-index:2;pointer-events:none;font-weight:700}
+    .stat-label{color:#0f0;margin-right:12px}
+    .stat-value{color:#ff0;font-weight:900;animation:statBlink 2s ease-in-out infinite}
+    @keyframes statBlink{0%,90%,100%{opacity:1}95%{opacity:.5}}
+    .speed-meter,.power-level{position:absolute;bottom:110px;width:200px;height:200px;border:3px solid #0ff;border-radius:50%;box-shadow:inset 0 0 30px rgba(0,255,255,.3);z-index:2;pointer-events:none}
+    .speed-meter{left:90px} .power-level{right:90px}
+    .speed-label{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:18px;color:#0f0;text-align:center;font-weight:700}
+    .speed-value{font-size:42px;color:#ff0;display:block;text-shadow:0 0 15px #ff0;font-weight:900}
+    .speed-unit{font-size:14px;color:#0ff}
+    .power-bars{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:6px}
+    .power-bar{width:10px;height:50px;background:linear-gradient(to top,#f00,#ff0,#0f0);box-shadow:0 0 15px #0f0;animation:powerBarPulse 2s ease-in-out infinite}
+    @keyframes powerBarPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
+
+    /* ==== Dock + Panels ==== */
+    .dock{position:fixed;left:50%;bottom:9%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(3,1fr);gap:18px;z-index:3}
+    .btn{width:220px;height:80px;background:linear-gradient(135deg, rgba(0,255,255,.15), rgba(0,255,0,.1));border:3px solid #0ff;color:#0ff;font-size:16px;font-weight:bold;cursor:pointer;position:relative;transition:all .25s;text-decoration:none;display:flex;align-items:center;justify-content:center;flex-direction:column;text-transform:uppercase;letter-spacing:2px;clip-path:polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%);box-shadow:0 0 25px rgba(0,255,255,.4)}
+    .btn:hover{background:linear-gradient(135deg, rgba(0,255,255,.4), rgba(0,255,0,.3));border-color:#0f0;color:#0f0;box-shadow:0 0 50px rgba(0,255,255,.8);transform:scale(1.06) translateY(-3px)}
+    .btn.engage{grid-column:1/-1;width:100%;height:110px;font-size:34px;background:linear-gradient(135deg, rgba(255,255,0,.25), rgba(0,255,255,.2));border-color:#ff0;color:#ff0;animation:engagePulse 1.6s ease-in-out infinite;clip-path:polygon(5% 0%,95% 0%,100% 50%,95% 100%,5% 100%,0% 50%)}
+    @keyframes engagePulse{0%,100%{box-shadow:0 0 30px rgba(255,255,0,.6);transform:scale(1)}50%{box-shadow:0 0 70px rgba(255,255,0,.9);transform:scale(1.02)}}
+
+    /* ==== Overlay Manager ==== */
+    .overlay{position:fixed;inset:80px;z-index:5;display:none}
+    .overlay.show{display:grid;grid-template-columns:320px 1fr;gap:12px}
+    .panel{background:var(--panel);border:1px solid rgba(0,255,255,.35);border-radius:12px;box-shadow:0 0 24px rgba(0,255,255,.2)}
+    .panel.heads{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(0,255,255,.25)}
+    .panel .title{font-weight:900;letter-spacing:2px}
+    .panel .close{appearance:none;border:2px solid #0ff;background:transparent;color:#0ff;border-radius:8px;padding:6px 10px;font-weight:800;cursor:pointer}
+    .stack{display:grid;grid-template-rows:auto 1fr;gap:10px;height:100%}
+    .scroll{overflow:auto;padding:12px}
+    .term{background:var(--term-bg);color:var(--term-ink);height:280px;overflow:auto;border:1px solid #0f0;border-radius:8px;padding:10px;font-family:'Courier New',monospace}
+    .term .sys{color:var(--term-accent)}
+    .row{display:flex;gap:8px}
+    .row input, .row textarea{flex:1;background:#001100;color:#aaffaa;border:1px solid #004400;border-radius:8px;padding:8px;font-family:'Courier New',monospace}
+    .row button{background:#001900;border:2px solid #00ff99;color:#00ff99;border-radius:8px;font-weight:900;padding:8px 12px;cursor:pointer}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tab{padding:8px 12px;border:1px solid rgba(0,255,255,.35);border-radius:999px;background:rgba(0,255,255,.08);cursor:pointer}
+    .tab.active{background:rgba(255,255,0,.1);border-color:#ff0;color:#ff0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+    .mini-runtime{position:relative;background:#051119;border:1px solid rgba(0,255,255,.25);border-radius:12px;overflow:hidden}
+    .mini-runtime canvas{display:block;width:100%;height:220px;background:#000}
+    .mini-hud{position:absolute;left:10px;bottom:10px;display:flex;gap:8px}
+    .badge{border:1px solid rgba(0,255,255,.45);background:rgba(0,255,255,.08);padding:4px 8px;border-radius:8px;font-size:12px}
+
+    /* Responsive */
+    @media (max-width: 1200px){
+      .overlay.show{grid-template-columns:1fr}
+      .dock{grid-template-columns:1fr;gap:12px;width:90%}
+      .asx-logo{top:6%}
+      .radar,.speed-meter,.power-level,.hud-stats{display:none}
+      .hud-frame{inset:20px}
+    }
+  </style>
+</head>
+<body>
+  <!-- Star Field -->
+  <div id="star-field"></div>
+
+  <!-- HUD Decorations -->
+  <div class="hud-frame"></div>
+  <div class="scanlines"></div>
+  <div class="crosshair"></div>
+
+  <div class="asx-logo">
+    <div class="asx-title">ASX</div>
+    <div class="asx-subtitle">COMMAND COCKPIT • ATOMIC RUNTIME</div>
+  </div>
+
+  <!-- HUD Stats + Radar + Dials -->
+  <div class="hud-stats" id="hudStats">
+    <div><span class="stat-label">SYSTEM:</span><span class="stat-value">ONLINE</span></div>
+    <div><span class="stat-label">ENGINE:</span><span class="stat-value">LIQUID ATOMIC</span></div>
+    <div><span class="stat-label">FORMAT:</span><span class="stat-value">.ASXR</span></div>
+    <div><span class="stat-label">MODE:</span><span class="stat-value" id="modeVal">IDLE</span></div>
+  </div>
+  <div class="radar">
+    <div class="radar-sweep"></div>
+    <div class="radar-dot" style="top: 25%; left: 65%;"></div>
+    <div class="radar-dot" style="top: 75%; left: 35%;"></div>
+    <div class="radar-dot" style="top: 50%; left: 85%;"></div>
+    <div class="radar-dot" style="top: 40%; left: 20%;"></div>
+  </div>
+  <div class="speed-meter">
+    <div class="speed-label">VELOCITY<span class="speed-value" id="velVal">0</span><span class="speed-unit">KM/S</span></div>
+  </div>
+  <div class="power-level">
+    <div class="speed-label" style="top:35px;">POWER <span class="speed-value" style="font-size:38px;color:#0f0" id="pwrVal">100<span style="font-size:20px">%</span></span></div>
+    <div class="power-bars">
+      <div class="power-bar"></div><div class="power-bar"></div><div class="power-bar"></div><div class="power-bar"></div>
+      <div class="power-bar"></div><div class="power-bar"></div><div class="power-bar"></div><div class="power-bar"></div>
+    </div>
+  </div>
+
+  <!-- Dock -->
+  <div class="dock">
+    <button class="btn engage" id="btnEngage">🚀 ENGAGE</button>
+    <button class="btn" id="btnTerminal">💬 AI TERMINAL</button>
+    <button class="btn" id="btnGames">🎮 MINI RUNTIMES</button>
+    <button class="btn" id="btnGuides">📖 ATOMIC GUIDES</button>
+    <button class="btn" id="btnDiagnostics">🧪 DIAGNOSTICS</button>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay">
+    <!-- Left: Tabs -->
+    <div class="panel stack">
+      <div class="panel heads">
+        <div class="title">MODULES</div>
+        <button class="close" id="closeOverlay">Close</button>
+      </div>
+      <div class="scroll">
+        <div class="tabs" id="tabs"></div>
+      </div>
+      <div class="scroll">
+        <div class="term" id="term"></div>
+        <div class="row" style="margin-top:8px">
+          <input id="aiInput" placeholder="Type to your crew… (Navigator:nav, Engineer:eng, Analyst:ana)">
+          <button id="sendAI">Send</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <input id="hfKey" placeholder="HF Token (router.huggingface.co) — optional for live chat">
+          <button id="testAI">Test HF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Active Module View -->
+    <div class="panel stack">
+      <div class="panel heads">
+        <div class="title" id="activeTitle">Welcome</div>
+        <div class="row">
+          <button class="close" id="minimize">Min</button>
+          <button class="close" id="maximize">Max</button>
+        </div>
+      </div>
+      <div class="scroll" id="activeView">
+        <!-- dynamic content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Embedded ASXR (demo blob) -->
+  <script type="application/json" id="asxr">
+  {
+    "asx-meta": { "type":"runtime", "engine":"ASX-Liquid-Core", "version":"1.0.0", "entry":"main" },
+    "asx-style": { "theme":"dark", "tokens": {} },
+    "asx-ui": {
+      "layout":"cockpit",
+      "components":[
+        { "type":"hud", "props":{"title":"ASX Command Cockpit"} }
+      ]
+    },
+    "asx-runtime": {
+      "dom":[{ "target":"#activeView", "render":"hud" }],
+      "server": "SCX:noop()",
+      "logic":  "SCX:if(ready){emit('online')}"
+    }
+  }
+  </script>
+
+  <!-- ===== Runtime Scripts ===== -->
+  <script>
+    /* ---------- Starfield ---------- */
+    const starField = document.getElementById('star-field');
+    for(let layer=0; layer<3; layer++){
+      const L=document.createElement('div'); L.className='star-layer';
+      L.style.animationDuration=(20+layer*10)+'s'; L.style.animationDelay=(layer*-5)+'s';
+      const count=100 - layer*20;
+      for(let i=0;i<count;i++){
+        const s=document.createElement('div'); s.className='star';
+        const types=['cyan','yellow','white']; s.classList.add(types[(Math.random()*types.length)|0]);
+        const size=Math.random()*3+1; s.style.width=size+'px'; s.style.height=size+'px';
+        s.style.left=(Math.random()*100)+'%'; s.style.top=(Math.random()*100)+'%';
+        s.style.animationDelay=(Math.random()*3)+'s'; s.style.animationDuration=(Math.random()*2+2)+'s';
+        L.appendChild(s);
+      }
+      starField.appendChild(L);
+    }
+
+    /* ---------- Overlay Manager ---------- */
+    const overlay = document.getElementById('overlay');
+    const term = document.getElementById('term');
+    const tabsEl = document.getElementById('tabs');
+    const activeTitle = document.getElementById('activeTitle');
+    const activeView = document.getElementById('activeView');
+    const modeVal = document.getElementById('modeVal');
+    function log(msg, cls=''){
+      const p=document.createElement('div');
+      if(cls) p.className=cls; p.innerHTML = cls? '<span class="sys">['+cls.toUpperCase()+']</span> '+msg : msg;
+      term.appendChild(p); term.scrollTop=term.scrollHeight;
+    }
+    function openOverlay(){ overlay.classList.add('show'); modeVal.textContent='OPERATIONS'; }
+    function closeOverlay(){ overlay.classList.remove('show'); modeVal.textContent='IDLE'; }
+    document.getElementById('closeOverlay').onclick=closeOverlay;
+
+    // Dock buttons
+    document.getElementById('btnEngage').onclick=()=>{ openOverlay(); selectTab('terminal'); };
+    document.getElementById('btnTerminal').onclick=()=>{ openOverlay(); selectTab('terminal'); };
+    document.getElementById('btnGames').onclick=()=>{ openOverlay(); selectTab('games'); };
+    document.getElementById('btnGuides').onclick=()=>{ openOverlay(); selectTab('guides'); };
+    document.getElementById('btnDiagnostics').onclick=()=>{ openOverlay(); selectTab('diagnostics'); };
+
+    // Tabs
+    const Modules = {
+      terminal: { title:'AI Terminal', render: renderTerminal },
+      games: { title:'Mini Runtimes', render: renderGames },
+      guides: { title:'Atomic Guides', render: renderGuides },
+      diagnostics: { title:'Diagnostics', render: renderDiagnostics }
+    };
+    function paintTabs(){
+      tabsEl.innerHTML = '';
+      Object.keys(Modules).forEach(id=>{
+        const t=document.createElement('div'); t.className='tab'; t.textContent=Modules[id].title;
+        t.onclick=()=>selectTab(id); t.dataset.id=id; tabsEl.appendChild(t);
+      });
+    }
+    function selectTab(id){
+      paintTabs();
+      [...tabsEl.children].forEach(el=>{ el.classList.toggle('active', el.dataset.id===id); });
+      activeTitle.textContent = Modules[id].title;
+      activeView.innerHTML=''; Modules[id].render(activeView);
+    }
+    paintTabs();
+
+    /* ---------- AI Terminal & HF Multi-Agent ---------- */
+    const aiInput = document.getElementById('aiInput');
+    const hfKey = document.getElementById('hfKey');
+    document.getElementById('sendAI').onclick = () => handleCrew(aiInput.value.trim());
+    document.getElementById('testAI').onclick = async () => {
+      if(!hfKey.value){ log('Set HF token for live chat. Using local echo.', 'sys'); return; }
+      const msg = "Say 'ASX cockpit live' in 6 words.";
+      const out = await hfChat([{role:'user', content:[{type:'text', text:msg}]}]);
+      log('HF ▶ '+ (out?.content?.[0]?.text || JSON.stringify(out)), 'sys');
+    };
+
+    const Crew = {
+      nav: (q) => `Navigator: plotting course — "${q}" → ETA 3 jumps.`,
+      eng: (q) => `Engineer: reallocating power to shields for "${q}".`,
+      ana: (q) => `Analyst: correlation found, confidence 0.82 for "${q}".`
+    };
+    async function handleCrew(text){
+      if(!text) return;
+      const [tag, ...rest] = text.split(':'); const content = rest.join(':').trim() || text;
+      const fn = Crew[tag]; log('&gt; '+text);
+      if(fn){ log(fn(content), 'sys'); }
+      if(hfKey.value){
+        try{
+          const out = await hfChat([{role:'user', content:[{type:'text', text:content}]}]);
+          const reply = out?.choices?.[0]?.message?.content?.[0]?.text || out?.choices?.[0]?.message?.content || JSON.stringify(out);
+          log('AI: '+ reply);
+        }catch(e){ log('HF error: '+e.message, 'sys'); }
+      } else {
+        // local fun reply
+        log('AI: '+ content.split('').reverse().join('') + ' • [local echo]');
+      }
+      aiInput.value='';
+    }
+
+    async function hfChat(messages){
+      // OpenAI-compatible client via fetch to HF router
+      const body = {
+        model: "Qwen/Qwen3-VL-8B-Instruct:novita",
+        messages
+      };
+      const r = await fetch("https://router.huggingface.co/v1/chat/completions", {
+        method:'POST',
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization":"Bearer "+hfKey.value.trim()
+        },
+        body: JSON.stringify(body)
+      });
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return await r.json();
+    }
+
+    /* ---------- MINI RUNTIMES: Canvases ---------- */
+    function renderGames(root){
+      const wrap = document.createElement('div'); wrap.className='grid';
+      // Galactica (from earlier demo)
+      wrap.appendChild(makeGalactica());
+      // Space Invaders (lite)
+      wrap.appendChild(makeInvaders());
+      // Ms. Pac-Man (lite)
+      wrap.appendChild(makePacman());
+      root.appendChild(wrap);
+    }
+
+    function makeCard(title, canvas, onboot){
+      const card=document.createElement('div'); card.className='mini-runtime';
+      const head=document.createElement('div'); head.className='mini-hud';
+      const b1=document.createElement('span'); b1.className='badge'; b1.textContent=title;
+      const b2=document.createElement('span'); b2.className='badge'; b2.textContent='AUTO';
+      head.append(b1,b2); card.append(canvas, head);
+      if(onboot) setTimeout(onboot, 0);
+      return card;
+    }
+
+    // ---- Galactica ----
+    function makeGalactica(){
+      const cvs=document.createElement('canvas'); cvs.width=640; cvs.height=240;
+      const ctx=cvs.getContext('2d');
+      const W=cvs.width, H=cvs.height;
+      const state={t:0,last:performance.now(),bul:[],en:[],score:0,px:W/2,cd:0,auto:true};
+      function spawn(){ for(let i=0;i<10;i++){ state.en.push({x:60+i*50,y:90+(i%2)*20,v:50+Math.random()*50}); } }
+      function step(){
+        const now=performance.now(); const dt=Math.min(.033,(now-state.last)/1000); state.last=now; state.t+=dt; state.cd-=dt;
+        if(state.auto && state.cd<=0){ state.bul.push({x:state.px,y:H-30,v:-300}); state.cd=.18; }
+        state.en.forEach(e=>{ e.x += Math.sin(state.t*e.v/50)*.6; });
+        state.bul.forEach(b=>{ b.y += b.v*dt; });
+        for(const b of state.bul){ for(const e of state.en){ if(Math.abs(b.x-e.x)<14 && Math.abs(b.y-e.y)<12){ b.hit=true; e.hit=true; state.score+=50; } } }
+        state.en=state.en.filter(e=>!e.hit); state.bul=state.bul.filter(b=>!b.hit && b.y>-40);
+        ctx.fillStyle='#030b12'; ctx.fillRect(0,0,W,H);
+        ctx.fillStyle='rgba(255,255,255,.35)'; for(let i=0;i<80;i++){ const sx=(i*97 % W), sy=(i*53*7 + (state.t*60*i)) % H; ctx.fillRect(sx,sy,2,2); }
+        ctx.fillStyle='#9ff'; ctx.beginPath(); ctx.moveTo(state.px,H-50); ctx.lineTo(state.px+12,H-20); ctx.lineTo(state.px-12,H-20); ctx.closePath(); ctx.fill();
+        ctx.fillStyle='#ffd37f'; state.en.forEach(e=>{ ctx.fillRect(e.x-10,e.y-8,20,16); });
+        ctx.fillStyle='#fff'; state.bul.forEach(b=>{ ctx.fillRect(b.x-2,b.y-6,4,12); });
+        ctx.fillStyle='#0fa'; ctx.font='12px monospace'; ctx.fillText('Score '+state.score, 10, 18);
+        requestAnimationFrame(step);
+      }
+      spawn(); step();
+      return makeCard('Galactica', cvs);
+    }
+
+    // ---- Space Invaders (lite) ----
+    function makeInvaders(){
+      const cvs=document.createElement('canvas'); cvs.width=640; cvs.height=240;
+      const ctx=cvs.getContext('2d'); const W=cvs.width, H=cvs.height;
+      const state={t:0,last:performance.now(),ship:{x:W/2},en:[],dx:1,bul:[],auto:true,cd:0,score:0};
+      for(let r=0;r<3;r++){ for(let c=0;c<10;c++){ state.en.push({x:60+c*45,y:50+r*24}); } }
+      function step(){
+        const now=performance.now(); const dt=Math.min(.033,(now-state.last)/1000); state.last=now; state.t+=dt; state.cd-=dt;
+        let hitEdge=false;
+        state.en.forEach(e=>{ e.x += state.dx*40*dt; if(e.x<20||e.x>W-20) hitEdge=true; });
+        if(hitEdge){ state.dx*=-1; state.en.forEach(e=>{ e.y+=6; }); }
+        if(state.auto && state.cd<=0){ state.bul.push({x:state.ship.x,y:H-30,v:-260}); state.cd=.22; }
+        state.bul.forEach(b=>{ b.y += b.v*dt; });
+        for(const b of state.bul){ for(const e of state.en){ if(Math.abs(b.x-e.x)<10 && Math.abs(b.y-e.y)<10){ b.hit=true; e.hit=true; state.score+=25; } } }
+        state.en=state.en.filter(e=>!e.hit); state.bul=state.bul.filter(b=>!b.hit && b.y>-40);
+        ctx.fillStyle='#01070d'; ctx.fillRect(0,0,W,H);
+        ctx.fillStyle='#7fd3ff'; ctx.fillRect(state.ship.x-12,H-28,24,18);
+        ctx.fillStyle='#ffcc7a'; state.en.forEach(e=>{ ctx.fillRect(e.x-8,e.y-6,16,12); });
+        ctx.fillStyle='#fff'; state.bul.forEach(b=>ctx.fillRect(b.x-2,b.y-6,4,12));
+        ctx.fillStyle='#0fa'; ctx.font='12px monospace'; ctx.fillText('Score '+state.score, 10, 18);
+        requestAnimationFrame(step);
+      }
+      step();
+      return makeCard('Space Invaders (lite)', cvs);
+    }
+
+    // ---- Ms. Pac-Man (lite) ----
+    function makePacman(){
+      const cvs=document.createElement('canvas'); cvs.width=640; cvs.height=240;
+      const ctx=cvs.getContext('2d'); const W=cvs.width, H=cvs.height;
+      const grid=20, cols=(W/grid)|0, rows=(H/grid)|0;
+      const dots=new Set(); for(let y=2;y<rows-2;y++){ for(let x=2;x<cols-2;x++){ if((x+y)%2===0) dots.add(x+','+y); } }
+      const state={t:0,last:performance.now(),px:3,py:3,vx:1,vy:0,score:0};
+      function step(){
+        const now=performance.now(); const dt=Math.min(.033,(now-state.last)/1000); state.last=now; state.t+=dt;
+        if((state.t|0)%1===0){
+          state.px+=state.vx; state.py+=state.vy;
+          if(state.px<2)state.px=cols-3; if(state.px>cols-3)state.px=2;
+          const key=state.px+','+state.py; if(dots.has(key)){ dots.delete(key); state.score+=10; }
+          if(Math.random()<.2){ const dirs=[[1,0],[-1,0],[0,1],[0,-1]]; const d=dirs[(Math.random()*4)|0]; state.vx=d[0]; state.vy=d[1]; }
+        }
+        ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+        ctx.strokeStyle='#0af'; ctx.lineWidth=2; for(let x=0;x<W;x+=grid){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); } for(let y=0;y<H;y+=grid){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+        ctx.fillStyle='#ff0'; dots.forEach(k=>{ const [x,y]=k.split(',').map(Number); ctx.fillRect(x*grid+grid/2-2, y*grid+grid/2-2, 4,4); });
+        const px=state.px*grid+grid/2, py=state.py*grid+grid/2;
+        ctx.fillStyle='#ff6fd8'; ctx.beginPath(); ctx.arc(px,py,8,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='#0fa'; ctx.font='12px monospace'; ctx.fillText('Score '+state.score, 10, 18);
+        requestAnimationFrame(step);
+      }
+      step();
+      return makeCard('Ms. Pac-Man (lite)', cvs);
+    }
+
+    /* ---------- Guides ---------- */
+    function renderGuides(root){
+      const wrap=document.createElement('div'); wrap.className='grid';
+      wrap.appendChild(guideCard('Atomic HTML v3 — Runtime Ops', Guides.ops));
+      wrap.appendChild(guideCard('Atomic ASX v2 — SCX & Reactive', Guides.v2));
+      wrap.appendChild(guideCard('Mx2LM Training Guide', Guides.mx2));
+      wrap.appendChild(guideCard('ASX Cypher Basics', Guides.cypher));
+      root.appendChild(wrap);
+    }
+    function guideCard(title, html){
+      const card=document.createElement('div'); card.className='mini-runtime';
+      const inner=document.createElement('div'); inner.style.color='#aaffaa'; inner.style.padding='10px'; inner.style.height='220px'; inner.style.overflow='auto'; inner.innerHTML=html;
+      const head=document.createElement('div'); head.className='mini-hud'; const b1=document.createElement('span'); b1.className='badge'; b1.textContent=title; head.appendChild(b1);
+      card.append(inner, head); return card;
+    }
+    const Guides = {
+      ops: `
+        <div><strong>Boot:</strong> <code>Atomic.init({asx:'/app.asx'})</code></div>
+        <div><strong>Bindings:</strong> <code>data-bind="path.to.state"</code> → <em>micro reactive</em></div>
+        <div><strong>Effects:</strong> SCX tokens with safe parser; never <code>eval</code>.</div>
+        <div><strong>Ops API:</strong> <code>Atomic.set</code>, <code>Atomic.update</code>, <code>Atomic.route</code>, <code>Atomic.effect</code></div>
+      `,
+      v2: `
+        <div><strong>Splash:</strong> playful fake boot, then mount UI.</div>
+        <div><strong>SCX Grammar:</strong> <code>(?)</code> if, <code>(∴)</code> then, <code>(¬)</code> else, <code>(⊕)</code> inc.</div>
+        <div><strong>Cipher:</strong> rotating alias map; decode server-side.</div>
+      `,
+      mx2: `
+        <div><strong>Mx2LM Role:</strong> Generate full <code>.asx</code> apps.</div>
+        <div><strong>Primary format:</strong> <code>asx-shell-v1</code> with $state/$routes/$effects.</div>
+        <div><strong>Components:</strong> div/text/button/canvas3d/if/forEach/tabs…</div>
+      `,
+      cypher: `
+        <div><strong>Core Dict:</strong> <code>@ # $ % & * ^ ~ ! ?</code> …</div>
+        <div><strong>Actions:</strong> <code>(>) (&lt;)</code> send/receive, <code>(%)</code> save, <code>(∂)</code> update…</div>
+        <div><strong>Best Practice:</strong> parse tokens, whitelist ops, rotate keys.</div>
+      `
+    };
+
+    /* ---------- Diagnostics ---------- */
+    function renderDiagnostics(root){
+      const wrap=document.createElement('div'); wrap.className='grid';
+      const card=document.createElement('div'); card.className='mini-runtime'; const inner=document.createElement('div'); inner.style.padding='10px'; inner.style.color='#aaffaa';
+      inner.innerHTML = '<div><strong>Checks:</strong></div><ul style="margin:6px 0 0 16px"><li>DOM Ready ✅</li><li>Service Worker API '+('serviceWorker' in navigator? '✅':'❌')+'</li><li>asx:ready Fired (demo) ✅</li></ul>';
+      const head=document.createElement('div'); head.className='mini-hud'; const b=document.createElement('span'); b.className='badge'; b.textContent='Diagnostics'; head.appendChild(b);
+      card.append(inner, head); wrap.append(card); root.appendChild(wrap);
+    }
+
+    function renderTerminal(root){
+      const wrap=document.createElement('div'); wrap.style.color='#aaffaa'; wrap.innerHTML='<p>Open the left terminal to issue crew commands. e.g., <code>nav: scan sector-7</code></p>';
+      root.appendChild(wrap);
+    }
+
+    // Boot splash logs
+    log('Initializing ASX Core Runtime…','sys');
+    log('Loading Liquid Atomic Cipher…','sys');
+    log('Activating Multi-Agent Loop…','sys');
+    log('Runtime Online.','sys');
+
+    // Velocity counter animation
+    let v=0; const velVal=document.getElementById('velVal'); const pwrVal=document.getElementById('pwrVal');
+    const vTimer=setInterval(()=>{ if(v<1337){ v+=23; velVal.textContent=v; } else clearInterval(vTimer); }, 50);
+    // playful power wobble
+    setInterval(()=>{ const p = 95 + Math.floor(Math.random()*6); pwrVal.firstChild.nodeValue = p; }, 1200);
+  </script>
+</body>
+</html>

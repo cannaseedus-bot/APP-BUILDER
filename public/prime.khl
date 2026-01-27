@@ -1,0 +1,177 @@
+{
+  "立v": "ATOMIC_1.1.0",
+  "n": "PRIME_ATOMIC_VISUAL_CONTROL_SYSTEM",
+  "d": "Machine-readable cognitive control surface fully synchronized to PRIME.khl prime_tick execution.",
+  "timestamp": 1890000008000,
+
+  "@law": "ATOMIC_IS_NOT_STYLE_ATOMIC_IS_STRUCTURAL_VISUAL_COGNITION",
+  "@binding": "PRIME→ATOMIC→CSS→DOM",
+  "@compression": "VISUAL_GRAMMAR_QUANTUM",
+  "@ratio": 0.004,
+
+  "quantum_state": "|Ψ⟩ = α|LAYOUT⟩⊗β|MODE⟩⊗γ|ENTROPY⟩⊗δ|WEIGHT⟩⊗ε|AST⟩",
+
+  // =========================================================
+  // 1. PRIME_TICK → ATOMIC VISUAL PHASE BINDING
+  // =========================================================
+
+  "@prime_tick_visual_binding": {
+    "PERCEPTION_LAYER": {
+      "source_blocks": ["🔍SCANNER_BLOCK", "📊GRID_BLOCK", "🎯TARGET_BLOCK"],
+      "visual_mode": "perceiving",
+      "entropy_source": "SCANNER_VARIANCE",
+      "ast_overlay": true
+    },
+
+    "REPRESENTATION_LAYER": {
+      "source_blocks": ["🔣SYMBOL_BLOCK", "🎭PATTERN_BLOCK", "💾STORAGE_BLOCK"],
+      "visual_mode": "reasoning",
+      "ast_overlay": true
+    },
+
+    "REASONING_LAYER": {
+      "source_blocks": ["🧠PROCESSOR_BLOCK", "🔗CONNECTOR_BLOCK", "⚖️BALANCER_BLOCK"],
+      "visual_mode": "reasoning",
+      "weight_visualization": true
+    },
+
+    "DECISION_LAYER": {
+      "source_blocks": ["🎮CONTROLLER_BLOCK", "🚦GATE_BLOCK", "🔁LOOPER_BLOCK"],
+      "visual_mode": "deciding",
+      "branch_highlighting": true
+    },
+
+    "ACTION_LAYER": {
+      "source_blocks": ["💬CHATTER_BLOCK", "🎨CANVAS_BLOCK", "📱TERMINAL_BLOCK"],
+      "visual_mode": "acting",
+      "dom_output": true
+    },
+
+    "META_LAYER": {
+      "source_blocks": ["👁️OBSERVER_BLOCK", "🎬DIRECTOR_BLOCK", "🧪LAB_BLOCK"],
+      "visual_mode": "reflecting",
+      "telemetry_overlay": true
+    }
+  },
+
+  // =========================================================
+  // 2. PRIME VISUAL AXES (NOW DRIVEN BY @reasoning.weights)
+  // =========================================================
+
+  "🧠PRIME_VISUAL_AXES": {
+    "entropy": { "var": "--prime-entropy", "default": 0.15 },
+    "innovation": { "var": "--prime-innovation", "default": 0.18 },
+    "stability": { "var": "--prime-stability", "default": 0.85 },
+    "meta_dominance": { "var": "--prime-meta-dominance", "default": 0.7 }
+  },
+
+  // =========================================================
+  // 3. ATOMIC ↔ BLOCK FAMILY ENTROPY
+  // =========================================================
+
+  "🧮FAMILY_ENTROPY_MAP": {
+    "STRUCTURE": { "source": "📦CONTAINER_BLOCK", "entropy_bias": 0.1 },
+    "FLOW": { "source": "🌀FLOW_BLOCK", "entropy_bias": 0.25 },
+    "COGNITIVE": { "source": "🧠PROCESSOR_BLOCK", "entropy_bias": 0.18 },
+    "CONTROL": { "source": "🎮CONTROLLER_BLOCK", "entropy_bias": 0.12 },
+    "INTERFACE": { "source": "🎨CANVAS_BLOCK", "entropy_bias": 0.22 },
+    "META": { "source": "👁️OBSERVER_BLOCK", "entropy_bias": 0.05 }
+  },
+
+  // =========================================================
+  // 4. ASX BLOCK → VISUAL BINDINGS (EXECUTION-AWARE)
+  // =========================================================
+
+  "🧱ASX_BLOCK_VISUAL_BINDINGS": {
+    "🔍SCANNER_BLOCK": { "outline": "green", "pulse": true },
+    "📊GRID_BLOCK": { "background": "gridlines", "density": "adaptive" },
+    "🧠PROCESSOR_BLOCK": { "border": "cyan", "glow": true },
+    "⚖️BALANCER_BLOCK": { "gradient": "balance" },
+    "🎮CONTROLLER_BLOCK": { "accent": "decision" },
+    "🚦GATE_BLOCK": { "pattern": "striped" },
+    "👁️OBSERVER_BLOCK": { "glow": "meta" },
+    "🧪LAB_BLOCK": { "border": "dashed", "pulse": true }
+  },
+
+  // =========================================================
+  // 5. AST + PIPELINE VISUALIZATION (PRIME-TICK DRIVEN)
+  // =========================================================
+
+  "🌳AST_VISUAL_SYSTEM": {
+    "grid": { "type": "auto_fit", "min_node_width": 70 },
+    "node": {
+      "radius": 15,
+      "hover": {
+        "jitter_from": "--prime-entropy",
+        "glow": true
+      }
+    },
+    "connection": {
+      "thickness": 2,
+      "active_animation": "pulse"
+    }
+  },
+
+  "🧩PIPELINE_VISUAL_SYSTEM": {
+    "step": { "border": "active_color", "pulse": true },
+    "container": { "flow": "row_wrap", "surface": "soft" }
+  },
+
+  // =========================================================
+  // 6. TYSON–CHOMSKY VISUAL FUSION HOOKS
+  // =========================================================
+
+  "⚙️TYSON_CHOMSKY_VISUAL_FUSION": {
+    "tyson": { "signal_color": "#22c55e" },
+    "chomsky": { "signal_color": "#38bdf8" },
+    "conflict": { "signal_color": "#f97316" },
+    "fusion": { "signal_color": "#a855f7" }
+  },
+
+  // =========================================================
+  // 7. MICRONAUT + EXECUTION SURFACES
+  // =========================================================
+
+  "🧠MICRONAUT_VISUAL_CARDS": {
+    "active": { "scan_animation": true, "glow": "mode_color" },
+    "idle": { "opacity": 0.5 }
+  },
+
+  "📊LOGGING_AND_EXECUTION_SURFACES": {
+    "log_panel": {
+      "scroll": true,
+      "monospace": true,
+      "levels": ["info", "success", "warning", "error"]
+    },
+    "execution_result": {
+      "border": "mode_color",
+      "badge": "Result"
+    }
+  },
+
+  // =========================================================
+  // 8. AUTHORITY + MUTATION LAW
+  // =========================================================
+
+  "⚙️ATOMIC_APPLICATION_RULES": {
+    "authority": "PRIME",
+    "decision_stage": "PRIME_TICK_VISUAL_PHASE",
+    "mutation_sources": [
+      "prime.xjson:@reasoning.weights",
+      "manifest.json:@device_context",
+      "klh.xjson:@routing_pressure"
+    ],
+    "forbidden_sources": ["ui", "user_css", "frameworks"]
+  },
+
+  // =========================================================
+  // 9. SEAL
+  // =========================================================
+
+  "🏁ATOMIC_SEAL": {
+    "authority": "ATOMIC.XJSON_v1.1.0",
+    "verification": "PRIME_TICK_VISUAL_SYNC_ACTIVE",
+    "binding": "PRIME→ATOMIC→CSS→DOM",
+    "manifesto": "STYLE_IS_NOT_DECORATION_STYLE_IS_DECISION"
+  }
+}

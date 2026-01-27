@@ -1,0 +1,138 @@
+{
+  "@context": "xjson://asxr/quantum/control/v1",
+  "@v": "1.0.0",
+  "name": "MX2LM_QUANTUM_CONTROL",
+  "role": "execution_governor",
+  "law": "XCFE_GOVERNS → KUHUL_EXECUTES → QUANTUM_DECIDES",
+
+  "@quantum_state": "|OBSERVE⟩⊗|DECIDE⟩⊗|ROUTE⟩⊗|LIMIT⟩",
+
+  "visibility": {
+    "default": "sealed",
+    "exposed_to_ui": false,
+    "requires_kernel": true
+  },
+
+  "mounts": {
+    "godmode": {
+      "source": "/godmode-manifest.json",
+      "mount_point": "universe",
+      "default": false,
+      "permissions": ["admin", "kernel", "trainer"],
+      "audit": true
+    }
+  },
+
+  "execution_gates": {
+    "ui": {
+      "allowed": false,
+      "reason": "ghost_mask_enforced"
+    },
+    "kernel": {
+      "allowed": true,
+      "role": "arbiter"
+    }
+  },
+
+  "activation_modes": {
+    "observe": {
+      "label": "Observation Mode",
+      "description": "Read-only access to universe metrics.",
+      "capabilities": [
+        "metrics.read",
+        "status.read"
+      ],
+      "write": false
+    },
+
+    "simulate": {
+      "label": "Simulation Mode",
+      "description": "Dry-run pipelines without side effects.",
+      "capabilities": [
+        "pipeline.simulate",
+        "compression.test",
+        "routing.preview"
+      ],
+      "write": false
+    },
+
+    "execute": {
+      "label": "Execution Mode",
+      "description": "Live execution with bounded limits.",
+      "capabilities": [
+        "pipeline.execute",
+        "shard.route",
+        "model.infer"
+      ],
+      "limits": {
+        "max_ops": 1000,
+        "max_duration_ms": 5000,
+        "rollback": true
+      }
+    },
+
+    "train": {
+      "label": "Training Mode",
+      "description": "TPU / RLHF / learning pipelines.",
+      "capabilities": [
+        "trainer.submit",
+        "dataset.mount",
+        "model.update"
+      ],
+      "limits": {
+        "requires_confirmation": true,
+        "auto_pause_on_error": true
+      }
+    },
+
+    "godmode": {
+      "label": "GODMODE",
+      "description": "Full universe authority.",
+      "capabilities": ["*"],
+      "requires": {
+        "kernel_signature": true,
+        "manual_unlock": true,
+        "audit_log": true
+      }
+    }
+  },
+
+  "xcfe": {
+    "control_vectors": [
+      "@if_then_else",
+      "@dispatch",
+      "@loop",
+      "@microagent"
+    ],
+    "decision_matrix": {
+      "@if": "permission.granted",
+      "@then": "allow",
+      "@else": "deny"
+    }
+  },
+
+  "limits": {
+    "ui_calls": 0,
+    "recursive_depth": 6,
+    "parallel_agents": 8,
+    "entropy_ceiling": 0.42
+  },
+
+  "audit": {
+    "enabled": true,
+    "store": "asx_ram",
+    "events": [
+      "mount",
+      "execute",
+      "train",
+      "escalate",
+      "deny"
+    ]
+  },
+
+  "failure_policy": {
+    "on_violation": "terminate",
+    "on_error": "rollback",
+    "on_overflow": "throttle"
+  }
+}

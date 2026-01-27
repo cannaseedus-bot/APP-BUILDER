@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="atomic" data-os="prime">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ASX OS — Ultimate Trinity Studio</title>
+<!-- Fabric.js for Canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+<!-- JSZip for template export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+/* ===== ASX OS CORE VARIABLES ===== */
+:root {
+  --atomic-bg: #010307;
+  --atomic-panel: #060d17;
+  --atomic-surface: #0a1520;
+  --atomic-text: #e8fff6;
+  --atomic-muted: #7e8a92;
+  --atomic-border: #16f2aa;
+  --atomic-accent: #00ffff;
+  --asx-color: #f9a826;
+  --kuhul-color: #16f2aa;
+  --scx-color: #ff6b6b;
+  --klh-color: #9d4edd;
+  --xjson-color: #00f5ff;
+}
+
+.atomic-body {
+  background: radial-gradient(circle at top, #07101e, var(--atomic-bg) 60%);
+  color: var(--atomic-text);
+  font-family: system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== TRINITY STUDIO LAYOUT ===== */
+.trinity-studio {
+  display: grid;
+  grid-template-columns: 280px 1fr 350px;
+  grid-template-rows: 60px 1fr;
+  grid-template-areas: 
+    "header header header"
+    "sidebar main inspector";
+  height: 100vh;
+  overflow: hidden;
+}
+
+.studio-header {
+  grid-area: header;
+  background: var(--atomic-panel);
+  border-bottom: 1px solid rgba(22, 242, 170, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.studio-sidebar {
+  grid-area: sidebar;
+  background: var(--atomic-surface);
+  border-right: 1px solid rgba(22, 242, 170, 0.2);
+  overflow-y: auto;
+}
+
+.studio-main {
+  grid-area: main;
+  background: var(--atomic-bg);
+  overflow: auto;
+  position: relative;
+}
+
+.studio-inspector {
+  grid-area: inspector;
+  background: var(--atomic-surface);
+  border-left: 1px solid rgba(22, 242, 170, 0.2);
+  overflow-y: auto;
+}
+
+/* ===== COMPONENT LIBRARY ===== */
+.component-library {
+  padding: 20px;
+}
+
+.component-category {
+  margin-bottom: 25px;
+}
+
+.category-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--asx-color);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.component-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.component-item {
+  background: rgba(249, 168, 38, 0.1);
+  border: 1px solid var(--asx-color);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 12px;
+  cursor: grab;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.component-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(249, 168, 38, 0.2);
+}
+
+.component-item:active {
+  cursor: grabbing;
+}
+
+.component-glyph {
+  font-size: 20px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ===== CANVAS AREA ===== */
+.canvas-container {
+  padding: 20px;
+  height: 100%;
+}
+
+#canvas {
+  border: 1px solid rgba(22, 242, 170, 0.3);
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.canvas-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.control-button {
+  background: var(--asx-color);
+  color: var(--atomic-bg);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(249, 168, 38, 0.3);
+}
+
+/* ===== INSPECTOR PANEL ===== */
+.inspector-panel {
+  padding: 20px;
+}
+
+.inspector-section {
+  margin-bottom: 25px;
+}
+
+.inspector-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--kuhul-color);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.control-group {
+  margin-bottom: 15px;
+}
+
+.control-label {
+  display: block;
+  font-size: 12px;
+  color: var(--atomic-muted);
+  margin-bottom: 6px;
+}
+
+.control-input {
+  width: 100%;
+  background: var(--atomic-panel);
+  border: 1px solid rgba(22, 242, 170, 0.3);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--atomic-text);
+  font-size: 12px;
+}
+
+.control-input:focus {
+  outline: none;
+  border-color: var(--kuhul-color);
+}
+
+/* ===== ASX BLOCKS INTEGRATION ===== */
+.asx-palette {
+  background: rgba(22, 242, 170, 0.05);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.asx-glyph-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.asx-glyph-item {
+  background: rgba(249, 168, 38, 0.1);
+  border: 1px solid var(--asx-color);
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 18px;
+}
+
+.asx-glyph-item:hover {
+  background: rgba(249, 168, 38, 0.2);
+  transform: scale(1.05);
+}
+
+/* ===== ASX OS DASHBOARD STYLES ===== */
+.asx-dashboard {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.systems-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.system-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 15px;
+  border-left: 3px solid rgba(22, 242, 170, 0.8);
+}
+
+.system-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: rgba(22, 242, 170, 1);
+}
+
+.glyph-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.glyph-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  min-width: 60px;
+}
+
+.glyph-symbol {
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+}
+
+.glyph-name {
+  font-size: 0.7rem;
+  color: #a0a0a0;
+}
+
+.dns-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.dns-item {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid rgba(56, 189, 248, 0.8);
+}
+
+.dns-host {
+  font-weight: 600;
+  color: rgba(56, 189, 248, 1);
+}
+
+.dns-desc {
+  font-size: 0.75rem;
+  color: #a0a0a0;
+  margin-top: 4px;
+}
+
+.rest-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.rest-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #e0e0e0;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.rest-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(22, 242, 170, 0.5);
+}
+
+.port-display {
+  background: rgba(22, 242, 170, 0.1);
+  border: 1px solid rgba(22, 242, 170, 0.3);
+  border-radius: 6px;
+  padding: 8px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.port-title {
+  font-size: 0.8rem;
+  color: rgba(22, 242, 170, 1);
+  margin-bottom: 4px;
+}
+
+.port-number {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.status-bar {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.active {
+  background: rgba(22, 242, 170, 1);
+  animation: pulse 2s infinite;
+}
+
+.status-dot.ready {
+  background: rgba(56, 189, 248, 1);
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* ===== TERMINAL STYLES ===== */
+.terminal-container {
+  background: #1e1e2e;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  height: 100%;
+}
+
+.terminal-header {
+  background: rgba(40, 40, 60, 0.8);
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.terminal-tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.terminal-tab {
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.terminal-tab.active {
+  background: rgba(22, 242, 170, 0.3);
+}
+
+.terminal-output {
+  height: calc(100% - 50px);
+  padding: 15px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #f8f8f2;
+  overflow: auto;
+  background: #1e1e2e;
+}
+
+.code-line {
+  margin-bottom: 2px;
+}
+
+.code-comment {
+  color: #6272a4;
+}
+
+.code-keyword {
+  color: #ff79c6;
+}
+
+.code-function {
+  color: #50fa7b;
+}
+
+.code-string {
+  color: #f1fa8c;
+}
+
+.code-type {
+  color: #8be9fd;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1200px) {
+  .trinity-studio {
+    grid-template-columns: 250px 1fr 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .trinity-studio {
+    grid-template-columns: 1fr;
+    grid-template-areas: 
+      "header"
+      "main"
+      "sidebar"
+      "inspector";
+    grid-template-rows: 60px 1fr auto auto;
+  }
+  
+  .component-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ===== TECHNOLOGY BADGES ===== */
+.tech-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 8px;
+}
+
+.badge-klh { background: var(--klh-color); color: var(--atomic-bg); }
+.badge-kuhul { background: var(--kuhul-color); color: var(--atomic-bg); }
+.badge-xjson { background: var(--xjson-color); color: var(--atomic-bg); }
+.badge-scx { background: var(--scx-color); color: var(--atomic-bg); }
+.badge-asx { background: var(--asx-color); color: var(--atomic-bg); }
+
+/* ===== MODE SWITCHER ===== */
+.mode-switcher {
+  display: flex;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.mode-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--atomic-muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.mode-btn.active {
+  background: var(--asx-color);
+  color: var(--atomic-bg);
+}
+</style>
+</head>
+<body class="atomic-body">
+<div class="trinity-studio">
+  
+  <!-- HEADER -->
+  <header class="studio-header">
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <h1 style="font-size: 1.4em; margin: 0; background: linear-gradient(135deg, var(--klh-color), var(--kuhul-color), var(--asx-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        ASX OS TRINITY STUDIO
+      </h1>
+      <div>
+        <span class="tech-badge badge-klh">KLH</span>
+        <span class="tech-badge badge-kuhul">K'uhul</span>
+        <span class="tech-badge badge-asx">ASX</span>
+        <span class="tech-badge badge-scx">SCX</span>
+        <span class="tech-badge badge-xjson">XJSON</span>
+      </div>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <div class="mode-switcher">
+        <button class="mode-btn active" onclick="switchMode('design')">Design</button>
+        <button class="mode-btn" onclick="switchMode('terminal')">Terminal</button>
+        <button class="mode-btn" onclick="switchMode('dashboard')">Dashboard</button>
+      </div>
+      <button class="control-button" onclick="saveTemplate()">Save Template</button>
+      <input type="file" id="template-upload" accept=".zip" style="display: none;">
+      <button class="control-button" onclick="document.getElementById('template-upload').click()">Load Template</button>
+    </div>
+  </header>
+
+  <!-- SIDEBAR - COMPONENT LIBRARY & ASX DASHBOARD -->
+  <aside class="studio-sidebar">
+    <div id="design-sidebar" class="component-library">
+      <!-- BASIC COMPONENTS -->
+      <div class="component-category">
+        <div class="category-header">Basic Elements</div>
+        <div class="component-grid">
+          <div class="component-item" draggable="true" data-type="text" data-content="Text Element">
+            <span class="component-glyph">T</span>
+            Text
+          </div>
+          <div class="component-item" draggable="true" data-type="rectangle">
+            <span class="component-glyph">▭</span>
+            Rectangle
+          </div>
+          <div class="component-item" draggable="true" data-type="circle">
+            <span class="component-glyph">●</span>
+            Circle
+          </div>
+          <div class="component-item" draggable="true" data-type="line">
+            <span class="component-glyph">─</span>
+            Line
+          </div>
+        </div>
+      </div>
+
+      <!-- UI COMPONENTS -->
+      <div class="component-category">
+        <div class="category-header">UI Components</div>
+        <div class="component-grid">
+          <div class="component-item" draggable="true" data-type="button" data-content="Button">
+            <span class="component-glyph">⎔</span>
+            Button
+          </div>
+          <div class="component-item" draggable="true" data-type="input" data-content="Input Field">
+            <span class="component-glyph">⎕</span>
+            Input
+          </div>
+          <div class="component-item" draggable="true" data-type="card">
+            <span class="component-glyph">▦</span>
+            Card
+          </div>
+          <div class="component-item" draggable="true" data-type="panel">
+            <span class="component-glyph">◰</span>
+            Panel
+          </div>
+        </div>
+      </div>
+
+      <!-- ASX BLOCKS -->
+      <div class="component-category">
+        <div class="category-header">ASX Blocks</div>
+        <div class="asx-palette">
+          <div class="asx-glyph-grid">
+            <div class="asx-glyph-item" data-glyph="⎔">⎔</div>
+            <div class="asx-glyph-item" data-glyph="▦">▦</div>
+            <div class="asx-glyph-item" data-glyph="◰">◰</div>
+            <div class="asx-glyph-item" data-glyph="⬡">⬡</div>
+            <div class="asx-glyph-item" data-glyph="◷">◷</div>
+            <div class="asx-glyph-item" data-glyph="▣">▣</div>
+            <div class="asx-glyph-item" data-glyph="◫">◫</div>
+            <div class="asx-glyph-item" data-glyph="◈">◈</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MEDIA COMPONENTS -->
+      <div class="component-category">
+        <div class="category-header">Media</div>
+        <div class="component-grid">
+          <div class="component-item" draggable="true" data-type="image">
+            <span class="component-glyph">🖼️</span>
+            Image
+          </div>
+          <div class="component-item" onclick="addSampleImage()">
+            <span class="component-glyph">📷</span>
+            Sample Image
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="dashboard-sidebar" class="asx-dashboard" style="display: none;">
+      <div class="port-display">
+        <div class="port-title">ASX PORT SPECIFICATION</div>
+        <div class="port-number">61680+ (KUHUL-NPX v3)</div>
+      </div>
+      
+      <div class="systems-grid">
+        <div class="system-card">
+          <div class="system-title">Kuhul System</div>
+          <div class="glyph-list">
+            <div class="glyph-item">
+              <div class="glyph-symbol">Pop</div>
+              <div class="glyph-name">function</div>
+            </div>
+            <div class="glyph-item">
+              <div class="glyph-symbol">Wo</div>
+              <div class="glyph-name">assign</div>
+            </div>
+            <div class="glyph-item">
+              <div class="glyph-symbol">Sek</div>
+              <div class="glyph-name">execute</div>
+            </div>
+          </div>
+          <div class="rest-controls">
+            <button class="rest-btn" onclick="ASX.executeKuhul()">Run Kuhul</button>
+            <button class="rest-btn" onclick="ASX.callREST('/api/klh/router')">KLH Router</button>
+          </div>
+        </div>
+
+        <div class="system-card">
+          <div class="system-title">SCX System</div>
+          <div class="glyph-list">
+            <div class="glyph-item">
+              <div class="glyph-symbol">(?)</div>
+              <div class="glyph-name">if</div>
+            </div>
+            <div class="glyph-item">
+              <div class="glyph-symbol">(∴)</div>
+              <div class="glyph-name">then</div>
+            </div>
+            <div class="glyph-item">
+              <div class="glyph-symbol">⟁</div>
+              <div class="glyph-name">block</div>
+            </div>
+          </div>
+          <div class="rest-controls">
+            <button class="rest-btn" onclick="ASX.decompressSCX()">Decompress</button>
+            <button class="rest-btn" onclick="ASX.callREST('/api/scxq2/compress')">Compress</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="inspector-header">DNS Authority</div>
+      <div class="dns-grid">
+        <div class="dns-item">
+          <div class="dns-host">xjson.app</div>
+          <div class="dns-desc">OS Root Domain → 127.0.0.1:61680</div>
+        </div>
+        <div class="dns-item">
+          <div class="dns-host">rig.xjson.app</div>
+          <div class="dns-desc">ASX-RIG Backend → :61681</div>
+        </div>
+        <div class="dns-item">
+          <div class="dns-host">hive.xjson.app</div>
+          <div class="dns-desc">HIVE Shard Manager → :61680</div>
+        </div>
+        <div class="dns-item">
+          <div class="dns-host">prime.xjson.app</div>
+          <div class="dns-desc">PRIME Cockpit → :61682</div>
+        </div>
+      </div>
+
+      <div class="inspector-header">REST Mesh</div>
+      <div class="rest-controls">
+        <button class="rest-btn" onclick="ASX.callREST('/api/xjson/compile')">XJSON Compile</button>
+        <button class="rest-btn" onclick="ASX.callREST('/api/hive/shards')">HIVE Shards</button>
+        <button class="rest-btn" onclick="ASX.callREST('/api/os/state')">OS State</button>
+        <button class="rest-btn" onclick="ASX.callREST('/api/trainer/status')">Trainer</button>
+        <button class="rest-btn" onclick="ASX.callREST('/api/prime/modules')">PRIME</button>
+        <button class="rest-btn" onclick="ASX.callREST('/api/basher/run')">Basher</button>
+      </div>
+
+      <div class="status-bar">
+        <div class="status-item">
+          <div class="status-dot active"></div>
+          <span>Kernel</span>
+        </div>
+        <div class="status-item">
+          <div class="status-dot ready"></div>
+          <span>DNS</span>
+        </div>
+        <div class="status-item">
+          <div class="status-dot ready"></div>
+          <span>REST</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CANVAS AREA -->
+  <main class="studio-main">
+    <div id="design-main" class="canvas-container">
+      <div class="canvas-controls">
+        <button class="control-button" onclick="addText()">Add Text</button>
+        <button class="control-button" onclick="addRectangle()">Add Rectangle</button>
+        <button class="control-button" onclick="addCircle()">Add Circle</button>
+        <button class="control-button" onclick="canvas.clear()">Clear Canvas</button>
+        <button class="control-button" onclick="toggleGrid()">Toggle Grid</button>
+      </div>
+      <canvas id="canvas" width="1200" height="800"></canvas>
+    </div>
+
+    <div id="terminal-main" class="canvas-container" style="display: none;">
+      <div class="terminal-container">
+        <div class="terminal-header">
+          <div class="terminal-tabs">
+            <div class="terminal-tab active">terminal</div>
+            <div class="terminal-tab">manifest.json</div>
+            <div class="terminal-tab">sw.js</div>
+          </div>
+          <div class="panel-actions">
+            <button class="btn" onclick="ASX.callKUHUL('/kuhul/ports')">Port Map</button>
+            <button class="btn btn-primary" onclick="ASX.launchBitBash()">Launch Backend</button>
+          </div>
+        </div>
+        <div class="terminal-output" id="terminal-output">
+          <div class="code-line"><span class="code-comment">// ASX OS - Universal Operating System v3</span></div>
+          <div class="code-line"><span class="code-comment">// KUHUL-NPX v3 - ASX Port Specification: 61680+</span></div>
+          <div class="code-line"></div>
+          <div class="code-line"><span class="code-type">ASX></span> System initialized. Kernel v3-KUHUL online.</div>
+          <div class="code-line"><span class="code-type">ASX></span> Port Root: 61680 | Architecture: 3-file-OS</div>
+          <div class="code-line"><span class="code-type">ASX></span> DNS Zones: xjson.app → 127.0.0.1:61680</div>
+          <div class="code-line"><span class="code-type">ASX></span> REST Mesh: /api/* + /kuhul/* endpoints active</div>
+          <div class="code-line"><span class="code-type">ASX></span> Ready for KUHUL-NPX backend launch.</div>
+          <div class="code-line" id="dynamic-output"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- INSPECTOR PANEL -->
+  <aside class="studio-inspector">
+    <div class="inspector-panel">
+      
+      <!-- SELECTION CONTROLS -->
+      <div class="inspector-section">
+        <div class="inspector-header">Selection Properties</div>
+        
+        <div class="control-group">
+          <label class="control-label">Text Content</label>
+          <input type="text" id="text-input" class="control-input" placeholder="Enter text...">
+        </div>
+        
+        <div class="control-group">
+          <label class="control-label">Font Size</label>
+          <input type="number" id="font-size-input" class="control-input" value="24" min="8" max="120">
+        </div>
+        
+        <div class="control-group">
+          <label class="control-label">Color</label>
+          <input type="color" id="color-input" class="control-input" value="#000000">
+        </div>
+        
+        <div class="control-group">
+          <label class="control-label">Position X</label>
+          <input type="number" id="position-x" class="control-input" value="0">
+        </div>
+        
+        <div class="control-group">
+          <label class="control-label">Position Y</label>
+          <input type="number" id="position-y" class="control-input" value="0">
+        </div>
+      </div>
+
+      <!-- ASX BLOCK PROPERTIES -->
+      <div class="inspector-section">
+        <div class="inspector-header">ASX Block Properties</div>
+        
+        <div class="control-group">
+          <label class="control-label">Block Type</label>
+          <select id="asx-type" class="control-input">
+            <option value="container">Container (⎔)</option>
+            <option value="grid">Grid (▦)</option>
+            <option value="panel">Panel (◰)</option>
+            <option value="header">Header (⬡)</option>
+            <option value="sidebar">Sidebar (◷)</option>
+            <option value="content">Content (▣)</option>
+            <option value="footer">Footer (◫)</option>
+            <option value="hero">Hero (◈)</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label class="control-label">Mobile Behavior</label>
+          <select id="mobile-behavior" class="control-input">
+            <option value="stack-vertical">Stack Vertical</option>
+            <option value="single-column">Single Column</option>
+            <option value="full-width">Full Width</option>
+            <option value="fixed-top">Fixed Top</option>
+            <option value="hidden-drawer">Hidden Drawer</option>
+            <option value="compact">Compact</option>
+          </select>
+        </div>
+        
+        <button class="control-button" style="width: 100%; margin-top: 10px;" onclick="applyASXProperties()">
+          Apply ASX Properties
+        </button>
+      </div>
+
+      <!-- EXPORT OPTIONS -->
+      <div class="inspector-section">
+        <div class="inspector-header">Export & Integration</div>
+        
+        <div class="control-group">
+          <label class="control-label">Export Format</label>
+          <select id="export-format" class="control-input">
+            <option value="asx-glyph">ASX Glyph Code</option>
+            <option value="xjson">XJSON Structure</option>
+            <option value="html">HTML + CSS</option>
+            <option value="klh-manifest">KLH Manifest</option>
+          </select>
+        </div>
+        
+        <button class="control-button" style="width: 100%; margin-top: 10px;" onclick="exportComposition()">
+          Export Composition
+        </button>
+        
+        <div id="export-output" style="margin-top: 15px; display: none;">
+          <textarea id="export-code" class="control-input" style="height: 120px; font-family: monospace; font-size: 11px;" readonly></textarea>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+</div>
+
+<script>
+// ===== FABRIC.JS CANVAS INITIALIZATION =====
+const canvas = new fabric.Canvas('canvas');
+let selectedObject = null;
+let showGrid = false;
+
+// Initialize grid
+function initGrid() {
+  const gridSize = 50;
+  const gridGroup = new fabric.Group([], {
+    selectable: false,
+    evented: false,
+    excludeFromExport: true
+  });
+
+  for (let i = 0; i < canvas.width / gridSize; i++) {
+    const verticalLine = new fabric.Line([i * gridSize, 0, i * gridSize, canvas.height], {
+      stroke: 'rgba(22, 242, 170, 0.1)',
+      strokeWidth: 1,
+      selectable: false,
+      evented: false
+    });
+    gridGroup.add(verticalLine);
+  }
+
+  for (let i = 0; i < canvas.height / gridSize; i++) {
+    const horizontalLine = new fabric.Line([0, i * gridSize, canvas.width, i * gridSize], {
+      stroke: 'rgba(22, 242, 170, 0.1)',
+      strokeWidth: 1,
+      selectable: false,
+      evented: false
+    });
+    gridGroup.add(horizontalLine);
+  }
+
+  canvas.add(gridGroup);
+  canvas.gridGroup = gridGroup;
+  gridGroup.visible = showGrid;
+  canvas.renderAll();
+}
+
+function toggleGrid() {
+  showGrid = !showGrid;
+  if (canvas.gridGroup) {
+    canvas.gridGroup.visible = showGrid;
+    canvas.renderAll();
+  }
+}
+
+// ===== COMPONENT DRAG AND DROP =====
+document.addEventListener('DOMContentLoaded', () => {
+  initGrid();
+  
+  // Add drag and drop for components
+  const componentItems = document.querySelectorAll('.component-item[draggable="true"]');
+  componentItems.forEach(item => {
+    item.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('component-type', item.dataset.type);
+      if (item.dataset.content) {
+        e.dataTransfer.setData('component-content', item.dataset.content);
+      }
+    });
+  });
+
+  canvas.on('dragover', (e) => {
+    e.e.preventDefault();
+  });
+
+  canvas.on('drop', (e) => {
+    e.e.preventDefault();
+    const type = e.e.dataTransfer.getData('component-type');
+    const content = e.e.dataTransfer.getData('component-content');
+    const pointer = canvas.getPointer(e.e);
+    
+    switch(type) {
+      case 'text':
+        addTextAtPosition(pointer.x, pointer.y, content);
+        break;
+      case 'rectangle':
+        addRectangleAtPosition(pointer.x, pointer.y);
+        break;
+      case 'circle':
+        addCircleAtPosition(pointer.x, pointer.y);
+        break;
+      case 'button':
+        addButtonAtPosition(pointer.x, pointer.y);
+        break;
+      case 'input':
+        addInputAtPosition(pointer.x, pointer.y);
+        break;
+      case 'card':
+        addCardAtPosition(pointer.x, pointer.y);
+        break;
+      case 'panel':
+        addPanelAtPosition(pointer.x, pointer.y);
+        break;
+    }
+  });
+});
+
+// ===== COMPONENT CREATION FUNCTIONS =====
+function addText(content = 'New Text') {
+  addTextAtPosition(100, 100, content);
+}
+
+function addTextAtPosition(x, y, content = 'New Text') {
+  const text = new fabric.Text(content, {
+    left: x,
+    top: y,
+    fontSize: 24,
+    fill: '#000000',
+    fontFamily: 'Arial'
+  });
+  canvas.add(text);
+  canvas.setActiveObject(text);
+  updateControls({ target: text });
+  canvas.renderAll();
+}
+
+function addRectangle() {
+  addRectangleAtPosition(100, 100);
+}
+
+function addRectangleAtPosition(x, y) {
+  const rect = new fabric.Rect({
+    left: x,
+    top: y,
+    width: 100,
+    height: 60,
+    fill: '#16f2aa',
+    stroke: '#0a8a66',
+    strokeWidth: 2
+  });
+  canvas.add(rect);
+  canvas.setActiveObject(rect);
+  canvas.renderAll();
+}
+
+function addCircle() {
+  addCircleAtPosition(100, 100);
+}
+
+function addCircleAtPosition(x, y) {
+  const circle = new fabric.Circle({
+    left: x,
+    top: y,
+    radius: 40,
+    fill: '#9d4edd',
+    stroke: '#6a2c9c',
+    strokeWidth: 2
+  });
+  canvas.add(circle);
+  canvas.setActiveObject(circle);
+  canvas.renderAll();
+}
+
+function addButtonAtPosition(x, y) {
+  const button = new fabric.Rect({
+    left: x,
+    top: y,
+    width: 120,
+    height: 40,
+    fill: '#f9a826',
+    rx: 6,
+    ry: 6
+  });
+  
+  const buttonText = new fabric.Text('Button', {
+    left: x + 60,
+    top: y + 20,
+    fontSize: 14,
+    fill: '#000000',
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center'
+  });
+  
+  const group = new fabric.Group([button, buttonText], {
+    left: x,
+    top: y
+  });
+  
+  canvas.add(group);
+  canvas.setActiveObject(group);
+  canvas.renderAll();
+}
+
+function addInputAtPosition(x, y) {
+  const input = new fabric.Rect({
+    left: x,
+    top: y,
+    width: 200,
+    height: 36,
+    fill: '#ffffff',
+    stroke: '#cccccc',
+    strokeWidth: 1,
+    rx: 4,
+    ry: 4
+  });
+  
+  const inputText = new fabric.Text('Input Field', {
+    left: x + 10,
+    top: y + 18,
+    fontSize: 14,
+    fill: '#666666',
+    originY: 'center'
+  });
+  
+  const group = new fabric.Group([input, inputText], {
+    left: x,
+    top: y
+  });
+  
+  canvas.add(group);
+  canvas.setActiveObject(group);
+  canvas.renderAll();
+}
+
+function addCardAtPosition(x, y) {
+  const card = new fabric.Rect({
+    left: x,
+    top: y,
+    width: 240,
+    height: 160,
+    fill: '#ffffff',
+    stroke: '#e0e0e0',
+    strokeWidth: 1,
+    rx: 8,
+    ry: 8,
+    shadow: '0 4px 12px rgba(0,0,0,0.1)'
+  });
+  
+  canvas.add(card);
+  canvas.setActiveObject(card);
+  canvas.renderAll();
+}
+
+function addPanelAtPosition(x, y) {
+  const panel = new fabric.Rect({
+    left: x,
+    top: y,
+    width: 300,
+    height: 200,
+    fill: '#f5f5f5',
+    stroke: '#16f2aa',
+    strokeWidth: 2,
+    rx: 8,
+    ry: 8
+  });
+  
+  canvas.add(panel);
+  canvas.setActiveObject(panel);
+  canvas.renderAll();
+}
+
+function addSampleImage() {
+  // Create a sample image (in real implementation, this would load an actual image)
+  const img = new fabric.Rect({
+    left: 150,
+    top: 150,
+    width: 200,
+    height: 150,
+    fill: 'rgba(0, 245, 255, 0.3)',
+    stroke: '#00f5ff',
+    strokeWidth: 2
+  });
+  
+  const imgText = new fabric.Text('Sample Image', {
+    left: 250,
+    top: 225,
+    fontSize: 16,
+    fill: '#000000',
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center'
+  });
+  
+  const group = new fabric.Group([img, imgText], {
+    left: 150,
+    top: 150
+  });
+  
+  canvas.add(group);
+  canvas.setActiveObject(group);
+  canvas.renderAll();
+}
+
+// ===== SELECTION AND CONTROLS =====
+canvas.on('selection:created', updateControls);
+canvas.on('selection:updated', updateControls);
+canvas.on('selection:cleared', () => {
+  selectedObject = null;
+  document.getElementById('text-input').value = '';
+  document.getElementById('font-size-input').value = '24';
+  document.getElementById('color-input').value = '#000000';
+  document.getElementById('position-x').value = '0';
+  document.getElementById('position-y').value = '0';
+});
+
+function updateControls(e) {
+  selectedObject = e.target;
+  
+  if (selectedObject.type === 'text' || (selectedObject.type === 'group' && selectedObject._objects.some(obj => obj.type === 'text'))) {
+    let textObj = selectedObject;
+    if (selectedObject.type === 'group') {
+      textObj = selectedObject._objects.find(obj => obj.type === 'text');
+    }
+    
+    if (textObj) {
+      document.getElementById('text-input').value = textObj.text;
+      document.getElementById('font-size-input').value = textObj.fontSize;
+      document.getElementById('color-input').value = textObj.fill;
+    }
+  }
+  
+  if (selectedObject) {
+    document.getElementById('position-x').value = Math.round(selectedObject.left);
+    document.getElementById('position-y').value = Math.round(selectedObject.top);
+  }
+}
+
+// ===== CONTROL EVENT LISTENERS =====
+document.getElementById('text-input').addEventListener('input', (e) => {
+  if (selectedObject) {
+    if (selectedObject.type === 'text') {
+      selectedObject.text = e.target.value;
+    } else if (selectedObject.type === 'group') {
+      const textObj = selectedObject._objects.find(obj => obj.type === 'text');
+      if (textObj) {
+        textObj.text = e.target.value;
+      }
+    }
+    canvas.renderAll();
+  }
+});
+
+document.getElementById('font-size-input').addEventListener('input', (e) => {
+  if (selectedObject) {
+    if (selectedObject.type === 'text') {
+      selectedObject.fontSize = parseInt(e.target.value, 10);
+    } else if (selectedObject.type === 'group') {
+      const textObj = selectedObject._objects.find(obj => obj.type === 'text');
+      if (textObj) {
+        textObj.fontSize = parseInt(e.target.value, 10);
+      }
+    }
+    canvas.renderAll();
+  }
+});
+
+document.getElementById('color-input').addEventListener('input', (e) => {
+  if (selectedObject) {
+    if (selectedObject.type === 'text') {
+      selectedObject.set('fill', e.target.value);
+    } else if (selectedObject.type === 'group') {
+      const textObj = selectedObject._objects.find(obj => obj.type === 'text');
+      if (textObj) {
+        textObj.set('fill', e.target.value);
+      }
+    }
+    canvas.renderAll();
+  }
+});
+
+document.getElementById('position-x').addEventListener('input', (e) => {
+  if (selectedObject) {
+    selectedObject.set('left', parseInt(e.target.value, 10));
+    canvas.renderAll();
+  }
+});
+
+document.getElementById('position-y').addEventListener('input', (e) => {
+  if (selectedObject) {
+    selectedObject.set('top', parseInt(e.target.value, 10));
+    canvas.renderAll();
+  }
+});
+
+// ===== ASX BLOCKS INTEGRATION =====
+function applyASXProperties() {
+  if (!selectedObject) return;
+  
+  const blockType = document.getElementById('asx-type').value;
+  const mobileBehavior = document.getElementById('mobile-behavior').value;
+  
+  // Add ASX metadata to the object
+  selectedObject.set('asxType', blockType);
+  selectedObject.set('asxMobileBehavior', mobileBehavior);
+  
+  // Visual feedback
+  selectedObject.set('stroke', '#f9a826');
+  selectedObject.set('strokeWidth', 3);
+  
+  canvas.renderAll();
+  
+  alert(`ASX Properties Applied:\nType: ${blockType}\nMobile: ${mobileBehavior}`);
+}
+
+// ===== TEMPLATE SYSTEM =====
+document.getElementById('template-upload').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const zip = await JSZip.loadAsync(file);
+  const manifestFile = zip.file('manifest.json');
+  if (!manifestFile) {
+    alert('manifest.json not found in zip!');
+    return;
+  }
+
+  const manifest = JSON.parse(await manifestFile.async('string'));
+  canvas.clear();
+  initGrid();
+
+  for (const obj of manifest.objects) {
+    if (obj.type === 'text') {
+      const text = new fabric.Text(obj.content, {
+        left: obj.left || 100,
+        top: obj.top || 100,
+        fontSize: obj.fontSize || 24,
+        fill: obj.color || '#000000'
+      });
+      canvas.add(text);
+    }
+    if (obj.type === 'image' && obj.src) {
+      const imgFile = zip.file(obj.src);
+      if (imgFile) {
+        const imgBlob = await imgFile.async('blob');
+        const imgUrl = URL.createObjectURL(imgBlob);
+        fabric.Image.fromURL(imgUrl, (img) => {
+          img.set({
+            left: obj.left || 50,
+            top: obj.top || 50,
+            scaleX: obj.scaleX || 1,
+            scaleY: obj.scaleY || 1
+          });
+          canvas.add(img);
+        });
+      }
+    }
+  }
+  canvas.renderAll();
+});
+
+async function saveTemplate() {
+  const zip = new JSZip();
+  const manifest = { objects: [] };
+  const objects = canvas.getObjects().filter(obj => obj !== canvas.gridGroup);
+
+  for (const obj of objects) {
+    if (obj.type === 'text') {
+      manifest.objects.push({
+        type: 'text',
+        content: obj.text,
+        left: obj.left,
+        top: obj.top,
+        fontSize: obj.fontSize,
+        color: obj.fill,
+        asxType: obj.asxType,
+        asxMobileBehavior: obj.asxMobileBehavior
+      });
+    } else if (obj.type === 'rect' || obj.type === 'circle' || obj.type === 'group') {
+      // For shapes and groups, we'll represent them as generic objects
+      manifest.objects.push({
+        type: 'shape',
+        shapeType: obj.type,
+        left: obj.left,
+        top: obj.top,
+        width: obj.width,
+        height: obj.height,
+        fill: obj.fill,
+        asxType: obj.asxType,
+        asxMobileBehavior: obj.asxMobileBehavior
+      });
+    }
+  }
+
+  zip.file('manifest.json', JSON.stringify(manifest, null, 2));
+  
+  // Add ASX metadata
+  const asxMetadata = {
+    version: "asx-studio-v1",
+    technologies: ["KLH", "K'uhul", "ASX", "SCX"],
+    created: new Date().toISOString(),
+    objectCount: objects.length
+  };
+  zip.file('asx-metadata.json', JSON.stringify(asxMetadata, null, 2));
+  
+  const blob = await zip.generateAsync({ type: 'blob' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'trinity-template.zip';
+  link.click();
+}
+
+// ===== EXPORT FUNCTIONALITY =====
+function exportComposition() {
+  const format = document.getElementById('export-format').value;
+  let exportData = '';
+  
+  const objects = canvas.getObjects().filter(obj => obj !== canvas.gridGroup);
+  
+  switch(format) {
+    case 'asx-glyph':
+      exportData = generateASXGlyphCode(objects);
+      break;
+    case 'xjson':
+      exportData = generateXJSON(objects);
+      break;
+    case 'html':
+      exportData = generateHTML(objects);
+      break;
+    case 'klh-manifest':
+      exportData = generateKLHManifest(objects);
+      break;
+  }
+  
+  document.getElementById('export-code').value = exportData;
+  document.getElementById('export-output').style.display = 'block';
+}
+
+function generateASXGlyphCode(objects) {
+  const glyphs = objects.map(obj => {
+    if (obj.asxType) {
+      const glyphMap = {
+        'container': '⎔',
+        'grid': '▦',
+        'panel': '◰',
+        'header': '⬡',
+        'sidebar': '◷',
+        'content': '▣',
+        'footer': '◫',
+        'hero': '◈'
+      };
+      return glyphMap[obj.asxType] || '◰';
+    }
+    return '◰';
+  });
+  
+  return glyphs.join(' ');
+}
+
+function generateXJSON(objects) {
+  const xjson = {
+    "$schema": "atomic-tape-v1",
+    "metadata": {
+      "id": "trinity-composition",
+      "name": "Trinity Studio Composition",
+      "technologies": ["ASX", "KLH", "K'uhul"]
+    },
+    "nodes": objects.map(obj => ({
+      "type": "element",
+      "tag": "div",
+      "props": {
+        "class": `asx-${obj.asxType || 'panel'}`,
+        "style": `left: ${obj.left}px; top: ${obj.top}px;`
+      },
+      "children": obj.type === 'text' ? [
+        {"type": "text", "value": obj.text}
+      ] : []
+    }))
+  };
+  
+  return JSON.stringify(xjson, null, 2);
+}
+
+function generateHTML(objects) {
+  let html = `<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .asx-container { display: flex; flex-wrap: wrap; gap: 16px; }
+    .asx-panel { background: #f5f5f5; border-radius: 8px; padding: 20px; }
+    /* Add more ASX styles as needed */
+  </style>
+</head>
+<body>
+  <div class="asx-container">\n`;
+  
+  objects.forEach(obj => {
+    html += `    <div class="asx-${obj.asxType || 'panel'}" style="position: absolute; left: ${obj.left}px; top: ${obj.top}px;">\n`;
+    if (obj.type === 'text') {
+      html += `      ${obj.text}\n`;
+    }
+    html += `    </div>\n`;
+  });
+  
+  html += `  </div>
+</body>
+</html>`;
+  
+  return html;
+}
+
+function generateKLHManifest(objects) {
+  const manifest = {
+    "$schema": "klh-manifest-v1",
+    "metadata": {
+      "name": "Trinity Composition",
+      "backend": "KLH Multi-Hive",
+      "technologies": ["ASX", "K'uhul", "SCX"]
+    },
+    "composition": {
+      "objects": objects.length,
+      "asxBlocks": objects.filter(obj => obj.asxType).length
+    },
+    "export": {
+      "format": "atomic-tape",
+      "timestamp": new Date().toISOString()
+    }
+  };
+  
+  return JSON.stringify(manifest, null, 2);
+}
+
+// ===== ASX OS CORE INTEGRATION =====
+class ASXOS {
+  constructor() {
+    this.terminal = document.getElementById('dynamic-output');
+    this.manifest = null;
+    this.init();
+  }
+
+  async init() {
+    // Load manifest
+    try {
+      const response = await fetch('./manifest.json');
+      this.manifest = await response.json();
+      this.logToTerminal('Manifest loaded: ASX Port Specification 61680+', 'success');
+    } catch (error) {
+      this.logToTerminal('Error loading manifest', 'error');
+    }
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      try {
+        await navigator.serviceWorker.register('sw.js');
+        this.logToTerminal('Service Worker registered - KUHUL-NPX ready', 'success');
+      } catch (error) {
+        this.logToTerminal('Service Worker registration failed', 'error');
+      }
+    }
+  }
+
+  logToTerminal(message, type = 'info') {
+    const line = document.createElement('div');
+    line.className = 'code-line';
+    
+    const prefix = document.createElement('span');
+    prefix.className = 'code-type';
+    prefix.textContent = 'ASX> ';
+    
+    const content = document.createElement('span');
+    content.textContent = message;
+    if (type === 'error') content.style.color = '#ff5555';
+    if (type === 'success') content.style.color = '#50fa7b';
+    
+    line.appendChild(prefix);
+    line.appendChild(content);
+    
+    this.terminal.appendChild(line);
+    this.terminal.parentElement.scrollTop = this.terminal.parentElement.scrollHeight;
+  }
+
+  // KUHUL-NPX Integration
+  async launchBitBash() {
+    this.logToTerminal('Starting KUHUL-NPX v3 backend launcher...', 'info');
+    
+    try {
+      const response = await fetch('/kuhul/bitbash');
+      const result = await response.json();
+      
+      this.logToTerminal(`KUHUL-NPX: ${result.output}`, 'success');
+      this.logToTerminal(`Services: ${Object.keys(result.services).join(', ')}`, 'info');
+      
+    } catch (error) {
+      this.logToTerminal('KUHUL-NPX launch failed', 'error');
+    }
+  }
+
+  async callREST(endpoint) {
+    this.logToTerminal(`Calling REST: ${endpoint}`, 'info');
+    
+    try {
+      const response = await fetch(endpoint);
+      const result = await response.json();
+      
+      if (result.error) {
+        this.logToTerminal(`REST Error: ${result.error}`, 'error');
+      } else {
+        this.logToTerminal(`REST Response: ${JSON.stringify(result)}`, 'success');
+      }
+    } catch (error) {
+      this.logToTerminal(`REST Call failed: ${error.message}`, 'error');
+    }
+  }
+
+  async callKUHUL(endpoint) {
+    this.logToTerminal(`Calling KUHUL: ${endpoint}`, 'info');
+    
+    try {
+      const response = await fetch(endpoint);
+      const result = await response.json();
+      
+      if (result.error) {
+        this.logToTerminal(`KUHUL Error: ${result.error}`, 'error');
+      } else {
+        this.logToTerminal(`KUHUL Response: ${JSON.stringify(result)}`, 'success');
+      }
+    } catch (error) {
+      this.logToTerminal(`KUHUL Call failed: ${error.message}`, 'error');
+    }
+  }
+
+  // System Functions
+  executeKuhul() {
+    this.logToTerminal('Executing Kuhul: [Wo "Hello from Kuhul System"]', 'info');
+  }
+
+  decompressSCX() {
+    this.logToTerminal('Decompressing SCX: (?) condition (∴) action ⟁', 'info');
+  }
+
+  testDNS(hostname = 'xjson.app') {
+    this.logToTerminal(`Resolving DNS: ${hostname}`, 'info');
+    
+    // Simulate DNS resolution
+    setTimeout(() => {
+      this.logToTerminal(`DNS Resolution: ${hostname} → 127.0.0.1:61680`, 'success');
+    }, 500);
+  }
+
+  refreshDNS() {
+    this.logToTerminal('Refreshing DNS authority cache...', 'info');
+  }
+}
+
+// ===== MODE SWITCHING =====
+function switchMode(mode) {
+  // Update mode buttons
+  document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  // Switch sidebar
+  document.getElementById('design-sidebar').style.display = mode === 'design' ? 'block' : 'none';
+  document.getElementById('dashboard-sidebar').style.display = mode === 'dashboard' ? 'block' : 'none';
+  
+  // Switch main area
+  document.getElementById('design-main').style.display = mode === 'design' ? 'block' : 'none';
+  document.getElementById('terminal-main').style.display = mode === 'terminal' ? 'block' : 'none';
+  
+  if (mode === 'terminal') {
+    document.getElementById('terminal-output').scrollTop = document.getElementById('terminal-output').scrollHeight;
+  }
+}
+
+// Initialize ASX OS
+const ASX = new ASXOS();
+
+// Global access
+window.ASX = ASX;
+
+// Initialize the studio
+console.log('🎨 ASX OS Trinity Studio Initialized');
+console.log('Technologies: KLH + K\'uhul + ASX + SCX + XJSON');
+console.log('Modes: Design | Terminal | Dashboard');
+console.log('Ready for full-stack ASX development');
+</script>
+</body>
+</html>

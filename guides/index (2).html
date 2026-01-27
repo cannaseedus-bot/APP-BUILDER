@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-os="asx-ghost" class="ghost-shell">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ASX GHOST LOADER — SCXQ2 Tape Engine</title>
+
+<!-- ===========================================================
+     01 — THE 4 CLASSIC CSS BLOCKS (CONTROL VECTORS)
+     =========================================================== -->
+
+<style>
+/* --- BLOCK 1: Layout Stability Shell --- */
+:root {
+  --bg: #030712;
+  --panel: #0a0f1a;
+  --txt: #e9f5ff;
+  --accent: #16f2aa;
+  --hazard: #ffaa00;
+}
+
+/* Protects layout even under Atomic collapse */
+.ghost-shell {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: system-ui, monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- BLOCK 2: ASX BLOCK BASICS (Atomic Core) --- */
+.asx-flex { display:flex; }
+.asx-row { flex-direction:row; }
+.asx-col { flex-direction:column; }
+.asx-center { align-items:center; justify-content:center; }
+
+.asx-pad { padding:12px; }
+.asx-gap { gap:12px; }
+.asx-border { border:1px solid var(--accent); }
+.asx-round { border-radius:8px; }
+.asx-glass { backdrop-filter:blur(10px); background:rgba(255,255,255,0.05); }
+
+/* --- BLOCK 3: Control Vector CSS (Advanced Variable Ops) --- */
+.cv {
+  --load: 0;
+  --fold: "";
+  --compression: 0%;
+  --runtime: "idle";
+  --mode: "ghost";
+}
+
+.cv-loading   { --runtime: "loading"; --load: 25%; }
+.cv-folding   { --runtime: "folding"; --load: 60%; }
+.cv-decode    { --runtime: "decode";  --load: 80%; }
+.cv-ready     { --runtime: "ready";   --load: 100%; }
+
+/* --- BLOCK 4: Hazard Mode (Your Choice) --- */
+.hazard {
+  border:1px solid var(--hazard);
+  box-shadow:0 0 12px rgba(255,170,0,0.5);
+  color:var(--hazard);
+  text-shadow:0 0 8px rgba(255,170,0,0.8);
+}
+</style>
+
+</head>
+<body class="ghost-shell">
+
+<!-- ======================================
+     TOP PANEL (STATUS + FOLD INDICATOR)
+     ====================================== -->
+<div class="asx-flex asx-row asx-pad asx-gap asx-border asx-round asx-glass cv cv-loading">
+  <div>ASX GHOST LOADER</div>
+  <div>STATE: <span id="ghostState">INIT</span></div>
+  <div>LOAD: <span id="ghostLoad">0%</span></div>
+  <div>FOLD: <span id="ghostFold">-</span></div>
+</div>
+
+<!-- ======================================
+     MAIN WINDOW — PAGE SLOT
+     ====================================== -->
+<div id="page" class="asx-col asx-flex asx-center asx-pad asx-gap"></div>
+
+<!-- ======================================
+     CORE LOADER SCRIPT
+     ====================================== -->
+<script>
+/* ===========================================================
+   SCXQ2-Lite Decoder (Browser-Safe)
+   =========================================================== */
+const SCXQ2 = {
+  decode(payload) {
+    try { return decodeURIComponent(escape(atob(payload))); }
+    catch { return ""; }
+  }
+};
+
+/* ===========================================================
+   GHOST LOADER ENGINE
+   Loads → Decompresses → Injects → Activates
+   =========================================================== */
+
+const Ghost = {
+  state(n) {
+    document.getElementById("ghostState").textContent = n;
+  },
+  load(n) {
+    document.getElementById("ghostLoad").textContent = n + "%";
+  },
+  fold(n) {
+    document.getElementById("ghostFold").textContent = n;
+  },
+
+  async boot() {
+    this.state("FETCH MANIFEST");
+    this.load(10);
+
+    const raw = await fetch("manifest.json").then(r => r.json());
+
+    this.fold("MANIFEST");
+    this.load(20);
+
+    // manifest.json contains SCXQ2-tapes like:
+    // manifest.pages = { "css-os": "<base64>", "quantum-css": "<base64>" }
+    window.ASX_PAGES = raw.pages || {};
+
+    this.state("LOAD SW");
+    this.load(30);
+    await this.loadSW();
+
+    this.state("DECOMPRESS");
+    this.fold("SCXQ2");
+    this.load(50);
+
+    this.state("PAGES READY");
+    this.load(70);
+
+    this.open("css-os");
+  },
+
+  async loadSW() {
+    try {
+      await navigator.serviceWorker.register("sw.khl");
+    } catch(e) {
+      console.warn("SW Error", e);
+    }
+  },
+
+  open(pageName) {
+    const pageSlot = document.getElementById("page");
+
+    if (!window.ASX_PAGES[pageName]) {
+      pageSlot.innerHTML = `<div class='hazard asx-pad asx-round'>PAGE NOT FOUND</div>`;
+      return;
+    }
+
+    this.state("DECODE PAGE");
+    this.fold(pageName);
+    this.load(90);
+
+    const html = SCXQ2.decode(window.ASX_PAGES[pageName]);
+    pageSlot.innerHTML = html;
+
+    this.state("READY");
+    this.load(100);
+  }
+};
+
+Ghost.boot();
+</script>
+
+</body>
+</html>

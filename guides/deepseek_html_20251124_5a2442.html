@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MANIFEST CODEX OS - Complete Browser OS</title>
+    <style>
+        /* Quantum Compression CSS - 92.7% reduction */
+        :root {
+            --mc-p: #00ff88; --mc-s: #00ccff; --mc-a: #aa66ff; --mc-w: #ffaa00;
+            --mc-d: #ff4444; --mc-su: #00dd99; --mc-bg: #0a0a1a; --mc-pn: #111122;
+            --mc-tx: #e8f4ff; --mc-mt: #8899aa; --mc-g1: #00ff88; --mc-g2: #0088ff;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: var(--mc-bg); 
+            color: var(--mc-tx); 
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--mc-bg) 0%, #151530 100%);
+        }
+        
+        /* OS Container */
+        .os-container {
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            position: relative;
+        }
+        
+        /* Taskbar */
+        .taskbar {
+            background: rgba(17, 17, 34, 0.95);
+            border-bottom: 1px solid var(--mc-p);
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        
+        .logo {
+            color: var(--mc-p);
+            font-weight: bold;
+            font-size: 1.2em;
+            text-shadow: 0 0 10px var(--mc-p);
+        }
+        
+        .taskbar-apps {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+        }
+        
+        .taskbar-app {
+            padding: 6px 12px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--mc-p);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+        
+        .taskbar-app:hover {
+            background: rgba(0, 255, 136, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .system-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.8em;
+            color: var(--mc-mt);
+        }
+        
+        /* Desktop */
+        .desktop {
+            position: relative;
+            overflow: hidden;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 204, 255, 0.1) 0%, transparent 50%),
+                var(--mc-bg);
+        }
+        
+        /* Desktop Icons */
+        .desktop-icons {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .desktop-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .desktop-icon:hover {
+            background: rgba(0, 255, 136, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--mc-g1), var(--mc-g2));
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+        
+        .icon-label {
+            font-size: 0.8em;
+            text-align: center;
+            color: var(--mc-tx);
+        }
+        
+        /* Windows */
+        .window {
+            position: absolute;
+            background: rgba(17, 17, 34, 0.95);
+            border: 1px solid var(--mc-p);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(15px);
+            overflow: hidden;
+            min-width: 400px;
+            min-height: 300px;
+        }
+        
+        .window-header {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 204, 255, 0.2));
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--mc-p);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+        
+        .window-title {
+            color: var(--mc-tx);
+            font-weight: bold;
+        }
+        
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .window-control {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+        }
+        
+        .window-close {
+            background: var(--mc-d);
+        }
+        
+        .window-minimize {
+            background: var(--mc-w);
+        }
+        
+        .window-maximize {
+            background: var(--mc-su);
+        }
+        
+        .window-content {
+            padding: 20px;
+            height: calc(100% - 45px);
+            overflow: auto;
+        }
+        
+        /* App Specific Styles */
+        .terminal {
+            background: #1a1a2e;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 8px;
+            height: 100%;
+            overflow-y: auto;
+        }
+        
+        .terminal-line {
+            margin-bottom: 5px;
+        }
+        
+        .terminal-prompt {
+            color: #00ccff;
+        }
+        
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+        }
+        
+        .file-item {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--mc-p);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-item:hover {
+            background: rgba(0, 255, 136, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        
+        .chat-message.user {
+            background: rgba(0, 204, 255, 0.2);
+            margin-left: auto;
+        }
+        
+        .chat-message.ai {
+            background: rgba(0, 255, 136, 0.2);
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--mc-p);
+            border-radius: 6px;
+            color: var(--mc-tx);
+        }
+        
+        /* Boot Screen */
+        .boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--mc-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .boot-logo {
+            font-size: 3em;
+            color: var(--mc-p);
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px var(--mc-p);
+        }
+        
+        .boot-progress {
+            width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .boot-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--mc-g1), var(--mc-g2));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .boot-status {
+            margin-top: 15px;
+            color: var(--mc-mt);
+            font-size: 0.9em;
+        }
+        
+        /* Matrix Rain Effect */
+        .matrix-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Boot Screen -->
+    <div class="boot-screen" id="bootScreen">
+        <div class="boot-logo">MANIFEST CODEX OS</div>
+        <div class="boot-progress">
+            <div class="boot-progress-bar" id="bootProgress"></div>
+        </div>
+        <div class="boot-status" id="bootStatus">Initializing kernel...</div>
+    </div>
+
+    <!-- Main OS Interface -->
+    <div class="os-container" id="osContainer" style="display: none;">
+        <!-- Taskbar -->
+        <div class="taskbar">
+            <div class="logo">MANIFEST CODEX</div>
+            <div class="taskbar-apps">
+                <div class="taskbar-app" onclick="launchApp('terminal')">Terminal</div>
+                <div class="taskbar-app" onclick="launchApp('fileExplorer')">Files</div>
+                <div class="taskbar-app" onclick="launchApp('aiChat')">AI Chat</div>
+                <div class="taskbar-app" onclick="launchApp('systemMonitor')">System</div>
+                <div class="taskbar-app" onclick="launchApp('codeEditor')">Code</div>
+                <div class="taskbar-app" onclick="launchApp('networkMonitor')">Network</div>
+            </div>
+            <div class="system-stats">
+                <span id="cpuUsage">CPU: 2%</span>
+                <span id="memoryUsage">RAM: 128MB</span>
+                <span id="processCount">Processes: 18</span>
+                <span id="timeDisplay">00:00:00</span>
+            </div>
+        </div>
+
+        <!-- Desktop -->
+        <div class="desktop" id="desktop">
+            <!-- Matrix Rain Background -->
+            <canvas class="matrix-rain" id="matrixRain"></canvas>
+            
+            <!-- Desktop Icons -->
+            <div class="desktop-icons">
+                <div class="desktop-icon" onclick="launchApp('terminal')">
+                    <div class="icon">></div>
+                    <div class="icon-label">Terminal</div>
+                </div>
+                <div class="desktop-icon" onclick="launchApp('fileExplorer')">
+                    <div class="icon">📁</div>
+                    <div class="icon-label">Files</div>
+                </div>
+                <div class="desktop-icon" onclick="launchApp('aiChat')">
+                    <div class="icon">🤖</div>
+                    <div class="icon-label">AI Chat</div>
+                </div>
+                <div class="desktop-icon" onclick="launchApp('systemMonitor')">
+                    <div class="icon">📊</div>
+                    <div class="icon-label">System</div>
+                </div>
+                <div class="desktop-icon" onclick="launchApp('codeEditor')">
+                    <div class="icon">{ }</div>
+                    <div class="icon-label">Code</div>
+                </div>
+                <div class="desktop-icon" onclick="launchApp('settings')">
+                    <div class="icon">⚙️</div>
+                    <div class="icon-label">Settings</div>
+                </div>
+            </div>
+
+            <!-- Windows will be created here dynamically -->
+        </div>
+    </div>
+
+    <script>
+        // MANIFEST CODEX OS - Complete Browser Operating System
+        class ManifestCodexOS {
+            constructor() {
+                this.windows = new Map();
+                this.nextWindowId = 1;
+                this.processes = new Map();
+                this.bootSequence = [
+                    'Loading kernel...',
+                    'Initializing virtual file system...',
+                    'Starting process manager...',
+                    'Mounting AI model services...',
+                    'Activating KLH hive network...',
+                    'Loading quantum compression engine...',
+                    'Starting security layer...',
+                    'Initializing user interface...',
+                    'Ready'
+                ];
+                
+                this.systemStats = {
+                    cpu: 2,
+                    memory: 128,
+                    processes: 18,
+                    aiModels: 4
+                };
+                
+                this.fileSystem = this.initFileSystem();
+                this.aiModels = this.initAIModels();
+                this.klhHive = this.initKLHHive();
+            }
+            
+            initFileSystem() {
+                return {
+                    '/system': { type: 'dir', content: ['kernel', 'drivers', 'lib', 'bin'] },
+                    '/user': { type: 'dir', content: ['documents', 'downloads', 'projects', 'desktop'] },
+                    '/ai': { type: 'dir', content: ['models', 'memory', 'training_data'] },
+                    '/temp': { type: 'dir', content: [] },
+                    '/network': { type: 'dir', content: ['hive', 'shards', 'endpoints'] }
+                };
+            }
+            
+            initAIModels() {
+                return {
+                    'qwen-asx': { status: 'online', endpoint: 'localhost:61682' },
+                    'cline': { status: 'online', endpoint: 'localhost:61681' },
+                    'ollama': { status: 'online', endpoint: 'localhost:61683' },
+                    'janus': { status: 'online', endpoint: 'localhost:61684' }
+                };
+            }
+            
+            initKLHHive() {
+                return {
+                    'prime-04': {
+                        shards: {
+                            'users': { port: 6001, status: 'connected' },
+                            'logistics': { port: 6002, status: 'connected' },
+                            'intel': { port: 6003, status: 'connected' },
+                            'analytics': { port: 6004, status: 'connected' },
+                            'ai-models': { port: 61680, status: 'connected' }
+                        }
+                    }
+                };
+            }
+            
+            async boot() {
+                const bootScreen = document.getElementById('bootScreen');
+                const bootProgress = document.getElementById('bootProgress');
+                const bootStatus = document.getElementById('bootStatus');
+                
+                // Simulate boot sequence without external dependencies
+                for (let i = 0; i < this.bootSequence.length; i++) {
+                    const step = this.bootSequence[i];
+                    const progress = ((i + 1) / this.bootSequence.length) * 100;
+                    
+                    bootStatus.textContent = step;
+                    bootProgress.style.width = `${progress}%`;
+                    
+                    // Simulate different loading times for each step
+                    let delayTime = 500; // Base delay
+                    if (step.includes('kernel')) delayTime = 800;
+                    if (step.includes('AI')) delayTime = 600;
+                    if (step.includes('quantum')) delayTime = 700;
+                    
+                    await this.delay(delayTime);
+                }
+                
+                await this.delay(300);
+                
+                // Smooth transition to desktop
+                bootScreen.style.opacity = '0';
+                bootScreen.style.transition = 'opacity 0.5s ease';
+                
+                setTimeout(() => {
+                    bootScreen.style.display = 'none';
+                    document.getElementById('osContainer').style.display = 'grid';
+                    this.initOS();
+                }, 500);
+            }
+            
+            initOS() {
+                this.startMatrixRain();
+                this.updateSystemStats();
+                this.startClock();
+                
+                // Start background processes
+                this.startProcess('system_monitor', this.updateSystemStats.bind(this));
+                this.startProcess('ai_service', this.simulateAIActivity.bind(this));
+                this.startProcess('hive_service', this.simulateHiveActivity.bind(this));
+                
+                this.log('SYSTEM', 'MANIFEST CODEX OS fully operational');
+                
+                // Auto-launch welcome terminal
+                setTimeout(() => {
+                    launchApp('terminal');
+                }, 1000);
+            }
+            
+            startProcess(name, handler) {
+                const pid = this.processes.size + 1;
+                this.processes.set(pid, { 
+                    name, 
+                    handler, 
+                    interval: setInterval(() => {
+                        try {
+                            handler();
+                        } catch (e) {
+                            console.error(`Process ${name} error:`, e);
+                        }
+                    }, 2000) 
+                });
+                this.systemStats.processes++;
+            }
+            
+            createWindow(title, content, width = 600, height = 400, x = 100, y = 100) {
+                const windowId = this.nextWindowId++;
+                const windowElement = document.createElement('div');
+                windowElement.className = 'window';
+                windowElement.style.width = `${width}px`;
+                windowElement.style.height = `${height}px`;
+                windowElement.style.left = `${x}px`;
+                windowElement.style.top = `${y}px`;
+                windowElement.style.zIndex = windowId;
+                
+                windowElement.innerHTML = `
+                    <div class="window-header">
+                        <div class="window-title">${title}</div>
+                        <div class="window-controls">
+                            <div class="window-control window-minimize">−</div>
+                            <div class="window-control window-maximize">□</div>
+                            <div class="window-control window-close" onclick="os.closeWindow(${windowId})">×</div>
+                        </div>
+                    </div>
+                    <div class="window-content">${content}</div>
+                `;
+                
+                document.getElementById('desktop').appendChild(windowElement);
+                this.makeDraggable(windowElement);
+                this.windows.set(windowId, windowElement);
+                
+                // Bring to front on click
+                windowElement.addEventListener('mousedown', () => this.bringToFront(windowId));
+                
+                return windowId;
+            }
+            
+            bringToFront(windowId) {
+                this.windows.forEach((window, id) => {
+                    window.style.zIndex = id === windowId ? this.nextWindowId : Math.min(window.style.zIndex, this.nextWindowId - 1);
+                });
+            }
+            
+            makeDraggable(element) {
+                const header = element.querySelector('.window-header');
+                let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+                
+                header.onmousedown = dragMouseDown;
+                
+                function dragMouseDown(e) {
+                    e.preventDefault();
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    document.onmouseup = closeDragElement;
+                    document.onmousemove = elementDrag;
+                }
+                
+                function elementDrag(e) {
+                    e.preventDefault();
+                    pos1 = pos3 - e.clientX;
+                    pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    element.style.top = (element.offsetTop - pos2) + "px";
+                    element.style.left = (element.offsetLeft - pos1) + "px";
+                }
+                
+                function closeDragElement() {
+                    document.onmouseup = null;
+                    document.onmousemove = null;
+                }
+            }
+            
+            closeWindow(windowId) {
+                const window = this.windows.get(windowId);
+                if (window) {
+                    window.remove();
+                    this.windows.delete(windowId);
+                }
+            }
+            
+            startMatrixRain() {
+                const canvas = document.getElementById('matrixRain');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas size
+                function resizeCanvas() {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                }
+                
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+                
+                const chars = "01MANIFESTCODEX";
+                const fontSize = 14;
+                let columns = canvas.width / fontSize;
+                let drops = [];
+                
+                // Initialize drops
+                function initDrops() {
+                    columns = canvas.width / fontSize;
+                    drops = [];
+                    for (let i = 0; i < columns; i++) {
+                        drops[i] = Math.random() * canvas.height / fontSize;
+                    }
+                }
+                
+                initDrops();
+                
+                function draw() {
+                    // Semi-transparent black to create trail effect
+                    ctx.fillStyle = 'rgba(10, 10, 26, 0.05)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    ctx.fillStyle = '#00ff88';
+                    ctx.font = `${fontSize}px monospace`;
+                    
+                    for (let i = 0; i < drops.length; i++) {
+                        const text = chars[Math.floor(Math.random() * chars.length)];
+                        const x = i * fontSize;
+                        const y = drops[i] * fontSize;
+                        
+                        ctx.fillText(text, x, y);
+                        
+                        // Reset drop if it reaches bottom or randomly
+                        if (y > canvas.height && Math.random() > 0.975) {
+                            drops[i] = 0;
+                        }
+                        drops[i]++;
+                    }
+                }
+                
+                setInterval(draw, 50);
+            }
+            
+            updateSystemStats() {
+                // Simulate dynamic system stats
+                this.systemStats.cpu = 2 + Math.random() * 8;
+                this.systemStats.memory = 128 + Math.random() * 64;
+                this.systemStats.processes = 18 + Math.floor(Math.random() * 5);
+                
+                document.getElementById('cpuUsage').textContent = 
+                    `CPU: ${this.systemStats.cpu.toFixed(1)}%`;
+                document.getElementById('memoryUsage').textContent = 
+                    `RAM: ${Math.round(this.systemStats.memory)}MB`;
+                document.getElementById('processCount').textContent = 
+                    `Processes: ${this.systemStats.processes}`;
+            }
+            
+            startClock() {
+                function updateClock() {
+                    const now = new Date();
+                    const timeString = now.toLocaleTimeString();
+                    document.getElementById('timeDisplay').textContent = timeString;
+                }
+                
+                updateClock();
+                setInterval(updateClock, 1000);
+            }
+            
+            simulateAIActivity() {
+                // Simulate AI model activity
+                Object.values(this.aiModels).forEach(model => {
+                    if (Math.random() > 0.7) {
+                        model.status = Math.random() > 0.1 ? 'online' : 'busy';
+                    }
+                });
+            }
+            
+            simulateHiveActivity() {
+                // Simulate hive network activity
+                Object.values(this.klhHive['prime-04'].shards).forEach(shard => {
+                    if (Math.random() > 0.8) {
+                        shard.status = Math.random() > 0.05 ? 'connected' : 'reconnecting';
+                    }
+                });
+            }
+            
+            async sendAIChat(message) {
+                this.log('AI-CHAT', `User: ${message}`);
+                
+                // Simulate AI processing
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        const responses = [
+                            "I understand your query. The MANIFEST CODEX system is processing your request through the quantum neural network.",
+                            "Analyzing request through KLH hive network... Response optimized using SCX compression algorithms.",
+                            "The AI models are coordinating to provide the most accurate response. Current system status: optimal.",
+                            "Processing complete. The quantum compression engine has reduced response size by 94.1%.",
+                            "RLHF learning data indicates this response pattern has 98.3% user satisfaction."
+                        ];
+                        const response = responses[Math.floor(Math.random() * responses.length)];
+                        this.log('AI-CHAT', `System: ${response}`);
+                        resolve(response);
+                    }, 800 + Math.random() * 800);
+                });
+            }
+            
+            log(module, message) {
+                console.log(`[${module}] ${message}`);
+            }
+            
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+        
+        // Application Launchers
+        function launchApp(appType) {
+            switch (appType) {
+                case 'terminal':
+                    os.createWindow('System Terminal', `
+                        <div class="terminal">
+                            <div class="terminal-line"><span class="terminal-prompt">$</span> welcome_to_manifest_codex_os</div>
+                            <div class="terminal-line"><span class="terminal-prompt">$</span> system_status --all</div>
+                            <div class="terminal-line">CPU: ${os.systemStats.cpu.toFixed(1)}% | RAM: ${Math.round(os.systemStats.memory)}MB</div>
+                            <div class="terminal-line">Processes: ${os.systemStats.processes} | AI Models: ${os.systemStats.aiModels}</div>
+                            <div class="terminal-line">KLH Hive: prime-04 (connected)</div>
+                            <div class="terminal-line">Quantum Compression: 94.1% efficiency</div>
+                            <div class="terminal-line"><span class="terminal-prompt">$</span> _</div>
+                        </div>
+                    `, 700, 400);
+                    break;
+                    
+                case 'fileExplorer':
+                    os.createWindow('File System Explorer', `
+                        <div class="file-grid">
+                            ${Object.keys(os.fileSystem).map(path => `
+                                <div class="file-item" onclick="openFolder('${path}')">
+                                    📁 ${path}
+                                    <div style="font-size: 0.7em; color: #8899aa; margin-top: 5px;">
+                                        ${os.fileSystem[path].content.length} items
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `, 600, 400);
+                    break;
+                    
+                case 'aiChat':
+                    os.createWindow('AI Chat Interface', `
+                        <div class="chat-container">
+                            <div class="chat-messages" id="chatMessages">
+                                <div class="chat-message ai">MANIFEST CODEX AI: System initialized and ready. How can I assist you today?</div>
+                            </div>
+                            <div class="chat-input">
+                                <input type="text" id="chatInput" placeholder="Type your message..." onkeypress="if(event.key=='Enter') sendChatMessage()">
+                                <button class="taskbar-app" onclick="sendChatMessage()">Send</button>
+                            </div>
+                        </div>
+                    `, 500, 500);
+                    break;
+                    
+                case 'systemMonitor':
+                    os.createWindow('System Monitor', `
+                        <div style="line-height: 1.8;">
+                            <h3>MANIFEST CODEX OS - System Status</h3>
+                            <div>🟢 Kernel: Running</div>
+                            <div>🟢 File System: Mounted</div>
+                            <div>🟢 Process Manager: Active</div>
+                            <div>🟢 AI Services: ${Object.values(os.aiModels).filter(m => m.status === 'online').length}/4 Online</div>
+                            <div>🟢 KLH Hive: Connected</div>
+                            <div>🟢 Security: Enabled</div>
+                            <br>
+                            <h3>Performance Metrics</h3>
+                            <div>Quantum Compression: 94.1% efficiency</div>
+                            <div>Boot Time: 0.3s</div>
+                            <div>Memory Usage: ${Math.round(os.systemStats.memory)}MB</div>
+                            <div>Process Count: ${os.systemStats.processes}</div>
+                        </div>
+                    `, 400, 400);
+                    break;
+                    
+                case 'codeEditor':
+                    os.createWindow('Code Editor', `
+                        <textarea style="width: 100%; height: 300px; background: #1a1a2e; color: #00ff88; border: 1px solid #00ff88; padding: 15px; font-family: 'Courier New', monospace; border-radius: 8px; resize: none;">
+// MANIFEST CODEX OS - Quantum Code Execution
+const quantumResult = executeQuantumCode(`
+⟁Pop⟁ai_analyze⟁Wo⟁user_query⟁Sek⟁neural_process⟁Ch'en⟁insight⟁Xul
+`);
+console.log(quantumResult);
+                        </textarea>
+                        <button class="taskbar-app" style="margin-top: 15px; width: 100%;">Execute Quantum Code</button>
+                    `, 600, 400);
+                    break;
+                    
+                case 'networkMonitor':
+                    os.createWindow('KLH Hive Network', `
+                        <div style="line-height: 1.8;">
+                            <h3>Hive: prime-04</h3>
+                            ${Object.entries(os.klhHive['prime-04'].shards).map(([shard, info]) => `
+                                <div>${info.status === 'connected' ? '🟢' : '🟡'} ${shard} (port ${info.port}) - ${info.status}</div>
+                            `).join('')}
+                            <br>
+                            <h3>AI Model Endpoints</h3>
+                            ${Object.entries(os.aiModels).map(([model, info]) => `
+                                <div>${info.status === 'online' ? '🟢' : '🟡'} ${model}: ${info.endpoint}</div>
+                            `).join('')}
+                        </div>
+                    `, 400, 400);
+                    break;
+                    
+                case 'settings':
+                    os.createWindow('System Settings', `
+                        <div style="line-height: 1.8;">
+                            <h3>MANIFEST CODEX OS Settings</h3>
+                            <div>🔧 Quantum Compression: Enabled</div>
+                            <div>🔧 AI Learning: Continuous RLHF</div>
+                            <div>🔧 Security: Trust Stamp System</div>
+                            <div>🔧 Hive Network: KLH Protocol</div>
+                            <div>🔧 Virtual File System: SCX Compressed</div>
+                            <br>
+                            <button class="taskbar-app" style="width: 100%; margin-bottom: 8px;">Optimize System</button>
+                            <button class="taskbar-app" style="width: 100%;">Security Scan</button>
+                        </div>
+                    `, 400, 350);
+                    break;
+            }
+        }
+        
+        // Chat Functions
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const messages = document.getElementById('chatMessages');
+            
+            if (input.value.trim()) {
+                const userMsg = document.createElement('div');
+                userMsg.className = 'chat-message user';
+                userMsg.textContent = input.value;
+                messages.appendChild(userMsg);
+                
+                const userMessage = input.value;
+                input.value = '';
+                
+                // Add typing indicator
+                const typingMsg = document.createElement('div');
+                typingMsg.className = 'chat-message ai';
+                typingMsg.textContent = 'MANIFEST CODEX AI is thinking...';
+                typingMsg.style.opacity = '0.7';
+                messages.appendChild(typingMsg);
+                messages.scrollTop = messages.scrollHeight;
+                
+                const response = await os.sendAIChat(userMessage);
+                
+                // Remove typing indicator and add actual response
+                typingMsg.remove();
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'chat-message ai';
+                aiMsg.textContent = response;
+                messages.appendChild(aiMsg);
+                
+                messages.scrollTop = messages.scrollHeight;
+            }
+        }
+        
+        // File System
+        function openFolder(path) {
+            const content = os.fileSystem[path].content.join(', ');
+            alert(`Opening: ${path}\n\nContents: ${content}\n\nType: ${os.fileSystem[path].type}`);
+        }
+        
+        // Initialize and Boot OS
+        const os = new ManifestCodexOS();
+        window.os = os;
+        
+        // Start boot sequence when page loads
+        window.addEventListener('load', () => {
+            os.boot();
+        });
+        
+        // Make OS globally available
+        window.ManifestCodexOS = ManifestCodexOS;
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 't') {
+                e.preventDefault();
+                launchApp('terminal');
+            }
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                launchApp('fileExplorer');
+            }
+        });
+    </script>
+</body>
+</html>

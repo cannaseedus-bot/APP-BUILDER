@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K'UHUL SVG-3D Language Crash Course</title>
+    <style>
+        :root {
+            --kuhul-primary: #16f2aa;
+            --kuhul-secondary: #00e0ff;
+            --kuhul-accent: #9966ff;
+            --kuhul-warning: #ffaa00;
+            --kuhul-danger: #ff0066;
+            --kuhul-success: #00cc88;
+            --kuhul-bg: #0a0a1a;
+            --kuhul-panel: #070b12;
+            --kuhul-text: #e9f5ff;
+            --kuhul-muted: #7b8a9a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--kuhul-bg);
+            color: var(--kuhul-text);
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 1px solid rgba(22, 242, 170, 0.3);
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: var(--kuhul-primary);
+            letter-spacing: 4px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(22, 242, 170, 0.5);
+        }
+
+        .subtitle {
+            color: var(--kuhul-secondary);
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .module {
+            background: var(--kuhul-panel);
+            border: 1px solid rgba(22, 242, 170, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(22, 242, 170, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .module:hover::before {
+            left: 100%;
+        }
+
+        .module:hover {
+            border-color: var(--kuhul-primary);
+            box-shadow: 0 0 25px rgba(22, 242, 170, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .module-title {
+            color: var(--kuhul-primary);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(22, 242, 170, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .concept-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .concept-item {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .concept-item::before {
+            content: '⤍';
+            color: var(--kuhul-accent);
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            border-left: 3px solid var(--kuhul-primary);
+            overflow-x: auto;
+        }
+
+        .operator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .operator {
+            background: rgba(22, 242, 170, 0.1);
+            border: 1px solid var(--kuhul-primary);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .operator:hover {
+            background: rgba(22, 242, 170, 0.2);
+            transform: scale(1.05);
+        }
+
+        .operator-symbol {
+            font-size: 2rem;
+            color: var(--kuhul-accent);
+            margin-bottom: 10px;
+        }
+
+        .operator-desc {
+            font-size: 0.9rem;
+            color: var(--kuhul-text);
+        }
+
+        .demo-area {
+            background: var(--kuhul-panel);
+            border: 1px solid rgba(22, 242, 170, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .demo-title {
+            color: var(--kuhul-accent);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+
+        .visualization {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .visualization {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .svg-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .output-console {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            min-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .log-timestamp {
+            color: var(--kuhul-muted);
+            margin-right: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .control-btn {
+            background: rgba(22, 242, 170, 0.1);
+            border: 1px solid var(--kuhul-primary);
+            color: var(--kuhul-text);
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(22, 242, 170, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .concept-diagram {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .neural-path {
+            stroke: var(--kuhul-accent);
+            stroke-width: 2;
+            fill: none;
+            filter: url(#glow);
+        }
+
+        .encryption-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+            padding: 10px;
+        }
+
+        .flow-arrow {
+            color: var(--kuhul-primary);
+            font-size: 1.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 50px;
+            border-top: 1px solid rgba(22, 242, 170, 0.3);
+            color: var(--kuhul-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>K'UHUL SVG-3D</h1>
+            <div class="subtitle">Vector Graphics Programming Language Crash Course</div>
+        </header>
+
+        <div class="course-grid">
+            <!-- Module 1: Core Concepts -->
+            <div class="module">
+                <h2 class="module-title">🔤 Core Language Foundation</h2>
+                <p>K'UHUL is a revolutionary programming language that unifies vector graphics, 3D control flow, and cryptographic operations.</p>
+                
+                <ul class="concept-list">
+                    <li class="concept-item">Vector-native programming paradigm</li>
+                    <li class="concept-item">SVG path commands as language primitives</li>
+                    <li class="concept-item">3D spatial control structures</li>
+                    <li class="concept-item">Integrated cryptographic operations</li>
+                    <li class="concept-item">Neural network vector operations</li>
+                </ul>
+
+                <div class="code-block">
+// K'UHUL Basic Syntax
+world.initialize(⤍) "M0,0 L100,100 C150,200 200,150 300,0"
+
+// Vector-based variable declaration
+user.geometry (⟿) generate-neural-path
+encryption.key (⤏) "M50,50 Q100,150 150,50"
+
+// 3D control flow
+(⟲) sphere.radius 360deg {
+    (⤦) point.visible? (⤧) process-vector
+}
+                </div>
+            </div>
+
+            <!-- Module 2: ASC Cipher System -->
+            <div class="module">
+                <h2 class="module-title">🔒 ASC Cipher Encryption</h2>
+                <p>Vector-based cryptographic system using SVG paths as encryption primitives.</p>
+                
+                <div class="operator-grid">
+                    <div class="operator">
+                        <div class="operator-symbol">(⤍)</div>
+                        <div class="operator-desc">Vector Encryption</div>
+                    </div>
+                    <div class="operator">
+                        <div class="operator-symbol">(⤎)</div>
+                        <div class="operator-desc">Vector Decryption</div>
+                    </div>
+                    <div class="operator">
+                        <div class="operator-symbol">(⤏)</div>
+                        <div class="operator-desc">Path Key Derivation</div>
+                    </div>
+                    <div class="operator">
+                        <div class="operator-symbol">(⤐)</div>
+                        <div class="operator-desc">Bezier Cryptography</div>
+                    </div>
+                </div>
+
+                <div class="encryption-flow">
+                    <div class="flow-step">
+                        <div>Plain Text</div>
+                        <div class="flow-arrow">→</div>
+                    </div>
+                    <div class="flow-step">
+                        <div>SVG Path Key</div>
+                        <div class="flow-arrow">→</div>
+                    </div>
+                    <div class="flow-step">
+                        <div>ASC Cipher</div>
+                        <div class="flow-arrow">→</div>
+                    </div>
+                    <div class="flow-step">
+                        <div>Encrypted Data</div>
+                    </div>
+                </div>
+
+                <div class="code-block">
+// ASC Cipher Example
+plaintext.data = "Secret K'UHUL Message"
+encryption.key (⤏) "M0,0 C100,50 200,150 300,0 Z"
+
+// Encrypt using vector operations
+encrypted.data (⤍) plaintext.data (⤏) encryption.key
+
+// Decrypt with same key
+decrypted.data (⤎) encrypted.data (⤏) encryption.key
+                </div>
+            </div>
+
+            <!-- Module 3: SCX Compression -->
+            <div class="module">
+                <h2 class="module-title">🗜️ SCX Vector Compression</h2>
+                <p>Geometric compression algorithms optimized for SVG and 3D data.</p>
+                
+                <div class="operator-grid">
+                    <div class="operator">
+                        <div class="operator-symbol">(↻)</div>
+                        <div class="operator-desc">Rotational Compression</div>
+                    </div>
+                    <div class="operator">
+                        <div class="operator-symbol">(↔)</div>
+                        <div class="operator-desc">Symmetrical Compression</div>
+                    </div>
+                    <div class="operator">
+                        <div class="operator-symbol">(⤒)</div>
+                        <div class="operator-desc">Hierarchical Compression</div>
+                    </div>
+                    <div class="operator">
+                        <div class="operator-symbol">(⤓)</div>
+                        <div class="operator-desc">Progressive Detail</div>
+                    </div>
+                </div>
+
+                <div class="code-block">
+// SCX Compression Examples
+complex.mesh = load-geometry("model.3d")
+
+// Apply rotational compression
+compressed.mesh (↻) complex.mesh 45deg
+
+// Use symmetrical compression
+optimized.mesh (↔) compressed.mesh "vertical-plane"
+
+// Hierarchical detail levels
+mesh.lod (⤒) optimized.mesh [1000, 500, 250, 100]
+                </div>
+
+                <div class="concept-diagram">
+                    <svg width="100%" height="100%">
+                        <defs>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <path class="neural-path" d="M50,100 Q150,50 250,100 T450,100" />
+                        <path class="neural-path" d="M50,150 Q150,100 250,150 T450,150" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Module 4: 3D Control Flow -->
+            <div class="module">
+                <h2 class="module-title">🎮 3D Vector Control Flow</h2>
+                <p>Spatial programming constructs that traditional languages cannot express.</p>
+                
+                <div class="operator-grid">
+                    <div class="operator">
+                        <div class="operator-symbol">(⟲)</div>
+                        <div class="operator-desc">Spherical Loop</div>
+                    </div>
+                    <div class="operator">
+                        <div class="operator-symbol">(⤦)</div>
+                        <div class="operator-desc">Vector Conditional</div>
+                    </div>
+                    <div class="operator">
+                        <div class="operator-symbol">(⤧)</div>
+                        <div class="operator-desc">Path Iteration</div>
+                    </div>
+                    <div class="operator">
+                        <div class="operator-symbol">(⤨)</div>
+                        <div class="operator-desc">Gradient Flow</div>
+                    </div>
+                </div>
+
+                <div class="code-block">
+// 3D Control Flow Examples
+(⟲) solar.system 360deg {
+    planet.position (⤦) calculate-orbit
+    (⤧) update-physics-step
+    (⤨) apply-gravity 9.8
+}
+
+// Path-based iteration
+neural.network (⟿) generate-architecture
+(⤧) neural.network.path {
+    layer.activation (⤃) sigmoid-function
+    weights.update (⤄) backpropagate-error
+}
+                </div>
+            </div>
+
+            <!-- Module 5: Neural Vector Operations -->
+            <div class="module">
+                <h2 class="module-title">🧠 Neural Vector Operations</h2>
+                <p>Direct neural network operations on vector graphics primitives.</p>
+                
+                <div class="operator-grid">
+                    <div class="operator">
+                        <div class="operator-symbol">(⟿)</div>
+                        <div class="operator-desc">Neural Path Generation</div>
+                    </div>
+                    <div class="operator">
+                        <div class="operator-symbol">(⤂)</div>
+                        <div class="operator-desc">Weight Application</div>
+                    </div>
+                    <div class="operator">
+                        <div class="operator-symbol">(⤃)</div>
+                        <div class="operator-desc">Activation Morph</div>
+                    </div>
+                    <div class="operator">
+                        <div class="operator-symbol">(⤄)</div>
+                        <div class="operator-desc">Gradient Backprop</div>
+                    </div>
+                </div>
+
+                <div class="code-block">
+// Neural Vector Operations
+training.data (⟿) generate-training-set
+network.initialize (⤂) random-weights
+
+// Training loop
+(⟲) training.epochs 100 {
+    (⤧) training.data {
+        prediction (⤃) forward-pass
+        error (⤄) calculate-loss
+        weights.update (⤂) apply-gradient
+    }
+}
+                </div>
+
+                <div class="concept-diagram">
+                    <svg width="100%" height="100%">
+                        <path class="neural-path" d="M50,50 C100,150 200,50 250,150 S400,50 450,150" />
+                        <circle cx="150" cy="100" r="8" fill="#ff0066" filter="url(#glow)" />
+                        <circle cx="300" cy="100" r="8" fill="#00cc88" filter="url(#glow)" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Module 6: Advanced Concepts -->
+            <div class="module">
+                <h2 class="module-title">⚡ Advanced K'UHUL Concepts</h2>
+                <p>Advanced patterns and optimization techniques.</p>
+                
+                <ul class="concept-list">
+                    <li class="concept-item">Recursive vector transformations</li>
+                    <li class="concept-item">Quantum-inspired path operations</li>
+                    <li class="concept-item">Multi-dimensional Bezier cryptography</li>
+                    <li class="concept-item">Fractal compression algorithms</li>
+                    <li class="concept-item">Real-time neural style transfer</li>
+                </ul>
+
+                <div class="code-block">
+// Advanced K'UHUL Patterns
+quantum.state (⟿) generate-superposition
+encrypted.state (⤍) quantum.state (⤏) fractal-key
+
+// Real-time processing
+(⟲) video.stream infinity {
+    frame.process (⤧) extract-features
+    style.transfer (⤃) apply-neural-style
+    output.render (⤨) gradient-blend
+}
+
+// Multi-dimensional operations
+hyper.mesh (↻) 4d-rotation 45deg
+compressed.hyper (↔) symmetry-group
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Demo Area -->
+        <div class="demo-area">
+            <h2 class="demo-title">K'UHUL LANGUAGE PLAYGROUND</h2>
+            
+            <div class="controls">
+                <button class="control-btn" onclick="runASCDemo()">RUN ASC CIPHER</button>
+                <button class="control-btn" onclick="runSCXDemo()">SCX COMPRESSION</button>
+                <button class="control-btn" onclick="run3DControlDemo()">3D CONTROL FLOW</button>
+                <button class="control-btn" onclick="runNeuralDemo()">NEURAL OPERATIONS</button>
+                <button class="control-btn" onclick="clearDemo()">CLEAR</button>
+            </div>
+
+            <div class="visualization">
+                <div class="svg-container">
+                    <svg id="kuhul-demo-svg" width="100%" height="100%" viewBox="0 0 400 300">
+                        <defs>
+                            <linearGradient id="demo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#16f2aa"/>
+                                <stop offset="100%" stop-color="#9966ff"/>
+                            </linearGradient>
+                            <filter id="glow-effect">
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+                                <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="glow"/>
+                                <feComposite in="SourceGraphic" in2="glow" operator="over"/>
+                            </filter>
+                        </defs>
+                    </svg>
+                </div>
+                
+                <div class="output-console" id="demo-console">
+                    <div class="log-entry">
+                        <span class="log-timestamp">[00:00:00]</span>
+                        <span>K'UHUL Playground Ready</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-timestamp">[00:00:00]</span>
+                        <span>Select a demo to begin...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>K'UHUL SVG-3D Language Crash Course | Vector Graphics Programming System</p>
+            <p>ASC Cipher + SCX Compression + 3D Control Flow + Neural Vector Operations</p>
+        </footer>
+    </div>
+
+    <script>
+        // K'UHUL Language Runtime Simulation
+        class KuhulRuntime {
+            constructor() {
+                this.svg = document.getElementById('kuhul-demo-svg');
+                this.console = document.getElementById('demo-console');
+                this.operations = new Map();
+                this.initializeRuntime();
+            }
+
+            initializeRuntime() {
+                this.log('SYSTEM', 'K\'UHUL Runtime Initialized');
+                
+                // Initialize operators
+                this.operations.set('(⤍)', this.vectorEncrypt.bind(this));
+                this.operations.set('(⤎)', this.vectorDecrypt.bind(this));
+                this.operations.set('(↻)', this.rotationalCompress.bind(this));
+                this.operations.set('(⟲)', this.sphericalLoop.bind(this));
+                this.operations.set('(⟿)', this.neuralPathGen.bind(this));
+            }
+
+            vectorEncrypt(data, key) {
+                this.log('ASC-CIPHER', `Encrypting data with key: ${key}`);
+                this.createEncryptionVisualization(key);
+                return `encrypted_${data}_${Date.now()}`;
+            }
+
+            vectorDecrypt(data, key) {
+                this.log('ASC-CIPHER', `Decrypting data with key: ${key}`);
+                this.createDecryptionVisualization(key);
+                return data.replace('encrypted_', '');
+            }
+
+            rotationalCompress(geometry, angle) {
+                this.log('SCX-COMPRESS', `Applying rotational compression: ${angle}°`);
+                this.createCompressionVisualization(angle);
+                return { original: geometry, compressed: geometry * 0.6, angle: angle };
+            }
+
+            sphericalLoop(radius, degrees, callback) {
+                this.log('3D-CONTROL', `Spherical loop: radius=${radius}, degrees=${degrees}`);
+                this.createSphericalVisualization(radius);
+                
+                const steps = Math.floor(degrees / 30);
+                for (let i = 0; i < steps; i++) {
+                    if (callback) callback(i * 30);
+                }
+            }
+
+            neuralPathGen(input) {
+                this.log('NEURAL-VECTOR', `Generating neural path for: ${input}`);
+                this.createNeuralVisualization();
+                return this.generateComplexPath();
+            }
+
+            createEncryptionVisualization(path) {
+                this.clearSVG();
+                const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                pathEl.setAttribute('d', path);
+                pathEl.setAttribute('stroke', '#16f2aa');
+                pathEl.setAttribute('fill', 'none');
+                pathEl.setAttribute('stroke-width', '2');
+                pathEl.setAttribute('filter', 'url(#glow-effect)');
+                this.svg.appendChild(pathEl);
+            }
+
+            createCompressionVisualization(angle) {
+                this.clearSVG();
+                const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                
+                // Create rotating elements
+                for (let i = 0; i < 8; i++) {
+                    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    const x = 150 + Math.cos(i * Math.PI/4) * 80;
+                    const y = 120 + Math.sin(i * Math.PI/4) * 80;
+                    rect.setAttribute('x', x);
+                    rect.setAttribute('y', y);
+                    rect.setAttribute('width', '20');
+                    rect.setAttribute('height', '20');
+                    rect.setAttribute('fill', '#9966ff');
+                    rect.setAttribute('transform', `rotate(${angle}, ${x+10}, ${y+10})`);
+                    group.appendChild(rect);
+                }
+                
+                this.svg.appendChild(group);
+            }
+
+            createSphericalVisualization(radius) {
+                this.clearSVG();
+                
+                // Create sphere
+                const sphere = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                sphere.setAttribute('cx', '200');
+                sphere.setAttribute('cy', '150');
+                sphere.setAttribute('r', radius);
+                sphere.setAttribute('fill', 'none');
+                sphere.setAttribute('stroke', '#00e0ff');
+                sphere.setAttribute('stroke-width', '2');
+                this.svg.appendChild(sphere);
+                
+                // Create orbiting points
+                for (let i = 0; i < 12; i++) {
+                    const angle = (i * 30) * Math.PI / 180;
+                    const x = 200 + radius * Math.cos(angle);
+                    const y = 150 + radius * Math.sin(angle);
+                    
+                    const point = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    point.setAttribute('cx', x);
+                    point.setAttribute('cy', y);
+                    point.setAttribute('r', '4');
+                    point.setAttribute('fill', '#ffaa00');
+                    this.svg.appendChild(point);
+                }
+            }
+
+            createNeuralVisualization() {
+                this.clearSVG();
+                const path = this.generateComplexPath();
+                const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                pathEl.setAttribute('d', path);
+                pathEl.setAttribute('stroke', '#ff0066');
+                pathEl.setAttribute('fill', 'none');
+                pathEl.setAttribute('stroke-width', '1.5');
+                this.svg.appendChild(pathEl);
+            }
+
+            generateComplexPath() {
+                let path = `M${50 + Math.random()*50},${50 + Math.random()*50}`;
+                for (let i = 0; i < 8; i++) {
+                    const x = 100 + Math.random() * 200;
+                    const y = 80 + Math.random() * 140;
+                    path += ` L${x},${y}`;
+                }
+                return path;
+            }
+
+            clearSVG() {
+                const defs = this.svg.querySelector('defs');
+                this.svg.innerHTML = '';
+                if (defs) this.svg.appendChild(defs);
+            }
+
+            log(module, message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                entry.innerHTML = `<span class="log-timestamp">[${timestamp}]</span> <span>${module}: ${message}</span>`;
+                this.console.appendChild(entry);
+                this.console.scrollTop = this.console.scrollHeight;
+            }
+
+            execute(operation, ...args) {
+                const op = this.operations.get(operation);
+                return op ? op(...args) : null;
+            }
+        }
+
+        // Initialize runtime
+        const kuhul = new KuhulRuntime();
+
+        // Demo functions
+        function runASCDemo() {
+            kuhul.log('DEMO', 'Starting ASC Cipher Demo');
+            const encrypted = kuhul.execute('(⤍)', 'Secret Data', 'M50,50 C100,150 200,50 250,150');
+            kuhul.log('ASC-CIPHER', `Encrypted: ${encrypted}`);
+            const decrypted = kuhul.execute('(⤎)', encrypted, 'M50,50 C100,150 200,50 250,150');
+            kuhul.log('ASC-CIPHER', `Decrypted: ${decrypted}`);
+        }
+
+        function runSCXDemo() {
+            kuhul.log('DEMO', 'Starting SCX Compression Demo');
+            const result = kuhul.execute('(↻)', 1000, 45);
+            kuhul.log('SCX-COMPRESS', `Compression result: ${JSON.stringify(result)}`);
+        }
+
+        function run3DControlDemo() {
+            kuhul.log('DEMO', 'Starting 3D Control Flow Demo');
+            kuhul.execute('(⟲)', 60, 360, (angle) => {
+                kuhul.log('3D-LOOP', `Processing angle: ${angle}°`);
+            });
+        }
+
+        function runNeuralDemo() {
+            kuhul.log('DEMO', 'Starting Neural Operations Demo');
+            const path = kuhul.execute('(⟿)', 'Generate neural architecture');
+            kuhul.log('NEURAL-VECTOR', `Generated path: ${path}`);
+        }
+
+        function clearDemo() {
+            kuhul.console.innerHTML = `
+                <div class="log-entry">
+                    <span class="log-timestamp">[${new Date().toLocaleTimeString()}]</span>
+                    <span>Console cleared</span>
+                </div>
+            `;
+            kuhul.clearSVG();
+        }
+    </script>
+</body>
+</html>

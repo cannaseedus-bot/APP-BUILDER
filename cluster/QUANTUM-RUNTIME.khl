@@ -1,0 +1,1045 @@
+/* ============================================================
+   sw.khl v3 — QUANTUM DOM KERNEL
+   MX2LM OS — LEGION TRINITY CLUSTER
+   Kernel: K'UHUL-only, manifest.json as LAW
+   No JavaScript keywords. Pure symbolic runtime.
+
+   MAIN RESPONSIBILITIES
+   - Load & cache manifest.json
+   - Initialize DNS Authority (from manifest.backend_architecture.dns_authority)
+   - Initialize REST Mesh (from manifest.asx_os.xjson_server.routes + backend_architecture.rest_mesh)
+   - Initialize Trinity Runtime (CPU/GPU/TPU/MESH/CLUSTER/LEGION)
+   - Initialize MeshChain + Liquidaty + CLN token
+   - Initialize Cluster runtime
+   - Initialize Legion + Autonomy fusion
+   - Initialize K'UHUL π Math + K'UHUL DOM Engine
+   - Quantum DOM Layer:
+       • DOM_STATE registry (panels, views, focus, overlays)
+       • Quantum snapshots for cockpit
+       • View subscriptions & broadcast
+       • Panel focus + highlight events
+       • Basher DOM commands
+   - Route all requests through kernel_route()
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   GLYPH LEGEND (REFERENCE ONLY, NOT EXECUTED)
+   ------------------------------------------------------------
+
+   [Pop]      define function / entry
+   [Wo]       write literal
+   [Ch'en]    store into variable
+   [Yax]      read from variable
+   [Sek]      execute operation / call
+   [K'ayab']  begin loop
+   [Kumk'u]   end loop
+   [(❓)]     conditional
+   [then]     then branch
+   [∴]        else / next branch
+   [Xul]      return / exit
+------------------------------------------------------------- */
+
+/* ------------------------------------------------------------
+   NAMESPACE EMOJIS
+   ------------------------------------------------------------
+   🌌  Kernel / OS state
+   🌐  Network / HTTP / DNS
+   🕸️  Mesh / MeshChain / CLN
+   ⚡  Runtime / Trinity
+   🔧  Cluster / Jobs
+   🧠  Legion / AI
+   🧮  Math / K'UHUL π
+   🎨  DOM / UI
+   📊  Data / JSON / responses
+   👤  Auth / user
+   🚀  Boot / deployment
+------------------------------------------------------------- */
+
+/* ============================================================
+   GLOBAL CONSTANTS & KERNEL STATE
+   ============================================================ */
+
+[🌌Pop kernel_state_init]
+  [🌌Wo 'manifest.json'][🌌Ch'en MANIFEST_URL]
+
+  [🌌Wo null][🌌Ch'en KERNEL_MANIFEST]
+  [🌌Wo null][🌌Ch'en DNS_ZONES]
+  [🌌Wo null][🌌Ch'en REST_ROUTES]
+  [🌌Wo null][🌌Ch'en TRINITY_RUNTIMES]
+  [🌌Wo null][🌌Ch'en MESHCHAIN_CONFIG]
+  [🌌Wo null][🌌Ch'en CLUSTER_CONFIG]
+  [🌌Wo null][🌌Ch'en LEGION_CONFIG]
+  [🌌Wo null][🌌Ch'en AUTONOMY_CONFIG]
+  [🌌Wo null][🌌Ch'en KUHUL_PI_CONFIG]
+  [🌌Wo null][🌌Ch'en DOM_ENGINE_CONFIG]
+
+  /* Quantum DOM global state */
+  [🌌Wo null][🌌Ch'en DOM_STATE]
+
+  [🌌Wo {
+    status: 'cold',
+    boot_steps: [],
+    errors: [],
+    uptime_seconds: 0
+  }][🌌Ch'en KERNEL_STATE]
+[🌌Xul]
+
+/* ============================================================
+   HELPERS: KERNEL LOG + PUSH STEP / ERROR
+   ============================================================ */
+
+[🌌Pop kernel_log_step]
+  [🌌Wo label][🌌Ch'en step_label]
+  [🌌Yax KERNEL_STATE][🌌Ch'en ks]
+
+  [🌌Wo ks.boot_steps + [step_label]][🌌Ch'en new_steps]
+  [🌌Wo {
+    status: ks.status,
+    boot_steps: new_steps,
+    errors: ks.errors,
+    uptime_seconds: ks.uptime_seconds
+  }][🌌Ch'en KERNEL_STATE]
+[🌌Xul]
+
+[🌌Pop kernel_log_error]
+  [🌌Wo msg][🌌Ch'en err]
+  [🌌Yax KERNEL_STATE][🌌Ch'en ks]
+
+  [🌌Wo ks.errors + [err]][🌌Ch'en new_errs]
+  [🌌Wo {
+    status: 'degraded',
+    boot_steps: ks.boot_steps,
+    errors: new_errs,
+    uptime_seconds: ks.uptime_seconds
+  }][🌌Ch'en KERNEL_STATE]
+[🌌Xul]
+
+/* ============================================================
+   MANIFEST LOADER (LAW OF THE OS)
+   ============================================================ */
+
+[🌐Pop load_manifest]
+  [🌐(❓) KERNEL_MANIFEST != null][then]
+    [🌐Yax KERNEL_MANIFEST][🌐Xul]
+  [∴]
+    [🌐Sek fetch MANIFEST_URL cache:false][🌐Ch'en res]
+    [🌐Sek res.json][🌐Ch'en mj]
+
+    [🌐Wo mj][🌐Ch'en KERNEL_MANIFEST]
+    [🌌Sek kernel_log_step 'manifest_loaded']
+    [🌐Yax KERNEL_MANIFEST][🌐Xul]
+  [∴]
+[🌐Xul]
+
+/* ============================================================
+   DNS AUTHORITY INIT — from manifest.backend_architecture.dns_authority
+   ============================================================ */
+
+[🌐Pop dns_kernel_init]
+  [🌐Sek load_manifest][🌐Ch'en mj]
+
+  [🌐Wo mj.backend_architecture.dns_authority.zones][🌐Ch'en zones]
+  [🌐Wo zones][🌐Ch'en DNS_ZONES]
+
+  [🌌Sek kernel_log_step 'dns_authority_initialized']
+  [🌐Yax DNS_ZONES][🌐Xul]
+[🌐Xul]
+
+[🌐Pop dns_lookup]
+  [🌐Wo host][🌐Ch'en h]
+  [🌐Yax DNS_ZONES][🌐Ch'en zones]
+
+  [🌐Wo zones[h] || null][🌐Ch'en target]
+  [🌐Yax target][🌐Xul]
+[🌐Xul]
+
+/* ============================================================
+   REST MESH INIT — from manifest.backend_architecture.rest_mesh
+   + asx_os.xjson_server.routes
+   ============================================================ */
+
+[🌐Pop rest_mesh_init]
+  [🌐Sek load_manifest][🌐Ch'en mj]
+
+  [🌐Wo mj.backend_architecture.rest_mesh.endpoints][🌐Ch'en mesh_endpoints]
+  [🌐Wo mj.asx_os.xjson_server.routes][🌐Ch'en xjson_routes]
+
+  [🌐Wo {
+    mesh: mesh_endpoints,
+    xjson: xjson_routes
+  }][🌐Ch'en REST_ROUTES]
+
+  [🌌Sek kernel_log_step 'rest_mesh_initialized']
+  [🌐Yax REST_ROUTES][🌐Xul]
+[🌐Xul]
+
+/* ============================================================
+   JSON RESPONSE HELPER
+   ============================================================ */
+
+[📊Pop json_response]
+  [📊Wo body][📊Ch'en b]
+  [📊Wo status_code][📊Ch'en s]
+
+  [📊Wo {
+    kind: 'http_response',
+    status: s,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: b
+  }][📊Ch'en resp]
+  [📊Yax resp][📊Xul]
+[📊Xul]
+
+/* ============================================================
+   HEALTH SNAPSHOT
+   ============================================================ */
+
+[📊Pop build_health_snapshot]
+  [📊Yax KERNEL_STATE][📊Ch'en ks]
+  [📊Yax TRINITY_RUNTIMES][📊Ch'en tr]
+  [📊Yax DNS_ZONES][📊Ch'en dz]
+  [📊Yax REST_ROUTES][📊Ch'en rr]
+  [📊Yax DOM_STATE][📊Ch'en ds]
+
+  [📊Wo {
+    ok: ks.errors.length == 0,
+    status: ks.status,
+    boot_steps: ks.boot_steps,
+    errors: ks.errors,
+    uptime_seconds: ks.uptime_seconds,
+
+    trinity: tr,
+    dns: dz,
+    rest_routes: rr,
+    dom_state: ds
+  }][📊Ch'en health]
+  [📊Yax health][📊Xul]
+[📊Xul]
+
+/* ============================================================
+   TRINITY RUNTIME INIT — from manifest.asx_os.runtime.runtimes
+   ============================================================ */
+
+[⚡Pop trinity_kernel_init]
+  [⚡Sek load_manifest][⚡Ch'en mj]
+  [⚡Wo mj.asx_os.runtime.runtimes][⚡Ch'en rts]
+
+  [⚡Wo {
+    cpu: rts.cpu,
+    gpu: rts.gpu,
+    tpu: rts.tpu,
+    mesh: rts.mesh,
+    cluster: rts.cluster,
+    legion: rts.legion
+  }][⚡Ch'en TRINITY_RUNTIMES]
+
+  [🌌Sek kernel_log_step 'trinity_initialized']
+  [⚡Yax TRINITY_RUNTIMES][⚡Xul]
+[⚡Xul]
+
+/* ------------------------------------------------------------
+   TRINITY ROUTE HELPER
+   ------------------------------------------------------------ */
+
+[⚡Pop trinity_route]
+  [⚡Wo shard][⚡Ch'en s]
+  [⚡Wo payload][⚡Ch'en p]
+
+  [⚡Yax TRINITY_RUNTIMES][⚡Ch'en tr]
+  [⚡Wo tr[s] || null][⚡Ch'en rt_cfg]
+
+  [⚡(❓) rt_cfg == null][then]
+    [⚡Wo {
+      ok: false,
+      error: 'unknown_trinity_shard',
+      shard: s
+    }][⚡Ch'en err]
+    [📊Sek json_response err 500][⚡Xul]
+  [∴]
+    [⚡Wo {
+      ok: true,
+      shard: s,
+      adapter_ids: rt_cfg.adapters,
+      payload_echo: p
+    }][⚡Ch'en info]
+    [📊Sek json_response info 200][⚡Xul]
+  [∴]
+[⚡Xul]
+
+/* ============================================================
+   MESHCHAIN KERNEL INIT — from manifest.asx_os.meshchain
+   ============================================================ */
+
+[🕸️Pop meshchain_kernel_init]
+  [🕸️Sek load_manifest][🕸️Ch'en mj]
+
+  [🕸️Wo mj.asx_os.meshchain][🕸️Ch'en mc]
+  [🕸️Wo mc][🕸️Ch'en MESHCHAIN_CONFIG]
+  [🕸️Wo mc.cln][🕸️Ch'en CLN_TOKEN]
+
+  [🌌Sek kernel_log_step 'meshchain_initialized']
+  [🕸️Yax MESHCHAIN_CONFIG][🕸️Xul]
+[🕸️Xul]
+
+/* ------------------------------------------------------------
+   MESHCHAIN ROUTE HANDLER
+   ------------------------------------------------------------ */
+
+[🕸️Pop meshchain_kernel_handle]
+  [🕸️Wo path][🕸️Ch'en p]
+  [🕸️Wo method][🕸️Ch'en m]
+  [🕸️Wo body][🕸️Ch'en b]
+
+  [🕸️Sek load_manifest][🕸️Ch'en mj]
+  [🕸️Wo mj.asx_os.meshchain.routes][🕸️Ch'en routes]
+
+  /* /mesh/contract/preview */
+  [🕸️(❓) p == '/mesh/contract/preview' && m == 'POST'][then]
+    [🕸️Wo {
+      ok: true,
+      kind: 'mesh_contract_preview',
+      contract_ast: b || {},
+      mesh_hint: 'preview_only',
+      liquidaty_dialect: mj.asx_os.meshchain.liquidaty.dialect
+    }][🕸️Ch'en resp]
+    [📊Sek json_response resp 200][🕸️Xul]
+  [∴]
+
+  /* /mesh/contract/execute */
+  [🕸️(❓) p == '/mesh/contract/execute' && m == 'POST'][then]
+    [🕸️Wo {
+      ok: true,
+      kind: 'mesh_contract_execute',
+      tx_id: 'mesh_' + Date.now,
+      gas_used: 4200,
+      result: 'executed',
+      payload: b || {}
+    }][🕸️Ch'en resp]
+    [📊Sek json_response resp 200][🕸️Xul]
+  [∴]
+
+  /* /mesh/token/mint */
+  [🕸️(❓) p == '/mesh/token/mint' && m == 'POST'][then]
+    [🕸️Yax CLN_TOKEN][🕸️Ch'en cln]
+    [🕸️Wo {
+      ok: true,
+      kind: 'cln_mint',
+      symbol: cln.symbol,
+      request: b || {}
+    }][🕸️Ch'en resp]
+    [📊Sek json_response resp 200][🕸️Xul]
+  [∴]
+
+  /* /mesh/cln/transfer */
+  [🕸️(❓) p == '/mesh/cln/transfer' && m == 'POST'][then]
+    [🕸️Wo {
+      ok: true,
+      kind: 'cln_transfer',
+      transfer: b || {},
+      ledger_hint: 'recorded'
+    }][🕸️Ch'en resp]
+    [📊Sek json_response resp 200][🕸️Xul]
+  [∴]
+
+  /* /mesh/cln/ledger */
+  [🕸️(❓) p == '/mesh/cln/ledger' && m == 'GET'][then]
+    [🕸️Wo {
+      ok: true,
+      kind: 'cln_ledger_snapshot',
+      entries: [],
+      note: 'ledger storage implemented at MeshChain runtime layer'
+    }][🕸️Ch'en resp]
+    [📊Sek json_response resp 200][🕸️Xul]
+  [∴]
+
+  [🕸️Wo {
+    ok: false,
+    error: 'meshchain_route_not_found',
+    path: p,
+    method: m
+  }][🕸️Ch'en err]
+  [📊Sek json_response err 404][🕸️Xul]
+[🕸️Xul]
+
+/* ============================================================
+   CLUSTER KERNEL INIT — from manifest.asx_os.cluster
+   ============================================================ */
+
+[🔧Pop cluster_kernel_init]
+  [🔧Sek load_manifest][🔧Ch'en mj]
+
+  [🔧Wo mj.asx_os.cluster][🔧Ch'en cc]
+  [🔧Wo cc][🔧Ch'en CLUSTER_CONFIG]
+
+  [🌌Sek kernel_log_step 'cluster_initialized']
+  [🔧Yax CLUSTER_CONFIG][🔧Xul]
+[🔧Xul]
+
+/* ------------------------------------------------------------
+   CLUSTER ROUTE HANDLER
+   ------------------------------------------------------------ */
+
+[🔧Pop cluster_kernel_handle]
+  [🔧Wo path][🔧Ch'en p]
+  [🔧Wo method][🔧Ch'en m]
+  [🔧Wo body][🔧Ch'en b]
+
+  [🔧Yax CLUSTER_CONFIG][🔧Ch'en cc]
+
+  /* /cluster/train (POST) -> submit training job */
+  [🔧(❓) p == '/cluster/train' && m == 'POST'][then]
+    [🔧Wo {
+      ok: true,
+      kind: 'cluster_train_job',
+      api_endpoint: cc.api.endpoint,
+      default_job: cc.api.default_job,
+      payload: b || {}
+    }][🔧Ch'en resp]
+    [📊Sek json_response resp 200][🔧Xul]
+  [∴]
+
+  /* /cluster/results (GET) -> fetch results */
+  [🔧(❓) p == '/cluster/results' && m == 'GET'][then]
+    [🔧Wo {
+      ok: true,
+      kind: 'cluster_results_descriptor',
+      file: cc.api.results_file,
+      metrics_schema: cc.metrics.schema,
+      aggregate_fields: cc.metrics.aggregate_fields
+    }][🔧Ch'en resp]
+    [📊Sek json_response resp 200][🔧Xul]
+  [∴]
+
+  [🔧Wo {
+    ok: false,
+    error: 'cluster_route_not_found',
+    path: p,
+    method: m
+  }][🔧Ch'en err]
+  [📊Sek json_response err 404][🔧Xul]
+[🔧Xul]
+
+/* ============================================================
+   BASHER TERMINAL INIT
+   ============================================================ */
+
+[⚡Pop basher_kernel_init]
+  [⚡Wo true][⚡Ch'en BASHER_READY]
+  [🌌Sek kernel_log_step 'basher_initialized']
+  [⚡Yax BASHER_READY][⚡Xul]
+[⚡Xul]
+
+/* ============================================================
+   BASHER KERNEL HANDLE — structured commands
+   Body shape examples:
+     { cmd: 'runtime', shard: 'cpu', payload: {...} }
+     { cmd: 'mesh', path: '/mesh/contract/preview', method: 'POST', body: {...} }
+     { cmd: 'cluster', path: '/cluster/train', method: 'POST', body: {...} }
+     { cmd: 'legion', prompt: '...' }
+     { cmd: 'dom', op: {...} }
+   ============================================================ */
+
+[⚡Pop basher_kernel_handle]
+  [⚡Wo body][⚡Ch'en b]
+  [⚡Wo b.cmd][⚡Ch'en c]
+
+  /* runtime -> /runtime/trinity via trinity_route */
+  [⚡(❓) c == 'runtime'][then]
+    [⚡Wo b.shard][⚡Ch'en shard]
+    [⚡Wo b.payload || {}][⚡Ch'en pl]
+    [⚡Sek trinity_route shard pl][⚡Ch'en r]
+    [⚡Yax r][⚡Xul]
+  [∴]
+
+  /* mesh -> /mesh/* via meshchain_kernel_handle */
+  [⚡(❓) c == 'mesh'][then]
+    [⚡Wo b.path][⚡Ch'en p]
+    [⚡Wo b.method || 'POST'][⚡Ch'en m]
+    [⚡Wo b.body || {}][⚡Ch'en mb]
+    [🕸️Sek meshchain_kernel_handle p m mb][🕸️Ch'en r]
+    [⚡Yax r][⚡Xul]
+  [∴]
+
+  /* cluster -> /cluster/* via cluster_kernel_handle */
+  [⚡(❓) c == 'cluster'][then]
+    [⚡Wo b.path][⚡Ch'en p]
+    [⚡Wo b.method || 'POST'][⚡Ch'en m]
+    [⚡Wo b.body || {}][⚡Ch'en cb]
+    [🔧Sek cluster_kernel_handle p m cb][🔧Ch'en r]
+    [⚡Yax r][⚡Xul]
+  [∴]
+
+  /* legion -> /legion/vote via legion_vote */
+  [⚡(❓) c == 'legion'][then]
+    [⚡Wo b.prompt][⚡Ch'en pr]
+    [🧠Sek legion_vote pr][🧠Ch'en r]
+    [⚡Yax r][⚡Xul]
+  [∴]
+
+  /* dom -> Quantum DOM op broadcast */
+  [⚡(❓) c == 'dom'][then]
+    [⚡Wo b.op || {}][⚡Ch'en dop]
+    [🎨Sek dom_quantum_exec dop][🎨Ch'en dresp]
+    [⚡Yax dresp][⚡Xul]
+  [∴]
+
+  /* default: unknown command */
+  [⚡Wo {
+    ok: false,
+    error: 'basher_unknown_command',
+    cmd: c,
+    body: b
+  }][⚡Ch'en err]
+  [📊Sek json_response err 400][⚡Xul]
+[⚡Xul]
+
+/* ============================================================
+   LEGION FUSION INIT — from manifest.asx_os.legion_fusion
+   AUTONOMY FUSION INIT — from manifest.asx_os.autonomy_fusion
+   ============================================================ */
+
+[🧠Pop legion_kernel_init]
+  [🧠Sek load_manifest][🧠Ch'en mj]
+
+  [🧠Wo mj.asx_os.legion_fusion][🧠Ch'en lg]
+  [🧠Wo mj.asx_os.autonomy_fusion][🧠Ch'en au]
+
+  [🧠Wo lg][🧠Ch'en LEGION_CONFIG]
+  [🧠Wo au][🧠Ch'en AUTONOMY_CONFIG]
+
+  [🌌Sek kernel_log_step 'legion_autonomy_initialized']
+  [🧠Yax LEGION_CONFIG][🧠Xul]
+[🧠Xul]
+
+/* ------------------------------------------------------------
+   LEGION CONSENSUS VOTE
+   ------------------------------------------------------------ */
+
+[🧠Pop legion_vote]
+  [🧠Wo prompt][🧠Ch'en p]
+  [🧠Yax LEGION_CONFIG][🧠Ch'en lg]
+
+  [🧠Wo lg.models][🧠Ch'en models]
+  [🧠Wo lg.consensus.weights][🧠Ch'en weights]
+
+  [🧠Wo {
+    ok: true,
+    kind: 'legion_consensus',
+    prompt: p,
+    models: models,
+    weights: weights,
+    decision: 'symbolic_legion_response',
+    rlhf_channels: lg.consensus.rlhf_channels
+  }][🧠Ch'en resp]
+  [📊Sek json_response resp 200][🧠Xul]
+[🧠Xul]
+
+/* ------------------------------------------------------------
+   AUTONOMY WORLD ENGINE HOOK
+   ------------------------------------------------------------ */
+
+[🧠Pop autonomy_world_step]
+  [🧠Wo world_state][🧠Ch'en ws]
+  [🧠Wo player_signal][🧠Ch'en sig]
+  [🧠Yax AUTONOMY_CONFIG][🧠Ch'en au]
+
+  [🧠Wo {
+    ok: true,
+    kind: 'autonomy_world_step',
+    modes: au.modes,
+    rlhf_channels: au.rlhf.channels,
+    input_world: ws,
+    input_signal: sig,
+    output_director: 'symbolic_world_director'
+  }][🧠Ch'en resp]
+  [📊Sek json_response resp 200][🧠Xul]
+[🧠Xul]
+
+
+/* ============================================================
+   K'UHUL π ENGINE INIT — from manifest.kuhul_pi_engine
+   ============================================================ */
+
+[🧮Pop kuhul_pi_init]
+  [🧮Sek load_manifest][🧮Ch'en mj]
+
+  [🧮Wo mj.kuhul_pi_engine][🧮Ch'en kp]
+  [🧮Wo kp][🧮Ch'en KUHUL_PI_CONFIG]
+
+  [🌌Sek kernel_log_step 'kuhul_pi_initialized']
+  [🧮Yax KUHUL_PI_CONFIG][🧮Xul]
+[🧮Xul]
+
+/* ------------------------------------------------------------
+   BASIC K'UHUL π OPS (symbolic examples)
+   ------------------------------------------------------------ */
+
+[🧮Pop pi_constant]
+  [🧮Wo 3.141592653589793][🧮Ch'en v]
+  [🧮Yax v][🧮Xul]
+[🧮Xul]
+
+[🧮Pop vector_length]
+  [🧮Wo vec][🧮Ch'en v]
+  [🧮Wo v.x * v.x + v.y * v.y + v.z * v.z][🧮Ch'en s]
+  [🧮Wo sqrt(s)][🧮Ch'en len]
+  [🧮Yax len][🧮Xul]
+[🧮Xul]
+
+[🧮Pop kinetic_energy]
+  [🧮Wo mass][🧮Ch'en m]
+  [🧮Wo velocity][🧮Ch'en v]
+  [🧮Wo 0.5 * m * v * v][🧮Ch'en ke]
+  [🧮Yax ke][🧮Xul]
+[🧮Xul]
+
+
+/* ============================================================
+   K'UHUL DOM ENGINE v3 — QUANTUM DOM KERNEL
+   - Component-slot layout
+   - Atomic Fold integration (manifest.atomic + ASX Blocks)
+   - Quantum DOM state (views, focus, overlays, feeds)
+   ============================================================ */
+
+/* Base DOM engine init */
+
+[🎨Pop kuhul_dom_init]
+  [🎨Sek load_manifest][🎨Ch'en mj]
+
+  [🎨Wo mj.asx_os.ui.panels][🎨Ch'en ui_panels]
+  [🎨Wo mj.atomic][🎨Ch'en atomic_fold]
+
+  [🎨Wo {
+    panels: ui_panels,
+    atomic: atomic_fold
+  }][🎨Ch'en DOM_ENGINE_CONFIG]
+
+  [🎨Sek dom_state_init ui_panels]
+  [🌌Sek kernel_log_step 'dom_engine_initialized']
+  [🎨Yax DOM_ENGINE_CONFIG][🎨Xul]
+[🎨Xul]
+
+/* ------------------------------------------------------------
+   QUANTUM DOM STATE INIT
+   ------------------------------------------------------------ */
+
+[🎨Pop dom_state_init]
+  [🎨Wo panels][🎨Ch'en p]
+
+  [🎨Wo {
+    views: {
+      prime: {
+        id: 'prime',
+        title: 'Prime Cockpit',
+        panels: ['runtime','folds','log','routes','cluster_stats','scene_state']
+      }
+    },
+    active_view_id: 'prime',
+    focused_panel_id: 'runtime',
+    overlays: [],
+    feeds: {
+      os_log: {
+        id: 'os_log',
+        kind: 'log',
+        channel: 'os_log',
+        last_seq: 0
+      }
+    },
+    last_snapshot_id: 0,
+    panels: p
+  }][🎨Ch'en DOM_STATE]
+[🎨Xul]
+
+/* ------------------------------------------------------------
+   QUANTUM SNAPSHOT BUILDER
+   ------------------------------------------------------------ */
+
+[🎨Pop dom_quantum_snapshot]
+  [🎨Yax DOM_STATE][🎨Ch'en ds]
+  [🎨Yax DOM_ENGINE_CONFIG][🎨Ch'en dec]
+  [⚡Yax TRINITY_RUNTIMES][⚡Ch'en tr]
+
+  [🎨Wo ds.last_snapshot_id + 1][🎨Ch'en next_id]
+  [🎨Wo next_id][🎨Ch'en new_snap_id]
+
+  [🎨Wo {
+    id: new_snap_id,
+    time: 'symbolic_now',
+    active_view_id: ds.active_view_id,
+    focused_panel_id: ds.focused_panel_id,
+    overlays: ds.overlays,
+    panels: dec.panels,
+    atomic: dec.atomic,
+    trinity_hint: {
+      cpu: tr.cpu.id,
+      gpu: tr.gpu.id,
+      tpu: tr.tpu.id,
+      mesh: tr.mesh.id,
+      cluster: tr.cluster.id,
+      legion: tr.legion.id
+    }
+  }][🎨Ch'en snap]
+
+  [🎨Wo {
+    views: ds.views,
+    active_view_id: ds.active_view_id,
+    focused_panel_id: ds.focused_panel_id,
+    overlays: ds.overlays,
+    feeds: ds.feeds,
+    last_snapshot_id: new_snap_id,
+    panels: ds.panels
+  }][🎨Ch'en new_ds]
+  [🎨Wo new_ds][🎨Ch'en DOM_STATE]
+
+  [🎨Yax snap][🎨Xul]
+[🎨Xul]
+
+/* ------------------------------------------------------------
+   QUANTUM VIEW SUBSCRIBE / BROADCAST (symbolic)
+   ------------------------------------------------------------ */
+
+[🎨Pop dom_view_subscribe]
+  [🎨Wo view_id][🎨Ch'en vid]
+  [🎨Wo client_id][🎨Ch'en cid]
+
+  [🎨Wo {
+    cmd: 'view_subscribe',
+    view_id: vid,
+    client_id: cid
+  }][🎨Ch'en op]
+  [🎨Sek dom_broadcast_op op]
+[🎨Xul]
+
+[🎨Pop dom_view_broadcast_snapshot]
+  [🎨Sek dom_quantum_snapshot][🎨Ch'en snap]
+
+  [🎨Wo {
+    cmd: 'view_snapshot',
+    snapshot: snap
+  }][🎨Ch'en op]
+  [🎨Sek dom_broadcast_op op]
+[🎨Xul]
+
+/* ------------------------------------------------------------
+   PANEL FOCUS + TOGGLE
+   ------------------------------------------------------------ */
+
+[🎨Pop dom_panel_focus]
+  [🎨Wo panelId][🎨Ch'en pid]
+  [🎨Yax DOM_STATE][🎨Ch'en ds]
+
+  [🎨Wo {
+    views: ds.views,
+    active_view_id: ds.active_view_id,
+    focused_panel_id: pid,
+    overlays: ds.overlays,
+    feeds: ds.feeds,
+    last_snapshot_id: ds.last_snapshot_id,
+    panels: ds.panels
+  }][🎨Ch'en new_ds]
+  [🎨Wo new_ds][🎨Ch'en DOM_STATE]
+
+  [🎨Wo {
+    cmd: 'panel_focus',
+    panelId: pid
+  }][🎨Ch'en op]
+  [🎨Sek dom_broadcast_op op]
+[🎨Xul]
+
+[🎨Pop dom_panel_toggle_overlay]
+  [🎨Wo overlayId][🎨Ch'en oid]
+  [🎨Yax DOM_STATE][🎨Ch'en ds]
+
+  [🎨Wo {
+    cmd: 'overlay_toggle',
+    overlayId: oid
+  }][🎨Ch'en op]
+  [🎨Sek dom_broadcast_op op]
+[🎨Xul]
+
+/* ------------------------------------------------------------
+   DOM BROADCAST OP — symbolic client messaging
+   ------------------------------------------------------------ */
+
+[🎨Pop dom_broadcast_op]
+  [🎨Wo op][🎨Ch'en operation]
+
+  [🎨Wo {
+    kind: 'dom_op',
+    op: operation
+  }][🎨Ch'en payload]
+
+  [🎨Yax payload][🎨Xul]
+[🎨Xul]
+
+/* ------------------------------------------------------------
+   DOM AUTO-BOOT — PRIME cockpit panels
+   ------------------------------------------------------------ */
+
+[🎨Pop dom_auto_boot]
+  [🎨Yax DOM_ENGINE_CONFIG][🎨Ch'en dec]
+  [🎨Wo dec.panels][🎨Ch'en panels]
+
+  [🎨Wo ['runtime','folds','log','routes','cluster_stats','scene_state']][🎨Ch'en boot_ids]
+
+  [🎨K'ayab' id_in_boot]
+    [🎨Wo id_in_boot][🎨Ch'en pid]
+    [🎨Sek dom_render_panel pid]
+  [🎨Kumk'u id_in_boot]
+
+  [🎨Sek dom_view_broadcast_snapshot]
+  [🌌Sek kernel_log_step 'dom_auto_boot_panels_rendered']
+[🎨Xul]
+
+/* ------------------------------------------------------------
+   RENDER HTML INTO TARGET NODE
+   ------------------------------------------------------------ */
+
+[🎨Pop dom_render]
+  [🎨Wo targetId][🎨Ch'en tid]
+  [🎨Wo html][🎨Ch'en h]
+
+  [🎨Wo {
+    cmd: 'render',
+    targetId: tid,
+    html: h
+  }][🎨Ch'en op]
+
+  [🎨Sek dom_broadcast_op op]
+[🎨Xul]
+
+/* ------------------------------------------------------------
+   MOUNT ATOMIC COMPONENT INTO PANEL SLOT
+   ------------------------------------------------------------ */
+
+[🎨Pop dom_mount_component]
+  [🎨Wo panelId][🎨Ch'en pid]
+  [🎨Wo slotId][🎨Ch'en sid]
+  [🎨Wo componentType][🎨Ch'en ctype]
+  [🎨Wo props || {}][🎨Ch'en p]
+
+  [🎨Wo {
+    cmd: 'mountComponent',
+    panelId: pid,
+    slotId: sid,
+    componentType: ctype,
+    props: p
+  }][🎨Ch'en op]
+
+  [🎨Sek dom_broadcast_op op]
+[🎨Xul]
+
+/* ------------------------------------------------------------
+   PANEL AUTO-RENDER FROM manifest.asx_os.ui.panels
+   ------------------------------------------------------------ */
+
+[🎨Pop dom_render_panel]
+  [🎨Wo panelId][🎨Ch'en pid]
+  [🎨Yax DOM_ENGINE_CONFIG][🎨Ch'en dec]
+  [🎨Wo dec.panels[pid] || null][🎨Ch'en panel]
+
+  [🎨(❓) panel == null][then]
+    [🎨Wo {
+      cmd: 'log',
+      level: 'warn',
+      msg: 'panel_not_found',
+      panelId: pid
+    }][🎨Ch'en op]
+    [🎨Sek dom_broadcast_op op]
+    [🎨Xul]
+  [∴]
+
+  [🎨Wo {
+    cmd: 'renderPanel',
+    panel: panel
+  }][🎨Ch'en op]
+  [🎨Sek dom_broadcast_op op]
+[🎨Xul]
+
+/* ------------------------------------------------------------
+   DOM QUANTUM EXEC — Basher DOM command entry
+   ------------------------------------------------------------ */
+
+[🎨Pop dom_quantum_exec]
+  [🎨Wo op][🎨Ch'en dop]
+  [🎨Wo dop.kind || 'broadcast'][🎨Ch'en k]
+
+  /* focus a panel */
+  [🎨(❓) k == 'focus'][then]
+    [🎨Wo dop.panelId][🎨Ch'en pid]
+    [🎨Sek dom_panel_focus pid]
+    [🎨Sek dom_quantum_snapshot][🎨Ch'en snap]
+    [📊Sek json_response {
+      ok: true,
+      kind: 'dom_focus',
+      panelId: pid,
+      snapshot: snap
+    } 200][🎨Xul]
+  [∴]
+
+  /* overlay toggle */
+  [🎨(❓) k == 'overlay_toggle'][then]
+    [🎨Wo dop.overlayId][🎨Ch'en oid]
+    [🎨Sek dom_panel_toggle_overlay oid]
+    [🎨Sek dom_quantum_snapshot][🎨Ch'en snap]
+    [📊Sek json_response {
+      ok: true,
+      kind: 'dom_overlay',
+      overlayId: oid,
+      snapshot: snap
+    } 200][🎨Xul]
+  [∴]
+
+  /* default: broadcast raw op */
+  [🎨Sek dom_broadcast_op dop]
+  [📊Sek json_response {
+    ok: true,
+    kind: 'dom_broadcast',
+    op: dop
+  } 200][🎨Xul]
+[🎨Xul]
+
+
+/* ============================================================
+   MASTER BOOT SEQUENCE — sw.khl v3
+   ============================================================ */
+
+[⚡Pop kernel_boot]
+  [🌌Sek kernel_state_init]
+  [🌌Sek kernel_log_step 'kernel_state_initialized']
+
+  [🌐Sek load_manifest]
+  [🌌Sek kernel_log_step 'manifest_loaded']
+
+  [🌐Sek dns_kernel_init]
+  [🌐Sek rest_mesh_init]
+  [⚡Sek trinity_kernel_init]
+  [🕸️Sek meshchain_kernel_init]
+  [🔧Sek cluster_kernel_init]
+  [🧮Sek kuhul_pi_init]
+  [🧠Sek legion_kernel_init]
+  [🎨Sek kuhul_dom_init]
+
+  /* Basher + DOM auto-boot */
+  [⚡Sek basher_kernel_init]
+  [🎨Sek dom_auto_boot]
+
+  [🌌Wo 'hot'][🌌Ch'en KERNEL_STATE.status]
+  [🌌Sek kernel_log_step 'kernel_boot_complete']
+
+  [🌌Yax KERNEL_STATE][🌌Xul]
+[⚡Xul]
+
+
+/* ============================================================
+   MAIN KERNEL ROUTER — ENTRY FOR ALL REQUESTS
+   ============================================================ */
+
+[🌐Pop kernel_route]
+  [🌐Wo request][🌐Ch'en req]
+
+  /* symbolic URL parse */
+  [🌐Sek url_parse req.url][🌐Ch'en url]
+  [🌐Wo url.pathname][🌐Ch'en path]
+  [🌐Wo req.method][🌐Ch'en method]
+
+  [🌐Sek kernel_boot]
+
+  /* /health -------------------------------------------------- */
+  [🌐(❓) path == '/health'][then]
+    [📊Sek build_health_snapshot][📊Ch'en health]
+    [📊Sek json_response health 200][🌐Xul]
+  [∴]
+
+  /* /os/state ------------------------------------------------ */
+  [🌐(❓) path == '/os/state'][then]
+    [🌐Sek load_manifest][🌐Ch'en mj]
+    [🌌Yax KERNEL_STATE][🌌Ch'en ks]
+    [🎨Sek dom_quantum_snapshot][🎨Ch'en snap]
+
+    [📊Wo {
+      ok: true,
+      id: mj.asx_os.id,
+      version: mj.asx_os.version,
+      runtime: mj.asx_os.runtime.primary,
+      folds: mj.asx_os.fold_manifest.total_folds,
+      kernel_status: ks.status,
+      boot_steps: ks.boot_steps,
+      errors: ks.errors,
+      dom_snapshot: snap
+    }][📊Ch'en state]
+    [📊Sek json_response state 200][🌐Xul]
+  [∴]
+
+  /* /dom/state ----------------------------------------------- */
+  [🌐(❓) path == '/dom/state'][then]
+    [🎨Sek dom_quantum_snapshot][🎨Ch'en snap]
+    [📊Sek json_response {
+      ok: true,
+      kind: 'dom_state',
+      snapshot: snap
+    } 200][🌐Xul]
+  [∴]
+
+  /* /dom/op -------------------------------------------------- */
+  [🌐(❓) path == '/dom/op' && method == 'POST'][then]
+    [📊Wo req.body || {}][📊Ch'en body]
+    [🎨Sek dom_quantum_exec body][🎨Ch'en dresp]
+    [🌐Yax dresp][🌐Xul]
+  [∴]
+
+  /* MeshChain ------------------------------------------------ */
+  [🌐(❓) str_starts_with path '/mesh/'][then]
+    [🕸️Sek meshchain_kernel_handle path method req.body][🕸️Ch'en mresp]
+    [🌐Yax mresp][🌐Xul]
+  [∴]
+
+  /* Cluster -------------------------------------------------- */
+  [🌐(❓) str_starts_with path '/cluster/'][then]
+    [🔧Sek cluster_kernel_handle path method req.body][🔧Ch'en cresp]
+    [🌐Yax cresp][🌐Xul]
+  [∴]
+
+  /* Trinity helper routing ----------------------------------- */
+  [🌐(❓) path == '/runtime/trinity' && method == 'POST'][then]
+    [📊Wo req.body || {}][📊Ch'en body]
+    [⚡Sek trinity_route body.shard body.payload][⚡Ch'en tresp]
+    [🌐Yax tresp][🌐Xul]
+  [∴]
+
+  /* Legion consensus ----------------------------------------- */
+  [🌐(❓) path == '/legion/vote' && method == 'POST'][then]
+    [📊Wo req.body || {}][📊Ch'en body]
+    [🧠Sek legion_vote body.prompt][🧠Ch'en lresp]
+    [🌐Yax lresp][🌐Xul]
+  [∴]
+
+  /* Autonomy world engine ------------------------------------ */
+  [🌐(❓) path == '/autonomy/world_step' && method == 'POST'][then]
+    [📊Wo req.body || {}][📊Ch'en body]
+    [🧠Sek autonomy_world_step body.world_state body.player_signal][🧠Ch'en aresp]
+    [🌐Yax aresp][🌐Xul]
+  [∴]
+
+  /* Basher CLI ------------------------------------------------ */
+  [🌐(❓) path == '/basher/exec' && method == 'POST'][then]
+    [📊Wo req.body || {}][📊Ch'en body]
+    [⚡Sek basher_kernel_handle body][⚡Ch'en bresp]
+    [🌐Yax bresp][🌐Xul]
+  [∴]
+
+  /* Default: route table echo -------------------------------- */
+  [🌐Sek load_manifest][🌐Ch'en mj]
+  [🌐Wo {
+    ok: false,
+    error: 'route_not_handled',
+    path: path,
+    method: method,
+    hint: 'extend kernel_route for additional endpoints',
+    xjson_routes: mj.asx_os.xjson_server.routes
+  }][🌐Ch'en err]
+  [📊Sek json_response err 404][🌐Xul]
+[🌐Xul]
+

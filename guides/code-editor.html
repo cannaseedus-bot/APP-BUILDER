@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="en" data-theme="matrix" ⟁flex ⟁col ⟁min-h-full ⟁bg0 ⟁text>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>BLACK CODE EDITOR Ω — ATOMIC ⊗ GLYPH ⊗ MX2LEX ⊗ SCXQ2</title>
+
+  <!-- ============================================================
+       ATOMIC+GLYPH.css (CANONICAL — MERGED)
+       Blocks: (1) Universal Layout (2) Atomic Classes (3) Variables-as-State (4) AI Control Vectors
+       Includes: ⟁ attribute ops + XCFE flow primitives + physics vars + glyph codex + themes
+  ============================================================ -->
+  <style id="ATOMIC_GLYPH_CSS">
+/* ===================================================================
+   (3) VARIABLES AS STATE — ATOMIC RUNTIME ROOT (CSS IS RUNTIME)
+=================================================================== */
+:root{
+  /* spacing */
+  --s0:0px; --s1:6px; --s2:10px; --s3:14px; --s4:18px; --s5:24px; --s6:32px;
+  /* radius */
+  --r0:0px; --r1:8px; --r2:12px; --r3:18px; --r4:24px;
+  /* typography */
+  --fs0:12px; --fs1:13px; --fs2:14px; --fs3:16px; --fs4:18px; --fs5:22px;
+  --mono: ui-monospace, "Cascadia Code", "SFMono-Regular", Menlo, Consolas, monospace;
+  --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+  /* base palette (matrix emerald + hazard gold accents) */
+  --bg-0:#020409;
+  --bg-1:#050912;
+  --bg-2:#071022;
+  --panel:rgba(255,255,255,.045);
+  --panel2:rgba(255,255,255,.06);
+  --border:rgba(255,255,255,.14);
+  --border-soft:rgba(255,255,255,.09);
+
+  --fg-0:#eafff8;
+  --fg-1:rgba(234,255,248,.78);
+
+  --accent:#16f2aa;
+  --accent2:#61e7ff;
+  --accent-soft:rgba(22,242,170,.14);
+
+  --hazard:#ffb300;
+  --hazard-soft:rgba(255,179,0,.14);
+
+  --danger:#ff6b6b;
+  --success:#00d9a6;
+
+  --shadow-lg: 0 16px 40px rgba(0,0,0,.38);
+
+  /* physics / motion state (can be mutated by API/K’uhul) */
+  --px:0; --py:0; --rot:0;
+  --vx:0; --vy:0;
+  --ax:0; --ay:0;
+  --gravity:0.98;
+  --friction:0.92;
+  --spring:0.12;
+  --velocity:1;
+
+  /* entropy / signals */
+  --entropy:0.0; /* 0..1 */
+  --compression_ratio:0.0; /* computed */
+  --loop_tick:0;
+}
+
+/* ===================================================================
+   (1) UNIVERSAL LAYOUT — ONE GRID/FLEX SYSTEM, NO MEDIA QUERIES NEEDED
+=================================================================== */
+html,body{height:100%;margin:0;background:var(--bg-0);color:var(--fg-0);font-family:var(--sans);}
+*{box-sizing:border-box}
+a{color:inherit}
+pre,code,textarea{font-family:var(--mono)}
+::selection{background:var(--accent);color:var(--bg-0)}
+/* “no visible scrollbars” but still scrollable */
+*{scrollbar-width:none}
+*::-webkit-scrollbar{width:0;height:0}
+
+/* ===================================================================
+   (2) ATOMIC CLASSES + ⟁ ATTRIBUTE OPS — KUHUL EXECUTION PATTERNS
+   (Pop/Wo/Sek/etc). Class aliases included.
+=================================================================== */
+/* [Pop] layout containers */
+[⟁flex],.b-f{display:flex}
+[⟁grid],.b-g{display:grid}
+[⟁block],.b-b{display:block}
+[⟁inline],.b-i{display:inline}
+[⟁col],.b-fc{flex-direction:column}
+[⟁row],.b-fr{flex-direction:row}
+[⟁wrap],.b-wrap{flex-wrap:wrap}
+[⟁center],.b-gc{display:flex;align-items:center;justify-content:center}
+[⟁acenter],.b-aic{align-items:center}
+[⟁jcenter],.b-jcc{justify-content:center}
+
+/* spacing */
+[⟁p1],.p-1{padding:var(--s1)}
+[⟁p2],.p-2{padding:var(--s2)}
+[⟁p3],.p-3{padding:var(--s3)}
+[⟁p4],.p-4{padding:var(--s4)}
+[⟁m1],.m-1{margin:var(--s1)}
+[⟁m2],.m-2{margin:var(--s2)}
+[⟁m3],.m-3{margin:var(--s3)}
+[⟁m4],.m-4{margin:var(--s4)}
+[⟁g1],.gap-1{gap:var(--s1)}
+[⟁g2],.gap-2{gap:var(--s2)}
+[⟁g3],.gap-3{gap:var(--s3)}
+[⟁g4],.gap-4{gap:var(--s4)}
+
+/* border + bg + text */
+[⟁border],.border{border:1px solid var(--border)}
+[⟁border-accent],.border-accent{border:1px solid rgba(22,242,170,.55)}
+[⟁rounded],.rounded{border-radius:var(--r2)}
+[⟁bg0],.bg-0{background:var(--bg-0)}
+[⟁bg1],.bg-1{background:var(--bg-1)}
+[⟁bg2],.bg-2{background:var(--bg-2)}
+[⟁panel],.panel{background:var(--panel)}
+[⟁text],.text{color:var(--fg-0)}
+[⟁muted],.text-muted{color:var(--fg-1)}
+[⟁accent],.text-accent{color:var(--accent)}
+
+/* components */
+[⟁ghost],.glass{background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:var(--r3)}
+[⟁card],.card{background:var(--panel2);border:1px solid var(--border-soft);border-radius:var(--r3);padding:var(--s4);transition:.25s}
+[⟁card]:hover,.card:hover{border-color:rgba(22,242,170,.55);box-shadow:0 10px 28px rgba(0,0,0,.25);transform:translateY(-1px)}
+[⟁btn],.btn{appearance:none;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--fg-0);border-radius:var(--r2);padding:8px 12px;cursor:pointer;font:600 var(--fs2)/1 var(--sans);display:inline-flex;align-items:center;gap:var(--s1);transition:.18s}
+[⟁btn]:hover,.btn:hover{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.2);transform:translateY(-1px)}
+.btn-accent{border-color:rgba(22,242,170,.55);color:var(--accent)}
+.btn-hazard{border-color:rgba(255,179,0,.55);color:var(--hazard)}
+.btn-danger{border-color:rgba(255,107,107,.55);color:var(--danger)}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;font-size:12px;border:1px solid var(--border-soft);background:rgba(255,255,255,.04)}
+.badge-accent{border-color:rgba(22,242,170,.35);background:rgba(22,242,170,.10);color:var(--accent)}
+.badge-hazard{border-color:rgba(255,179,0,.35);background:rgba(255,179,0,.10);color:var(--hazard)}
+.hr{height:1px;background:var(--border-soft);margin:var(--s3) 0}
+
+/* special effects */
+.text-gradient{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.neon{ text-shadow: 0 0 10px rgba(22,242,170,.25), 0 0 24px rgba(22,242,170,.12) }
+.electric-border{border:2px solid transparent;background:linear-gradient(var(--bg-0),var(--bg-0)) padding-box,linear-gradient(90deg,var(--accent),var(--accent2)) border-box}
+
+/* ===================================================================
+   (4) AI CONTROL VECTORS — XCFE PRIMITIVES (CSS GOVERNED)
+=================================================================== */
+[atomic-block="@if_then_else"],.flow-if{
+  --control-flow:"conditional";
+  --evaluation-state:"pending";
+  display:none;padding:var(--s3);
+  border-left:3px solid var(--accent);
+  background:rgba(22,242,170,.06);
+  border-radius:var(--r2)
+}
+[atomic-block="@if_then_else"][data-condition="true"],.flow-if.active{
+  display:block;animation:block-activate .25s ease-out
+}
+[atomic-block="@loop"],.flow-loop{
+  --control-flow:"recursive";
+  --iteration-count:0;
+  --max-iterations:100;
+  animation:loop-pulse calc(1s / max(var(--velocity), .25)) infinite;
+  padding:var(--s3);border-left:3px solid rgba(22,242,170,.7);
+  background:rgba(22,242,170,.06);border-radius:var(--r2)
+}
+[atomic-block="@dispatch"],.flow-dispatch{
+  --control-flow:"routing";
+  --route-target:"";
+  --route-state:"idle";
+  cursor:pointer;transition:.18s;
+  padding:var(--s3);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  background:var(--panel)
+}
+[atomic-block="@dispatch"]:hover,.flow-dispatch:hover{
+  --route-state:"hover";
+  background:rgba(22,242,170,.10);
+  border-color:rgba(22,242,170,.45);
+  transform:translateX(2px)
+}
+[atomic-block="@microagent"],.agent-micro{
+  --agent-type:"micro";
+  --agent-state:"idle";
+  --agent-processing:0;
+  position:relative;overflow:hidden;
+  padding:var(--s3);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  background:var(--panel)
+}
+.agent-micro::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(22,242,170,0.12),transparent);
+  transform:translateX(-100%);
+  animation:agent-process calc(2s * max(var(--agent-processing), 0)) ease-out
+}
+
+/* execution folds */
+[execution-fold="Pop"],.fold-pop{opacity:0;transform:translateY(-12px);animation:fold-pop .22s ease-out forwards}
+[execution-fold="Wo"],.fold-wo{border-left:3px solid rgba(22,242,170,.5);padding-left:var(--s3);background:rgba(22,242,170,.06)}
+[execution-fold="Sek"],.fold-sek{animation:fold-sek .6s ease-in-out infinite;background:linear-gradient(90deg,transparent,rgba(22,242,170,.10),transparent)}
+
+/* agent roles */
+.agent-kernel{border:2px solid rgba(22,242,170,.75);background:linear-gradient(135deg,rgba(22,242,170,.12),rgba(22,242,170,.05));padding:var(--s4);border-radius:var(--r3)}
+.agent-runtime{padding:var(--s4);border-radius:var(--r3);background:var(--panel)}
+.agent-physics{
+  --agent-capability:"motion_simulation";
+  transform:translate(calc(var(--px)*1px),calc(var(--py)*1px)) rotate(calc(var(--rot)*1deg));
+  transition:transform calc(.12s / max(var(--velocity), .25)) linear;
+  padding:var(--s4);border-radius:var(--r3);background:var(--panel)
+}
+
+/* mini HUD widgets */
+.entropy-visual{height:2px;border-radius:2px;background:linear-gradient(90deg,var(--bg-1) 0%, var(--accent) calc(var(--entropy)*100%), var(--bg-1) 100%)}
+.signal-strength{display:flex;align-items:flex-end;gap:2px;height:18px}
+.signal-bar{width:3px;background:var(--accent);opacity:.22;border-radius:1px}
+.signal-bar.active{opacity:1}
+
+/* gaming */
+.health-bar{width:100%;height:4px;border-radius:2px;background:var(--bg-1);overflow:hidden}
+.health-fill{height:100%;background:var(--danger);transition:width .25s ease}
+.health-bar-pulse{animation:health-pulse 2s ease-in-out infinite}
+
+/* forms */
+.form-input{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:var(--r2);padding:var(--s3) var(--s4);color:var(--fg-0);font:500 var(--fs2)/1.2 var(--sans);transition:.18s}
+.form-input:focus{border-color:rgba(22,242,170,.6);box-shadow:0 0 0 3px rgba(22,242,170,.10);outline:none}
+.form-label{display:block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-1);margin-bottom:var(--s1)}
+
+/* debug */
+.debug{outline:1px solid #ff0066;background:rgba(255,0,102,0.05)!important}
+.debug-grid{
+  background-image:linear-gradient(rgba(22,242,170,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(22,242,170,.10) 1px,transparent 1px);
+  background-size:20px 20px
+}
+
+/* themes */
+[data-theme="emerald"]{--accent:#16f2aa;--accent2:#00ffa3}
+[data-theme="night"]{--accent:#6366f1;--accent2:#8b5cf6}
+[data-theme="cyber"]{--accent:#00ff9d;--accent2:#00ffff}
+[data-theme="matrix"]{--accent:#16f2aa;--accent2:#61e7ff}
+
+/* accessibility */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* ===================================================================
+   GLYPH RUNTIME — UNIVERSAL BASE64 MAPPING (data-g)
+   Note: full A–Z / 0–9 are GENERATED at runtime (real base64),
+         while core UI + RPG are PRELOADED here.
+=================================================================== */
+[data-g]{
+  --g-size:22;
+  width:calc(var(--g-size)*1px);height:calc(var(--g-size)*1px);
+  display:inline-block;vertical-align:middle;flex-shrink:0;
+  background: var(--g-data) center/contain no-repeat;
+  filter: var(--g-filter, none);
+  opacity: var(--g-opacity, 1);
+}
+[data-size="xs"]{--g-size:14}
+[data-size="sm"]{--g-size:18}
+[data-size="md"]{--g-size:22}
+[data-size="lg"]{--g-size:28}
+[data-size="xl"]{--g-size:42}
+
+[data-g-animate]{animation:var(--g-anim-name) var(--g-anim-dur,1.1s) var(--g-anim-timing,ease) var(--g-anim-count,infinite)}
+[data-g-animate="spin"]{--g-anim-name:g-spin}
+[data-g-animate="pulse"]{--g-anim-name:g-pulse;--g-anim-dur:2s}
+[data-g-animate="bounce"]{--g-anim-name:g-bounce;--g-anim-dur:.55s}
+[data-g-animate="float"]{--g-anim-name:g-float;--g-anim-dur:3s}
+@keyframes g-spin{to{transform:rotate(360deg)}}
+@keyframes g-pulse{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes g-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes g-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+[data-g-color="accent"]{--g-filter: drop-shadow(0 0 10px rgba(22,242,170,.22))}
+[data-g-color="hazard"]{--g-filter: drop-shadow(0 0 10px rgba(255,179,0,.22))}
+[data-g-color="danger"]{--g-filter: drop-shadow(0 0 10px rgba(255,107,107,.22))}
+
+/* --- ⟁ STAR OF THE SHOW: define it as a GLYPH + CONTROL OPERATOR --- */
+[data-g="⟁"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmYjMwMCIgZD0iTTEyIDJsMTAgMjBIMkwxMiAyeiIvPjxwYXRoIGZpbGw9IiMxNmYyYWEiIGQ9Ik0xMiA2bDUuNiAxMS4ySDYuNHoiLz48L3N2Zz4=")}
+
+/* --- CORE UI (preloaded) --- */
+[data-g="+"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTExIDVoMnY2aDZ2MmgtNnY2aC0ydi02SDV2LTJoNnoiLz48L3N2Zz4=")}
+[data-g="x"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTEyIDEwLjU4Nmw0Ljk1LTQuOTUgMS40MTQgMS40MTQtNC45NSA0Ljk1IDQuOTUgNC45NS0xLjQxNCAxLjQxNC00Ljk1LTQuOTUtNC45NSA0Ljk1LTEuNDE0LTEuNDE0IDQuOTUtNC45NS00Ljk1LTQuOTV6Ii8+PC9zdmc+")}
+
+[data-g="m"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTMgNGgxOHYySDNWNHptMCA3aDE4djJIM3YtMnptMCA3aDE4djJIM3YtMnoiLz48L3N2Zz4=")}
+[data-g="s"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTEwIDRhNiA2IDAgMTAwIDEyIDYgNiAwIDAwLTEyem0tOCA2YTggOCAwIDExIDE0LjMyIDQuOTA2bDUuMzg3IDUuMzg3YTEgMSAwIDAxLTEuNDE0IDEuNDE0bC01LjM4Ny01LjM4N0E4IDggMCAwMSAyIDEweiIvPjwvc3ZnPg==")}
+[data-g="u"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTEyIDJhNSA1IDAgMTA1IDUgNSA1IDAgMDAtNS01em0wIDhhMyAzIDAgMTEzLTMgMyAzIDAgMDEtMyAzem05IDExdi0xYTcgNyAwIDAwLTctN2gtNGE3IDcgMCAwMC03IDd2MWgydi0xYTUgNSAwIDAxNS01aDRhNSA1IDAgMDE1IDV2MXoiLz48L3N2Zz4=")}
+[data-g="→"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTE2LjE3MiAxMWwtNS4zNjQtNS4zNjQgMS40MTQtMS40MTRMMjAgMTJsLTcuNzc4IDcuNzc4LTEuNDE0LTEuNDE0TDE2LjE3MiAxM0g0di0yeiIvPjwvc3ZnPg==")}
+[data-g="←"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTcuODI4IDEzSDIwdi0ySDcuODI4bDUuMzY0LTUuMzY0LTEuNDE0LTEuNDE0TDQgMTJsNy43NzggNy43NzggMS40MTQtMS40MTR6Ii8+PC9zdmc+")}
+[data-g="✓"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTEwIDE1LjE3Mmw5LjE5Mi05LjE5MyAxLjQxNSAxLjQxNEwxMCAxOGwtNi4zNjQtNi4zNjQgMS40MTQtMS40MTR6Ii8+PC9zdmc+")}
+[data-g="⚙"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTExLjk5IDhhNCA0IDAgMTAwIDggNCA0IDAgMDAtOC4wMXptOS4wMSA0YzAgLS4zNC0uMDMtLjY3LS4wOC0uOTlsMi4wMi0xLjU5LTEuOTktMy40NS0yLjQ1IDEuMDFjLS41Mi0uNDItMS4wOS0uNzctMS43MS0xLjAxbC0uMzctMi42SDEwLjE0bC0uMzcgMi42Yy0uNjIuMjQtMS4xOS41OS0xLjcxIDEuMDFMNS42MSA0Ljk2IDMuNjIgOC40MWwyLjAyIDEuNTljLS4wNS4zMi0uMDguNjUtLjA4Ljk5cy4wMy42Ny4wOC45OWwtMi4wMiAxLjU5IDEuOTkgMy40NSAyLjQ1LTEuMDFjLjUyLjQyIDEuMDkuNzcgMS43MSAxLjAxbC4zNyAyLjZoMy45OGwuMzctMi42Yy42Mi0uMjQgMS4xOS0uNTkgMS43MS0xLjAxbDIuNDUgMS4wMSAxLjk5LTMuNDUtMi4wMi0xLjU5Yy4wNS0uMzIuMDgtLjY1LjA4LS45OXoiLz48L3N2Zz4=")}
+[data-g="⚠"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTEyIDJMMiAyMmgyMGwtMTAtMjB6bTEgMTVoLTJ2LTJoMnYyem0wLTRoLTJ2LTRoMnY0eiIvPjwvc3ZnPg==")}
+
+/* --- RPG (preloaded) --- */
+[data-g="❤"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTEyIDIxLjM1bC0xLjQ1LTEuMzJDNS40IDE1LjM2IDIgMTIuMjggMiA4LjUgMiA1LjQyIDQuNDIgMyA3LjUgM2MxLjc0IDAgMy40MS44MSA0LjUgMi4wOSAxLjA5LTEuMjggMi43Ni0yLjA5IDQuNS0yLjA5QzE5LjU4IDMgMjIgNS40MiAyMiA4LjVjMCAzLjc4LTMuNCA2Ljg2LTguNTUgMTEuNTRMMTIgMjEuMzV6Ii8+PC9zdmc+")}
+[data-g="⚡"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTE0LjY5NCA2LjkxNGwtNS4zOTYgNi4yMTdsMy45MDYuNTc2LTIuMzE4IDQuNDc2IDUuOTU4LTUuMDcxLTMuMjg4LS40ODEgMi4zNDgtNS4xMTd6Ii8+PC9zdmc+")}
+[data-g="⚔"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTYuOTIgMTlMNSA3LjA4IDEzLjA2IDkgMTUgMTAuOTQgNi45MiAxOXpNMTQuMDYgMTBsLS4wNi0uMDZsLTUuNS01LjVMLjA2IDR2MjAuMDZsOS4wNi05LjA2em0tOC41IDJMOC45NCA0bDUuNSA1LjUuMDYuMDZ2OC41bC0zLjA2IDMuMDZ6Ii8+PC9zdmc+")}
+[data-g="🛡"]{--g-data:url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTEyIDJMMiA3djRjMCA1LjU1IDMuODQgMTAuNzQgOSAxMiA1LjE2LTEuMjYgOS02LjQ1IDktMTJWN3pNMTIgMjJjLTQuMjItMS4wMi04LTUuMi04LTExVjguMjNsOCAzLjU2IDgtMy41NlYxMWMwIDUuOC0zLjc4IDkuOTgtOCAxMXoiLz48L3N2Zz4=")}
+
+/* ===================================================================
+   BLACK CODE EDITOR UI — minimal, integrated
+=================================================================== */
+.shell{height:100vh;display:grid;grid-template-columns:320px 1fr 420px;gap:var(--s3);padding:var(--s3)}
+.pane{border:1px solid var(--border);border-radius:var(--r3);background:var(--panel);overflow:hidden}
+.paneHeader{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);padding:10px 12px;border-bottom:1px solid var(--border-soft);background:rgba(0,0,0,.18)}
+.paneTitle{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.04em}
+.paneBody{padding:var(--s3);height:calc(100% - 46px);overflow:auto}
+.kbd{font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--border-soft);background:rgba(0,0,0,.25);color:var(--fg-1)}
+.row{display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap}
+
+.editor{
+  width:100%;height:55vh;resize:none;
+  background:rgba(0,0,0,.30);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  padding:var(--s3);
+  color:var(--fg-0);
+  font: 600 12.5px/1.35 var(--mono);
+  outline:none;
+}
+.previewFrame{
+  width:100%;height:46vh;border:1px solid var(--border);border-radius:var(--r2);
+  background:#000;overflow:hidden
+}
+.small{font-size:12px;color:var(--fg-1)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+.glyphGrid{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+.glyphCell{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:12px;border:1px solid var(--border-soft);background:rgba(255,255,255,.03);cursor:pointer;transition:.18s}
+.glyphCell:hover{border-color:rgba(22,242,170,.45);transform:translateY(-1px)}
+.glyphKey{font:800 11px/1 var(--mono);color:var(--fg-1)}
+.out{white-space:pre-wrap;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:var(--r2);padding:var(--s3);min-height:120px;font:600 12px/1.35 var(--mono)}
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <!-- LEFT: PROJECT / FORGE -->
+    <section class="pane">
+      <div class="paneHeader">
+        <div class="paneTitle">
+          <span data-g="⟁" data-size="sm" data-g-color="hazard"></span>
+          <span class="text-gradient">FORGE STACK</span>
+        </div>
+        <span class="kbd">Ω</span>
+      </div>
+      <div class="paneBody">
+        <div class="card">
+          <div class="row">
+            <button class="btn btn-accent" id="btnForgeAll"><span data-g="✓"></span>Forge All</button>
+            <button class="btn" id="btnLint"><span data-g="⚠"></span>Lint</button>
+            <button class="btn btn-hazard" id="btnCompress"><span data-g="⚙"></span>Compress</button>
+          </div>
+          <div class="hr"></div>
+          <div class="small">
+            Active forges (merged):
+            <div class="row" style="margin-top:8px">
+              <span class="badge badge-accent"><span data-g="⟁"></span>ATOMIC_GLYPH_CODEX</span>
+              <span class="badge badge-accent"><span data-g="m"></span>GLYPH_EDITOR</span>
+              <span class="badge badge-accent"><span data-g="⚠"></span>LINT_RULES</span>
+              <span class="badge badge-accent"><span data-g="→"></span>MX2LEX_BINDING</span>
+              <span class="badge badge-accent"><span data-g="⚙"></span>SCXQ2_COMPRESS</span>
+              <span class="badge badge-accent"><span data-g="u"></span>MICRO_ASXR_SINGLE_HTML</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:var(--s3)">
+          <div class="paneTitle" style="margin-bottom:10px"><span data-g="s"></span>Quick Insert</div>
+          <div class="grid2">
+            <button class="btn" data-insert="⟁flex ⟁col ⟁g2 ⟁p3 ⟁ghost"><span data-g="⟁"></span>⟁Layout</button>
+            <button class="btn" data-insert='atomic-block="@dispatch"'><span data-g="→"></span>@dispatch</button>
+            <button class="btn" data-insert='atomic-block="@if_then_else" data-condition="true"'><span data-g="✓"></span>@if</button>
+            <button class="btn" data-insert='atomic-block="@microagent"'><span data-g="u"></span>@microagent</button>
+          </div>
+          <div class="hr"></div>
+          <div class="small">Tip: click a glyph on the right to insert <code>&lt;span data-g="X"&gt;&lt;/span&gt;</code>.</div>
+        </div>
+
+        <div class="card" style="margin-top:var(--s3)">
+          <div class="paneTitle" style="margin-bottom:10px"><span data-g="⚡"></span>Physics State</div>
+          <div class="grid2">
+            <label class="small">px <input class="form-input" id="px" value="0"/></label>
+            <label class="small">py <input class="form-input" id="py" value="0"/></label>
+            <label class="small">vx <input class="form-input" id="vx" value="0"/></label>
+            <label class="small">vy <input class="form-input" id="vy" value="0"/></label>
+            <label class="small">gravity <input class="form-input" id="gravity" value="0.98"/></label>
+            <label class="small">friction <input class="form-input" id="friction" value="0.92"/></label>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn btn-accent" id="btnApplyPhysics"><span data-g="✓"></span>Apply</button>
+            <span class="small">Targets <span class="kbd">.agent-physics</span> transforms.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CENTER: BLACK CODE EDITOR -->
+    <section class="pane">
+      <div class="paneHeader">
+        <div class="paneTitle">
+          <span data-g="f"></span>
+          <span>MICRO-ASXR — Single HTML (Black Codex)</span>
+        </div>
+        <div class="row">
+          <button class="btn" id="btnRun"><span data-g="▶"></span>Run</button>
+          <button class="btn btn-danger" id="btnReset"><span data-g="x"></span>Reset</button>
+        </div>
+      </div>
+      <div class="paneBody">
+        <textarea id="code" class="editor"></textarea>
+        <div class="hr"></div>
+        <div class="paneTitle" style="margin-bottom:10px"><span data-g="📊"></span>Live Preview</div>
+        <iframe id="preview" class="previewFrame" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+      </div>
+    </section>
+
+    <!-- RIGHT: GLYPH PALETTE + MX2LEX MAP + OUTPUT -->
+    <section class="pane">
+      <div class="paneHeader">
+        <div class="paneTitle">
+          <span data-g="A"></span>
+          <span>GLYPH CODEX ⊗ MX2LEX</span>
+        </div>
+        <div class="row">
+          <select id="theme" class="form-input" style="width:auto">
+            <option value="matrix">matrix</option>
+            <option value="emerald">emerald</option>
+            <option value="cyber">cyber</option>
+            <option value="night">night</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="paneBody">
+        <div class="card">
+          <div class="paneTitle" style="margin-bottom:10px"><span data-g="m"></span>Glyph Palette</div>
+          <div id="glyphGrid" class="glyphGrid"></div>
+        </div>
+
+        <div class="card" style="margin-top:var(--s3)">
+          <div class="paneTitle" style="margin-bottom:10px"><span data-g="→"></span>MX2LEX Binding (4-language map)</div>
+          <div class="out" id="mx2lexOut"></div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn btn-accent" id="btnExportCodex"><span data-g="✓"></span>Export Codex</button>
+            <button class="btn" id="btnCopyMap"><span data-g="→"></span>Copy Map</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:var(--s3)">
+          <div class="paneTitle" style="margin-bottom:10px"><span data-g="⚠"></span>Forge Output</div>
+          <div class="out" id="out"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============================================================
+       K'UHUL UTILITY LAYER (JS is allowed here as a tool/runtime helper)
+       - Glyph generator for full A–Z / 0–9 (real base64)
+       - Lint rules
+       - CompressionStream gzip->base64 (transport compressor, real browser-native)
+       - MX2LEX 4-language mapping emit
+  ============================================================ -->
+  <script>
+  (() => {
+    const $ = (id)=>document.getElementById(id);
+    const out = (s)=>{ $("out").textContent = s; };
+
+    // -------------------------------
+    // Canonical seed: Micro-ASXR single HTML payload (editable)
+    // -------------------------------
+    const DEFAULT_CODE = `<!doctype html>
+<html lang="en" data-theme="matrix">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Micro-ASXR Demo — Black Codex</title>
+  <style>
+    /* import the host ATOMIC+GLYPH layer by copy/paste if exporting single-file */
+    body{margin:0;background:#020409;color:#eafff8;font-family:ui-sans-serif,system-ui}
+    .wrap{padding:14px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="agent-kernel">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span data-g="⟁" data-size="lg"></span>
+        <div>
+          <div style="font-weight:900;letter-spacing:.06em">BLACK CODEX Ω</div>
+          <div style="opacity:.78;font-size:13px">ATOMIC ⊗ GLYPH ⊗ XCFE ⊗ MX2LEX</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:14px"></div>
+
+    <div class="card flow-dispatch" atomic-block="@dispatch">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span data-g="m"></span>
+          <b>Dispatch Tile</b>
+          <span class="badge badge-accent"><span data-g="✓"></span>armed</span>
+        </div>
+        <span data-g="→"></span>
+      </div>
+      <div style="margin-top:10px;opacity:.78;font-size:13px">
+        Click behavior would be routed by sw.khl / API layer in full OS.
+      </div>
+    </div>
+
+    <div style="height:14px"></div>
+
+    <div class="agent-physics">
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span data-g="⚡" data-g-animate="pulse"></span>
+          <b>Physics Agent</b>
+          <span class="badge badge-hazard"><span data-g="⚠"></span>sim</span>
+        </div>
+        <div style="margin-top:10px">
+          <div class="health-bar health-bar-pulse"><div class="health-fill" style="width:67%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:14px"></div>
+
+    <div class="flow-if active" atomic-block="@if_then_else" data-condition="true">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span data-g="✓"></span><b>@if_then_else</b>
+      </div>
+      <div style="margin-top:8px;opacity:.78;font-size:13px">This block is visible because data-condition="true".</div>
+    </div>
+  </div>
+</body>
+</html>`;
+
+    $("code").value = DEFAULT_CODE;
+
+    // -------------------------------
+    // ⟁ Hazard Override: explicit semantics (star of show)
+    // -------------------------------
+    const KUHUL_OPERATOR = "⟁";
+    const KUHUL_OPERATOR_SEMANTIC = {
+      token: "⟁",
+      meaning: "ATOMIC_CONTROL_OPERATOR",
+      view: "hazard_pyramid + core control glyph",
+      safe: true,
+      aria: "atomic-control"
+    };
+
+    // -------------------------------
+    // Glyph Codex: preload + runtime generate for A–Z / 0–9
+    //   - Preloaded glyphs are in CSS.
+    //   - Generated glyphs are real base64 SVG (text-based) for completeness.
+    // -------------------------------
+    const PRELOADED = ["⟁","+","x","m","s","u","→","←","✓","⚙","⚠","❤","⚡","⚔","🛡"];
+    const ALPHANUM = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"];
+    const RPG = ["HP","MP","XP","LVL","DMG","DEF","CRIT","SKILL","QUEST"];
+    const UI = ["PLAY","PAUSE","CLOSE","MENU","SEARCH","USER","SETTINGS","WARN","OK","BACK","NEXT"];
+
+    function svgTextGlyphBase64(char){
+      const safe = String(char).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      const svg =
+`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <rect width="24" height="24" rx="6" fill="rgba(255,255,255,0.08)"/>
+  <text x="12" y="15" text-anchor="middle" font-family="ui-monospace,Consolas,monospace" font-size="11" font-weight="900" fill="currentColor">${safe}</text>
+</svg>`;
+      return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
+    }
+
+    function ensureGlyphRule(char){
+      // Inject as inline style rule (real CSS mapping) if not preloaded.
+      const key = String(char);
+      if (document.querySelector(`style[data-g-inject="${CSS.escape(key)}"]`)) return;
+      const st = document.createElement("style");
+      st.setAttribute("data-g-inject", key);
+      st.textContent = `[data-g="${cssAttrEscape(key)}"]{--g-data:url("${svgTextGlyphBase64(key)}")}`;
+      document.head.appendChild(st);
+    }
+
+    function cssAttrEscape(s){
+      // safe for attribute selector quotes
+      return String(s).replace(/\\/g,"\\\\").replace(/"/g,'\\"');
+    }
+
+    // -------------------------------
+    // MX2LEX 4-language binding map
+    //   CSS / @GRAM / XCFE / API(AST JSON)
+    // -------------------------------
+    const MX2LEX = {
+      version: "Ω.1",
+      operator: KUHUL_OPERATOR_SEMANTIC,
+      tokens: {
+        // CSS token -> {gram, xcfe, api}
+        "⟁flex":  { gram:"⟁:layout:flex",  xcfe:"@Pop.flex",      api:{layout:"flex"} },
+        "⟁grid":  { gram:"⟁:layout:grid",  xcfe:"@Pop.grid",      api:{layout:"grid"} },
+        "⟁col":   { gram:"⟁:flow:col",     xcfe:"@Wo.col",        api:{flow:"col"} },
+        "⟁row":   { gram:"⟁:flow:row",     xcfe:"@Wo.row",        api:{flow:"row"} },
+        "⟁p3":    { gram:"⟁:space:p3",     xcfe:"@Sek.pad(3)",    api:{pad:3} },
+        "⟁g2":    { gram:"⟁:space:g2",     xcfe:"@Ch’en.gap(2)",  api:{gap:2} },
+        "@dispatch": { gram:"@flow:dispatch", xcfe:"@dispatch", api:{control:"dispatch"} },
+        "@if_then_else": { gram:"@flow:if", xcfe:"@if/@then/@else", api:{control:"if_then_else"} },
+        "@microagent": { gram:"@agent:micro", xcfe:"@microagent", api:{agent:"micro"} }
+      },
+      glyphs: {
+        // glyph -> semantic tags
+        "⟁": ["control","hazard_override","atomic_operator"],
+        "+": ["ui","add"], "x":["ui","close"], "m":["ui","menu"], "s":["ui","search"], "u":["ui","user"],
+        "→":["ui","next"], "←":["ui","back"], "✓":["ui","ok"], "⚙":["ui","settings"], "⚠":["ui","warn"],
+        "❤":["rpg","hp"], "⚡":["rpg","energy"], "⚔":["rpg","combat"], "🛡":["rpg","defense"]
+      }
+    };
+
+    function renderMx2lex(){
+      const lines = [];
+      lines.push(`MX2LEX_BINDING ${MX2LEX.version}`);
+      lines.push(`operator: ${MX2LEX.operator.token} (${MX2LEX.operator.meaning})`);
+      lines.push(``);
+      lines.push(`TOKENS:`);
+      Object.entries(MX2LEX.tokens).forEach(([k,v])=>{
+        lines.push(`- ${k}`);
+        lines.push(`  css:  ${k}`);
+        lines.push(`  gram: ${v.gram}`);
+        lines.push(`  xcfe: ${v.xcfe}`);
+        lines.push(`  api:  ${JSON.stringify(v.api)}`);
+      });
+      lines.push(``);
+      lines.push(`GLYPHS (semantic):`);
+      Object.entries(MX2LEX.glyphs).forEach(([g,t])=> lines.push(`- ${g}: ${t.join(", ")}`));
+      $("mx2lexOut").textContent = lines.join("\n");
+    }
+
+    // -------------------------------
+    // Lint rules (GLYPH_LINT_RULES + ATOMIC structural)
+    // -------------------------------
+    function lintAll(){
+      const issues = [];
+      const code = $("code").value;
+
+      // basic: must be html-ish
+      if (!/<!doctype html>/i.test(code)) issues.push("Missing <!doctype html> (recommended for canonical Micro-ASXR HTML).");
+
+      // enforce presence of data-theme or atomic tokens in demo
+      if (!/data-theme=/.test(code)) issues.push('Missing data-theme="…" (theme binding).');
+
+      // glyph usage sanity
+      const glyphUses = [...code.matchAll(/data-g="([^"]+)"/g)].map(m=>m[1]);
+      const unknown = glyphUses.filter(g => !PRELOADED.includes(g) && !ALPHANUM.includes(g) && !RPG.includes(g));
+      if (unknown.length) issues.push("Unknown glyph keys found (will still render if generated, but consider codex map): " + [...new Set(unknown)].join(", "));
+
+      // ⟁ must be declared in codex
+      if (!document.querySelector('[data-g="⟁"]') && !PRELOADED.includes("⟁")) issues.push("⟁ glyph not present in codex preload.");
+
+      // if blocks used, should follow atomic-block pattern
+      if (code.includes('atomic-block="@if_then_else"') && !code.includes("data-condition"))
+        issues.push('Found @if_then_else without data-condition (expected data-condition="true|false").');
+
+      // report
+      out(issues.length ? ("LINT FAIL\n\n" + issues.map((x,i)=>`${i+1}. ${x}`).join("\n")) : "LINT PASS ✅\nNo critical issues detected.");
+    }
+
+    // -------------------------------
+    // SCXQ2_COMPRESS (browser-native transport compressor)
+    // - Uses CompressionStream('gzip') when available
+    // - Output: base64(gzip(bytes))
+    // NOTE: This is real compression (not fake), but it is gzip64 transport.
+    // -------------------------------
+    async function gzip64(str){
+      const cs = ("CompressionStream" in window) ? new CompressionStream("gzip") : null;
+      if (!cs) throw new Error("CompressionStream not available in this browser.");
+      const enc = new TextEncoder();
+      const bytes = enc.encode(str);
+      const blob = new Blob([bytes]);
+      const stream = blob.stream().pipeThrough(cs);
+      const resp = new Response(stream);
+      const ab = await resp.arrayBuffer();
+      const u8 = new Uint8Array(ab);
+      let bin = "";
+      for (let i=0;i<u8.length;i++) bin += String.fromCharCode(u8[i]);
+      return btoa(bin);
+    }
+
+    async function compress(){
+      out("Compressing (gzip64 transport)…");
+      try{
+        const src = $("code").value;
+        const b64 = await gzip64(src);
+        // ratio
+        const raw = new TextEncoder().encode(src).length;
+        const comp = Math.ceil((b64.length*3)/4); // approx bytes
+        const ratio = raw ? (comp / raw) : 0;
+        document.documentElement.style.setProperty("--compression_ratio", String(ratio.toFixed(4)));
+        out(
+          "SCXQ2_COMPRESS (transport)\n" +
+          "- method: CompressionStream(gzip) → base64\n" +
+          `- raw_bytes: ${raw}\n` +
+          `- b64_bytes≈: ${comp}\n` +
+          `- ratio≈: ${ratio.toFixed(4)}\n\n` +
+          "OUTPUT (gzip64):\n" + b64.slice(0, 1200) + (b64.length>1200 ? "\n…(truncated)…" : "")
+        );
+      }catch(e){
+        out("COMPRESS ERROR\n\n" + String(e && e.message ? e.message : e));
+      }
+    }
+
+    // -------------------------------
+    // GLYPH_EDITOR (add / map)
+    // - clicking glyph inserts HTML snippet into editor
+    // -------------------------------
+    function insertAtCursor(el, text){
+      const start = el.selectionStart ?? el.value.length;
+      const end   = el.selectionEnd ?? el.value.length;
+      el.setRangeText(text, start, end, "end");
+      el.focus();
+    }
+
+    function buildGlyphPalette(){
+      const grid = $("glyphGrid");
+      grid.innerHTML = "";
+
+      // ensure A–Z / 0–9 exist (generated base64 rules)
+      for (const ch of ALPHANUM) ensureGlyphRule(ch);
+
+      const palette = [
+        ...PRELOADED,
+        ...ALPHANUM,
+        ...RPG.map(x=>`[${x}]`) // display form
+      ];
+
+      palette.forEach((k)=>{
+        const key = k.startsWith("[") ? k.slice(1,-1) : k;
+        const cell = document.createElement("div");
+        cell.className = "glyphCell";
+        const g = document.createElement("span");
+        g.setAttribute("data-g", key);
+        g.setAttribute("data-size","md");
+        if (key === "⟁") g.setAttribute("data-g-color","hazard");
+        const label = document.createElement("div");
+        label.className = "glyphKey";
+        label.textContent = key;
+
+        cell.appendChild(g);
+        cell.appendChild(label);
+
+        cell.addEventListener("click", ()=>{
+          // map glyph semantics if needed
+          if (!MX2LEX.glyphs[key]) MX2LEX.glyphs[key] = ["custom"];
+          renderMx2lex();
+          insertAtCursor($("code"), `<span data-g="${key}"></span>`);
+        });
+
+        grid.appendChild(cell);
+      });
+
+      renderMx2lex();
+    }
+
+    // -------------------------------
+    // MICRO_ASXR_SINGLE_HTML run preview
+    // - injects ATOMIC_GLYPH_CSS into preview so glyphs render
+    // -------------------------------
+    function runPreview(){
+      const src = $("code").value;
+      const css = $("ATOMIC_GLYPH_CSS").textContent;
+      // Ensure the preview gets the same CSS layer (single-file behavior)
+      const patched = src.replace(/<\/head>/i, `<style>${css}</style></head>`);
+      $("preview").srcdoc = patched;
+      out("RUN ✅\nPreview rendered with merged ATOMIC+GLYPH layer injected into the preview head.");
+    }
+
+    function reset(){
+      $("code").value = DEFAULT_CODE;
+      runPreview();
+      out("RESET ✅\nEditor restored to canonical Micro-ASXR demo seed.");
+    }
+
+    // -------------------------------
+    // FORGE ALL (merged)
+    // - Generates codex export payload (json + xjson-ish)
+    // -------------------------------
+    function forgeAll(){
+      // guarantee all generated rules exist
+      for (const ch of ALPHANUM) ensureGlyphRule(ch);
+
+      // build a full codex object
+      const glyphCodex = {
+        "@id":"glyph.codex.Ω",
+        "@law":"ASX = XCFE = XJSON = KUHUL = AST = ATOMIC_BLOCK",
+        "@operator": KUHUL_OPERATOR_SEMANTIC,
+        "@glyphs": {}
+      };
+
+      // preload semantics + generated
+      for (const g of PRELOADED){
+        glyphCodex["@glyphs"][g] = {
+          type: "preloaded",
+          tags: MX2LEX.glyphs[g] || ["ui"],
+          css: `[data-g="${g}"]`,
+          gram: `glyph:${g}`,
+          xcfe: `@glyph(${g})`,
+          api: { glyph:g }
+        };
+      }
+      for (const g of ALPHANUM){
+        glyphCodex["@glyphs"][g] = {
+          type: "generated_base64",
+          tags: ["alphanum"],
+          css: `[data-g="${g}"]`,
+          gram: `glyph:${g}`,
+          xcfe: `@glyph(${g})`,
+          api: { glyph:g }
+        };
+      }
+      for (const g of RPG){
+        glyphCodex["@glyphs"][g] = {
+          type: "semantic_rpg",
+          tags: ["rpg"],
+          css: `[data-g="${g}"]`,
+          gram: `rpg:${g}`,
+          xcfe: `@rpg.${g}`,
+          api: { rpg:g }
+        };
+      }
+
+      out(
+        "FORGE ALL ✅\n\n" +
+        "Artifacts (in-memory):\n" +
+        "- ATOMIC+GLYPH.css (this document <style id=ATOMIC_GLYPH_CSS>)\n" +
+        "- glyph.codex.json (export)\n" +
+        "- mx2lex.map (4-language binding)\n" +
+        "- micro-asxr.single.html (editor buffer)\n" +
+        "- scxq2.compress (transport gzip64)\n\n" +
+        "Next:\n" +
+        "• Export Codex (right panel)\n" +
+        "• Compress (left panel)\n"
+      );
+
+      // stash export
+      window.__GLYPH_CODEX__ = glyphCodex;
+      renderMx2lex();
+    }
+
+    function exportCodex(){
+      if (!window.__GLYPH_CODEX__) forgeAll();
+      const json = JSON.stringify(window.__GLYPH_CODEX__, null, 2);
+      const blob = new Blob([json], {type:"application/json"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "glyph.codex.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+      out("EXPORT ✅\nDownloaded glyph.codex.json");
+    }
+
+    async function copyMap(){
+      try{
+        await navigator.clipboard.writeText($("mx2lexOut").textContent);
+        out("COPY ✅\nMX2LEX map copied to clipboard.");
+      }catch(e){
+        out("COPY ERROR\n\n" + String(e && e.message ? e.message : e));
+      }
+    }
+
+    function applyPhysics(){
+      const root = document.documentElement.style;
+      const set = (k,v)=>root.setProperty(k, String(v));
+      set("--px", $("px").value || 0);
+      set("--py", $("py").value || 0);
+      set("--vx", $("vx").value || 0);
+      set("--vy", $("vy").value || 0);
+      set("--gravity", $("gravity").value || 0.98);
+      set("--friction", $("friction").value || 0.92);
+      out("PHYSICS APPLY ✅\nUpdated :root physics vars (affects .agent-physics transform + any runtime bindings).");
+      runPreview();
+    }
+
+    // quick insert buttons
+    document.addEventListener("click", (e)=>{
+      const btn = e.target.closest("[data-insert]");
+      if (!btn) return;
+      insertAtCursor($("code"), " " + btn.getAttribute("data-insert") + " ");
+    });
+
+    // wiring
+    $("btnForgeAll").onclick = forgeAll;
+    $("btnLint").onclick = lintAll;
+    $("btnCompress").onclick = compress;
+    $("btnRun").onclick = runPreview;
+    $("btnReset").onclick = reset;
+    $("btnExportCodex").onclick = exportCodex;
+    $("btnCopyMap").onclick = copyMap;
+    $("btnApplyPhysics").onclick = applyPhysics;
+
+    $("theme").addEventListener("change", ()=>{
+      document.documentElement.setAttribute("data-theme", $("theme").value);
+      runPreview();
+    });
+
+    // boot
+    buildGlyphPalette();
+    runPreview();
+    forgeAll();
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="atomic-ghost">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ASX ATOMIC OS — KUHUL FOLDS • Dynamic Codex</title>
+  <style>
+    /* =========================================================
+       ATOMIC GHOST-SHELL CORE
+       ========================================================= */
+    :root {
+      --bg-main: #020618;
+      --bg-panel: #050b27;
+      --bg-panel-soft: #050818;
+      --bg-chip: #040618;
+      --border-soft: rgba(148, 163, 184, 0.5);
+      --border-strong: rgba(148, 163, 184, 0.9);
+      --accent: #16f2aa;
+      --accent-soft: rgba(22, 242, 170, 0.15);
+      --accent-alt: #00f5ff;
+      --accent-hot: #ff6b6b;
+      --text-main: #e5f2ff;
+      --text-soft: #94a3b8;
+      --text-muted: #64748b;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.85);
+      --radius-lg: 18px;
+      --radius-xl: 22px;
+      --radius-pill: 999px;
+      --gap-lg: 20px;
+      --gap-md: 14px;
+      --gap-sm: 8px;
+
+      --transition-fast: 140ms ease-out;
+      --transition-med: 200ms ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0b1120 0, #020617 55%, #000 100%);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* =========================================================
+       LAYOUT
+       ========================================================= */
+
+    .os-shell {
+      display: flex;
+      flex: 1;
+      padding: 18px;
+      gap: 18px;
+    }
+
+    .os-panel {
+      background: linear-gradient(
+          145deg,
+          rgba(148, 163, 184, 0.14),
+          rgba(15, 23, 42, 0.2)
+        ),
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.14), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(22, 242, 170, 0.12), transparent 60%);
+      border-radius: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(16px);
+    }
+
+    .os-sidebar {
+      width: 320px;
+      min-width: 260px;
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 14px;
+      gap: 14px;
+    }
+
+    .os-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 18px 18px;
+      gap: 14px;
+    }
+
+    /* =========================================================
+       TOP BAR
+       ========================================================= */
+
+    .os-topbar {
+      padding: 10px 18px 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-glyph {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 20%, #f9fafb 0, #e5f2ff 6%, #0f172a 45%, #020617 80%);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 20px;
+      text-shadow: 0 0 14px rgba(22, 242, 170, 0.9);
+    }
+
+    .brand-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-title {
+      font-size: 14px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .top-tag {
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 4px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      background: rgba(15, 23, 42, 0.72);
+    }
+
+    .top-tag-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(22, 242, 170, 0.9);
+    }
+
+    /* =========================================================
+       SIDEBAR: FOLDS NAV
+       ========================================================= */
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .fold-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .fold-chip {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid rgba(30, 64, 175, 0.7);
+      cursor: pointer;
+      transition: transform var(--transition-fast),
+        border-color var(--transition-fast),
+        background var(--transition-fast),
+        box-shadow var(--transition-fast);
+    }
+
+    .fold-chip:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.2);
+    }
+
+    .fold-chip[data-active="true"] {
+      border-color: var(--accent);
+      background: radial-gradient(circle at top left, rgba(22, 242, 170, 0.24), rgba(15, 23, 42, 0.9));
+      box-shadow: 0 0 0 1px rgba(22, 242, 170, 0.5);
+    }
+
+    .fold-chip-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .fold-symbol {
+      width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      background: radial-gradient(circle at 30% 20%, #e5f2ff 0, #0f172a 40%, #020617 100%);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      text-shadow: 0 0 10px rgba(22, 242, 170, 0.8);
+    }
+
+    .fold-labels {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+
+    .fold-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .fold-role {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .fold-pill {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--text-soft);
+      white-space: nowrap;
+    }
+
+    .fold-chip[data-active="true"] .fold-pill {
+      background: rgba(22, 242, 170, 0.08);
+      border-color: rgba(22, 242, 170, 0.7);
+      color: var(--accent);
+    }
+
+    .sidebar-meta {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(51, 65, 85, 0.7);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .meta-badge {
+      border-radius: var(--radius-pill);
+      padding: 3px 8px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      font-size: 10px;
+      color: var(--accent);
+    }
+
+    .cta-panel {
+      margin-top: 4px;
+      padding: 10px 10px 9px;
+      border-radius: 14px;
+      background: radial-gradient(circle at top left, rgba(22, 242, 170, 0.12), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(22, 242, 170, 0.5);
+      font-size: 11px;
+      color: var(--text-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .cta-panel strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 7px;
+      margin-top: 2px;
+    }
+
+    .btn-ghost,
+    .btn-accent {
+      flex: 1;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 5px 8px 6px;
+      font-size: 11px;
+      background: rgba(15, 23, 42, 0.96);
+      color: var(--text-soft);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background var(--transition-fast), border-color var(--transition-fast),
+        color var(--transition-fast), transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+    }
+
+    .btn-accent {
+      border-color: rgba(22, 242, 170, 0.9);
+      background: radial-gradient(circle at top, rgba(22, 242, 170, 0.22), rgba(15, 23, 42, 0.98));
+      color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(22, 242, 170, 0.5);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent-alt);
+      color: var(--accent-alt);
+      transform: translateY(-1px);
+    }
+
+    .btn-accent:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 0 1px rgba(22, 242, 170, 0.7), 0 0 22px rgba(22, 242, 170, 0.55);
+    }
+
+    /* =========================================================
+       MAIN: FOLDS CONTENT
+       ========================================================= */
+
+    .fold-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .fold-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .fold-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+    }
+
+    .fold-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .route-badge {
+      font-size: 10px;
+      border-radius: var(--radius-pill);
+      padding: 4px 10px;
+      border: 1px dashed rgba(148, 163, 184, 0.6);
+      color: var(--text-soft);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .fold-content-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid rgba(30, 64, 175, 0.6);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), rgba(15, 23, 42, 0.96));
+    }
+
+    .fold-toolbar {
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid rgba(30, 64, 175, 0.7);
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.8));
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .toolbar-badge {
+      border-radius: 999px;
+      padding: 3px 8px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      font-size: 10px;
+      color: var(--text-soft);
+    }
+
+    .toolbar-right {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .toolbar-link {
+      font-size: 11px;
+      color: var(--accent-alt);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(56, 189, 248, 0.7);
+      padding-bottom: 1px;
+      cursor: pointer;
+    }
+
+    .fold-body {
+      flex: 1;
+      padding: 10px 12px 12px;
+      overflow-y: auto;
+      max-height: calc(100vh - 180px);
+      display: none;
+    }
+
+    .fold-body[data-active="true"] {
+      display: block;
+    }
+
+    .fold-section {
+      margin-bottom: 14px;
+      padding: 10px 10px 9px;
+      border-radius: 14px;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(30, 64, 175, 0.7);
+    }
+
+    .fold-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .fold-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .fold-section-tag {
+      font-size: 10px;
+      border-radius: 999px;
+      padding: 3px 8px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.96);
+      white-space: nowrap;
+    }
+
+    .fold-section-body {
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.55;
+    }
+
+    .fold-section-body code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+        Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 6px;
+      padding: 1px 4px;
+      border: 1px solid rgba(30, 64, 175, 0.7);
+    }
+
+    pre.code-block {
+      margin: 6px 0 0;
+      padding: 8px;
+      border-radius: 12px;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 1));
+      border: 1px solid rgba(30, 64, 175, 0.9);
+      font-size: 11px;
+      line-height: 1.4;
+      overflow-x: auto;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+        Consolas, "Liberation Mono", "Courier New", monospace;
+      color: #e5f2ff;
+    }
+
+    ul.compact {
+      margin: 4px 0 0 16px;
+      padding: 0;
+    }
+    ul.compact li {
+      margin-bottom: 1px;
+    }
+
+    /* SVG 3D Preview Container */
+    .svg-3d-preview {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(30, 64, 175, 0.6);
+    }
+
+    .svg-3d-preview svg {
+      width: 100%;
+      height: 200px;
+      background: rgba(5, 11, 39, 0.9);
+      border-radius: 8px;
+    }
+
+    /* =========================================================
+       SCREENSAVER: MATRIX GLYPH RAIN (IDLE ONLY)
+       ========================================================= */
+
+    #screensaver {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, #020617 0, #000 55%, #000 100%);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    #screensaver canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #screensaver-hint {
+      position: absolute;
+      bottom: 20px;
+      right: 24px;
+      font-size: 11px;
+      color: rgba(226, 232, 240, 0.8);
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: var(--radius-pill);
+      padding: 4px 10px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+    }
+
+    /* Scrollbar */
+    .fold-body::-webkit-scrollbar {
+      width: 7px;
+    }
+    .fold-body::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.8);
+    }
+    .fold-body::-webkit-scrollbar-thumb {
+      background: rgba(51, 65, 85, 0.9);
+      border-radius: 999px;
+    }
+
+    /* Responsive tweak */
+    @media (max-width: 960px) {
+      .os-shell {
+        flex-direction: column;
+      }
+      .os-sidebar {
+        width: 100%;
+        max-width: 100%;
+      }
+      .fold-body {
+        max-height: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="os-topbar">
+    <div class="brand-group">
+      <div class="brand-glyph">⟁</div>
+      <div class="brand-meta">
+        <div class="brand-title">ASX ATOMIC OS • KUHUL</div>
+        <div class="brand-sub">Atomic Codex · 3-File Architecture · Micronaut Hive</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="top-tag">
+        <span class="top-tag-dot"></span>
+        <span>KLH Mesh Online</span>
+      </div>
+      <div class="top-tag">
+        <span>12-FOLD KUHUL · Dynamic Guide</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="os-shell">
+    <!-- SIDEBAR -->
+    <aside class="os-panel os-sidebar">
+      <div class="section-label">K'UHUL FOLDS</div>
+      <div id="foldNav" class="fold-nav">
+        <!-- Each chip maps to one fold body by data-fold-id -->
+        <div class="fold-chip" data-fold="AI" data-active="true">
+          <div class="fold-chip-left">
+            <div class="fold-symbol">AI</div>
+            <div class="fold-labels">
+              <div class="fold-name">⟁AI — Intelligence</div>
+              <div class="fold-role">Micronauts, models, live reasoning</div>
+            </div>
+          </div>
+          <div class="fold-pill">/ai/*</div>
+        </div>
+
+        <div class="fold-chip" data-fold="UI">
+          <div class="fold-chip-left">
+            <div class="fold-symbol">UI</div>
+            <div class="fold-labels">
+              <div class="fold-name">⟁UI — Interface</div>
+              <div class="fold-role">Atomic ghost-shell, Liquid OS, layout</div>
+            </div>
+          </div>
+          <div class="fold-pill">/os/ui</div>
+        </div>
+
+        <!-- NEW SVG 3D FOLD -->
+        <div class="fold-chip" data-fold="SVG3D">
+          <div class="fold-chip-left">
+            <div class="fold-symbol">3D</div>
+            <div class="fold-labels">
+              <div class="fold-name">⟁SVG3D — SVG 3D Language</div>
+              <div class="fold-role">KUHUL 3D transforms, shaders, animation</div>
+            </div>
+          </div>
+          <div class="fold-pill">/os/svg3d</div>
+        </div>
+
+        <div class="fold-chip" data-fold="Runtime">
+          <div class="fold-chip-left">
+            <div class="fold-symbol">RT</div>
+            <div class="fold-labels">
+              <div class="fold-name">⟁RT — Runtime</div>
+              <div class="fold-role">Kernel, KLH mesh, K'uhul VM</div>
+            </div>
+          </div>
+          <div class="fold-pill">/os/*</div>
+        </div>
+
+        <div class="fold-chip" data-fold="Internet">
+          <div class="fold-chip-left">
+            <div class="fold-symbol">NET</div>
+            <div class="fold-labels">
+              <div class="fold-name">⟁NET — Internet</div>
+              <div class="fold-role">Online feeds, public data, trainers</div>
+            </div>
+          </div>
+          <div class="fold-pill">/trainer/net</div>
+        </div>
+
+        <div class="fold-chip" data-fold="Trainer">
+          <div class="fold-chip-left">
+            <div class="fold-symbol">TR</div>
+            <div class="fold-labels">
+              <div class="fold-name">⟁TRN — Trainer</div>
+              <div class="fold-role">RLHF, Colab nodes, TPU-OS hooks</div>
+            </div>
+          </div>
+          <div class="fold-pill">/trainer/*</div>
+        </div>
+
+        <div class="fold-chip" data-fold="Fusion">
+          <div class="fold-chip-left">
+            <div class="fold-symbol">FS</div>
+            <div class="fold-labels">
+              <div class="fold-name">⟁FSN — Fusion</div>
+              <div class="fold-role">Multi-model fusion, quantum stack</div>
+            </div>
+          </div>
+          <div class="fold-pill">/hive/fusion</div>
+        </div>
+
+        <div class="fold-chip" data-fold="Shard">
+          <div class="fold-chip-left">
+            <div class="fold-symbol">SH</div>
+            <div class="fold-labels">
+              <div class="fold-name">⟁SHD — Shards</div>
+              <div class="fold-role">Prime-04 multi-hive, ports, shards</div>
+            </div>
+          </div>
+          <div class="fold-pill">/hive/*</div>
+        </div>
+
+        <div class="fold-chip" data-fold="Tape">
+          <div class="fold-chip-left">
+            <div class="fold-symbol">TP</div>
+            <div class="fold-labels">
+              <div class="fold-name">⟁TPE — Tapes</div>
+              <div class="fold-role">3-file OS, sub-ghost tapes, studios</div>
+            </div>
+          </div>
+          <div class="fold-pill">/os/tapes</div>
+        </div>
+
+        <div class="fold-chip" data-fold="Eschaton">
+          <div class="fold-chip-left">
+            <div class="fold-symbol">ES</div>
+            <div class="fold-labels">
+              <div class="fold-name">⟁ESC — Eschaton</div>
+              <div class="fold-role">Limit functions, shutdown rites</div>
+            </div>
+          </div>
+          <div class="fold-pill">/os/eschaton</div>
+        </div>
+
+        <div class="fold-chip" data-fold="Forbidden">
+          <div class="fold-chip-left">
+            <div class="fold-symbol">FB</div>
+            <div class="fold-labels">
+              <div class="fold-name">⟁FRB — Forbidden</div>
+              <div class="fold-role">Dangerous ops, direct shell bridges</div>
+            </div>
+          </div>
+          <div class="fold-pill">locked</div>
+        </div>
+
+        <div class="fold-chip" data-fold="Meta">
+          <div class="fold-chip-left">
+            <div class="fold-symbol">M</div>
+            <div class="fold-labels">
+              <div class="fold-name">⟁META — Self</div>
+              <div class="fold-role">Metrics, performance, codex view</div>
+            </div>
+          </div>
+          <div class="fold-pill">/os/meta</div>
+        </div>
+
+        <div class="fold-chip" data-fold="Transcendent">
+          <div class="fold-chip-left">
+            <div class="fold-symbol">Ω</div>
+            <div class="fold-labels">
+              <div class="fold-name">⟁Ω — Transcendent</div>
+              <div class="fold-role">Prime-X, quantum manifest, master</div>
+            </div>
+          </div>
+          <div class="fold-pill">/prime/*</div>
+        </div>
+      </div>
+
+      <div class="sidebar-meta">
+        <div class="meta-row">
+          <span>Guide Mode</span>
+          <span class="meta-badge">Dynamic Atomic HTML</span>
+        </div>
+        <div class="meta-row">
+          <span>Power of 3</span>
+          <span class="meta-badge">index.html · sw.js · manifest.json</span>
+        </div>
+        <div class="cta-panel">
+          <div><strong>Build Your Micronaut AI</strong></div>
+          <div>Use this codex to spawn a tape for any niche: ice cream, baseball, news, cannabis, corrupt politicians — whatever topic your Micronaut governs.</div>
+          <div class="cta-buttons">
+            <button class="btn-ghost" type="button" id="btnScreensaverToggle">
+              Glyph Screensaver
+            </button>
+            <button class="btn-accent" type="button" id="btnAtomicExport">
+              Export as 3-File OS
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <section class="os-panel os-main">
+      <div class="fold-header">
+        <div class="fold-header-left">
+          <div id="foldTitle" class="fold-title">⟁AI — Autonomous Intelligence</div>
+          <div id="foldSubtitle" class="fold-subtitle">
+            AI MICRONAUTS WITH BRAINS · ASX-MICRONAUTS · model routing &amp; archetypes
+          </div>
+        </div>
+        <div id="foldRouteBadge" class="route-badge">Routing: /ai/* → KLH → live_ai_models</div>
+      </div>
+
+      <div class="fold-content-container">
+        <div class="fold-toolbar">
+          <div class="toolbar-left">
+            <span class="toolbar-badge" id="toolbarFoldName">Fold: ⟁AI</span>
+            <span id="toolbarFoldHint">Micronauts, Qwen-ASX, Cline, Janus, Ollama</span>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn-ghost" type="button" id="btnJumpAtomicCodex">Atomic Codex</button>
+            <button class="btn-ghost" type="button" id="btnJumpPowerOf3">Power of 3</button>
+          </div>
+        </div>
+
+        <!-- FOLD BODIES -->
+        <div id="foldBodies" class="fold-bodies">
+          <!-- AI FOLD -->
+          <div class="fold-body" data-fold-id="AI" data-active="true">
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">AI Micronauts with Brains</div>
+                <div class="fold-section-tag">From: AI MICRONAUTS WITH BRAINS.html</div>
+              </div>
+              <div class="fold-section-body">
+                This fold centralizes every concept from your <strong>AI Micronauts</strong> guides:
+                Micronauts as local AI governors, equipped with brains, archetypes, and route maps
+                into the KLH mesh and K'uhul runtime.
+                <ul class="compact">
+                  <li>Each Micronaut = tape-scoped AI governor (faction, product, world, OS shard).</li>
+                  <li>Brains are defined via JSON / XJSON: capabilities, specialties, memory policy.</li>
+                  <li>Routing into live models: Cline Java, Qwen-ASX, Ollama, Janus, custom endpoints.</li>
+                  <li>All of this is now anchored in the <code>⟁AI</code> fold of the OS.</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">ASX Micronauts · Colony View</div>
+                <div class="fold-section-tag">From: ASX-MICRONAUTS.html</div>
+              </div>
+              <div class="fold-section-body">
+                This section merges the <strong>ASX-MICRONAUTS</strong> document into a single view:
+                how Micronauts proliferate across tapes, shards, and Prime-OS.
+                <ul class="compact">
+                  <li>Per-tape Micronaut: governs that tape's local DB, UI, and agent matrix.</li>
+                  <li>Faction Micronaut: one per faction in ASX RISK / Wasteland / Doom worlds.</li>
+                  <li>Global Micronaut: a Prime-level overseer for cross-faction balance &amp; meta-intent.</li>
+                  <li>Hive Micronauts: each shard in Prime-04 can host its own Micronaut sub-brain.</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">Model Matrix · live_ai_models</div>
+                <div class="fold-section-tag">Manifest: live_ai_models</div>
+              </div>
+              <div class="fold-section-body">
+                Your manifest defines a canonical <code>live_ai_models</code> matrix:
+                <ul class="compact">
+                  <li><strong>Cline Java AI</strong> — code execution, analysis, dev toolchain.</li>
+                  <li><strong>Qwen-ASX Reasoning Engine</strong> — primary language &amp; reasoning model.</li>
+                  <li><strong>Ollama Model Server</strong> — general local multi-model host.</li>
+                  <li><strong>Janus Multi-modal AI</strong> — image &amp; multi-modal reasoning.</li>
+                </ul>
+                The <code>⟁AI</code> fold acts as the router for these endpoints. Your KUHUL kernel
+                uses <code>/ai/&lt;model&gt;/…</code> routes to forward from the browser to the
+                correct local port, with RLHF and learning services listening in.
+              </div>
+            </article>
+          </div>
+
+          <!-- UI FOLD -->
+          <div class="fold-body" data-fold-id="UI">
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">Liquid OS · Ghost Shell</div>
+                <div class="fold-section-tag">From: LIQUID OS.html + LIQUID-OS-BASICS.html</div>
+              </div>
+              <div class="fold-section-body">
+                The <strong>Liquid OS</strong> documents define your baseline ghost-shell UI language:
+                panels, flows, and Micronaut themes. This fold merges those into a single concept:
+                <ul class="compact">
+                  <li><strong>Liquid Colors</strong>: deep ocean blues with neon cyan &amp; flow green.</li>
+                  <li><strong>Panel Grammar</strong>: left nav, right work surface, fluid utilities.</li>
+                  <li><strong>Runtime Tagging</strong>: <code>data-theme="liquid"</code>, <code>data-os="ai-runtime"</code>.</li>
+                  <li><strong>Atomic Layout</strong> rules layer on top using K'uhul Atomic CSS classes.</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">K'uhul Atomic CSS</div>
+                <div class="fold-section-tag">From: K'UHUL ATOMIC CSS.html</div>
+              </div>
+              <div class="fold-section-body">
+                The <strong>K'uhul Atomic CSS</strong> guide becomes the canonical class dictionary
+                for all UI in this OS. Instead of Tailwind, tapes use your own atomics:
+                spacing, flex grid, neon borders, glass surfaces.
+                <ul class="compact">
+                  <li>Atomic layout: flex rows/cols, grid tracks, gap utilities.</li>
+                  <li>Atomic color tokens: AI, XJSON, KUHUL, SCX, KLH each have brand slots.</li>
+                  <li>Atomic surfaces: glass, hard metal, terminal, chip, code.</li>
+                  <li>Atomic typography: ghost headings, codex labels, terminal text.</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">K'uhul Atomic CSS Compression System</div>
+                <div class="fold-section-tag">From: K'UHUL ATOMIC CSS COMPRESSION SYSTEM.html</div>
+              </div>
+              <div class="fold-section-body">
+                The compression guide explains how CSS itself is an atomic data store:
+                <ul class="compact">
+                  <li>SCXQ2 compresses entire atomic stylesheets into symbol dictionaries.</li>
+                  <li>Tokens become glyphs; glyphs become compressed style packs.</li>
+                  <li>At runtime, K'uhul unfolds compressed style glyphs into live CSS.</li>
+                </ul>
+                This fold tells UI authors that every visual decision is also a compression decision.
+              </div>
+            </article>
+          </div>
+
+          <!-- NEW SVG 3D FOLD -->
+          <div class="fold-body" data-fold-id="SVG3D">
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">KUHUL SVG 3D Language · Core Syntax</div>
+                <div class="fold-section-tag">From: KUHUL SVG 3D LANGUAGE.html</div>
+              </div>
+              <div class="fold-section-body">
+                The KUHUL SVG 3D Language extends SVG with 3D transformation capabilities:
+                <ul class="compact">
+                  <li><strong>3D Transforms</strong>: <code>transform3d="rotateX(45) translateZ(100)"</code></li>
+                  <li><strong>Depth Sorting</strong>: Automatic z-index management based on transform3d</li>
+                  <li><strong>Lighting System</strong>: Virtual lights with <code>data-light-source</code></li>
+                  <li><strong>Material Properties</strong>: <code>data-material="metal|glass|hologram"</code></li>
+                  <li><strong>Animation Timeline</strong>: Keyframe animations with 3D easing curves</li>
+                </ul>
+                
+                <div class="svg-3d-preview">
+                  <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 3D Cube Example -->
+                    <g transform="translate(200,100)">
+                      <!-- Back face -->
+                      <polygon points="-50,-50 50,-50 50,50 -50,50" 
+                               fill="rgba(22,242,170,0.3)" stroke="#16f2aa"
+                               transform3d="rotateX(45) rotateY(45) translateZ(-25)"/>
+                      <!-- Bottom face -->
+                      <polygon points="-50,50 50,50 50,150 -50,150" 
+                               fill="rgba(22,242,170,0.4)" stroke="#16f2aa"
+                               transform3d="rotateX(-45) rotateY(45) translateZ(-25)"/>
+                      <!-- Side face -->
+                      <polygon points="50,-50 150,-50 150,50 50,50" 
+                               fill="rgba(22,242,170,0.5)" stroke="#16f2aa"
+                               transform3d="rotateX(45) rotateY(-45) translateZ(-25)"/>
+                      <!-- Top face -->
+                      <polygon points="-50,-50 50,-50 150,-50 50,-150" 
+                               fill="rgba(22,242,170,0.6)" stroke="#16f2aa"
+                               transform3d="rotateX(-45) rotateY(45) translateZ(-25)"/>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </article>
+
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">3D Shader System · Material Pipeline</div>
+                <div class="fold-section-tag">Fold: SVG3D</div>
+              </div>
+              <div class="fold-section-body">
+                The KUHUL 3D engine includes a complete shader and material system:
+                <ul class="compact">
+                  <li><strong>Gradient Meshes</strong>: Complex color transitions across 3D surfaces</li>
+                  <li><strong>Holographic Materials</strong>: <code>data-material="hologram"</code> with interference patterns</li>
+                  <li><strong>Neon Glow</strong>: <code>data-glow-intensity="0.8"</code> for emissive materials</li>
+                  <li><strong>Reflection Maps</strong>: Environment mapping for metallic surfaces</li>
+                  <li><strong>Shadow System</strong>: Real-time shadow casting between 3D elements</li>
+                </ul>
+                
+                <pre class="code-block">&lt;!-- Example: Holographic Material --&gt;
+&lt;rect x="50" y="50" width="100" height="100"
+      data-material="hologram"
+      data-glow-intensity="0.7"
+      transform3d="rotateX(30) rotateY(45)"
+      fill="url(#hologramGradient)" /&gt;</pre>
+              </div>
+            </article>
+
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">Animation Engine · 3D Keyframes</div>
+                <div class="fold-section-tag">Fold: SVG3D</div>
+              </div>
+              <div class="fold-section-body">
+                Advanced 3D animation system with timeline control:
+                <ul class="compact">
+                  <li><strong>3D Keyframes</strong>: Define complex 3D transformations over time</li>
+                  <li><strong>Easing Curves</strong>: Cubic bezier easing in 3D space</li>
+                  <li><strong>Animation Sequencing</strong>: Chain multiple 3D transformations</li>
+                  <li><strong>Performance Optimized</strong>: Hardware-accelerated 3D transforms</li>
+                  <li><strong>Interactive Controls</strong>: Play, pause, scrub through 3D animations</li>
+                </ul>
+                
+                <pre class="code-block">&lt;!-- 3D Animation Example --&gt;
+&lt;circle r="40" fill="#16f2aa"
+        data-animation3d="
+          @keyframes spin3d {
+            0% { transform3d: rotateY(0) rotateX(0); }
+            100% { transform3d: rotateY(360) rotateX(180); }
+          }
+          animation: spin3d 4s infinite linear;
+        " /&gt;</pre>
+              </div>
+            </article>
+          </div>
+
+          <!-- RUNTIME FOLD -->
+          <div class="fold-body" data-fold-id="Runtime">
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">ASX OS · Complete 3-File Architecture</div>
+                <div class="fold-section-tag">From: ASX OS - Complete 3-File Architecture.html</div>
+              </div>
+              <div class="fold-section-body">
+                This section merges your <strong>ASX OS 3-File Architecture</strong> and
+                <strong>Power of 3</strong> guides into the runtime core:
+                <ul class="compact">
+                  <li><code>index.html</code> — ghost-shell UI, tapes, and codex views.</li>
+                  <li><code>sw.js</code> (here: <code>sw.khl</code>) — unified kernel (KLH + K'uhul + SCXQ2 + DNS + REST mesh).</li>
+                  <li><code>manifest.json</code> — DB, tapes, zones, ports, AI models, folds.</li>
+                </ul>
+                Everything else (assets, templates, docs, studio layouts) is encoded into those three.
+              </div>
+            </article>
+
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">K'uhul Atomic Kernel (sw.khl)</div>
+                <div class="fold-section-tag">From: your sw.khl drop</div>
+              </div>
+              <div class="fold-section-body">
+                Below is the canonical <strong>K'uhul Prime Kernel</strong>, SCX-compressed style,
+                with KLH hive routing and 12-Fold mapping baked in. This is the runtime heart of the OS.
+                <pre class="code-block">/*  
+   ============================================================
+     ASX PRIME — KUHUL ATOMIC KERNEL (sw.khl)
+     KLH Hive Router + SCXQ2 Engine + K'uhul VM
+     SCX-COMPRESSED VERSION - 89.3% reduction
+   ============================================================
+*/
+
+const O={v:"KUHUL-PRIME-v1",m:null,g:{},c:{},h:{},p:{},v:{},a:{},r:{},b:!1},S={d(e){try{return decodeURIComponent(escape(atob(e)))}catch{return""}},e(e){try{return btoa(unescape(encodeURIComponent(e)))}catch{return""}}},K={m:new Map,g(e){return this.m.get(e)},s(e,t){this.m.set(e,t)},p(){this.m.clear()}};self.addEventListener("install",e=>{self.skipWaiting()}),self.addEventListener("activate",async e=>{e.waitUntil(clients.claim()),await B()});async function B(){O.m=await fetch("/manifest.json").then(e=>e.json()),O.p=O.m.klh_hive_config.mesh.ports,O.h=O.m.klh_hive_config,O.a=O.m.live_ai_models,O.f=O.m.kuhul_folds,G(),await V(),R(),O.b=!0,console.log("[K'UHUL KERNEL] Boot Complete")}function G(){O.g={⟁AI:O.f.AI,⟁UI:O.f.UI,⟁RT:O.f.Runtime,⟁NET:O.f.Internet,⟁TRN:O.f.Trainer,⟁FSN:O.f.Fusion,⟁SHD:O.f.Shard,⟁TPE:O.f.Tape,⟁ESC:O.f.Eschaton,⟁FRB:O.f.Forbidden,⟁META:O.f.Meta,⟁Ω:O.f.Transcendent}}async function V(){let e=O.m.kernel_processes.file_system.mounts;for(let t of e)O.v[t.path]={type:t.type,compression:t.compression??"scxq2",source:t.source,files:{}}}function R(){O.r={async route(e,t){if(e.pathname.startsWith("/os/"))return A(e,t);if(e.pathname.startsWith("/ai/"))return H(e,t);if(e.pathname.startsWith("/hive/"))return L(e,t);return fetch(t)}}}async function L(e,t){let[,r,n,...a]=e.pathname.split("/"),i=O.h.shard_definitions[r];if(!i)return new Response("Shard not found",{status:404});let o=`http://localhost:${i.port}/${a.join("/")}`;return fetch(o,t)}async function A(e,t){let r=e.pathname.replace("/os/","");switch(r){case"status":return new Response(JSON.stringify({ok:!0,version:O.v,booted:O.b}),{headers:{"content-type":"application/json"}});case"folds":return new Response(JSON.stringify(O.f));case"models":return new Response(JSON.stringify(O.a))}return new Response("Unknown OS route",{status:404})}async function H(e,t){let[,r,n,...a]=e.pathname.split("/"),i=O.a[r];if(!i)return new Response("Model not found",{status:404});let o=`${i.endpoint}/${a.join("/")}`;return fetch(o,t)}const M={async exec(e,t={}){let r=O.g[e];if(!r)return{error:"Unknown glyph"};return{ok:!0,glyph:e,fold:r.role,payload:t}}};self.addEventListener("fetch",e=>{let t=new URL(e.request.url);e.respondWith(O.r.route(t,e.request))});const $={async tunnel(e){return fetch("/hive/ai-models/execute",{method:"POST",body:JSON.stringify({cmd:e}),headers:{"content-type":"application/json"}})}};console.log("[K'UHUL KERNEL] sw.khl loaded");</pre>
+              </div>
+            </article>
+
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">Atomic OS Codex · Runtime View</div>
+                <div class="fold-section-tag">From: ATOMIC OS CODEX.html</div>
+              </div>
+              <div class="fold-section-body">
+                The <strong>Atomic OS Codex</strong> is the textual spec of this kernel:
+                it defines how the Power-of-3 architecture, folds, KLH router, and SCXQ2 engine
+                are supposed to behave. This section explains how to read the codex as a live OS:
+                <ul class="compact">
+                  <li>Every doctrine entry maps to a function in <code>sw.khl</code> or a key in <code>manifest.json</code>.</li>
+                  <li>Every diagram maps to a concrete path in the XJSON REST mesh.</li>
+                  <li>Every "Atomic Rule" is enforced at runtime by K'uhul + KLH, not just on paper.</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+
+          <!-- INTERNET FOLD -->
+          <div class="fold-body" data-fold-id="Internet">
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">Internet Learning · Public Knowledge Mesh</div>
+                <div class="fold-section-tag">Manifest: internet_learning</div>
+              </div>
+              <div class="fold-section-body">
+                The <code>⟁NET</code> fold describes how the OS drinks from the public internet:
+                <ul class="compact">
+                  <li>Knowledge sources: Wikipedia, GitHub, arXiv, reddit, StackOverflow, HF Hub, data registries.</li>
+                  <li>Real-time feeds: HN, Product Hunt, RSS streams, etc.</li>
+                  <li>Specialized data: weather, finance, disease, coins.</li>
+                  <li>All data is compressed via SCXQ2 and routed into the RLHF / learning pipeline.</li>
+                </ul>
+                In this codex, <code>⟁NET</code> explains which URLs are trusted, how they're scraped,
+                and how that data feeds your Micronaut brains.
+              </div>
+            </article>
+          </div>
+
+          <!-- TRAINER FOLD -->
+          <div class="fold-body" data-fold-id="Trainer">
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">Trainer Engine · TPU-OS / Colab Nodes</div>
+                <div class="fold-section-tag">ASX TPU-OS + Colab Nodes</div>
+              </div>
+              <div class="fold-section-body">
+                The trainer fold merges your TPU-OS, Colab launcher, and RLHF design:
+                <ul class="compact">
+                  <li><strong>KUHULColabNode</strong> style nodes act as remote training shards.</li>
+                  <li>RLHF engine runs continuously, compressing learning logs via SCXQ2.</li>
+                  <li>Trainer API exposed via <code>/trainer/status</code>, <code>/trainer/start</code>, etc.</li>
+                  <li>Metrics are reported back into the Meta fold for performance tracking.</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+
+          <!-- FUSION FOLD -->
+          <div class="fold-body" data-fold-id="Fusion">
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">Fusion Layer · Multi-Model Orchestrator</div>
+                <div class="fold-section-tag">Fold: Fusion</div>
+              </div>
+              <div class="fold-section-body">
+                Fusion is where multiple models cooperate:
+                <ul class="compact">
+                  <li>Model router chooses which brain answers first (Who Works First).</li>
+                  <li>Second opinions: Qwen-ASX, Cline, Janus, Ollama collaborate instead of compete.</li>
+                  <li>Consensus engine aggregates results into a single OS-level answer.</li>
+                  <li>Quantum compression metrics track how efficiently this fusion works.</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+
+          <!-- SHARD FOLD -->
+          <div class="fold-body" data-fold-id="Shard">
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">Prime-04 Multi-Hive · Shards &amp; Ports</div>
+                <div class="fold-section-tag">Manifest: klh_hive_config</div>
+              </div>
+              <div class="fold-section-body">
+                The shard fold unifies everything you've said about Prime-04 multi-hive routing:
+                <ul class="compact">
+                  <li><strong>Shards</strong>: users, logistics, intel, analytics, ai-models.</li>
+                  <li><strong>Ports</strong>: 6001–6004, 61680, etc., mapped as virtual REST shards.</li>
+                  <li><strong>KLH router</strong>: maps <code>/hive/&lt;shard&gt;/…</code> to local ports.</li>
+                  <li>Rebalancing and failover live here, plus multi-hive federation.</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+
+          <!-- TAPE FOLD -->
+          <div class="fold-body" data-fold-id="Tape">
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">Power of 3 · Tape &amp; Sub-Ghost Architecture</div>
+                <div class="fold-section-tag">From: the-power-of-3.html</div>
+              </div>
+              <div class="fold-section-body">
+                Your <strong>Power of 3</strong> guide is the formal statement of the triple-threat runtime:
+                <ul class="compact">
+                  <li>Every tape must compress into three files at the origin: <code>index.html</code>, <code>sw.js</code>, <code>manifest.json</code>.</li>
+                  <li>Sub-ghost tapes mount inside Prime-OS but behave as full independent sites.</li>
+                  <li>Each tape has its own Micronaut, DB, atomic CSS, and AI routing.</li>
+                  <li>KLH ensures each tape can be reached as a virtual host or subdomain.</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">Atomic Codex · Language of Tapes</div>
+                <div class="fold-section-tag">From: ATOMIC CODEX.html</div>
+              </div>
+              <div class="fold-section-body">
+                The <strong>Atomic Codex</strong> explains how you think in atoms:
+                blocks, glyphs, shards, folds. In this fold, it tells tape authors:
+                <ul class="compact">
+                  <li>Each UI element = an atomic block with its own ID and semantics.</li>
+                  <li>Each block's behavior is described via XJSON + SCXQ2 compressed payload.</li>
+                  <li>Each tape is a collection of atomic blocks + holotape metadata.</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+
+          <!-- ESCHATON FOLD -->
+          <div class="fold-body" data-fold-id="Eschaton">
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">Eschaton Functions · Safe Shutdown</div>
+                <div class="fold-section-tag">Fold: Eschaton</div>
+              </div>
+              <div class="fold-section-body">
+                Eschaton is where you keep the OS-level limit switches:
+                <ul class="compact">
+                  <li>Graceful shutdown of all schedulers, caches, and AI models.</li>
+                  <li>Final compression and archival of logs (SCXQ2) before wipe.</li>
+                  <li>Strict rules to avoid data loss and preserve important learning artifacts.</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+
+          <!-- FORBIDDEN FOLD -->
+          <div class="fold-body" data-fold-id="Forbidden">
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">Forbidden Pack · Locked Operations</div>
+                <div class="fold-section-tag">Fold: Forbidden</div>
+              </div>
+              <div class="fold-section-body">
+                This fold documents but does not execute the dangerous things:
+                direct shell bridges, raw sockets, unbounded internet scraping, etc.
+                In a live OS, these are locked behind policy and never enabled by default.
+              </div>
+            </article>
+          </div>
+
+          <!-- META FOLD -->
+          <div class="fold-body" data-fold-id="Meta">
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">Meta Engine · Performance &amp; Self-Reflection</div>
+                <div class="fold-section-tag">Fold: Meta</div>
+              </div>
+              <div class="fold-section-body">
+                Meta is where the OS looks at itself:
+                <ul class="compact">
+                  <li>Logging metrics: compression ratios, boot times, RAM usage.</li>
+                  <li>Shadow caches: replaying sessions for debugging and improvement.</li>
+                  <li>Self-observation: tracking how Micronauts and models actually behave.</li>
+                </ul>
+                This guide is part of the meta engine: a human-readable codex for the OS itself.
+              </div>
+            </article>
+          </div>
+
+          <!-- TRANSCENDENT FOLD -->
+          <div class="fold-body" data-fold-id="Transcendent">
+            <article class="fold-section">
+              <div class="fold-section-header">
+                <div class="fold-section-title">Prime-X · Quantum OS View</div>
+                <div class="fold-section-tag">Fold: Transcendent</div>
+              </div>
+              <div class="fold-section-body">
+                The Transcendent fold ties your <strong>Quantum Atomic OS</strong> language together:
+                <ul class="compact">
+                  <li>Quantum manifest: compressed meta-definition of all folds, tapes, and shards.</li>
+                  <li>CosmOS runtime: cross-domain, cross-hive orchestration of multiple OS clusters.</li>
+                  <li>Absolute master pack: PRIMEX pack that owns the last word in boot order.</li>
+                </ul>
+                This is the layer where the entire ATOMIC codex becomes one symbol: the OS itself.
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- IDLE SCREENSAVER (GLYPH RAIN) -->
+  <div id="screensaver">
+    <canvas id="screensaverCanvas"></canvas>
+    <div id="screensaver-hint">Glyph storm active — click to return to the codex</div>
+  </div>
+
+  <script>
+    /* =========================================================
+       FOLD NAVIGATION
+       ========================================================= */
+    (function () {
+      const foldNav = document.getElementById("foldNav");
+      const foldBodies = document.querySelectorAll(".fold-body");
+      const titleEl = document.getElementById("foldTitle");
+      const subtitleEl = document.getElementById("foldSubtitle");
+      const routeBadgeEl = document.getElementById("foldRouteBadge");
+      const toolbarFoldName = document.getElementById("toolbarFoldName");
+      const toolbarHint = document.getElementById("toolbarFoldHint");
+
+      const foldMeta = {
+        AI: {
+          title: "⟁AI — Autonomous Intelligence",
+          subtitle:
+            "AI MICRONAUTS WITH BRAINS · ASX-MICRONAUTS · model routing & archetypes",
+          route: "Routing: /ai/* → KLH → live_ai_models",
+          hint: "Micronaut brains, archetypes, Qwen-ASX, Cline, Janus, Ollama"
+        },
+        UI: {
+          title: "⟁UI — Interface Runtime",
+          subtitle: "Liquid OS · K'uhul Atomic CSS · compression-aware layouts",
+          route: "Routing: /os/ui/* · theme + components",
+          hint: "Ghost-shell UI, atomic CSS, Liquid OS panels"
+        },
+        SVG3D: {
+          title: "⟁SVG3D — SVG 3D Language",
+          subtitle: "3D transforms · materials · animation · shader system",
+          route: "Routing: /os/svg3d/* · 3D engine endpoints",
+          hint: "KUHUL 3D syntax, materials, lighting, animation system"
+        },
+        Runtime: {
+          title: "⟁RT — Kernel & Processes",
+          subtitle: "3-File OS · KLH mesh · K'uhul VM · SCXQ2 engine",
+          route: "Routing: /os/* · KLH core · status/folds/models",
+          hint: "Kernel boot sequence & manifest structure"
+        },
+        Internet: {
+          title: "⟁NET — Internet Learning",
+          subtitle: "Public data mesh · SCXQ2 compressed feeds",
+          route: "Routing: /trainer/net/*",
+          hint: "Knowledge sources & continuous online learning"
+        },
+        Trainer: {
+          title: "⟁TRN — Trainer",
+          subtitle: "RLHF engines · TPU-OS nodes · Colab style shards",
+          route: "Routing: /trainer/* · training jobs",
+          hint: "Training orchestration & RLHF loops"
+        },
+        Fusion: {
+          title: "⟁FSN — Fusion",
+          subtitle: "Multi-model fusion · consensus engines",
+          route: "Routing: /hive/fusion/*",
+          hint: "Who-works-first routing and second opinions"
+        },
+        Shard: {
+          title: "⟁SHD — Shards",
+          subtitle: "Prime-04 multi-hive · ports · virtual shards",
+          route: "Routing: /hive/* → local ports",
+          hint: "Shard defs and per-port duties"
+        },
+        Tape: {
+          title: "⟁TPE — Tapes & Apps",
+          subtitle: "Power of 3 · sub-ghost tapes · studios",
+          route: "Routing: /os/tapes/*",
+          hint: "Tape-level architecture and Atomic Codex"
+        },
+        Eschaton: {
+          title: "⟁ESC — Eschaton",
+          subtitle: "Shutdown rites · limits · safe exit paths",
+          route: "Routing: /os/eschaton/*",
+          hint: "Final OS shutdown sequences"
+        },
+        Forbidden: {
+          title: "⟁FRB — Forbidden Operations",
+          subtitle: "Locked functions · dangerous bridges",
+          route: "Status: locked",
+          hint: "Documented but disabled operations"
+        },
+        Meta: {
+          title: "⟁META — Self-Reflection",
+          subtitle: "Metrics · logging · shadow caches · audits",
+          route: "Routing: /os/meta/*",
+          hint: "Performance, metrics, and codex introspection"
+        },
+        Transcendent: {
+          title: "⟁Ω — Transcendent · Prime-X",
+          subtitle: "Quantum manifest · CosmOS runtime · absolute core",
+          route: "Routing: /prime/*",
+          hint: "Highest-level orchestration layer"
+        }
+      };
+
+      foldNav.addEventListener("click", (ev) => {
+        const chip = ev.target.closest(".fold-chip");
+        if (!chip) return;
+        const fold = chip.getAttribute("data-fold");
+        if (!fold) return;
+
+        // Activate nav
+        foldNav
+          .querySelectorAll(".fold-chip")
+          .forEach((c) => c.setAttribute("data-active", "false"));
+        chip.setAttribute("data-active", "true");
+
+        // Activate body
+        foldBodies.forEach((body) => {
+          const id = body.getAttribute("data-fold-id");
+          body.setAttribute("data-active", id === fold ? "true" : "false");
+        });
+
+        // Update header meta
+        const meta = foldMeta[fold] || foldMeta.AI;
+        titleEl.textContent = meta.title;
+        subtitleEl.textContent = meta.subtitle;
+        routeBadgeEl.textContent = meta.route;
+        toolbarFoldName.textContent = "Fold: " + meta.title.split("—")[0].trim();
+        toolbarHint.textContent = meta.hint;
+      });
+    })();
+
+    /* =========================================================
+       SIMPLE ACTION HOOKS
+       ========================================================= */
+
+    document.getElementById("btnJumpAtomicCodex").addEventListener("click", () => {
+      // Jump to Tape fold (Atomic Codex lives there)
+      const tapeChip = document.querySelector('.fold-chip[data-fold="Tape"]');
+      if (tapeChip) tapeChip.click();
+    });
+
+    document.getElementById("btnJumpPowerOf3").addEventListener("click", () => {
+      const tapeChip = document.querySelector('.fold-chip[data-fold="Tape"]');
+      if (tapeChip) tapeChip.click();
+    });
+
+    document.getElementById("btnAtomicExport").addEventListener("click", () => {
+      alert(
+        "Export stub: wire this button to generate index.html + sw.khl + manifest.json from this codex.\n\nFor now, treat this as the live spec of that triple-threat OS."
+      );
+    });
+
+    /* =========================================================
+       IDLE TRACKING + GLYPH SCREENSAVER
+       ========================================================= */
+
+    (function () {
+      const IDLE_LIMIT_MS = 5 * 60 * 1000; // 5 minutes
+      let idleMs = 0;
+      let saverActive = false;
+      let rafId = null;
+      let columns = [];
+      let glyphCanvas, glyphCtx;
+      let width, height;
+      let fontSize = 16;
+      const glyphs = "⟁Ω⟁AI⟁UI⟁RT⟁NET⟁TRN⟁FSN⟁SHD⟁TPE⟁ESC⟁FRB⟁META⟁SVG3D";
+
+      const saverEl = document.getElementById("screensaver");
+      const canvasEl = document.getElementById("screensaverCanvas");
+
+      function resetIdle() {
+        idleMs = 0;
+        if (saverActive) {
+          stopScreensaver();
+        }
+      }
+
+      ["mousemove", "mousedown", "keydown", "scroll", "touchstart"].forEach((evt) => {
+        window.addEventListener(evt, resetIdle, { passive: true });
+      });
+
+      setInterval(() => {
+        idleMs += 1000;
+        if (!saverActive && idleMs >= IDLE_LIMIT_MS) {
+          startScreensaver();
+        }
+      }, 1000);
+
+      document
+        .getElementById("btnScreensaverToggle")
+        .addEventListener("click", () => {
+          if (saverActive) {
+            stopScreensaver();
+          } else {
+            startScreensaver(true);
+          }
+        });
+
+      saverEl.addEventListener("click", () => {
+        stopScreensaver();
+        idleMs = 0;
+      });
+
+      function initCanvas() {
+        glyphCanvas = canvasEl;
+        glyphCtx = glyphCanvas.getContext("2d");
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+      }
+
+      function resizeCanvas() {
+        glyphCanvas.width = window.innerWidth;
+        glyphCanvas.height = window.innerHeight;
+        width = glyphCanvas.width;
+        height = glyphCanvas.height;
+        fontSize = 18;
+        const cols = Math.floor(width / fontSize);
+        columns = new Array(cols).fill(0);
+      }
+
+      function drawFrame() {
+        if (!glyphCtx) return;
+        glyphCtx.fillStyle = "rgba(0, 0, 0, 0.12)";
+        glyphCtx.fillRect(0, 0, width, height);
+
+        glyphCtx.fillStyle = "#16f2aa";
+        glyphCtx.font = fontSize + "px monospace";
+
+        columns.forEach((y, i) => {
+          const text = glyphs.charAt(Math.floor(Math.random() * glyphs.length));
+          const x = i * fontSize;
+          glyphCtx.fillText(text, x, y * fontSize);
+
+          if (y * fontSize > height && Math.random() > 0.975) {
+            columns[i] = 0;
+          } else {
+            columns[i] = y + 1;
+          }
+        });
+
+        rafId = requestAnimationFrame(drawFrame);
+      }
+
+      function startScreensaver(force = false) {
+        if (saverActive) return;
+        saverActive = true;
+        saverEl.style.display = "flex";
+        if (!glyphCtx) initCanvas();
+        idleMs = force ? 0 : idleMs;
+        drawFrame();
+      }
+
+      function stopScreensaver() {
+        saverActive = false;
+        saverEl.style.display = "none";
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    })();
+  </script>
+</body>
+</html>

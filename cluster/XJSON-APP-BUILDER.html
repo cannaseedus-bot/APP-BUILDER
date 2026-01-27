@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XJSON App Builder - AI-Powered Application Generator</title>
+
+  <style>
+    :root {
+      --bg-primary: #020617;
+      --bg-secondary: #0f172a;
+      --accent-primary: #16f2aa;
+      --accent-secondary: #38bdf8;
+      --accent-purple: #a855f7;
+      --text-primary: #e5f2ff;
+      --text-muted: #94a3b8;
+      --glass: rgba(255,255,255,0.05);
+      --border: rgba(148,163,184,0.2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at 10% 20%, rgb(6, 20, 38) 0%, rgb(2, 6, 23) 90%);
+      color: var(--text-primary);
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .matrix-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      padding: 3rem 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1rem;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--bg-primary);
+      box-shadow: 0 0 60px rgba(22, 242, 170, 0.5);
+    }
+
+    h1 {
+      font-size: 3rem;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      padding: 0.5rem 1.5rem;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.9rem;
+    }
+
+    .stat-value {
+      color: var(--accent-primary);
+      font-weight: 700;
+      margin-right: 0.5rem;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .panel {
+      background: linear-gradient(135deg, rgba(22,242,170,0.05), rgba(56,189,248,0.05));
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .panel h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .icon {
+      font-size: 1.8rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    textarea, input, select {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      color: var(--text-primary);
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 20px rgba(22, 242, 170, 0.2);
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: var(--bg-primary);
+      box-shadow: 0 10px 40px rgba(22, 242, 170, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 50px rgba(22, 242, 170, 0.5);
+    }
+
+    .btn-secondary {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent-primary);
+      background: rgba(22, 242, 170, 0.1);
+    }
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    .code-output {
+      background: #0a0e1a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      max-height: 600px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-title {
+      font-weight: 700;
+      color: var(--accent-primary);
+    }
+
+    .copy-btn {
+      padding: 0.5rem 1rem;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .copy-btn:hover {
+      background: rgba(22, 242, 170, 0.1);
+      border-color: var(--accent-primary);
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 1rem;
+      border: 3px solid var(--glass);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .examples {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .example-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .example-card:hover {
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(22, 242, 170, 0.2);
+    }
+
+    .example-title {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--accent-secondary);
+    }
+
+    .example-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 1rem 1.5rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab.active {
+      color: var(--accent-primary);
+      border-bottom-color: var(--accent-primary);
+    }
+
+    .tab:hover {
+      color: var(--text-primary);
+    }
+
+    .output-tabs {
+      display: none;
+    }
+
+    .output-tabs.active {
+      display: block;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 3rem 0;
+    }
+
+    .feature {
+      padding: 1.5rem;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      text-align: center;
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-title {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--accent-secondary);
+    }
+
+    .feature-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Styles for generated XJSON app components in preview */
+    #preview-frame {
+      background-color: var(--bg-secondary); /* Ensure background is visible */
+    }
+    #preview-frame .xjson-component {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+    #preview-frame .xjson-component h2 {
+      color: var(--accent-primary);
+      margin-bottom: 1rem;
+      font-size: 1.2em;
+    }
+    #preview-frame .xjson-component p {
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+    }
+    #preview-frame .xjson-input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--text-primary);
+    }
+    #preview-frame .xjson-nav {
+      background: var(--bg-primary);
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 1.5rem;
+    }
+    #preview-frame .xjson-nav a {
+      color: var(--accent-secondary);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      transition: background 0.2s ease;
+    }
+    #preview-frame .xjson-nav a:hover {
+      background: rgba(56,189,248,0.1);
+    }
+
+
+    @media (max-width: 968px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas class="matrix-bg" id="matrix"></canvas>
+
+  <div class="container">
+    <header>
+      <div class="logo">⚡</div>
+      <h1>XJSON App Builder</h1>
+      <p class="subtitle">AI-Powered Application Generator - Describe It, Build It, Deploy It</p>
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-value">3</span>
+          <span>Files Generated</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">0</span>
+          <span>Dependencies</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">87%</span>
+          <span>Compression</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">∞</span>
+          <span>Possibilities</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-grid">
+      <!-- Input Panel -->
+      <div class="panel">
+        <h2>
+          <span class="icon">🎯</span>
+          Describe Your App
+        </h2>
+
+        <div class="input-group">
+          <label for="appType">App Type</label>
+          <select id="appType">
+            <option value="custom">Custom Description</option>
+            <option value="ecommerce">E-Commerce Store</option>
+            <option value="dashboard">Admin Dashboard</option>
+            <option value="chat">Real-Time Chat</option>
+            <option value="blog">Blog/CMS</option>
+            <option value="social">Social Network</option>
+            <option value="portfolio">Portfolio Site</option>
+            <option value="game">Game/Interactive</option>
+            <option value="saas">SaaS Platform</option>
+            <option value="lore_terminal">Lore Terminal (CLINE Specialization)</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="description">Natural Language Description</label>
+          <textarea id="description" placeholder="Example: Build me a real-time chat application with emoji reactions, typing indicators, and file sharing. Users should be able to create channels and direct messages. Include dark mode and mobile responsiveness."></textarea>
+        </div>
+
+        <div class="input-group">
+          <label for="features">Features (comma-separated)</label>
+          <input type="text" id="features" placeholder="auth, dark-mode, offline-support, pwa, real-time">
+        </div>
+
+        <div class="input-group">
+          <label for="compression">Compression Mode</label>
+          <select id="compression">
+            <option value="iconic">Iconic (87% compression - SCXQ2)</option>
+            <option value="standard">Standard XJSON</option>
+            <option value="hybrid">Hybrid (Icons + XJSON)</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" onclick="generateApp()">
+            🚀 Generate App
+          </button>
+          <button class="btn btn-secondary" onclick="showExamples()">
+            📚 Examples
+          </button>
+        </div>
+
+        <div id="examples-container" style="display:none; margin-top: 2rem;">
+          <h3 style="margin-bottom: 1rem;">Quick Start Examples</h3>
+          <div class="examples">
+            <div class="example-card" onclick="loadExample('chat')">
+              <div class="example-title">💬 Real-Time Chat</div>
+              <div class="example-desc">WebSocket chat with channels, DMs, emoji reactions</div>
+            </div>
+            <div class="example-card" onclick="loadExample('ecommerce')">
+              <div class="example-title">🛒 E-Commerce</div>
+              <div class="example-desc">Product catalog, cart, checkout, payments</div>
+            </div>
+            <div class="example-card" onclick="loadExample('dashboard')">
+              <div class="example-title">📊 Analytics Dashboard</div>
+              <div class="example-desc">Charts, metrics, real-time data, exports</div>
+            </div>
+            <div class="example-card" onclick="loadExample('social')">
+              <div class="example-title">📱 Social Feed</div>
+              <div class="example-desc">Posts, comments, likes, notifications</div>
+            </div>
+            <div class="example-card" onclick="loadExample('lore_terminal')">
+              <div class="example-title">📜 Lore Terminal</div>
+              <div class="example-desc">Interactive archive of wasteland history and faction data</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Features Panel -->
+      <div class="panel">
+        <h2>
+          <span class="icon">✨</span>
+          AI Features
+        </h2>
+
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">🧠</div>
+            <div class="feature-title">Smart Generation</div>
+            <div class="feature-desc">AI understands your description and generates optimal architecture</div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">🎨</div>
+            <div class="feature-title">Auto Design</div>
+            <div class="feature-desc">Beautiful UI components with responsive layouts</div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-title">Performance</div>
+            <div class="feature-desc">Optimized code with lazy loading and caching</div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">🔒</div>
+            <div class="feature-title">Security</div>
+            <div class="feature-desc">Built-in XSS, CSRF protection and sanitization</div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">♿</div>
+            <div class="feature-title">Accessibility</div>
+            <div class="feature-desc">ARIA labels, keyboard nav, screen reader support</div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">📱</div>
+            <div class="feature-title">PWA Ready</div>
+            <div class="feature-desc">Offline support, installable, push notifications</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output Panel -->
+    <div class="panel" id="output-panel" style="display:none;">
+      <h2>
+        <span class="icon">📦</span>
+        Generated Application
+      </h2>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab(event, 'index')">index.html</button>
+        <button class="tab" onclick="switchTab(event, 'sw')">sw.js</button>
+        <button class="tab" onclick="switchTab(event, 'manifest')">manifest.json</button>
+        <button class="tab" onclick="switchTab(event, 'preview')">🎨 Preview</button>
+      </div>
+
+      <div id="tab-index" class="output-tabs active">
+        <div class="code-output">
+          <div class="code-header">
+            <span class="code-title">index.html</span>
+            <button class="copy-btn" onclick="copyCode('index', this)">📋 Copy</button>
+          </div>
+          <pre id="code-index"></pre>
+        </div>
+      </div>
+
+      <div id="tab-sw" class="output-tabs">
+        <div class="code-output">
+          <div class="code-header">
+            <span class="code-title">sw.js</span>
+            <button class="copy-btn" onclick="copyCode('sw', this)">📋 Copy</button>
+          </div>
+          <pre id="code-sw"></pre>
+        </div>
+      </div>
+
+      <div id="tab-manifest" class="output-tabs">
+        <div class="code-output">
+          <div class="code-header">
+            <span class="code-title">manifest.json</span>
+            <button class="copy-btn" onclick="copyCode('manifest', this)">📋 Copy</button>
+          </div>
+          <pre id="code-manifest"></pre>
+        </div>
+      </div>
+
+      <div id="tab-preview" class="output-tabs">
+        <div style="background: var(--bg-secondary); border-radius: 10px; padding: 2rem; min-height: 400px; border: 1px solid var(--border);">
+          <iframe id="preview-frame" style="width: 100%; height: 600px; border: none; border-radius: 10px; background-color: var(--bg-secondary);"></iframe>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="downloadApp()">
+          💾 Download as ZIP
+        </button>
+        <button class="btn btn-secondary" onclick="deployApp()">
+          🚀 Deploy to Netlify
+        </button>
+        <button class="btn btn-secondary" onclick="shareApp()">
+          🔗 Share Link
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Matrix background
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const columns = Math.floor(canvas.width / 20);
+    const drops = Array(columns).fill(0);
+
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(2, 6, 23, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#16f2aa';
+      ctx.font = '14px monospace';
+
+      drops.forEach((y, i) => {
+        const text = String.fromCharCode(0x30A0 + Math.random() * 96);
+        ctx.fillText(text, i * 20, y * 20);
+        if (y * 20 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        else drops[i]++;
+      });
+    }
+
+    setInterval(drawMatrix, 50);
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    // App Builder Logic
+    let generatedApp = {
+      index: '',
+      sw: '',
+      manifest: ''
+    };
+
+    function showExamples() {
+      const container = document.getElementById('examples-container');
+      container.style.display = container.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function loadExample(type) {
+      const examples = {
+        chat: {
+          description: "Build a real-time chat application with WebSocket support. Include user authentication, multiple chat rooms, direct messaging, emoji reactions, typing indicators, and file sharing capabilities. Add online status indicators and message read receipts. Support markdown formatting in messages.",
+          features: "auth, websocket, real-time, file-upload, emoji, dark-mode, pwa"
+        },
+        ecommerce: {
+          description: "Create an e-commerce platform with product catalog, shopping cart, checkout process, and payment integration. Include product search and filters, user reviews and ratings, wishlist, order tracking, and admin dashboard for inventory management. Support multiple payment methods.",
+          features: "auth, cart, payments, search, reviews, admin, responsive, pwa"
+        },
+        dashboard: {
+          description: "Build an analytics dashboard with real-time data visualization using charts and graphs. Include customizable widgets, data export to CSV/PDF, date range filters, comparison metrics, and user role management. Support for multiple data sources and API integrations.",
+          features: "auth, charts, real-time, export, filters, admin, responsive"
+        },
+        social: {
+          description: "Create a social media platform with user profiles, post creation (text, images, videos), comments and replies, likes and reactions, follow/unfollow system, news feed algorithm, notifications, and direct messaging. Include hashtag support and trending topics.",
+          features: "auth, posts, comments, likes, follows, notifications, chat, media-upload, pwa"
+        },
+        lore_terminal: {
+          description: "Construct an interactive lore terminal for the Salt Frontier. It should feature searchable archives of faction histories, character dossiers, creature bestiaries, and maps. Allow users to input queries and retrieve interconnected lore entries. Implement a 'holotape' playback feature for audio logs.",
+          features: "search, database, media-playback, interactive-map, lore-entries, faction-data, character-dossiers"
+        }
+      };
+
+      const example = examples[type];
+      if (example) {
+        document.getElementById('description').value = example.description;
+        document.getElementById('features').value = example.features;
+        document.getElementById('appType').value = type;
+      }
+    }
+
+    async function generateApp() {
+      const description = document.getElementById('description').value;
+      const features = document.getElementById('features').value;
+      const appType = document.getElementById('appType').value;
+      const compression = document.getElementById('compression').value;
+      const appNameInput = appType === 'custom' ? 'Custom XJSON App' : `${appType.charAt(0).toUpperCase() + appType.slice(1)} App`;
+      const appDescriptionInput = description || `A ${appNameInput} generated by CLINE, the Ranger's Scribe.`;
+
+
+      if (!description) {
+        alert('CLINE requires a descriptive input. Please articulate your application\'s purpose.');
+        return;
+      }
+
+      // Show loading state
+      const outputPanel = document.getElementById('output-panel');
+      outputPanel.style.display = 'block';
+      outputPanel.innerHTML = '<div class="loading"><div class="spinner"></div><p>CLINE is synthesizing your application\'s core directives. Stand by for compilation...</p></div>';
+
+      // Simulate AI generation (in production, this would call an AI API)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Generate the app based on description
+      const app = buildXJSONApp(appNameInput, appDescriptionInput, features, appType, compression);
+      generatedApp = app;
+
+      // Restore output panel structure
+      outputPanel.innerHTML = `
+        <h2><span class="icon">📦</span> Generated Application</h2>
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab(event, 'index')">index.html</button>
+          <button class="tab" onclick="switchTab(event, 'sw')">sw.js</button>
+          <button class="tab" onclick="switchTab(event, 'manifest')">manifest.json</button>
+          <button class="tab" onclick="switchTab(event, 'preview')">🎨 Preview</button>
+        </div>
+        <div id="tab-index" class="output-tabs active">
+          <div class="code-output">
+            <div class="code-header">
+              <span class="code-title">index.html</span>
+              <button class="copy-btn" onclick="copyCode('index', this)">📋 Copy</button>
+            </div>
+            <pre id="code-index"></pre>
+          </div>
+        </div>
+        <div id="tab-sw" class="output-tabs">
+          <div class="code-output">
+            <div class="code-header">
+              <span class="code-title">sw.js</span>
+              <button class="copy-btn" onclick="copyCode('sw', this)">📋 Copy</button>
+            </div>
+            <pre id="code-sw"></pre>
+          </div>
+        </div>
+        <div id="tab-manifest" class="output-tabs">
+          <div class="code-output">
+            <div class="code-header">
+              <span class="code-title">manifest.json</span>
+              <button class="copy-btn" onclick="copyCode('manifest', this)">📋 Copy</button>
+            </div>
+            <pre id="code-manifest"></pre>
+          </div>
+        </div>
+        <div id="tab-preview" class="output-tabs">
+          <div style="background: var(--bg-secondary); border-radius: 10px; padding: 2rem; min-height: 400px; border: 1px solid var(--border);">
+            <iframe id="preview-frame" style="width: 100%; height: 600px; border: none; border-radius: 10px; background-color: var(--bg-secondary);"></iframe>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="downloadApp()">💾 Download as ZIP</button>
+          <button class="btn btn-secondary" onclick="deployApp()">🚀 Deploy to Netlify</button>
+          <button class="btn btn-secondary" onclick="shareApp()">🔗 Share Link</button>
+        </div>
+      `;
+
+      // Display generated code
+      document.getElementById('code-index').textContent = app.index;
+      document.getElementById('code-sw').textContent = app.sw;
+      document.getElementById('code-manifest').textContent = app.manifest;
+
+      // Generate preview
+      generatePreview(app);
+
+      outputPanel.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function buildXJSONApp(appName, description, featuresStr, appType, compression) {
+      const features = featuresStr.split(',').map(f => f.trim()).filter(f => f);
+      const useIconic = compression === 'iconic' || compression === 'hybrid';
+
+      // Generate manifest.json
+      const manifest = generateManifest(appName, description, features, appType, useIconic);
+
+      // Generate sw.js
+      const sw = generateServiceWorker(appName, features, useIconic);
+
+      // Generate index.html
+      const index = generateIndexHTML(appName, appType, useIconic);
+
+      return { index, sw, manifest };
+    }
+
+    function generateManifest(appName, appDescription, features, appType, useIconic) {
+      const base = {
+        "xjson_version": "7.0",
+        "app_name": appName,
+        "description": appDescription,
+        "compression": useIconic ? "iconic-scxq2" : "standard",
+        "state": {
+          "user": null,
+          "authenticated": false,
+          "theme": "dark",
+          "loading": false
+        },
+        "routes": [
+          { "path": "/", "name": "home", "component": "HomePage" },
+          { "path": "/login", "name": "login", "component": "LoginPage" }
+        ],
+        "components": {
+          "LoginPage": {
+            "title": "Access Terminal",
+            "elements": [
+              { "type": "input", "inputType": "text", "placeholder": "User ID" },
+              { "type": "input", "inputType": "password", "placeholder": "Authentication Key" },
+              { "type": "button", "text": "Authenticate" }
+            ]
+          },
+          "HomePage": {
+            "title": `Welcome to ${appName}`,
+            "elements": [
+              { "type": "paragraph", "text": `This is the primary operational interface for your new ${appName}.` },
+              { "type": "paragraph", "text": "Navigate through the system using the integrated controls." }
+            ]
+          }
+        },
+        "css_variables": {
+          "--primary": "#16f2aa",
+          "--secondary": "#38bdf8",
+          "--bg": "#020617",
+          "--text": "#e5f2ff"
+        }
+      };
+
+      // Add features
+      if (features.includes('auth')) {
+        base.state.token = null;
+        base.routes.push({ "path": "/dashboard", "name": "dashboard", "component": "DashboardPage", "guard": "requireAuth" });
+        base.components.DashboardPage = {
+          "title": "Operational Dashboard",
+          "elements": [
+            { "type": "paragraph", "text": "Centralized control panel with real-time system metrics." },
+            { "type": button, "text": "View Logs" }
+          ]
+        };
+      }
+
+      if (features.includes('dark-mode')) {
+        base.state.darkMode = true;
+      }
+
+      if (features.includes('pwa')) {
+        base.pwa = {
+          "name": appName,
+          "short_name": appName.substring(0, 12),
+          "theme_color": "#16f2aa",
+          "background_color": "#020617"
+        };
+      }
+
+      // App-specific additions
+      if (appType === 'chat') {
+        base.state.messages = [];
+        base.state.channels = [];
+        base.state.activeChannel = null;
+        base.websocket = {
+          "url": "wss://api.example.com/chat",
+          "reconnect": true
+        };
+        base.routes.push({ "path": "/chat", "name": "chat", "component": "ChatWindow" });
+        base.routes.push({ "path": "/channels", "name": "channels", "component": "ChannelList" });
+        base.components.HomePage.elements = [{ "type": "paragraph", "text": "Welcome to your secure communications network. Select a channel or direct message to begin transmission." }];
+        base.components.ChatWindow = {
+          "title": "Secure Comms Relay",
+          "elements": [
+            { "type": "list", "items": ["Incoming Transmission: Hello.", "Outgoing: Acknowledged. Status report?"] },
+            { "type": "input", "placeholder": "Enter message..." },
+            { "type": "button", "text": "Send Transmission" }
+          ]
+        };
+        base.components.ChannelList = {
+          "title": "Available Frequencies",
+          "elements": [
+            { "type": "list", "items": ["#General", "#Ops_Command", "#Intel_Brief"] },
+            { "type": "button", "text": "Join Frequency" }
+          ]
+        };
+      } else if (appType === 'ecommerce') {
+        base.state.products = [];
+        base.state.cart = { "items": [], "total": 0 };
+        base.routes.push({ "path": "/products", "name": "products", "component": "ProductList" });
+        base.routes.push({ "path": "/cart", "name": "cart", "component": "CartView" });
+        base.routes.push({ "path": "/checkout", "name": "checkout", "component": "CheckoutPage" });
+        base.components.HomePage.elements = [{ "type": "paragraph", "text": "Browse our curated selection of post-scarcity essentials." }];
+        base.components.ProductList = {
+          "title": "Item Catalog",
+          "elements": [
+            { "type": "paragraph", "text": "Displaying available merchandise." },
+            { "type": "list", "items": ["Rad-X Suppressant", "Stimpak (Mk.III)", "Plasma Cartridge (x50)"] },
+            { "type": "button", "text": "View Details" }
+          ]
+        };
+        base.components.CartView = {
+          "title": "Salvage Haul",
+          "elements": [
+            { "type": "paragraph", "text": "Your current acquisitions." },
+            { "type": "list", "items": ["1x Stimpak", "2x Purified Water"] },
+            { "type": "button", "text": "Proceed to Exchange" }
+          ]
+        };
+        base.components.CheckoutPage = {
+          "title": "Exchange Protocol",
+          "elements": [
+            { "type": "paragraph", "text": "Confirm acquisition details." },
+            { "type": "input", "placeholder": "Shipping Address (Sector, Quadrant)" },
+            { "type": "button", "text": "Finalize Transaction" }
+          ]
+        };
+      } else if (appType === 'dashboard') {
+        base.state.metrics = {};
+        base.state.widgets = [];
+        base.routes.push({ "path": "/analytics", "name": "analytics", "component": "AnalyticsPage" });
+        base.components.HomePage.elements = [{ "type": "paragraph", "text": "Overview of system telemetry and operational statistics." }];
+        base.components.AnalyticsPage = {
+          "title": "System Diagnostics Report",
+          "elements": [
+            { "type": "paragraph", "text": "Visualizing crucial operational data streams." },
+            { "type": "div", "content": "<!-- Chart Placeholder -->" },
+            { "type": "button", "text": "Generate Report" }
+          ]
+        };
+      } else if (appType === 'lore_terminal') {
+        base.state.currentEntry = null;
+        base.state.searchResults = [];
+        base.state.holotapePlaying = false;
+        base.routes.push({ "path": "/archive", "name": "archive", "component": "LoreArchive" });
+        base.routes.push({ "path": "/factions", "name": "factions", "component": "FactionDatabase" });
+        base.routes.push({ "path": "/holotapes", "name": "holotapes", "component": "HolotapePlayer" });
+        base.components.HomePage.elements = [{ "type": "paragraph", "text": "Welcome, Scribe. Access the integrated CLINE archive for all known Wasteland lore." }];
+        base.components.LoreArchive = {
+          "title": "CLINE Lore Archive",
+          "elements": [
+            { "type": "input", "placeholder": "Search archive (e.g., 'Brotherhood of Steel', 'Vault 76')" },
+            { "type": "button", "text": "Query Archive" },
+            { "type": "list", "items": ["Entry: Pre-War Technology", "Entry: The Great War", "Entry: Scorched Plague"] },
+            { "type": "paragraph", "text": "Database entries are cross-referenced by SCXQ2 compression algorithm." }
+          ]
+        };
+        base.components.FactionDatabase = {
+          "title": "Faction Dossiers",
+          "elements": [
+            { "type": "paragraph", "text": "Detailed reports on known Wasteland organizations." },
+            { "type": "list", "items": ["The Enclave", "Responders", "Free States", "Cult of the Mothman"] },
+            { "type": "button", "text": "View Dossier" }
+          ]
+        };
+        base.components.HolotapePlayer = {
+          "title": "Holotape Playback Unit",
+          "elements": [
+            { "type": "paragraph", "text": "Initiating audio log playback." },
+            { "type": "div", "content": "<!-- Audio Player UI Placeholder -->" },
+            { "type": "button", "text": "Play Holotape" },
+            { "type": "button", "text": "Stop Playback" }
+          ]
+        };
+      }
+
+      return JSON.stringify(base, null, 2);
+    }
+
+    function generateServiceWorker(appName, features, useIconic) {
+      return `// XJSON Runtime Engine v7.0 - CLINE Integration Active
+// Application Name: ${appName}
+// Compression Mode: ${useIconic ? 'Iconic (SCXQ2)' : 'Standard'}
+class XJSONRuntime {
+  constructor() {
+    this.state = {};
+    this.components = {};
+    this.routes = [];
+    this.manifest = null;
+    this.rootElementId = 'xjson-root'; // Define root element ID
+  }
+
+  async boot(manifestPath = '/manifest.json') {
+    try {
+      const response = await fetch(manifestPath);
+      if (!response.ok) throw new Error('Manifest not found or inaccessible.');
+      this.manifest = await response.json();
+
+      // Initialize state with proxy for reactivity
+      this.state = new Proxy(this.manifest.state || {}, {
+        set: (target, prop, value) => {
+          target[prop] = value;
+          console.log(\`State updated: \${prop} = \${JSON.stringify(value)}\`);
+          this.render(); // Re-render on state change
+          return true;
+        }
+      });
+
+      // Load components from manifest
+      this.components = this.manifest.components || {};
+
+      // Setup router
+      this.setupRouter(this.manifest.routes || []);
+
+      // Initial render based on current URL
+      this.render();
+
+      console.log('XJSON App Booted ✅ - CLINE directives loaded.');
+      document.dispatchEvent(new CustomEvent('xjson_booted')); // Notify if needed
+    } catch (error) {
+      console.error('XJSON Boot Failure: ', error);
+      document.getElementById(this.rootElementId).innerHTML = '<div style="color:red;">Error: Application failed to load. Check manifest.</div>';
+    }
+  }
+
+  setupRouter(routes) {
+    this.routes = routes;
+    window.addEventListener('popstate', () => this.render());
+    // Initial render for current path
+    // this.render(); // Moved to boot for initial load consistency
+  }
+
+  render() {
+    const root = document.getElementById(this.rootElementId);
+    if (!root) {
+      console.warn('XJSON root element not found. Cannot render.');
+      return;
+    }
+
+    const currentPath = window.location.pathname;
+    const route = this.routes.find(r => r.path === currentPath) || this.routes.find(r => r.name === 'home'); // Fallback to home
+
+    if (route && route.component) {
+      root.innerHTML = this.renderComponent(route.component);
+    } else {
+      root.innerHTML = \`<div class="xjson-component">Error: No component found for path '\${currentPath}'.</div>\`;
+    }
+  }
+
+  renderComponent(componentName) {
+    const componentData = this.components[componentName];
+    if (!componentData) {
+      return \`<div class="xjson-component">Error: Component definition for '\${componentName}' not found in manifest.</div>\`;
+    }
+
+    let html = \`
+      <div class="xjson-component" id="\${componentName.toLowerCase()}-component">
+        <h2>\${componentData.title || componentName}</h2>
+    \`;
+
+    if (componentData.description) {
+      html += \`<p>\${componentData.description}</p>\`;
+    }
+
+    if (componentData.elements && Array.isArray(componentData.elements)) {
+      componentData.elements.forEach(el => {
+        if (el.type === 'paragraph') {
+          html += \`<p>\${el.text}</p>\`;
+        } else if (el.type === 'button') {
+          html += \`<button class="btn btn-secondary">\${el.text}</button>\`;
+        } else if (el.type === 'input') {
+          html += \`<input type="\${el.inputType || 'text'}" placeholder="\${el.placeholder || ''}" class="xjson-input" />\`;
+        } else if (el.type === 'list' && Array.isArray(el.items)) {
+          html += \`<ul>\`;
+          el.items.forEach(item => html += \`<li>\${item}</li>\`);
+          html += \`</ul>\`;
+        } else if (el.type === 'div' && el.content) {
+          html += \`<div>\${el.content}</div>\`;
+        }
+        // Future expansion: Add more element types here
+      });
+    }
+
+    html += \`</div>\`;
+    return html;
+  }
+
+  navigate(path) {
+    if (window.location.pathname !== path) { // Prevent redundant history entries
+      window.history.pushState({}, '', path);
+      this.render();
+    }
+  }
+}
+
+// Global instance of the XJSON Runtime
+const app = new XJSONRuntime();
+app.boot();
+
+// CLINE-specific runtime enhancements
+${features.includes('pwa') ? `
+// Service Worker for PWA (PRIME-SW.js integration)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw-cache.js').then(reg => {
+    console.log('PWA Service Worker registered for offline archival operations.');
+  }).catch(err => {
+    console.error('PWA Service Worker registration failed:', err);
+  });
+}
+` : ''}
+
+${features.includes('websocket') ? `
+// WebSocket connection for real-time data streams (KLH Backend compatible)
+let ws;
+function connectWebSocket() {
+  const wsUrl = app.manifest.websocket?.url || 'wss://localhost:8080';
+  ws = new WebSocket(wsUrl);
+
+  ws.onopen = () => {
+    console.log('WebSocket connection established. Data stream active.');
+  };
+
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    // Process incoming data for state updates or component re-rendering
+    console.log('WebSocket message received:', data);
+    // Example: app.state.messages.push(data);
+  };
+
+  ws.onclose = (event) => {
+    console.warn('WebSocket connection closed:', event.code, event.reason);
+    if (app.manifest.websocket?.reconnect) {
+      console.log('Attempting to re-establish WebSocket connection...');
+      setTimeout(connectWebSocket, 5000); // Attempt to reconnect after 5 seconds
+    }
+  };
+
+  ws.onerror = (error) => {
+    console.error('WebSocket error detected:', error);
+    ws.close();
+  };
+}
+
+// Connect WebSocket only if manifest defines it
+if (app.manifest && app.manifest.websocket) {
+  app.boot().then(() => connectWebSocket()); // Ensure manifest is loaded before connecting
+}
+
+` : ''}
+`;
+    }
+
+    function generateIndexHTML(appName, appType, useIconic) {
+      const navLinks = {
+        'chat': [{ path: '/', label: 'Home' }, { path: '/chat', label: 'Chat' }, { path: '/channels', label: 'Channels' }, { path: '/login', label: 'Login' }],
+        'ecommerce': [{ path: '/', label: 'Home' }, { path: '/products', label: 'Products' }, { path: '/cart', label: 'Cart' }, { path: '/login', label: 'Login' }],
+        'dashboard': [{ path: '/', label: 'Home' }, { path: '/analytics', label: 'Analytics' }, { path: '/dashboard', label: 'Dashboard' }, { path: '/login', label: 'Login' }],
+        'lore_terminal': [{ path: '/', label: 'Archive Index' }, { path: '/archive', label: 'Lore Archive' }, { path: '/factions', label: 'Faction Data' }, { path: '/holotapes', label: 'Holotapes' }, { path: '/login', label: 'Access' }],
+        'custom': [{ path: '/', label: 'Home' }, { path: '/login', label: 'Login' }], // Default for custom
+        'default': [{ path: '/', label: 'Home' }, { path: '/login', label: 'Login' }]
+      };
+
+      const links = navLinks[appType] || navLinks['default'];
+      const navHtml = links.map(link => `<a href="${link.path}" onclick="app.navigate('${link.path}'); return false;">${link.label}</a>`).join('\n');
+
+
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XJSON ${appName}</title>
+
+  <style>
+    /* BLOCK 1: Desktop Layout */
+    @media (min-width: 1024px) {
+      body {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        grid-template-rows: 60px 1fr;
+        height: 100vh;
+        margin: 0;
+      }
+    }
+
+    /* BLOCK 2: Tablet Layout */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      body {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+      }
+    }
+
+    /* BLOCK 3: Mobile Layout */
+    @media (max-width: 767px) {
+      body {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+      }
+    }
+
+    /* BLOCK 4: Runtime & Theme */
+    :root {
+      --primary: #16f2aa;
+      --secondary: #38bdf8;
+      --bg: #020617;
+      --text: #e5f2ff;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    #xjson-root {
+      padding: 2rem;
+      grid-column: 2 / 3; /* For desktop layout */
+      grid-row: 2 / 3; /* For desktop layout */
+    }
+
+    .xjson-header {
+        grid-column: 1 / -1; /* Spans all columns in desktop */
+        grid-row: 1 / 2; /* Top row in desktop */
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--text);
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .xjson-nav {
+      grid-column: 1 / 2; /* Left column in desktop */
+      grid-row: 2 / 3; /* Second row in desktop */
+      background: var(--bg-primary);
+      border-right: 1px solid var(--border);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    @media (max-width: 1023px) { /* Tablet and Mobile */
+        .xjson-nav {
+            flex-direction: row;
+            justify-content: space-around;
+            border-right: none;
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+        }
+    }
+
+    .xjson-nav a {
+      color: var(--accent-secondary);
+      text-decoration: none;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      transition: background 0.2s ease;
+      display: block; /* For vertical nav */
+    }
+    @media (max-width: 1023px) { /* Tablet and Mobile */
+        .xjson-nav a {
+            display: inline-block; /* For horizontal nav */
+            padding: 0.5rem 0.75rem;
+        }
+    }
+
+    .xjson-nav a:hover {
+      background: rgba(56,189,248,0.1);
+    }
+
+    /* Generated Component Styles (for preview) */
+    .xjson-component {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2rem;
+      margin-bottom: 1rem;
+    }
+    .xjson-component h2 {
+      color: var(--accent-primary);
+      margin-bottom: 1rem;
+      font-size: 1.5em;
+    }
+    .xjson-component p {
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+      line-height: 1.6;
+    }
+    .xjson-input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--text-primary);
+      font-family: 'Courier New', monospace;
+    }
+    .xjson-component .btn-secondary { /* Re-use builder's btn-secondary style */
+      background: var(--glass);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 0.75rem 1.5rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+    .xjson-component .btn-secondary:hover {
+      border-color: var(--accent-primary);
+      background: rgba(22, 242, 170, 0.1);
+    }
+    .xjson-component ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 1rem 0;
+    }
+    .xjson-component li {
+      background: var(--bg-primary);
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-family: 'Courier New', monospace;
+    }
+    .xjson-component li:last-child {
+      border-bottom: none;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="xjson-header">${appName} <span style="font-size:0.8em; opacity:0.7;">(CLINE Build)</span></div>
+  <nav class="xjson-nav">
+    ${navHtml}
+  </nav>
+  <div id="xjson-root">
+    <!-- XJSON Application will render here -->
+  </div>
+  <script src="/sw.js" type="module"></script>
+  <script>
+    // Ensure app is globally accessible if sw.js is type="module"
+    // The app.boot() is called in sw.js, and it handles the initial render.
+    // If you need direct app control, ensure app is globally exposed in sw.js or imported.
+    // For preview, we'll ensure the iframe has access to 'app'
+  </script>
+</body>
+</html>`;
+    }
+
+    function switchTab(event, tab) {
+      // Remove active class from all tabs
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.output-tabs').forEach(t => t.classList.remove('active'));
+
+      // Add active class to selected tab
+      event.target.classList.add('active');
+      document.getElementById('tab-' + tab).classList.add('active');
+    }
+
+    function copyCode(type, buttonElement) {
+      const code = generatedApp[type];
+      navigator.clipboard.writeText(code);
+      buttonElement.textContent = '✅ Copied!';
+      setTimeout(() => {
+        buttonElement.textContent = '📋 Copy';
+      }, 2000);
+    }
+
+    function generatePreview(app) {
+      const iframe = document.getElementById('preview-frame');
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+
+      // Wrap the generated SW content in a <script> tag for the iframe
+      const swScript = `<script type="module">${app.sw}<\/script>`;
+
+      // Replace the script tag in index.html with the actual SW content
+      const indexHtmlWithInlineSw = app.index.replace('<script src="/sw.js" type="module"></script>', swScript);
+
+      doc.open();
+      doc.write(indexHtmlWithInlineSw);
+      doc.close();
+
+      // Ensure 'app' is accessible within the iframe for navigation
+      iframe.contentWindow.onload = () => {
+        if (iframe.contentWindow.app) {
+          console.log('XJSON app instance available in iframe.');
+          // You can call app.navigate from the main window for testing if needed
+          // For now, let the app manage its own navigation via onclicks
+        } else {
+          console.warn('XJSON app instance not found in iframe after load.');
+        }
+      };
+    }
+
+    function downloadApp() {
+      // Initiate data transfer protocol for local storage.
+      alert('CLINE initiates data packaging. Download functionality is queued for ZIP compression of manifest.json, sw.js, and index.html.');
+      // In a live system, this would create a ZIP file from generatedApp.index, .sw, .manifest
+    }
+
+    function deployApp() {
+      // Initiating external deployment protocols.
+      alert('CLINE establishing secure channel for Netlify deployment. This requires MX2LM authorization for external network interaction.');
+    }
+
+    function shareApp() {
+      // Generating secure link.
+      alert('CLINE compiling shareable access key. A unique URL will be generated for your application once deployed.');
+    }
+  </script>
+</body>
+</html>

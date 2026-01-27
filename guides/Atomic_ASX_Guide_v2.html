@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Atomic ASX Guide v2 — SCX + Reactive + Splash</title>
+<style>
+/* Neon holotape vibe */
+:root{
+  --glow:#00ff99;
+  --aqua:#00ffff;
+  --bg:#000;
+}
+html,body{background:var(--bg);color:var(--glow);font-family:'Courier New',monospace;margin:0}
+nav{position:fixed;top:0;left:0;width:300px;height:100vh;overflow:auto;
+    border-right:3px solid var(--glow);padding:1.25rem;box-shadow:3px 0 20px rgba(0,255,153,.35);}
+nav h2{margin:0 0 .75rem 0;text-align:center}
+nav a{display:block;color:var(--glow);text-decoration:none;margin:.45rem 0;padding:.35rem;border-left:3px solid transparent}
+nav a:hover{border-left-color:var(--glow);background:rgba(0,255,153,.10);padding-left:.65rem}
+main{margin-left:320px;padding:2rem;max-width:1100px}
+h1,h2,h3{color:var(--glow);text-shadow:0 0 10px var(--glow)}
+h1{border-bottom:3px solid var(--glow);padding-bottom:.75rem}
+.card{border:2px solid var(--glow);border-radius:12px;padding:1rem;margin:1rem 0;background:rgba(0,255,153,.06);box-shadow:0 0 15px rgba(0,255,153,.25)}
+pre{background:#001100;border:1px solid var(--glow);padding:1rem;border-radius:8px;overflow:auto}
+code{background:#002200;color:#22c55e;padding:.1rem .25rem;border-radius:4px}
+.badge{display:inline-block;background:var(--glow);color:#000;font-weight:bold;border-radius:4px;padding:.2rem .5rem;margin-right:.35rem}
+.warning{border-left:4px solid #ff9900;background:rgba(255,153,0,.1)}
+.success{border-left:4px solid #22c55e;background:rgba(34,197,94,.08)}
+.ai-note{border:2px solid var(--aqua);background:rgba(0,255,255,.08);border-radius:8px;padding:1rem}
+.ai-note::before{content:"🤖  AI NOTE: ";color:var(--aqua);font-weight:bold}
+footer{border-top:2px solid var(--glow);margin-top:3rem;padding:2rem;text-align:center;color:#22c55e}
+img.splash{width:220px;max-width:50%;display:block;margin:0 auto 1rem auto;filter:drop-shadow(0 0 12px var(--aqua))}
+.hr{border:0;border-top:2px solid var(--glow);margin:2rem 0;box-shadow:0 0 10px var(--glow)}
+small{opacity:.8}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid var(--glow);padding:.6rem;text-align:left}
+th{background:rgba(0,255,153,.15)}
+.kbd{border:1px solid var(--glow);padding:.05rem .35rem;border-radius:4px;background:#002200}
+</style>
+</head>
+<body>
+<nav>
+  <h2>🎮 Atomic ASX v2</h2>
+  <a href="#whats-new">✨ What’s New</a>
+  <a href="#mission">🎯 Mission</a>
+  <a href="#splash">🌌 Boot Splash</a>
+  <a href="#binding">📡 Reactive Binding</a>
+  <a href="#scx">🧠 SCX Grammar</a>
+  <a href="#cipher">🔑 Cipher & Rotation</a>
+  <a href="#effects">⚡ Effects + SCX</a>
+  <a href="#example">💡 Live Demo Markup</a>
+  <a href="#best">✅ Best Practices</a>
+  <a href="#footer">ℹ️ Metadata</a>
+</nav>
+
+<main>
+  <h1>⚛️ Atomic ASX Guide v2 — SCX + Reactive + Splash</h1>
+  <p class="ai-note">This guide upgrades the Atomic Holotape format to include a branded splash boot, a zero-dependency reactive binding system, and inline SCX execution for effects and control flow.</p>
+
+  <section id="whats-new" class="card success">
+    <h2>✨ What’s New in v2</h2>
+    <ul>
+      <li><span class="badge">NEW</span> <strong>Boot Splash</strong> with playful text and fade-in.</li>
+      <li><span class="badge">NEW</span> <strong>Reactive data-binding</strong> via <code>data-bind="path.to.state"</code>.</li>
+      <li><span class="badge">NEW</span> <strong>SCX inline strings</strong> executed inside <code>$effects.run</code>.</li>
+      <li><span class="badge">READY</span> <strong>Cipher map integration</strong> + rotating key policy.</li>
+    </ul>
+  </section>
+
+  <section id="mission" class="card">
+    <h2>🎯 Mission</h2>
+    <p>ASX is a JSON-first, framework-free runtime. One file ships an app: <code>$state</code>, <code>$routes</code>, <code>$effects</code>, plus optional <code>$cipher</code>. The engine interprets declarative JSON + SCX strings at raw JS speed.</p>
+  </section>
+
+  <section id="splash" class="card">
+    <h2>🌌 Boot Splash (Fake Boot)</h2>
+    <img src="https://joeslist.refluxedpc.com/friendly-bot.png" class="splash" alt="Micronaut Splash">
+    <p class="ai-note"><em>“We are already booted — we just want to look cool like the other runtimes that have to boot..”</em></p>
+    <pre><code>&lt;div id="splash"&gt;
+  &lt;img src="friendly-bot.png" alt="Micronaut Boot"&gt;
+  &lt;p&gt;We are already booted — we just want to look cool like the other runtimes that have to boot..&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+setTimeout(()=>{ /* fade-out + show main */ },3500);
+&lt;/script&gt;</code></pre>
+    <p><small>Tip: keep splash &lt; 4 seconds. Use CSS <code>@keyframes</code> for subtle float/glow.</small></p>
+  </section>
+
+  <section id="binding" class="card">
+    <h2>📡 Reactive Binding</h2>
+    <p>Bind DOM elements directly to <code>$state</code> paths — no framework required.</p>
+    <pre><code>&lt;strong&gt;Score:&lt;/strong&gt; &lt;span data-bind="user.score"&gt;&lt;/span&gt;
+&lt;button id="add"&gt;Add +5&lt;/button&gt;</code></pre>
+    <pre><code>// Engine snippet
+function updateBindings(state){
+  document.querySelectorAll("[data-bind]").forEach(el=&gt;{
+    const path = el.getAttribute("data-bind").split(".");
+    let val = state; for(const p of path){ if(val &amp;&amp; p in val) val = val[p]; }
+    el.textContent = val;
+  });
+}</code></pre>
+    <p><strong>Why:</strong> Declarative, resilient, very small. Works offline and scales.</p>
+  </section>
+
+  <section id="scx" class="card">
+    <h2>🧠 SCX Grammar (Inline Control Flow)</h2>
+    <table>
+      <tr><th>Token</th><th>Meaning</th><th>JS Equivalent</th></tr>
+      <tr><td><code>(?)</code></td><td>if</td><td><code>if (cond)</code></td></tr>
+      <tr><td><code>(∴)</code></td><td>then</td><td>then block</td></tr>
+      <tr><td><code>(¬)</code></td><td>else</td><td><code>else</code></td></tr>
+      <tr><td><code>(⊕)</code></td><td>increment</td><td><code>x++ / += 1</code></td></tr>
+      <tr><td><code>(💬&gt;)</code></td><td>message</td><td>notify/log</td></tr>
+    </table>
+    <pre><code>// Inside $effects.run
+"(?) user.score ≥ 100 (∴) (💬&gt;) '🎉 Level up!' (⊕) user.score"</code></pre>
+    <p><small>SCX strings are tokenized and executed in a sandbox — only whitelisted verbs/operators are allowed.</small></p>
+  </section>
+
+  <section id="cipher" class="card">
+    <h2>🔑 Cipher & Key Rotation</h2>
+    <p>Session-specific dialects via a <code>CipherMap</code>. Pair with a time-based key for automatic rotation.</p>
+    <pre><code>// Example map (static demo)
+const CipherMap = { "(?)":"if", "(∴)":"then", "(⊕)":"increment", "(💬&gt;)":"message" };</code></pre>
+    <pre><code>// Rotation policy (pseudocode)
+derivedKey = SHA256(baseKey + timeSegment + salt);
+CipherMap = makeMapFromKey(derivedKey);</code></pre>
+    <p class="warning">Do not eval arbitrary strings. Always parse SCX tokens and dispatch to safe handlers.</p>
+  </section>
+
+  <section id="effects" class="card">
+    <h2>⚡ Effects + SCX Example</h2>
+    <pre><code>{
+  "$state": { "user": { "score": 95 } },
+  "$effects": [
+    { "when": "user.score",
+      "run": "(?) user.score ≥ 100 (∴) (💬&gt;) '🎉 Level up!' (⊕) user.score" }
+  ]
+}</code></pre>
+  </section>
+
+  <section id="example" class="card">
+    <h2>💡 Live Demo Markup (Splash + Reactive)</h2>
+    <p>Save as <code>atomic-asx-runtime.html</code> in the same folder as <code>friendly-bot.png</code>.</p>
+    <pre><code>&lt;!-- See runtime v3 delivered in chat: splash fades, then reactive UI with data-bind --&gt;</code></pre>
+  </section>
+
+  <section id="best" class="card">
+    <h2>✅ Best Practices</h2>
+    <ul>
+      <li>Initialize all state; avoid undefined paths.</li>
+      <li>Keep SCX verbs minimal and explicit.</li>
+      <li>Keep splash short; fade to UI promptly.</li>
+      <li>Use key rotation for any secret-bearing fields.</li>
+      <li>Never use <code>eval</code>; only parse whitelisted tokens.</li>
+    </ul>
+  </section>
+
+  <section id="footer">
+    <div class="hr"></div>
+    <footer>
+      <p><strong>Atomic ASX Guide v2</strong></p>
+      <p>Engine: Reactive SCX Core • Security: Rotating Cipher Ready</p>
+      <p><small>Last Updated: November 2025 • Micronaut Systems</small></p>
+    </footer>
+  </section>
+</main>
+</body>
+</html>

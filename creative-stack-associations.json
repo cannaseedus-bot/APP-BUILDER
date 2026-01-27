@@ -1,0 +1,319 @@
+{
+  "@context": "xjson://assoc/creative_stack/v1",
+  "@n": "ASSOCIATION_PACK_WEB_APP_GAME_ATOMIC",
+  "@d": "Word-association clusters for websites, apps, games, builders, designers, UI, math, science, theory, atomic ASX blocks, and the ASX stack.",
+  "@version": "1.0.0",
+
+  "clusters": {
+    "websites": {
+      "nouns": ["site","page","layout","section","header","footer","navigation","menu","link","content","article","blog","landing","dashboard","portal"],
+      "verbs": ["browse","scroll","click","navigate","load","render","deploy","publish","update","optimize"],
+      "concepts": ["responsive","interactive","static","dynamic","accessible","fast","lightweight","minimal","immersive"]
+    },
+
+    "apps": {
+      "nouns": ["app","screen","module","feature","workflow","notification","session","profile","settings","dashboard","widget"],
+      "verbs": ["tap","swipe","launch","install","update","sync","authenticate","configure","share"],
+      "concepts": ["mobile","native","hybrid","offline-first","real-time","user-centric","performant"]
+    },
+
+    "games": {
+      "nouns": ["game","level","map","quest","mission","score","health","inventory","character","enemy","boss","loot","HUD","world","arena"],
+      "verbs": ["play","explore","attack","defend","build","upgrade","spawn","respawn","level-up","craft","aim"],
+      "concepts": ["immersive","replayable","balanced","challenging","cooperative","competitive","procedural","sandbox"]
+    },
+
+    "builder": {
+      "nouns": ["builder","editor","studio","toolkit","palette","template","blueprint","schema","scaffold","component","block","asset"],
+      "verbs": ["create","drag","drop","assemble","configure","wire","connect","generate","export","clone","refactor"],
+      "concepts": ["modular","reusable","composable","visual","no-code","low-code","automated"]
+    },
+
+    "designer": {
+      "nouns": ["designer","mockup","wireframe","prototype","style-guide","pattern","token","brand","layout","grid"],
+      "verbs": ["design","sketch","align","space","highlight","refine","iterate","prototype","animate"],
+      "concepts": ["aesthetic","consistent","intuitive","legible","high-contrast","minimal","expressive"]
+    },
+
+    "user_interface": {
+      "nouns": ["interface","button","card","form","input","label","tooltip","dialog","modal","navigation","sidebar","tab","grid"],
+      "verbs": ["click","hover","focus","submit","cancel","confirm","toggle","expand","collapse"],
+      "concepts": ["intuitive","discoverable","responsive","accessible","ergonomic","clutter-free","guided"]
+    },
+
+    "math": {
+      "nouns": ["number","vector","matrix","function","variable","equation","graph","limit","derivative","integral"],
+      "verbs": ["calculate","compute","solve","derive","integrate","differentiate","approximate","optimize"],
+      "concepts": ["discrete","continuous","linear","non-linear","probabilistic","deterministic","convergent"]
+    },
+
+    "science": {
+      "nouns": ["experiment","hypothesis","dataset","observation","measure","model","system","signal"],
+      "verbs": ["observe","measure","test","validate","falsify","simulate","analyze","correlate"],
+      "concepts": ["empirical","reproducible","robust","noisy","stable","emergent"]
+    },
+
+    "theory": {
+      "nouns": ["theory","framework","model","axiom","principle","pattern","abstraction"],
+      "verbs": ["generalize","formalize","prove","derive","unify","abstract","reason"],
+      "concepts": ["elegant","minimal","coherent","consistent","predictive"]
+    },
+
+    "out_of_the_box": {
+      "nouns": ["pattern","anomaly","motif","sequence","block","chunk","template","loop","grid"],
+      "verbs": ["reframe","recombine","remix","shuffle","permute","zoom-out","zoom-in","cluster"],
+      "concepts": ["unconventional","unexpected","emergent","fractal","recursive","generative","modular"]
+    },
+
+    "atomic_asx_blocks": {
+      "who": ["agent","user","player","builder","designer","admin","client","server","shard","micronaut","model"],
+      "what": ["block","tape","schema","world","HUD","component","page","app","game","token","dataset","checkpoint"],
+      "where": ["shard","hive","page","viewport","grid","panel","layer","fold","zone","route","endpoint"],
+      "how": ["algorithm","pipeline","routine","loop","rule","policy","pattern","grammar","protocol"],
+      "why": ["goal","intent","objective","outcome","reward","metric","score","utility","purpose"]
+    },
+
+    "xjson": {
+      "nouns": ["xjson","schema","node","field","attribute","key","value","fold","tape","manifest","pipeline"],
+      "verbs": ["encode","parse","validate","transform","serialize","compress","route","hydrate"],
+      "concepts": ["structured","nested","atomic","declarative","transport-native"]
+    },
+
+    "kuhul": {
+      "nouns": ["kuhul","opcode","glyph","kernel","scene","vector","path","lattice","runtime"],
+      "verbs": ["execute","project","entangle","compress","expand","render","simulate"],
+      "concepts": ["symbolic","spatial","quantum-like","SVG-native","3D-aware"]
+    },
+
+    "xcfe": {
+      "nouns": ["xcfe","control-vector","variable-vector","phase","flow","state","transition","branch"],
+      "verbs": ["route","gate","switch","branch","merge","schedule","escalate","resolve"],
+      "concepts": ["causal","deterministic","vectorized","compositional","layered"]
+    },
+
+    "html": {
+      "nouns": ["element","tag","div","span","section","header","footer","article","link","form","input"],
+      "verbs": ["mark-up","nest","structure","embed","link","wrap"],
+      "concepts": ["semantic","hierarchical","accessible"]
+    },
+
+    "css": {
+      "nouns": ["selector","class","rule","property","variable","token","theme"],
+      "verbs": ["style","align","position","animate","transition","layout"],
+      "concepts": ["responsive","atomic","utility-based","themable","composable"]
+    }
+  },
+
+  "@unigram": [
+    "site","page","layout","section","header","footer","navigation","menu","link","content",
+    "article","blog","landing","dashboard","portal",
+    "browse","scroll","click","navigate","load","render","deploy","publish","update","optimize",
+    "responsive","interactive","static","dynamic","accessible","fast","lightweight","minimal","immersive",
+    "app","screen","module","feature","workflow","notification","session","profile","settings",
+    "widget","tap","swipe","launch","install","sync","authenticate","configure","share","native","hybrid",
+    "game","level","map","quest","mission","score","health","inventory","character","enemy","boss","loot",
+    "hud","world","arena","play","explore","attack","defend","build","upgrade","spawn","respawn","craft","aim",
+    "builder","editor","studio","toolkit","palette","template","blueprint","schema","scaffold",
+    "component","asset","create","assemble","connect","generate","export","refactor",
+    "modular","reusable","automated",
+    "designer","mockup","wireframe","prototype","style","guide","token","brand","grid","align","refine","iterate",
+    "interface","button","card","form","input","label","tooltip","dialog","modal","tab","sidebar","toggle",
+    "discoverable","ergonomic",
+    "number","vector","matrix","function","variable","equation","graph","limit","derivative","integral",
+    "calculate","compute","solve","derive",
+    "experiment","hypothesis","dataset","observation","measure","model","system","signal",
+    "observe","validate","simulate","analyze","correlate",
+    "theory","framework","axiom","principle","pattern","abstraction","generalize","formalize","unify","abstract",
+    "predictive","coherent",
+    "motif","sequence","block","chunk","loop","reframe","recombine","shuffle","permute",
+    "emergent","fractal","recursive",
+    "agent","user","player","client","server","shard","micronaut","checkpoint","tape",
+    "xjson","node","attribute","fold","manifest","pipeline","encode","parse","serialize","route","hydrate",
+    "kuhul","opcode","glyph","scene","runtime","entangle","compress","execute","simulate",
+    "xcfe","phase","state","transition","branch","gate","switch","merge","resolve",
+    "html","element","tag","div","span","article","input",
+    "css","selector","class","rule","property","theme","animate"
+  ],
+
+  "@bigram": [
+    "responsive layout",
+    "interactive page",
+    "navigation menu",
+    "content section",
+    "render pipeline",
+    "deploy update",
+    "optimize performance",
+    "app module",
+    "screen workflow",
+    "user session",
+    "profile settings",
+    "native experience",
+    "hybrid interface",
+    "game world",
+    "level map",
+    "quest mission",
+    "enemy boss",
+    "loot table",
+    "hud overlay",
+    "arena battle",
+    "builder studio",
+    "schema blueprint",
+    "component library",
+    "template scaffold",
+    "automated generation",
+    "modular block",
+    "designer mockup",
+    "wireframe prototype",
+    "style guide",
+    "token grid",
+    "aesthetic consistency",
+    "user interface",
+    "button interaction",
+    "form input",
+    "modal dialog",
+    "navigation sidebar",
+    "responsive grid",
+    "vector matrix",
+    "function variable",
+    "equation graph",
+    "compute derivative",
+    "optimize function",
+    "science model",
+    "dataset observation",
+    "signal system",
+    "measure error",
+    "simulate behavior",
+    "analyze pattern",
+    "theory framework",
+    "axiom principle",
+    "pattern abstraction",
+    "formalize model",
+    "predictive outcome",
+    "pattern sequence",
+    "fractal motif",
+    "recursive block",
+    "loop repetition",
+    "modular design",
+    "atomic block",
+    "asx tape",
+    "xjson fold",
+    "kuhul opcode",
+    "xcfe flow",
+    "html structure",
+    "css selector"
+  ],
+
+  "@xcfe_mapping": {
+    "websites": {
+      "@control": ["navigation","structure","optimize","deploy"],
+      "@flow":    ["scroll","load","render","route"],
+      "@view":    ["layout","section","header","footer","portal"],
+      "@variable": ["content","state","theme","settings"]
+    },
+
+    "apps": {
+      "@control": ["workflow","configure","authenticate"],
+      "@flow":    ["sync","update","launch","install"],
+      "@view":    ["screen","module","widget","dashboard"],
+      "@variable": ["session","profile","notification"]
+    },
+
+    "games": {
+      "@control": ["rules","difficulty","spawn","upgrade"],
+      "@flow":    ["movement","exploration","combat","loops"],
+      "@view":    ["hud","map","world","arena"],
+      "@variable": ["health","score","inventory"]
+    },
+
+    "builder": {
+      "@control": ["blueprint","schema","template"],
+      "@flow":    ["assemble","generate","connect","refactor"],
+      "@view":    ["component","palette","editor"],
+      "@variable": ["config","params","assets"]
+    },
+
+    "designer": {
+      "@control": ["pattern","alignment","style guide"],
+      "@flow":    ["iterate","refine","balance"],
+      "@view":    ["mockup","grid","prototype"],
+      "@variable": ["spacing","tokens","colors"]
+    },
+
+    "user_interface": {
+      "@control": ["interaction","navigation","accessibility"],
+      "@flow":    ["hover","focus","transition","toggle"],
+      "@view":    ["button","form","dialog","sidebar"],
+      "@variable": ["input","state","flags"]
+    },
+
+    "math": {
+      "@control": ["function","equation","logic"],
+      "@flow":    ["transform","calculate","derive"],
+      "@view":    ["graph","matrix"],
+      "@variable": ["variable","constant","vector"]
+    },
+
+    "science": {
+      "@control": ["hypothesis","model","system"],
+      "@flow":    ["measure","simulate","analyze"],
+      "@view":    ["observation","signal"],
+      "@variable": ["dataset","error","parameters"]
+    },
+
+    "theory": {
+      "@control": ["axiom","principle","framework"],
+      "@flow":    ["generalize","formalize","unify"],
+      "@view":    ["pattern","structure"],
+      "@variable": ["abstraction","components"]
+    },
+
+    "out_of_the_box": {
+      "@control": ["reframe","invent","remix"],
+      "@flow":    ["shuffle","permute","recombine"],
+      "@view":    ["motif","sequence","block"],
+      "@variable": ["pattern","weights","rules"]
+    },
+
+    "atomic_asx_blocks": {
+      "@control": ["who","what","where","how","why"],
+      "@flow":    ["tape","pipeline","route"],
+      "@view":    ["block","page","component","hud"],
+      "@variable": ["state","intent","metric","score"]
+    },
+
+    "xjson": {
+      "@control": ["schema","node","key"],
+      "@flow":    ["serialize","route","hydrate"],
+      "@view":    ["structure","manifest"],
+      "@variable": ["value","field","attribute"]
+    },
+
+    "kuhul": {
+      "@control": ["opcode","kernel","glyph"],
+      "@flow":    ["entangle","compress","render"],
+      "@view":    ["scene","vector","path"],
+      "@variable": ["runtime","state","energy"]
+    },
+
+    "xcfe": {
+      "@control": ["control-vector","phase","branch"],
+      "@flow":    ["transition","route","merge","switch"],
+      "@view":    ["state-view","flow-diagram"],
+      "@variable": ["variable-vector","flags","params"]
+    },
+
+    "html": {
+      "@control": ["semantic structure"],
+      "@flow":    ["link","embed","nest"],
+      "@view":    ["element","tag","div","section"],
+      "@variable": ["attributes","values"]
+    },
+
+    "css": {
+      "@control": ["theme","ruleset"],
+      "@flow":    ["transition","animation"],
+      "@view":    ["class","selector","grid"],
+      "@variable": ["css-var","token","property"]
+    }
+  }
+}

@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>XJSON v1 Specification & OS Manual — PRIME Edition (v2)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+/* ===========================================================
+   PRIME ATOMIC CSS — XJSON MANUAL EDITION
+   =========================================================== */
+
+:root {
+  --bg: #010307;
+  --panel: #060d17;
+  --text: #e8fff6;
+  --muted: #7e8a92;
+  --border: #16f2aa;
+  --accent: #00ffff;
+  --mono: ui-monospace, "SF Mono", Consolas, monospace;
+}
+
+body {
+  background: radial-gradient(circle at top, #07101e, #010307 60%);
+  color: var(--text);
+  font-family: var(--mono);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* --- SCX Atomic Blocks --- */
+[scx*="⟁PANEL"] {
+  background: var(--panel);
+  border: 1px solid rgba(22,242,170,0.4);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 960px;
+  box-shadow: 0 0 24px rgba(0,255,200,0.15);
+}
+
+[scx*="⟁TITLE"] { font-size: 28px; font-weight: bold; margin-bottom: 18px; }
+[scx*="⟁SUB"] { font-size: 20px; font-weight: bold; margin-top: 28px; margin-bottom: 12px; }
+
+[scx*="⟁CODE"] {
+  white-space: pre;
+  background: #000408;
+  padding: 14px;
+  border: 1px solid rgba(22,242,170,0.18);
+  border-radius: 8px;
+  font-size: 13px;
+  overflow-x: auto;
+  margin-top: 12px;
+  margin-bottom: 20px;
+}
+
+[scx*="⟁H3"] { font-size: 18px; font-weight: bold; margin-top: 20px; }
+[scx*="⟁H4"] { font-size: 16px; font-weight: bold; margin-top: 14px; }
+
+a { color: var(--accent); }
+
+/* Sidebar navigation */
+#nav {
+  position: fixed;
+  top: 0; left: 0;
+  width: 260px; height: 100%;
+  background: #020a10;
+  border-right: 1px solid rgba(22,242,170,0.3);
+  padding: 20px;
+  overflow-y: auto;
+}
+
+#nav h1 { font-size: 18px; margin-bottom: 16px; }
+#nav a { display: block; padding: 4px 0; font-size: 13px; }
+
+/* Main content area */
+#main { margin-left: 280px; padding: 30px 20px 50px; }
+
+</style>
+
+</head>
+<body>
+
+<!-- ===========================================================
+     SIDEBAR NAVIGATION
+     =========================================================== -->
+<div id="nav">
+  <h1>XJSON Manual</h1>
+  <a href="#intro">Introduction</a>
+  <a href="#overview">Language Overview</a>
+  <a href="#nodes">Node Types</a>
+  <a href="#elements">Elements</a>
+  <a href="#style">Styles / SCX</a>
+  <a href="#logic">Logic Engine</a>
+  <a href="#control-flow">Control Flow (@if/@then/@else)</a>
+  <a href="#components">Components</a>
+  <a href="#routing">Routing</a>
+  <a href="#state">State System</a>
+  <a href="#agents">Agents</a>
+  <a href="#tapes">Tapes / Holotapes</a>
+  <a href="#flashram">Flash-RAM</a>
+  <a href="#blocks">Atomic Blocks</a>
+  <a href="#scx">SCX Compression</a>
+  <a href="#transform">Code → AST → XJSON</a>
+  <a href="#security">Security Model</a>
+  <a href="#economy">ASX Token Economy</a>
+  <a href="#runtime">Runtime / Builder Engine</a>
+  <a href="#appendix">Appendix (DSL / Grammar)</a>
+</div>
+
+
+<!-- ===========================================================
+     MAIN DOCUMENT
+     =========================================================== -->
+<div id="main">
+
+<div scx="⟁PANEL">
+  <div scx="⟁TITLE">
+    XJSON v1 Specification & OS Manual<br>
+    <span style="font-size:16px;color:var(--accent);">
+      PRIME Edition — Universal AST Language (v2 with Control Flow / XCFE)
+    </span>
+  </div>
+
+  <p>
+    XJSON is a universal AST-JSON language capable of representing any:
+    HTML, CSS, Logic (JS/PY/PHP), state, routing, components, templates,
+    SCX blocks, compression, agents, and OS-level layout.
+  </p>
+
+  <p>
+    It is the core language of ASX, SCX, PRIME OS, Micronaut AI, and all
+    holotape-based runtimes. The v2 PRIME edition adds an official
+    control-flow model (<code>@if</code>, <code>@then</code>, <code>@else</code>)
+    powered by the XJSON Control Flow Engine (XCFE).
+  </p>
+</div>
+
+
+
+<!-- ===========================================================
+     1 — INTRODUCTION
+     =========================================================== -->
+<div scx="⟁PANEL" id="intro">
+  <div scx="⟁SUB">1. Introduction</div>
+
+  <p>
+    XJSON is a universal Abstract Syntax Tree model, serialized entirely as JSON.
+    It is designed to serve simultaneously as:
+  </p>
+
+  <ul>
+    <li>A UI language</li>
+    <li>A CSS/SCX styling system</li>
+    <li>A logic representation (multi-language)</li>
+    <li>A state machine / database layer</li>
+    <li>A routing system</li>
+    <li>A component/template engine</li>
+    <li>An agent instruction format</li>
+    <li>A compression-friendly symbolic code layer</li>
+    <li>A tape OS packaging format</li>
+  </ul>
+
+  <p>
+    Everything is a <b>node</b> — and every node is declarative and combinable.
+    Control flow and branching are expressed as data using the <code>@if</code>
+    family of blocks, not as raw code.
+  </p>
+</div>
+
+
+
+<!-- ===========================================================
+     2 — OVERVIEW
+     =========================================================== -->
+<div scx="⟁PANEL" id="overview">
+  <div scx="⟁SUB">2. Language Overview</div>
+
+  <p>
+    Every XJSON document begins with:
+  </p>
+
+<div scx="⟁CODE">{
+  "xjson": "1.0",
+  "nodes": []
+}</div>
+
+  <p>
+    Nodes can represent:
+  </p>
+
+  <ul>
+    <li>HTML structures</li>
+    <li>CSS styles</li>
+    <li>JS/Python/PHP logic</li>
+    <li>Components</li>
+    <li>State</li>
+    <li>Tapes</li>
+    <li>Agents</li>
+    <li>SCX blocks</li>
+    <li>Control flow (@if/@then/@else)</li>
+  </ul>
+</div>
+
+
+
+<!-- ===========================================================
+     3 — NODE TYPES
+     =========================================================== -->
+<div scx="⟁PANEL" id="nodes">
+  <div scx="⟁SUB">3. Node Types</div>
+
+  <p>The primary node types include:</p>
+
+  <ul>
+    <li><b>element</b> — HTML/UI tree</li>
+    <li><b>style</b> — CSS/SCX rule</li>
+    <li><b>logic</b> — multi-language logic</li>
+    <li><b>control</b> — control-flow nodes (@if/@then/@else)</li>
+    <li><b>component</b></li>
+    <li><b>route</b></li>
+    <li><b>state</b></li>
+    <li><b>agent</b></li>
+    <li><b>tape</b></li>
+    <li><b>flashram</b></li>
+  </ul>
+
+  <p>
+    The <b>control</b> node type maps to the <code>@if</code> block family and
+    is executed by the XJSON Control Flow Engine.
+  </p>
+</div>
+
+
+
+<!-- ===========================================================
+     4 — ELEMENTS
+     =========================================================== -->
+<div scx="⟁PANEL" id="elements">
+  <div scx="⟁SUB">4. Element Nodes (HTML)</div>
+
+  <p>Example:</p>
+
+<div scx="⟁CODE">{
+  "type": "element",
+  "tag": "div",
+  "props": { "scx": "⟁F ⟁Acenter" },
+  "children": [
+    { "type": "text", "value": "Hello PRIME" }
+  ]
+}</div>
+</div>
+
+
+
+<!-- ===========================================================
+     5 — STYLES / SCX
+     =========================================================== -->
+<div scx="⟁PANEL" id="style">
+  <div scx="⟁SUB">5. Styles / SCX Atomic CSS</div>
+
+  <p>XJSON supports raw CSS and symbolic SCX.</p>
+
+<div scx="⟁CODE">{
+  "type": "style",
+  "selector": "[scx~='⟁BTN']",
+  "rules": {
+    "padding": "8px 12px",
+    "border-radius": "12px",
+    "background": "linear-gradient(...)"
+  }
+}</div>
+
+  <p>SCX block example:</p>
+
+<div scx="⟁CODE">⟁BTN = {
+  "border": "1px solid rgba(22,242,170,0.4)",
+  "padding": "6px 12px",
+  "font-size": "12px"
+}</div>
+
+</div>
+
+
+
+<!-- ===========================================================
+     6 — LOGIC
+     =========================================================== -->
+<div scx="⟁PANEL" id="logic">
+  <div scx="⟁SUB">6. Logic Engine (JS/PY/PHP)</div>
+
+  <p>
+    XJSON logic is AST-safe, multi-language, and can be combined with
+    data-driven control-flow blocks defined in the next section.
+  </p>
+
+<div scx="⟁CODE">{
+  "type": "logic",
+  "lang": "js",
+  "name": "increment",
+  "code": [
+    "PrimeOS.state.score += 1;",
+    "render();"
+  ]
+}</div>
+
+  <p>Python:</p>
+
+<div scx="⟁CODE">{
+  "type": "logic",
+  "lang": "py",
+  "code": ["state['score'] += 1"]
+}</div>
+
+  <p>PHP:</p>
+
+<div scx="⟁CODE">{
+  "type": "logic",
+  "lang": "php",
+  "code": ["$score = $score + 1;"]
+}</div>
+
+  <p>
+    Logic blocks should avoid arbitrary <code>eval()</code> in favor of
+    structured data and XCFE-driven branching.
+  </p>
+</div>
+
+
+
+<!-- ===========================================================
+     6.5 — CONTROL FLOW
+     =========================================================== -->
+<div scx="⟁PANEL" id="control-flow">
+  <div scx="⟁SUB">6.5 Control Flow Blocks (@if / @then / @else)</div>
+
+  <p>
+    Control flow in XJSON is not free-form code — it is expressed as
+    <b>data blocks</b> interpreted by the
+    <b>XJSON Control Flow Engine (XCFE)</b>.
+  </p>
+
+  <div scx="⟁H4">Block Shape</div>
+
+<div scx="⟁CODE">{
+  "@if": {
+    "cond": {
+      "left": &lt;value|var|ref&gt;,
+      "op": "&lt;operator&gt;",
+      "right": &lt;value|var|ref&gt;
+    },
+    "@then": [
+      /* array of normal ASX / XJSON blocks */
+    ],
+    "@else": [
+      /* optional fallback blocks */
+    ]
+  }
+}</div>
+
+  <p>
+    <code>left</code> and <code>right</code> can be literals or references like
+    <code>"$player.hp"</code>, which are resolved against the current tape /
+    OS context (state, session, HUD, agent memory).
+  </p>
+
+  <div scx="⟁H4">Supported Operators</div>
+
+<div scx="⟁CODE">Equality:
+  ==, !=
+
+Comparison:
+  &gt;, &lt;, &gt;=, &lt;=
+
+String:
+  contains, startswith, endswith
+
+Set:
+  in, not_in
+
+Nullability:
+  isnull, notnull
+
+Existence:
+  isset, notset
+
+Boolean:
+  and, or, not
+
+Type:
+  is_string, is_number, is_boolean, is_array, is_object
+
+Agent-based:
+  agent_eval, agent_score
+</div>
+
+  <p>
+    Agent-based operators allow delegation to micro-agents
+    (Mx2LM, Mx2Qwen, Mx2PHP, etc.) for higher-level decisions.
+  </p>
+
+  <div scx="⟁H4">Example — Simple HP Check</div>
+
+<div scx="⟁CODE">{
+  "@if": {
+    "cond": { "left": "$player.hp", "op": ">", "right": 0 },
+    "@then": [
+      { "@block": "show_status", "value": "Player is alive" }
+    ],
+    "@else": [
+      { "@block": "game_over", "value": "You died" }
+    ]
+  }
+}</div>
+
+  <div scx="⟁H4">Example — ASX RISK Attack</div>
+
+<div scx="⟁CODE">{
+  "@if": {
+    "cond": {
+      "left": "$attack.roll",
+      "op": ">",
+      "right": "$defense.roll"
+    },
+    "@then": [
+      { "@log": "Attacker wins" },
+      { "@territory/transfer": {
+          "from": "$defender",
+          "to": "$attacker"
+      }}
+    ],
+    "@else": [
+      { "@log": "Defender survives" },
+      { "@army/loss": {
+          "faction": "$attacker",
+          "amount": 1
+      }}
+    ]
+  }
+}</div>
+
+  <div scx="⟁H4">Example — PRIME OS HUD Switch</div>
+
+<div scx="⟁CODE">{
+  "@if": {
+    "cond": {
+      "left": "$os.mode",
+      "op": "==",
+      "right": "combat"
+    },
+    "@then": [
+      { "@hud/open": "combat_panel" }
+    ],
+    "@else": [
+      { "@hud/open": "dashboard" }
+    ]
+  }
+}</div>
+
+  <div scx="⟁H4">XCFE Runtime Contract</div>
+
+  <p>
+    XCFE runs inside ASX SERVER PRIME as:
+    <code>window.XJSONEngine.executeIfBlock(block, ctx)</code>.
+    It:
+  </p>
+
+  <ul>
+    <li>Resolves variables (e.g. <code>$player.hp</code>).</li>
+    <li>Evaluates the condition via the operator table.</li>
+    <li>Executes <code>@then</code> or <code>@else</code> arrays by delegating to
+        <code>ASXRuntime.executeBlock()</code>.</li>
+    <li>Returns the updated context back to the tape / PRIME OS HUD.</li>
+  </ul>
+
+  <p>
+    This makes all control flow:
+  </p>
+  <ul>
+    <li>Deterministic</li>
+    <li>Serializable and tape-safe</li>
+    <li>Agent-trainable (logs can be replayed)</li>
+    <li>Safe to run offline / local-first</li>
+  </ul>
+</div>
+
+
+
+<!-- ===========================================================
+     7 — COMPONENTS
+     =========================================================== -->
+<div scx="⟁PANEL" id="components">
+  <div scx="⟁SUB">7. Component Model</div>
+
+  <p>Components are reusable UI templates:</p>
+
+<div scx="⟁CODE">{
+  "type": "component",
+  "id": "card.user",
+  "template": [
+    {
+      "type": "element",
+      "tag": "div",
+      "props": { "scx": "⟁CARD" },
+      "children": [
+        { "type": "slot", "name": "avatar" },
+        { "type": "slot", "name": "name" }
+      ]
+    }
+  ]
+}</div>
+</div>
+
+
+
+<!-- ===========================================================
+     8 — ROUTING
+     =========================================================== -->
+<div scx="⟁PANEL" id="routing">
+  <div scx="⟁SUB">8. Routing System</div>
+
+<div scx="⟁CODE">{
+  "type": "route",
+  "path": "/settings",
+  "component": "settings.panel"
+}</div>
+
+  <p>Supports: redirects, nested routes, tape-to-tape routing.</p>
+</div>
+
+
+
+<!-- ===========================================================
+     9 — STATE
+     =========================================================== -->
+<div scx="⟁PANEL" id="state">
+  <div scx="⟁SUB">9. State System (XState Mode)</div>
+
+<div scx="⟁CODE">{
+  "type": "state",
+  "id": "prime.user",
+  "value": { "score": 100, "theme": "dark" }
+}</div>
+
+  <p>
+    State values are directly consumable by control-flow blocks via
+    variable references (e.g. <code>$prime.user.score</code>).
+  </p>
+</div>
+
+
+
+<!-- ===========================================================
+     10 — AGENTS
+     =========================================================== -->
+<div scx="⟁PANEL" id="agents">
+  <div scx="⟁SUB">10. Agent System (MX2)</div>
+
+  <p>Agents include MX2LM (coordinator), Mx2Qwen, Mx2Cline, Janus, etc.</p>
+
+<div scx="⟁CODE">{
+  "type": "agent",
+  "id": "mx2lm",
+  "role": "coordinator",
+  "skills": ["routing", "logic", "intent"],
+  "endpoints": {
+    "infer": "/api/mx2lm/infer",
+    "train": "/api/mx2lm/train"
+  }
+}</div>
+
+  <p>
+    Agents can be consulted via <code>agent_eval</code> / <code>agent_score</code>
+    operators in control blocks to delegate higher-level decisions.
+  </p>
+</div>
+
+
+
+<!-- ===========================================================
+     11 — TAPES
+     =========================================================== -->
+<div scx="⟁PANEL" id="tapes">
+  <div scx="⟁SUB">11. Tapes / Holotapes</div>
+
+  <p>Each tape is a mini-server. Capable of:</p>
+
+  <ul>
+    <li>Running UI</li>
+    <li>Running logic</li>
+    <li>Hosting agents</li>
+    <li>Calling ASX SERVER REST points</li>
+    <li>Connecting to tunnels</li>
+    <li>Booting standalone</li>
+    <li>Being merged into any larger OS</li>
+  </ul>
+
+<div scx="⟁CODE">{
+  "type": "tape",
+  "id": "prime-os",
+  "entry": "index.xjson",
+  "agents": ["mx2lm", "mx2qwen"],
+  "public": "./public/"
+}</div>
+</div>
+
+
+
+<!-- ===========================================================
+     12 — FLASH RAM
+     =========================================================== -->
+<div scx="⟁PANEL" id="flashram">
+  <div scx="⟁SUB">12. Flash-RAM Snapshots</div>
+
+  <p>Instant resume system:</p>
+
+<div scx="⟁CODE">{
+  "type": "flashram",
+  "snapshot": {
+    "theme": "grid",
+    "score": 120
+  }
+}</div>
+</div>
+
+
+
+<!-- ===========================================================
+     13 — ATOMIC BLOCKS
+     =========================================================== -->
+<div scx="⟁PANEL" id="blocks">
+  <div scx="⟁SUB">13. Atomic ASX Blocks</div>
+
+  <p>
+    Blocks define <b>entire UI structures using only symbols</b>.
+  </p>
+
+<div scx="⟁CODE">⟁PAGE  → &lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;/body&gt;&lt;/html&gt;
+⟁CARD  → &lt;div class="card"&gt;&lt;/div&gt;
+⟁BTN   → &lt;button class="atomic-btn"&gt;&lt;/button&gt;
+⟁TABLE → &lt;table&gt;&lt;/table&gt;
+⟁FORM  → &lt;form&gt;&lt;/form&gt;
+⟁DIV   → &lt;div&gt;&lt;/div&gt;
+</div>
+
+  <p>You can build entire apps with symbols.</p>
+</div>
+
+
+
+<!-- ===========================================================
+     14 — SCX COMPRESSION
+     =========================================================== -->
+<div scx="⟁PANEL" id="scx">
+  <div scx="⟁SUB">14. SCX Compression System</div>
+
+  <p>
+    SCX replaces repeated or long HTML/CSS/Logic patterns with symbolic nouns.
+  </p>
+
+<div scx="⟁CODE">⟁F = display:flex
+⟁Fcol = flex-direction:column
+⟁Psm = padding:6px
+⟁R2 = border-radius:8px
+⟁BGgrad = background:linear-gradient(...)
+</div>
+</div>
+
+
+
+<!-- ===========================================================
+     15 — TRANSFORMATIONS
+     =========================================================== -->
+<div scx="⟁PANEL" id="transform">
+  <div scx="⟁SUB">15. Code → AST → XJSON Transformation Engine</div>
+
+  <p>
+    Any code in any language becomes AST → XJSON.
+  </p>
+
+  <p>HTML:</p>
+<div scx="⟁CODE">&lt;h1&gt;Hi&lt;/h1&gt;</div>
+
+  <p>→ XJSON:</p>
+<div scx="⟁CODE">{
+  "type": "element",
+  "tag": "h1",
+  "children": ["Hi"]
+}</div>
+
+  <p>CSS:</p>
+<div scx="⟁CODE">h1 { color:red }</div>
+
+  <p>→ XJSON:</p>
+<div scx="⟁CODE">{
+  "type": "style",
+  "selector": "h1",
+  "rules": { "color": "red" }
+}</div>
+
+  <p>Logic:</p>
+<div scx="⟁CODE">score += 1</div>
+
+  <p>→ XJSON Logic:</p>
+<div scx="⟁CODE">{
+  "type": "logic",
+  "lang": "js",
+  "code": ["score++"]
+}</div>
+</div>
+
+
+
+<!-- ===========================================================
+     16 — SECURITY
+     =========================================================== -->
+<div scx="⟁PANEL" id="security">
+  <div scx="⟁SUB">16. Security Model</div>
+
+  <ul>
+    <li>Trust Stamps</li>
+    <li>Agent sandboxing</li>
+    <li>Signed tapes</li>
+    <li>Deterministic execution</li>
+    <li>No eval()</li>
+    <li>Symbols only map to whitelisted blocks</li>
+    <li>Control flow is declarative, not arbitrary code</li>
+  </ul>
+</div>
+
+
+
+<!-- ===========================================================
+     17 — ASX TOKEN + ECONOMY
+     =========================================================== -->
+<div scx="⟁PANEL" id="economy">
+  <div scx="⟁SUB">17. ASX Token Economy</div>
+
+  <p>
+    ASX is the native token for:
+  </p>
+
+  <ul>
+    <li>Faction mechanics</li>
+    <li>Crown tiers</li>
+    <li>NPC interaction</li>
+    <li>Quests</li>
+    <li>Loot / NFT drops</li>
+    <li>Marketplace & store framework</li>
+    <li>User rewards</li>
+    <li>Voting & governance</li>
+    <li>Agent power scaling</li>
+  </ul>
+</div>
+
+
+
+<!-- ===========================================================
+     18 — BUILDER / GENERATOR ENGINE
+     =========================================================== -->
+<div scx="⟁PANEL" id="runtime">
+  <div scx="⟁SUB">18. XJSON Builder / SCX Generator Engine</div>
+
+  <p>
+    This engine can build <b>any UI, any tape, any OS</b>.
+  </p>
+
+  <h4 scx="⟁H4">Input (XJSON):</h4>
+<div scx="⟁CODE">{
+  "type": "tape",
+  "id": "demo",
+  "ui": [{ "type": "element", "tag": "div" }]
+}</div>
+
+  <h4 scx="⟁H4">Output:</h4>
+  <ul>
+    <li>index.html</li>
+    <li>ui.xjson</li>
+    <li>style.xjson</li>
+    <li>logic.xjson</li>
+    <li>runtime.js (with XCFE embedded)</li>
+    <li>agents/ folder</li>
+    <li>flashram/ folder</li>
+    <li>Ready-to-run mini server</li>
+  </ul>
+
+  <p>
+    Core idea:<br>
+    <b>Every tape is a server.  
+    Every tape is a runtime.  
+    Every tape can auto-discover others via REST broadcasting.</b>
+  </p>
+</div>
+
+
+
+<!-- ===========================================================
+     19 — APPENDIX
+     =========================================================== -->
+<div scx="⟁PANEL" id="appendix">
+  <div scx="⟁SUB">19. Appendix — Grammar & Symbolic Index</div>
+
+  <div scx="⟁H4">ABNF Grammar</div>
+<div scx="⟁CODE">xjson      = object
+object     = "{" members "}"
+members    = pair *( "," pair )
+pair       = string ":" value
+value      = string / number / object / array / true / false / null
+node       = element / style / logic / agent / route / component / control
+</div>
+
+  <div scx="⟁H4">SCX Symbol Catalog</div>
+
+<div scx="⟁CODE">⟁F        → display:flex
+⟁Fcol     → flex-direction:column
+⟁Acenter  → align-items:center
+⟁BTN      → Prime button block
+⟁CARD     → Card container block
+⟁PAGE     → HTML scaffold
+⟁DIV      → generic div container
+⟁GRID     → grid layout primitive
+⟁R2       → radius:8px
+⟁Psm      → padding:6px
+⟁BG       → background
+</div>
+
+</div>
+
+
+
+</div><!-- END MAIN -->
+
+</body>
+</html>
