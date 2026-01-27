@@ -1,224 +1,337 @@
-import gradio as gr
-import torch
-from transformers import AutoConfig, AutoModelForCausalLM
-from janus.models import MultiModalityCausalLM, VLChatProcessor
-from PIL import Image
+"""
+ASX Runtime API Server
+Powered by Ollama (local and cloud)
+"""
+import os
+from typing import Optional, List, Dict, Any
+from contextlib import asynccontextmanager
 
-import numpy as np
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 
-
-# Load model and processor
-model_path = "deepseek-ai/Janus-1.3B"
-config = AutoConfig.from_pretrained(model_path)
-language_config = config.language_config
-language_config._attn_implementation = 'eager'
-vl_gpt = AutoModelForCausalLM.from_pretrained(model_path,
-                                             language_config=language_config,
-                                             trust_remote_code=True)
-vl_gpt = vl_gpt.to(torch.bfloat16).cuda()
-
-vl_chat_processor = VLChatProcessor.from_pretrained(model_path)
-tokenizer = vl_chat_processor.tokenizer
-cuda_device = 'cuda' if torch.cuda.is_available() else 'cpu'
-# Multimodal Understanding function
-@torch.inference_mode()
-# Multimodal Understanding function
-def multimodal_understanding(image, question, seed, top_p, temperature):
-    # Clear CUDA cache before generating
-    torch.cuda.empty_cache()
-    
-    # set seed
-    torch.manual_seed(seed)
-    np.random.seed(seed)
-    torch.cuda.manual_seed(seed)
-    
-    conversation = [
-        {
-            "role": "User",
-            "content": f"<image_placeholder>\n{question}",
-            "images": [image],
-        },
-        {"role": "Assistant", "content": ""},
-    ]
-    
-    pil_images = [Image.fromarray(image)]
-    prepare_inputs = vl_chat_processor(
-        conversations=conversation, images=pil_images, force_batchify=True
-    ).to(cuda_device, dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float16)
-    
-    
-    inputs_embeds = vl_gpt.prepare_inputs_embeds(**prepare_inputs)
-    
-    outputs = vl_gpt.language_model.generate(
-        inputs_embeds=inputs_embeds,
-        attention_mask=prepare_inputs.attention_mask,
-        pad_token_id=tokenizer.eos_token_id,
-        bos_token_id=tokenizer.bos_token_id,
-        eos_token_id=tokenizer.eos_token_id,
-        max_new_tokens=512,
-        do_sample=False if temperature == 0 else True,
-        use_cache=True,
-        temperature=temperature,
-        top_p=top_p,
-    )
-    
-    answer = tokenizer.decode(outputs[0].cpu().tolist(), skip_special_tokens=True)
-    return answer
+try:
+    from ollama import Client, AsyncClient
+    OLLAMA_AVAILABLE = True
+except ImportError:
+    OLLAMA_AVAILABLE = False
+    Client = None
+    AsyncClient = None
 
 
-def generate(input_ids,
-             width,
-             height,
-             temperature: float = 1,
-             parallel_size: int = 5,
-             cfg_weight: float = 5,
-             image_token_num_per_image: int = 576,
-             patch_size: int = 16):
-    # Clear CUDA cache before generating
-    torch.cuda.empty_cache()
-    
-    tokens = torch.zeros((parallel_size * 2, len(input_ids)), dtype=torch.int).to(cuda_device)
-    for i in range(parallel_size * 2):
-        tokens[i, :] = input_ids
-        if i % 2 != 0:
-            tokens[i, 1:-1] = vl_chat_processor.pad_id
-    inputs_embeds = vl_gpt.language_model.get_input_embeddings()(tokens)
-    generated_tokens = torch.zeros((parallel_size, image_token_num_per_image), dtype=torch.int).to(cuda_device)
+# Configuration
+OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
+OLLAMA_API_KEY = os.environ.get("OLLAMA_API_KEY")
+USE_CLOUD = os.environ.get("OLLAMA_USE_CLOUD", "").lower() == "true"
+DEFAULT_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.2")
 
-    pkv = None
-    for i in range(image_token_num_per_image):
-        outputs = vl_gpt.language_model.model(inputs_embeds=inputs_embeds,
-                                             use_cache=True,
-                                             past_key_values=pkv)
-        pkv = outputs.past_key_values
-        hidden_states = outputs.last_hidden_state
-        logits = vl_gpt.gen_head(hidden_states[:, -1, :])
-        logit_cond = logits[0::2, :]
-        logit_uncond = logits[1::2, :]
-        logits = logit_uncond + cfg_weight * (logit_cond - logit_uncond)
-        probs = torch.softmax(logits / temperature, dim=-1)
-        next_token = torch.multinomial(probs, num_samples=1)
-        generated_tokens[:, i] = next_token.squeeze(dim=-1)
-        next_token = torch.cat([next_token.unsqueeze(dim=1), next_token.unsqueeze(dim=1)], dim=1).view(-1)
-        img_embeds = vl_gpt.prepare_gen_img_embeds(next_token)
-        inputs_embeds = img_embeds.unsqueeze(dim=1)
-    patches = vl_gpt.gen_vision_model.decode_code(generated_tokens.to(dtype=torch.int),
-                                                 shape=[parallel_size, 8, width // patch_size, height // patch_size])
-
-    return generated_tokens.to(dtype=torch.int), patches
-
-def unpack(dec, width, height, parallel_size=5):
-    dec = dec.to(torch.float32).cpu().numpy().transpose(0, 2, 3, 1)
-    dec = np.clip((dec + 1) / 2 * 255, 0, 255)
-
-    visual_img = np.zeros((parallel_size, width, height, 3), dtype=np.uint8)
-    visual_img[:, :, :] = dec
-
-    return visual_img
+# Cloud configuration
+if USE_CLOUD and OLLAMA_API_KEY:
+    OLLAMA_HOST = "https://ollama.com"
+    DEFAULT_MODEL = os.environ.get("OLLAMA_MODEL", "gpt-oss:120b")
 
 
+# Request/Response models
+class ChatMessage(BaseModel):
+    role: str
+    content: str
 
-@torch.inference_mode()
-def generate_image(prompt,
-                   seed=None,
-                   guidance=5):
-    # Clear CUDA cache and avoid tracking gradients
-    torch.cuda.empty_cache()
-    # Set the seed for reproducible results
-    if seed is not None:
-        torch.manual_seed(seed)
-        torch.cuda.manual_seed(seed)
-        np.random.seed(seed)
-    width = 384
-    height = 384
-    parallel_size = 5
-    
-    with torch.no_grad():
-        messages = [{'role': 'User', 'content': prompt},
-                    {'role': 'Assistant', 'content': ''}]
-        text = vl_chat_processor.apply_sft_template_for_multi_turn_prompts(conversations=messages,
-                                                                   sft_format=vl_chat_processor.sft_format,
-                                                                   system_prompt='')
-        text = text + vl_chat_processor.image_start_tag
-        input_ids = torch.LongTensor(tokenizer.encode(text))
-        output, patches = generate(input_ids,
-                                   width // 16 * 16,
-                                   height // 16 * 16,
-                                   cfg_weight=guidance,
-                                   parallel_size=parallel_size)
-        images = unpack(patches,
-                        width // 16 * 16,
-                        height // 16 * 16)
 
-        return [Image.fromarray(images[i]).resize((1024, 1024), Image.LANCZOS) for i in range(parallel_size)]
+class ChatRequest(BaseModel):
+    model: Optional[str] = None
+    messages: List[ChatMessage]
+    stream: bool = False
+    system: Optional[str] = None
 
-        
 
-# Gradio interface
-with gr.Blocks() as demo:
-    gr.Markdown(value="# Multimodal Understanding")
-    # with gr.Row():
-    with gr.Row():
-        image_input = gr.Image()
-        with gr.Column():
-            question_input = gr.Textbox(label="Question")
-            und_seed_input = gr.Number(label="Seed", precision=0, value=42)
-            top_p = gr.Slider(minimum=0, maximum=1, value=0.95, step=0.05, label="top_p")
-            temperature = gr.Slider(minimum=0, maximum=1, value=0.1, step=0.05, label="temperature")
-        
-    understanding_button = gr.Button("Chat")
-    understanding_output = gr.Textbox(label="Response")
+class ChatResponse(BaseModel):
+    model: str
+    message: ChatMessage
+    done: bool = True
 
-    examples_inpainting = gr.Examples(
-        label="Multimodal Understanding examples",
-        examples=[
-            [
-                "explain this meme",
-                "images/doge.png",
-            ],
-            [
-                "Convert the formula into latex code.",
-                "images/equation.png",
-            ],
-        ],
-        inputs=[question_input, image_input],
-    )
-    
-        
-    gr.Markdown(value="# Text-to-Image Generation")
 
-    
-    
-    with gr.Row():
-        cfg_weight_input = gr.Slider(minimum=1, maximum=10, value=5, step=0.5, label="CFG Weight")
+class GenerateRequest(BaseModel):
+    model: Optional[str] = None
+    prompt: str
+    system: Optional[str] = None
+    stream: bool = False
 
-    prompt_input = gr.Textbox(label="Prompt")
-    seed_input = gr.Number(label="Seed (Optional)", precision=0, value=12345)
 
-    generation_button = gr.Button("Generate Images")
+class GenerateResponse(BaseModel):
+    model: str
+    response: str
+    done: bool = True
 
-    image_output = gr.Gallery(label="Generated Images", columns=2, rows=2, height=300)
 
-    examples_t2i = gr.Examples(
-        label="Text to image generation examples. (Tips for designing prompts: Adding description like 'digital art' at the end of the prompt or writing the prompt in more detail can help produce better images!)",
-        examples=[
-            "Master shifu racoon wearing drip attire as a street gangster.",
-            "A cute and adorable baby fox with big brown eyes, autumn leaves in the background enchanting,immortal,fluffy, shiny mane,Petals,fairyism,unreal engine 5 and Octane Render,highly detailed, photorealistic, cinematic, natural colors.",
-            "The image features an intricately designed eye set against a circular backdrop adorned with ornate swirl patterns that evoke both realism and surrealism. At the center of attention is a strikingly vivid blue iris surrounded by delicate veins radiating outward from the pupil to create depth and intensity. The eyelashes are long and dark, casting subtle shadows on the skin around them which appears smooth yet slightly textured as if aged or weathered over time.\n\nAbove the eye, there's a stone-like structure resembling part of classical architecture, adding layers of mystery and timeless elegance to the composition. This architectural element contrasts sharply but harmoniously with the organic curves surrounding it. Below the eye lies another decorative motif reminiscent of baroque artistry, further enhancing the overall sense of eternity encapsulated within each meticulously crafted detail. \n\nOverall, the atmosphere exudes a mysterious aura intertwined seamlessly with elements suggesting timelessness, achieved through the juxtaposition of realistic textures and surreal artistic flourishes. Each component\u2014from the intricate designs framing the eye to the ancient-looking stone piece above\u2014contributes uniquely towards creating a visually captivating tableau imbued with enigmatic allure.",
-        ],
-        inputs=prompt_input,
-    )
-    
-    understanding_button.click(
-        multimodal_understanding,
-        inputs=[image_input, question_input, und_seed_input, top_p, temperature],
-        outputs=understanding_output
-    )
-    
-    generation_button.click(
-        fn=generate_image,
-        inputs=[prompt_input, seed_input, cfg_weight_input],
-        outputs=image_output
-    )
+class EmbeddingRequest(BaseModel):
+    model: str = "nomic-embed-text"
+    prompt: str
 
-demo.launch(share=True)
+
+class EmbeddingResponse(BaseModel):
+    embedding: List[float]
+
+
+class ModelInfo(BaseModel):
+    name: str
+    size: Optional[int] = None
+    modified_at: Optional[str] = None
+
+
+class ModelsResponse(BaseModel):
+    models: List[ModelInfo]
+
+
+# Global client
+ollama_client = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Initialize Ollama client on startup"""
+    global ollama_client
+
+    if OLLAMA_AVAILABLE:
+        headers = {}
+        if OLLAMA_API_KEY:
+            headers["Authorization"] = f"Bearer {OLLAMA_API_KEY}"
+
+        ollama_client = Client(
+            host=OLLAMA_HOST,
+            headers=headers if headers else None
+        )
+        print(f"Ollama client initialized: {OLLAMA_HOST}")
+        print(f"Default model: {DEFAULT_MODEL}")
+        print(f"Cloud mode: {USE_CLOUD}")
+    else:
+        print("WARNING: ollama package not installed. Run: pip install ollama")
+
+    yield
+
+    # Cleanup
+    ollama_client = None
+
+
+# Create FastAPI app
+app = FastAPI(
+    title="ASX Runtime API",
+    description="AI-powered API using Ollama (local and cloud)",
+    version="2.0.0",
+    lifespan=lifespan
+)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+def check_ollama():
+    """Check if Ollama is available"""
+    if not OLLAMA_AVAILABLE:
+        raise HTTPException(
+            status_code=503,
+            detail="Ollama not installed. Run: pip install ollama"
+        )
+    if ollama_client is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Ollama client not initialized"
+        )
+
+
+@app.get("/")
+async def root():
+    """API root endpoint"""
+    return {
+        "name": "ASX Runtime API",
+        "version": "2.0.0",
+        "ollama_available": OLLAMA_AVAILABLE,
+        "ollama_host": OLLAMA_HOST,
+        "default_model": DEFAULT_MODEL,
+        "cloud_mode": USE_CLOUD
+    }
+
+
+@app.get("/health")
+async def health():
+    """Health check endpoint"""
+    return {"status": "healthy", "ollama": OLLAMA_AVAILABLE}
+
+
+@app.get("/api/tags", response_model=ModelsResponse)
+async def list_models():
+    """List available models"""
+    check_ollama()
+
+    try:
+        response = ollama_client.list()
+        models = [
+            ModelInfo(
+                name=m.get("name", ""),
+                size=m.get("size"),
+                modified_at=m.get("modified_at")
+            )
+            for m in response.get("models", [])
+        ]
+        return ModelsResponse(models=models)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/chat", response_model=ChatResponse)
+async def chat(request: ChatRequest):
+    """Chat with a model"""
+    check_ollama()
+
+    model = request.model or DEFAULT_MODEL
+    messages = [{"role": m.role, "content": m.content} for m in request.messages]
+
+    if request.system:
+        messages.insert(0, {"role": "system", "content": request.system})
+
+    if request.stream:
+        async def generate():
+            for part in ollama_client.chat(model=model, messages=messages, stream=True):
+                content = part.get("message", {}).get("content", "")
+                yield f"data: {content}\n\n"
+            yield "data: [DONE]\n\n"
+
+        return StreamingResponse(generate(), media_type="text/event-stream")
+
+    try:
+        response = ollama_client.chat(model=model, messages=messages, stream=False)
+        return ChatResponse(
+            model=model,
+            message=ChatMessage(
+                role="assistant",
+                content=response.get("message", {}).get("content", "")
+            )
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/generate", response_model=GenerateResponse)
+async def generate(request: GenerateRequest):
+    """Generate a completion"""
+    check_ollama()
+
+    model = request.model or DEFAULT_MODEL
+
+    if request.stream:
+        async def stream_generate():
+            for part in ollama_client.generate(
+                model=model,
+                prompt=request.prompt,
+                system=request.system,
+                stream=True
+            ):
+                yield f"data: {part.get('response', '')}\n\n"
+            yield "data: [DONE]\n\n"
+
+        return StreamingResponse(stream_generate(), media_type="text/event-stream")
+
+    try:
+        response = ollama_client.generate(
+            model=model,
+            prompt=request.prompt,
+            system=request.system,
+            stream=False
+        )
+        return GenerateResponse(
+            model=model,
+            response=response.get("response", "")
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/embeddings", response_model=EmbeddingResponse)
+async def embeddings(request: EmbeddingRequest):
+    """Generate embeddings"""
+    check_ollama()
+
+    try:
+        response = ollama_client.embeddings(
+            model=request.model,
+            prompt=request.prompt
+        )
+        return EmbeddingResponse(embedding=response.get("embedding", []))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/pull")
+async def pull_model(model: str):
+    """Pull a model from the registry"""
+    check_ollama()
+
+    try:
+        ollama_client.pull(model)
+        return {"status": "success", "model": model}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# Legacy endpoints for backward compatibility
+@app.post("/v1/chat/completions")
+async def openai_compatible_chat(request: Dict[str, Any]):
+    """OpenAI-compatible chat endpoint"""
+    check_ollama()
+
+    model = request.get("model", DEFAULT_MODEL)
+    messages = request.get("messages", [])
+    stream = request.get("stream", False)
+
+    if stream:
+        async def stream_response():
+            for part in ollama_client.chat(model=model, messages=messages, stream=True):
+                content = part.get("message", {}).get("content", "")
+                chunk = {
+                    "id": "chatcmpl-asx",
+                    "object": "chat.completion.chunk",
+                    "model": model,
+                    "choices": [{
+                        "index": 0,
+                        "delta": {"content": content},
+                        "finish_reason": None
+                    }]
+                }
+                yield f"data: {chunk}\n\n"
+            yield "data: [DONE]\n\n"
+
+        return StreamingResponse(stream_response(), media_type="text/event-stream")
+
+    try:
+        response = ollama_client.chat(model=model, messages=messages, stream=False)
+        return {
+            "id": "chatcmpl-asx",
+            "object": "chat.completion",
+            "model": model,
+            "choices": [{
+                "index": 0,
+                "message": {
+                    "role": "assistant",
+                    "content": response.get("message", {}).get("content", "")
+                },
+                "finish_reason": "stop"
+            }],
+            "usage": {
+                "prompt_tokens": 0,
+                "completion_tokens": 0,
+                "total_tokens": 0
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

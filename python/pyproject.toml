@@ -10,11 +10,18 @@ requires-python = ">=3.9"
 dependencies = [
     "fastapi>=0.100.0",
     "uvicorn>=0.22.0",
-    "torch>=2.0.0",
-    "transformers>=4.30.0",
-    "pillow>=9.0.0",
-    "numpy>=1.24.0",
+    "ollama>=0.4.0",
+    "httpx>=0.25.0",
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0.0",
+    "python-dotenv>=1.0.0",
 ]
+
+[project.optional-dependencies.ml]
+# Optional ML dependencies for local model processing
+torch = ["torch>=2.0.0"]
+transformers = ["transformers>=4.30.0"]
+vision = ["pillow>=9.0.0", "numpy>=1.24.0"]
 
 [project.optional-dependencies]
 dev = [

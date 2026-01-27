@@ -1,0 +1,281 @@
+# ASX Runtime Configuration
+# This file configures AI models, API routes, and system settings
+
+version: "1.0"
+
+# =============================================================================
+# AI Model Providers
+# =============================================================================
+providers:
+  # Ollama - Primary local/cloud provider
+  ollama:
+    enabled: true
+    local:
+      host: ${OLLAMA_HOST:-http://localhost:11434}
+      default_model: ${OLLAMA_MODEL:-llama3.2}
+    cloud:
+      enabled: ${OLLAMA_USE_CLOUD:-false}
+      host: https://ollama.com
+      api_key: ${OLLAMA_API_KEY}
+      default_model: ${OLLAMA_CLOUD_MODEL:-gpt-oss:120b}
+
+  # OpenAI Compatible APIs
+  openai:
+    enabled: false
+    host: https://api.openai.com/v1
+    api_key: ${OPENAI_API_KEY}
+    default_model: gpt-4-turbo
+
+  # Anthropic Claude
+  anthropic:
+    enabled: false
+    host: https://api.anthropic.com
+    api_key: ${ANTHROPIC_API_KEY}
+    default_model: claude-3-opus-20240229
+
+  # DeepSeek
+  deepseek:
+    enabled: false
+    host: ${DEEPSEEK_HOST:-https://api.deepseek.com}
+    api_key: ${DEEPSEEK_API_KEY}
+    default_model: deepseek-chat
+
+  # Groq (Fast inference)
+  groq:
+    enabled: false
+    host: https://api.groq.com/openai/v1
+    api_key: ${GROQ_API_KEY}
+    default_model: llama-3.3-70b-versatile
+
+  # Together AI
+  together:
+    enabled: false
+    host: https://api.together.xyz/v1
+    api_key: ${TOGETHER_API_KEY}
+    default_model: meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo
+
+# =============================================================================
+# Model Routes - Map tasks to specific models
+# =============================================================================
+routes:
+  # Default route for general chat
+  default:
+    provider: ollama
+    model: llama3.2
+    fallback:
+      - provider: groq
+        model: llama-3.3-70b-versatile
+
+  # Code generation
+  code:
+    provider: ollama
+    model: qwen2.5-coder:7b
+    fallback:
+      - provider: deepseek
+        model: deepseek-coder
+      - provider: ollama
+        model: codellama
+
+  # Reasoning tasks
+  reasoning:
+    provider: ollama
+    model: deepseek-r1
+    fallback:
+      - provider: anthropic
+        model: claude-3-opus-20240229
+
+  # Vision/Image understanding
+  vision:
+    provider: ollama
+    model: llava
+    fallback:
+      - provider: together
+        model: meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo
+
+  # Embeddings
+  embeddings:
+    provider: ollama
+    model: nomic-embed-text
+
+  # Fast responses (low latency)
+  fast:
+    provider: ollama
+    model: phi3
+    fallback:
+      - provider: groq
+        model: llama-3.1-8b-instant
+
+  # Large context (>100K tokens)
+  large_context:
+    provider: ollama
+    cloud: true
+    model: gpt-oss:120b-cloud
+    fallback:
+      - provider: anthropic
+        model: claude-3-opus-20240229
+
+# =============================================================================
+# Model Presets
+# =============================================================================
+models:
+  # Local models (Ollama)
+  local:
+    - name: llama3.2
+      provider: ollama
+      context: 128000
+      capabilities: [chat, reasoning]
+
+    - name: qwen2.5-coder:7b
+      provider: ollama
+      context: 32000
+      capabilities: [code, chat]
+
+    - name: deepseek-r1
+      provider: ollama
+      context: 128000
+      capabilities: [reasoning, math, code]
+
+    - name: llava
+      provider: ollama
+      context: 4096
+      capabilities: [vision, chat]
+
+    - name: phi3
+      provider: ollama
+      context: 4096
+      capabilities: [chat, fast]
+
+    - name: mistral
+      provider: ollama
+      context: 32000
+      capabilities: [chat, reasoning]
+
+    - name: codellama
+      provider: ollama
+      context: 16000
+      capabilities: [code]
+
+    - name: nomic-embed-text
+      provider: ollama
+      capabilities: [embeddings]
+
+  # Cloud models
+  cloud:
+    - name: gpt-oss:120b-cloud
+      provider: ollama
+      cloud: true
+      context: 256000
+      capabilities: [chat, reasoning, code]
+
+    - name: gpt-4-turbo
+      provider: openai
+      context: 128000
+      capabilities: [chat, reasoning, code, vision]
+
+    - name: claude-3-opus-20240229
+      provider: anthropic
+      context: 200000
+      capabilities: [chat, reasoning, code]
+
+# =============================================================================
+# Inference Settings
+# =============================================================================
+inference:
+  # Default parameters
+  defaults:
+    temperature: 0.7
+    top_p: 0.9
+    max_tokens: 4096
+    stream: true
+
+  # Task-specific overrides
+  tasks:
+    code:
+      temperature: 0.2
+      top_p: 0.95
+    reasoning:
+      temperature: 0.5
+      max_tokens: 8192
+    creative:
+      temperature: 0.9
+      top_p: 0.95
+
+  # Retry settings
+  retry:
+    max_attempts: 3
+    backoff_factor: 2
+    initial_delay: 1
+
+  # Timeout settings (seconds)
+  timeout:
+    connect: 10
+    read: 120
+    total: 300
+
+# =============================================================================
+# API Server Settings
+# =============================================================================
+server:
+  host: ${API_HOST:-0.0.0.0}
+  port: ${API_PORT:-8000}
+  workers: 4
+
+  # CORS settings
+  cors:
+    origins: ${CORS_ORIGINS:-*}
+    methods: [GET, POST, PUT, DELETE, OPTIONS]
+    headers: [Content-Type, Authorization]
+
+  # Rate limiting
+  rate_limit:
+    enabled: true
+    requests_per_minute: ${RATE_LIMIT:-60}
+    burst: 10
+
+  # Authentication
+  auth:
+    enabled: false
+    type: bearer  # bearer, api_key, basic
+    secret: ${API_SECRET}
+
+# =============================================================================
+# Cluster Settings
+# =============================================================================
+cluster:
+  enabled: true
+  port: ${CLUSTER_PORT:-3000}
+  workers: ${CLUSTER_WORKERS:-4}
+
+  # Load balancing strategy
+  strategy: round_robin  # round_robin, least_connections, random
+
+  # Health check interval (seconds)
+  health_check_interval: 30
+
+# =============================================================================
+# Logging
+# =============================================================================
+logging:
+  level: ${LOG_LEVEL:-info}
+  format: json  # json, text
+  file: ${LOG_FILE:-./logs/asx.log}
+
+  # Log rotation
+  rotation:
+    max_size: 100MB
+    max_files: 10
+    compress: true
+
+# =============================================================================
+# Caching
+# =============================================================================
+cache:
+  enabled: true
+  type: memory  # memory, redis
+  redis_url: ${REDIS_URL:-redis://localhost:6379}
+
+  # Cache TTL (seconds)
+  ttl:
+    embeddings: 86400     # 24 hours
+    responses: 3600       # 1 hour
+    models_list: 300      # 5 minutes

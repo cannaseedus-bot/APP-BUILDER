@@ -9,11 +9,10 @@
       "role": "orchestrator",
       "weight": 0.9
     },
-    "janus-deepseek": {
-      "type": "remote-http",
-      "runtime": "janus",
-      "host": "http://localhost:7001",
-      "endpoint": "/janus",
+    "ollama-vision": {
+      "type": "ollama",
+      "host": "http://localhost:11434",
+      "model": "llava",
       "role": "vision+narrative",
       "weight": 0.8
     },
@@ -64,7 +63,7 @@
     "legion": {
       "models": [
         "cline-java",
-        "janus-deepseek",
+        "ollama-vision",
         "llama-kuhul",
         "rombos-qwen-7b",
         "deepseek-r1"
