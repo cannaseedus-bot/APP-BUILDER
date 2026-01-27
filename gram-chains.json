@@ -1,0 +1,209 @@
+{
+  "@context": "xjson://grams/creative_stack/v1",
+  "@n": "CREATIVE_STACK_GRAMS",
+  "@d": "Trigram, quadragram, and supagram chains over websites, apps, games, builders, designers, UI, math, science, theory, ASX blocks, XJSON, KUHUL, XCFE, HTML, CSS.",
+  "@version": "1.0.0",
+
+  "@trigram": [
+    { "gram": "responsive layout grid",                  "cluster": "websites",        "role": "view_layout" },
+    { "gram": "interactive navigation menu",            "cluster": "websites",        "role": "control_nav" },
+    { "gram": "single page portal",                     "cluster": "websites",        "role": "app_shell" },
+
+    { "gram": "mobile app screen",                      "cluster": "apps",            "role": "view_screen" },
+    { "gram": "user profile settings",                  "cluster": "apps",            "role": "control_profile" },
+    { "gram": "real time sync",                         "cluster": "apps",            "role": "flow_realtime" },
+
+    { "gram": "game world map",                         "cluster": "games",           "role": "view_world" },
+    { "gram": "player health hud",                      "cluster": "games",           "role": "view_status" },
+    { "gram": "arena battle loop",                      "cluster": "games",           "role": "flow_combat" },
+
+    { "gram": "visual builder studio",                  "cluster": "builder",         "role": "tool_environment" },
+    { "gram": "drag drop blocks",                       "cluster": "builder",         "role": "flow_edit" },
+    { "gram": "schema blueprint template",              "cluster": "builder",         "role": "control_schema" },
+
+    { "gram": "designer style guide",                   "cluster": "designer",        "role": "control_design" },
+    { "gram": "wireframe prototype screen",             "cluster": "designer",        "role": "view_wireframe" },
+    { "gram": "grid based layout",                      "cluster": "designer",        "role": "view_grid" },
+
+    { "gram": "user interface button",                  "cluster": "user_interface",  "role": "view_control" },
+    { "gram": "form input validation",                  "cluster": "user_interface",  "role": "control_form" },
+    { "gram": "sidebar navigation menu",                "cluster": "user_interface",  "role": "view_nav" },
+
+    { "gram": "vector matrix multiplication",           "cluster": "math",            "role": "math_linear" },
+    { "gram": "function variable mapping",              "cluster": "math",            "role": "math_function" },
+    { "gram": "optimize loss function",                 "cluster": "math",            "role": "math_optimization" },
+
+    { "gram": "experiment dataset observation",         "cluster": "science",         "role": "science_data" },
+    { "gram": "simulate system behavior",               "cluster": "science",         "role": "science_simulation" },
+    { "gram": "analyze signal noise",                   "cluster": "science",         "role": "science_signal" },
+
+    { "gram": "axiom principle framework",              "cluster": "theory",          "role": "theory_core" },
+    { "gram": "pattern abstraction layer",              "cluster": "theory",          "role": "theory_abstraction" },
+    { "gram": "predictive coherent model",              "cluster": "theory",          "role": "theory_quality" },
+
+    { "gram": "recursive pattern block",                "cluster": "out_of_the_box",  "role": "pattern_recursive" },
+    { "gram": "fractal sequence motif",                 "cluster": "out_of_the_box",  "role": "pattern_fractal" },
+    { "gram": "modular loop grid",                      "cluster": "out_of_the_box",  "role": "pattern_modular" },
+
+    { "gram": "atomic asx block",                       "cluster": "atomic_asx_blocks","role": "asx_block" },
+    { "gram": "who what why",                           "cluster": "atomic_asx_blocks","role": "asx_questions" },
+    { "gram": "tape schema world",                      "cluster": "atomic_asx_blocks","role": "asx_assets" },
+
+    { "gram": "xjson manifest fold",                    "cluster": "xjson",           "role": "data_structure" },
+    { "gram": "encode route hydrate",                   "cluster": "xjson",           "role": "data_pipeline" },
+
+    { "gram": "kuhul opcode glyph",                     "cluster": "kuhul",           "role": "exec_opcode" },
+    { "gram": "scene vector runtime",                   "cluster": "kuhul",           "role": "exec_scene" },
+
+    { "gram": "xcfe control flow",                      "cluster": "xcfe",            "role": "xcfe_govern" },
+    { "gram": "state transition branch",                "cluster": "xcfe",            "role": "xcfe_transition" },
+
+    { "gram": "semantic html structure",                "cluster": "html",            "role": "view_dom" },
+    { "gram": "css atomic class",                       "cluster": "css",             "role": "view_style" }
+  ],
+
+  "@quadragram": [
+    { "gram": "responsive layout grid system",          "cluster": "websites",        "role": "view_layout_system" },
+    { "gram": "single page application shell",          "cluster": "websites",        "role": "web_app_shell" },
+    { "gram": "interactive navigation menu bar",        "cluster": "websites",        "role": "view_nav_bar" },
+
+    { "gram": "mobile app workflow screen",             "cluster": "apps",            "role": "app_flow" },
+    { "gram": "user profile settings panel",            "cluster": "apps",            "role": "app_profile" },
+    { "gram": "real time sync pipeline",                "cluster": "apps",            "role": "app_sync" },
+
+    { "gram": "game world map overlay",                 "cluster": "games",           "role": "hud_world" },
+    { "gram": "player health hud bar",                  "cluster": "games",           "role": "hud_health" },
+    { "gram": "arena battle event loop",                "cluster": "games",           "role": "combat_loop" },
+
+    { "gram": "visual builder studio canvas",           "cluster": "builder",         "role": "builder_ui" },
+    { "gram": "drag drop component blocks",             "cluster": "builder",         "role": "builder_interaction" },
+    { "gram": "schema blueprint template file",         "cluster": "builder",         "role": "builder_schema" },
+
+    { "gram": "designer style guide tokens",            "cluster": "designer",        "role": "design_tokens" },
+    { "gram": "wireframe prototype preview screen",     "cluster": "designer",        "role": "design_preview" },
+
+    { "gram": "user interface button click",            "cluster": "user_interface",  "role": "ui_action" },
+    { "gram": "form input validation state",            "cluster": "user_interface",  "role": "ui_state" },
+    { "gram": "sidebar navigation layout grid",         "cluster": "user_interface",  "role": "ui_layout" },
+
+    { "gram": "vector matrix multiplication graph",     "cluster": "math",            "role": "math_linear_algebra" },
+    { "gram": "function variable dependency graph",     "cluster": "math",            "role": "math_dependency" },
+
+    { "gram": "experiment dataset observation log",     "cluster": "science",         "role": "science_logging" },
+    { "gram": "simulate system behavior over time",     "cluster": "science",         "role": "science_dynamics" },
+
+    { "gram": "axiom principle theory framework",       "cluster": "theory",          "role": "theory_bundle" },
+    { "gram": "pattern abstraction reasoning layer",    "cluster": "theory",          "role": "theory_layer" },
+
+    { "gram": "recursive pattern block repetition",     "cluster": "out_of_the_box",  "role": "pattern_repetition" },
+    { "gram": "fractal sequence motif generator",       "cluster": "out_of_the_box",  "role": "pattern_generator" },
+
+    { "gram": "atomic asx block registry",              "cluster": "atomic_asx_blocks","role": "asx_registry" },
+    { "gram": "who what where why",                     "cluster": "atomic_asx_blocks","role": "asx_question_set" },
+
+    { "gram": "xjson manifest fold pipeline",           "cluster": "xjson",           "role": "xjson_pipeline" },
+    { "gram": "encode parse route hydrate",             "cluster": "xjson",           "role": "xjson_runtime" },
+
+    { "gram": "kuhul opcode glyph scene",               "cluster": "kuhul",           "role": "kuhul_exec_scene" },
+    { "gram": "vector path lattice runtime",            "cluster": "kuhul",           "role": "kuhul_space" },
+
+    { "gram": "xcfe control flow phase",                "cluster": "xcfe",            "role": "xcfe_phase" },
+    { "gram": "state transition routing branch",        "cluster": "xcfe",            "role": "xcfe_route" },
+
+    { "gram": "semantic html document structure",       "cluster": "html",            "role": "dom_structure" },
+    { "gram": "css atomic utility class",               "cluster": "css",             "role": "css_atomic" }
+  ],
+
+  "@supagram": [
+    {
+      "gram": "responsive layout grid atomic blocks",
+      "cluster": "websites",
+      "role": "web_atomic_layout",
+      "pattern": "view_layout + atomic_blocks"
+    },
+    {
+      "gram": "mobile app workflow screen state machine",
+      "cluster": "apps",
+      "role": "app_state_machine",
+      "pattern": "app_flow + state"
+    },
+    {
+      "gram": "game world map hud overlay loop",
+      "cluster": "games",
+      "role": "game_hud_loop",
+      "pattern": "view_world + hud + loop"
+    },
+    {
+      "gram": "visual builder studio drag drop pipeline",
+      "cluster": "builder",
+      "role": "builder_pipeline",
+      "pattern": "tool + interaction + flow"
+    },
+    {
+      "gram": "designer style guide token grid system",
+      "cluster": "designer",
+      "role": "design_system",
+      "pattern": "tokens + grid + guidelines"
+    },
+    {
+      "gram": "user interface button form dialog flow",
+      "cluster": "user_interface",
+      "role": "ui_interaction_flow",
+      "pattern": "controls + form + dialog"
+    },
+    {
+      "gram": "vector matrix function dependency graph",
+      "cluster": "math",
+      "role": "math_model_graph",
+      "pattern": "linear_algebra + graph"
+    },
+    {
+      "gram": "experiment dataset observation model update",
+      "cluster": "science",
+      "role": "science_learning_loop",
+      "pattern": "data + observation + model"
+    },
+    {
+      "gram": "axiom principle framework predictive theory",
+      "cluster": "theory",
+      "role": "theory_stack",
+      "pattern": "axioms + framework + prediction"
+    },
+    {
+      "gram": "recursive pattern block repetition fractal",
+      "cluster": "out_of_the_box",
+      "role": "fractal_pattern",
+      "pattern": "recursion + repetition"
+    },
+    {
+      "gram": "atomic asx block who what where why",
+      "cluster": "atomic_asx_blocks",
+      "role": "asx_question_block",
+      "pattern": "who_what_where_why"
+    },
+    {
+      "gram": "xjson manifest fold pipeline route hydrate",
+      "cluster": "xjson",
+      "role": "xjson_exec_pipeline",
+      "pattern": "manifest + folds + runtime"
+    },
+    {
+      "gram": "kuhul opcode glyph vector scene runtime",
+      "cluster": "kuhul",
+      "role": "kuhul_exec_runtime",
+      "pattern": "opcode + glyph + space"
+    },
+    {
+      "gram": "xcfe control flow state transition branch",
+      "cluster": "xcfe",
+      "role": "xcfe_control_block",
+      "pattern": "control + flow + state"
+    },
+    {
+      "gram": "semantic html structure css atomic classes",
+      "cluster": "html_css",
+      "role": "dom_style_stack",
+      "pattern": "html + css_atomic"
+    }
+  ]
+}

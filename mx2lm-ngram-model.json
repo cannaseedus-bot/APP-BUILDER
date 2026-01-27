@@ -1,0 +1,162 @@
+{
+  "@context": "xjson://mx2lm/ngrams/v1",
+  "@engine": "MX2LM_NGRAM_CORE",
+  "@version": "1.0.0",
+
+  "meta": {
+    "name": "MX2LM-NGRAM-MAP",
+    "description": "Unified n-gram map for MX2LM covering unigrams → supagrams.",
+    "token_space": [
+      "char",
+      "word",
+      "kuhul_glyph",
+      "command_block"
+    ],
+    "orders": [1, 2, 3, 5, 7],
+    "roles": {
+      "1": "unigram_base",
+      "2": "local_transition",
+      "3": "micro_intent",
+      "5": "pattern_phrase",
+      "7": "supagram_routine"
+    }
+  },
+
+  "config": {
+    "min_count": 2,
+    "max_vocab": 65536,
+    "normalize": true,
+    "smoothing": "add_k",
+    "smoothing_k": 0.5,
+    "backoff": "katz",
+    "decay": {
+      "time_half_life_days": 30,
+      "decay_factor": 0.5
+    }
+  },
+
+  "folds": {
+    "tokens": {
+      "vocab": {
+        "@type": "map<string, object>",
+        "@example": {
+          "FORGE": { "id": 101, "kind": "word", "freq": 123 },
+          "⟁Sek": { "id": 777, "kind": "kuhul_glyph", "freq": 42 }
+        }
+      }
+    },
+
+    "unigrams": {
+      "@order": 1,
+      "@type": "map<string, object>",
+      "@example": {
+        "FORGE": {
+          "id": 101,
+          "count": 120,
+          "p": 0.0042,
+          "role": "unigram_base"
+        },
+        "DOOM": {
+          "id": 102,
+          "count": 96,
+          "p": 0.0037,
+          "role": "unigram_base"
+        }
+      }
+    },
+
+    "bigrams": {
+      "@order": 2,
+      "@type": "map<string, object>",
+      "@example": {
+        "FORGE|THE": {
+          "seq": ["FORGE", "THE"],
+          "count": 80,
+          "p_cond": 0.66,
+          "backoff": 0.34,
+          "role": "local_transition"
+        },
+        "THE|DOOM": {
+          "seq": ["THE", "DOOM"],
+          "count": 72,
+          "p_cond": 0.55,
+          "backoff": 0.45,
+          "role": "local_transition"
+        }
+      }
+    },
+
+    "trigrams": {
+      "@order": 3,
+      "@type": "map<string, object>",
+      "@example": {
+        "FORGE|THE|DOOM": {
+          "seq": ["FORGE", "THE", "DOOM"],
+          "count": 48,
+          "p_cond": 0.72,
+          "intent": "action_forge_doom_world",
+          "role": "micro_intent"
+        },
+        "DROP|THE|HELLCITY": {
+          "seq": ["DROP", "THE", "HELLCITY"],
+          "count": 21,
+          "p_cond": 0.61,
+          "intent": "spawn_world_hell_city",
+          "role": "micro_intent"
+        }
+      }
+    },
+
+    "pentagrams": {
+      "@order": 5,
+      "@type": "map<string, object>",
+      "@example": {
+        "FORGE|THE|DOOM|HUD|NOW": {
+          "seq": ["FORGE", "THE", "DOOM", "HUD", "NOW"],
+          "count": 19,
+          "p_cond": 0.84,
+          "pattern": "doom_hud_pipeline",
+          "role": "pattern_phrase",
+          "tags": ["ui", "hud", "forge"]
+        },
+        "DROP|THE|HELL|CITY|FULL": {
+          "seq": ["DROP", "THE", "HELL", "CITY", "FULL"],
+          "count": 9,
+          "p_cond": 0.71,
+          "pattern": "open_world_doom_city",
+          "role": "pattern_phrase",
+          "tags": ["world", "spawn", "doom"]
+        }
+      }
+    },
+
+    "supagrams": {
+      "@order": 7,
+      "@type": "map<string, object>",
+      "@explain": "Longer n-grams (~7 tokens) representing full routines / macros.",
+      "@example": {
+        "FORGE|THE|DOOM|HUD|AND|SAVE|TAPE": {
+          "seq": ["FORGE", "THE", "DOOM", "HUD", "AND", "SAVE", "TAPE"],
+          "count": 7,
+          "routine": "doom_hud_create_and_persist",
+          "role": "supagram_routine",
+          "hooks": {
+            "tape": "tape_doom_hud_v1",
+            "fold": "ui",
+            "kuhul_route": "⟁Sek⟁hud.forge.save"
+          }
+        },
+        "DROP|THE|HELL|CITY|THEN|START|ARENA": {
+          "seq": ["DROP", "THE", "HELL", "CITY", "THEN", "START", "ARENA"],
+          "count": 5,
+          "routine": "spawn_city_then_boot_arena_mode",
+          "role": "supagram_routine",
+          "hooks": {
+            "world_tape": "tape_doom_world_hellcity_v1",
+            "arena_tape": "tape_arena_battlemode_v1"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,435 @@
+{
+  "@manifest": "CLINE_JAVA_GRPC_AI_ASSISTANT_BRAIN",
+  "@version": "Ω.4.0.0",
+  "@created": "2025-12-09T07:40:00.000Z",
+  "@law": "ASX = XCFE = JAVA = CLINE = GRPC = AI_AGENT",
+  "@purpose": "CLINE AI coding assistant: Java-based gRPC backend with IntelliJ IDE integration",
+
+  "@summary": {
+    "model": "Frontier LLMs (OpenAI, Anthropic, etc.)",
+    "framework": "Java + gRPC + Netty + IntelliJ Platform",
+    "capabilities": ["file_operations", "terminal_execution", "browser_automation", "ast_analysis", "linter_monitoring"],
+    "architecture": "Human-in-the-loop agentic AI",
+    "version": "1.0.9",
+    "total_size": "208MB (JAR files + dependencies)"
+  },
+
+  "CLINE_ARCHITECTURE": {
+    "@role": "AI_CODING_ASSISTANT_WITH_CLI_AND_EDITOR_ACCESS",
+    "@plugin_id": "bot.cline",
+    "@vendor": "Cline",
+    "@ide_support": ["IntelliJ IDEA", "WebStorm", "Rider", "All JetBrains IDEs"],
+
+    "CORE_CAPABILITIES": {
+      "file_operations": {
+        "@create_files": "Generate new source files",
+        "@edit_files": "Modify existing files with AST awareness",
+        "@read_files": "Analyze file structure and content",
+        "@monitor_errors": "Track linter/compiler errors in real-time",
+        "@proactive_fixes": "Auto-fix imports, syntax errors"
+      },
+
+      "terminal_execution": {
+        "@run_commands": "Execute shell commands with permission",
+        "@monitor_output": "Track command output and errors",
+        "@react_to_errors": "Respond to dev server issues",
+        "@dev_workflows": "Start servers, run tests, build projects"
+      },
+
+      "browser_automation": {
+        "@headless_browser": "Launch sites in headless mode",
+        "@interact": "Click, type, scroll",
+        "@capture": "Screenshots + console logs",
+        "@debug": "Fix runtime errors and visual bugs"
+      },
+
+      "project_analysis": {
+        "@ast_parsing": "Analyze source code Abstract Syntax Trees",
+        "@regex_search": "Pattern-based code search",
+        "@file_structure": "Understand project organization",
+        "@context_management": "Smart context window optimization"
+      },
+
+      "model_context_protocol": {
+        "@mcp_support": "Create new tools via MCP",
+        "@self_extension": "Extend own capabilities",
+        "@tool_creation": "Dynamic tool generation"
+      }
+    },
+
+    "GRPC_BACKEND": {
+      "@service": "WorkspaceServiceGrpc",
+      "@port": 8080,
+      "@protocol": "gRPC over Netty",
+      "@methods": [
+        "getDiagnostics",
+        "createFile",
+        "editFile",
+        "readFile",
+        "executeCommand",
+        "monitorOutput",
+        "launchBrowser",
+        "captureScreenshot"
+      ],
+
+      "server_configuration": {
+        "@builder": "NettyServerBuilder",
+        "@implementation": "WorkspaceServiceImplBase",
+        "@startup": "java -cp \".;lib/*\" Main",
+        "@ast_format": "[Pop start_grpc_server][Wo port_8080]→[Sek netty_builder]→[Sek add_workspace_service]→[Sek build_start]→[Ch'en server_running][Xul]"
+      },
+
+      "dependencies": {
+        "grpc": {
+          "@version": "1.64.0",
+          "@components": ["grpc-netty", "grpc-netty-shaded", "grpc-stub", "grpc-services"]
+        },
+        "netty": {
+          "@version": "4.1.108.Final",
+          "@components": ["buffer", "codec", "common", "handler", "transport"]
+        },
+        "protobuf": {
+          "@version": "3.25.1",
+          "@format": "Protocol Buffers for RPC"
+        },
+        "guava": {
+          "@version": "32.1.3-jre",
+          "@role": "Collections and utilities"
+        },
+        "gson": {
+          "@version": "2.10.1",
+          "@role": "JSON serialization"
+        },
+        "kotlin": {
+          "@version": "1.8.0",
+          "@components": ["stdlib", "stdlib-jdk7", "stdlib-jdk8"]
+        }
+      }
+    },
+
+    "INTELLIJ_PLUGIN_INTEGRATION": {
+      "@plugin_type": "JetBrains IntelliJ Platform",
+      "@since_build": "242",
+      "@until_build": "252.*",
+
+      "tool_window": {
+        "@id": "Cline",
+        "@factory": "ClineToolWindowFactory",
+        "@icon": "clineLogo13x13.svg",
+        "@location": "Right sidebar"
+      },
+
+      "actions": {
+        "AddToClineAction": {
+          "@text": "Add to Cline",
+          "@description": "Send selected code to Cline",
+          "@group": "EditorPopupMenu",
+          "@anchor": "first"
+        },
+        "FixWithClineAction": {
+          "@type": "IntentionAction",
+          "@trigger": "Fix selected code with AI"
+        },
+        "ExplainWithClineAction": {
+          "@type": "IntentionAction",
+          "@trigger": "Explain code with AI"
+        },
+        "ImproveWithClineAction": {
+          "@type": "IntentionAction",
+          "@trigger": "Improve code with AI"
+        },
+        "FocusToolWindowAction": {
+          "@shortcut": "Ctrl+Quote",
+          "@description": "Focus Cline tool window"
+        }
+      },
+
+      "startup_activity": {
+        "@class": "ClineProjectActivity",
+        "@trigger": "postStartup",
+        "@initialization": "Connect to gRPC backend on project open"
+      },
+
+      "diff_editor": {
+        "@provider": "ClineDiffFileEditorProvider",
+        "@role": "Show AI-suggested changes with diff view"
+      },
+
+      "notifications": {
+        "@group": "Cline Messages",
+        "@display_type": "BALLOON",
+        "@resource_bundle": "ClineBundle.properties"
+      }
+    },
+
+    "WORKFLOW_PIPELINE": {
+      "@human_in_loop": "All actions require user approval",
+      "@safety": "Sandboxed with permission gates",
+
+      "task_execution_flow": {
+        "1_receive_task": {
+          "@input": "User enters task + optional images",
+          "@examples": ["Convert mockup to app", "Fix bug from screenshot"]
+        },
+        "2_analyze_project": {
+          "@actions": [
+            "Parse file structure",
+            "Analyze source code ASTs",
+            "Run regex searches",
+            "Read relevant files"
+          ],
+          "@context_optimization": "Smart context window management"
+        },
+        "3_execute_changes": {
+          "@file_operations": "Create/edit with error monitoring",
+          "@terminal_commands": "Run with output tracking",
+          "@browser_testing": "Launch and debug web apps"
+        },
+        "4_present_result": {
+          "@output": "Terminal command to view result",
+          "@example": "open -a \"Google Chrome\" index.html",
+          "@approval": "User clicks to execute"
+        }
+      },
+
+      "ast_format": "[Pop receive_task][Wo task_description images]→[Sek analyze_project]→[Sek parse_ast]→[Sek read_files]→[Sek execute_changes]→[Sek monitor_errors]→[Sek fix_issues]→[Ch'en task_complete][Xul]"
+    }
+  },
+
+  "CLINE_TOKENIZATION": {
+    "@name": "@-GRAMS_CLINE_JAVA",
+
+    "@unigrams": [
+      "CLINE",
+      "GRPC",
+      "WORKSPACE",
+      "SERVICE",
+      "INTELLIJ",
+      "PLUGIN",
+      "JAVA",
+      "NETTY",
+      "AST",
+      "FILE",
+      "EDIT",
+      "CREATE",
+      "READ",
+      "TERMINAL",
+      "COMMAND",
+      "EXECUTE",
+      "MONITOR",
+      "BROWSER",
+      "HEADLESS",
+      "CAPTURE",
+      "SCREENSHOT",
+      "DIAGNOSTIC",
+      "LINTER",
+      "COMPILER",
+      "ERROR",
+      "FIX",
+      "INTENTION",
+      "ACTION",
+      "DIFF",
+      "APPROVAL",
+      "HUMAN",
+      "LOOP",
+      "AGENT",
+      "AI",
+      "ASSISTANT"
+    ],
+
+    "@bigrams": [
+      "WORKSPACE_SERVICE",
+      "GRPC_SERVER",
+      "INTELLIJ_PLUGIN",
+      "TOOL_WINDOW",
+      "FILE_OPERATIONS",
+      "TERMINAL_EXECUTION",
+      "BROWSER_AUTOMATION",
+      "AST_ANALYSIS",
+      "LINTER_MONITORING",
+      "ERROR_FIXING",
+      "HUMAN_IN_LOOP",
+      "AI_ASSISTANT",
+      "CODE_EDITING",
+      "COMMAND_EXECUTION",
+      "SCREENSHOT_CAPTURE",
+      "CONTEXT_MANAGEMENT",
+      "PROJECT_ANALYSIS",
+      "DIFF_EDITOR",
+      "INTENTION_ACTION",
+      "APPROVAL_GATE"
+    ],
+
+    "@trigrams": [
+      "WORKSPACE_SERVICE_GRPC",
+      "INTELLIJ_PLUGIN_INTEGRATION",
+      "FILE_EDIT_MONITOR",
+      "TERMINAL_COMMAND_EXECUTE",
+      "BROWSER_HEADLESS_CAPTURE",
+      "AST_PARSE_ANALYZE",
+      "HUMAN_IN_LOOP_APPROVAL",
+      "AI_AGENT_ASSISTANT"
+    ],
+
+    "vocabulary_cline": {
+      "@size": 93,
+      "@tokens": {
+        "CLINE": 0,
+        "GRPC": 1,
+        "WORKSPACE": 2,
+        "SERVICE": 3,
+        "INTELLIJ": 4,
+        "PLUGIN": 5,
+        "JAVA": 6,
+        "NETTY": 7,
+        "AST": 8,
+        "FILE": 9,
+        "EDIT": 10,
+        "CREATE": 11,
+        "READ": 12,
+        "TERMINAL": 13,
+        "COMMAND": 14,
+        "EXECUTE": 15,
+        "MONITOR": 16,
+        "BROWSER": 17,
+        "HEADLESS": 18,
+        "CAPTURE": 19,
+        "SCREENSHOT": 20,
+        "DIAGNOSTIC": 21,
+        "LINTER": 22,
+        "COMPILER": 23,
+        "ERROR": 24,
+        "FIX": 25,
+        "INTENTION": 26,
+        "ACTION": 27,
+        "DIFF": 28,
+        "APPROVAL": 29,
+        "HUMAN": 30,
+        "LOOP": 31,
+        "AGENT": 32,
+        "AI": 33,
+        "ASSISTANT": 34
+      }
+    },
+
+    "weights_cline": {
+      "@matrix_shape": [93, 93],
+      "@tokens_by_frequency": [
+        {"token": "FILE", "weight": 0.98},
+        {"token": "EDIT", "weight": 0.96},
+        {"token": "EXECUTE", "weight": 0.94},
+        {"token": "GRPC", "weight": 0.92},
+        {"token": "SERVICE", "weight": 0.90},
+        {"token": "WORKSPACE", "weight": 0.88},
+        {"token": "MONITOR", "weight": 0.86},
+        {"token": "COMMAND", "weight": 0.84},
+        {"token": "AST", "weight": 0.82},
+        {"token": "AI", "weight": 0.80}
+      ],
+
+      "@workflow_transitions": {
+        "FILE→EDIT": 0.95,
+        "EDIT→MONITOR": 0.93,
+        "MONITOR→ERROR": 0.88,
+        "ERROR→FIX": 0.94,
+        "FIX→APPROVAL": 0.91,
+        "COMMAND→EXECUTE": 0.96,
+        "EXECUTE→MONITOR": 0.92,
+        "BROWSER→CAPTURE": 0.89,
+        "CAPTURE→SCREENSHOT": 0.94,
+        "AST→ANALYZE": 0.90
+      }
+    }
+  },
+
+  "DEPLOYMENT_CONFIGURATION": {
+    "@mode": "JAVA_GRPC_SERVER",
+    "@requirements": [
+      "Java 11+",
+      "IntelliJ Platform 242-252",
+      "gRPC 1.64.0",
+      "Netty 4.1.108",
+      "208MB JAR dependencies"
+    ],
+
+    "startup_commands": {
+      "compile": "javac -cp \"lib/*\" Main.java",
+      "run": "java -cp \".;lib/*\" Main",
+      "server_port": 8080,
+      "output": "WorkspaceService gRPC server started on port 8080"
+    },
+
+    "jar_structure": {
+      "cline-1.0.9.jar": {
+        "@size": "184MB",
+        "@role": "Main plugin with all Cline logic"
+      },
+      "grpc-netty-shaded-1.64.0.jar": {
+        "@size": "9.4MB",
+        "@role": "gRPC networking (shaded)"
+      },
+      "netty-*.jar": {
+        "@total_size": "2.3MB",
+        "@components": ["buffer", "codec", "common", "handler", "transport"]
+      },
+      "lib/*": {
+        "@total": "60+ JAR files",
+        "@categories": ["gRPC", "Netty", "Protobuf", "Guava", "Gson", "Kotlin"]
+      }
+    },
+
+    "integration_with_asx_os": {
+      "@dns": "java://cline/",
+      "@klh_route": "@route.cline_grpc",
+      "@xcfe_control": "@java.workspace_service",
+      "@kuhul_execution": "[Pop cline_service][Wo task]→[Sek analyze_project]→[Sek execute_changes]→[Sek await_approval]→[Ch'en result][Xul]"
+    }
+  },
+
+  "INTEGRATION_WITH_EXISTING_BRAINS": {
+    "@merges_into": "brain-02-specialized-systems.json",
+    "@category": "JAVA_GRPC_AI_ASSISTANT",
+
+    "connections": {
+      "TO_brain-01-core": {
+        "@xcfe_governance": "Controls CLINE approval workflow",
+        "@kuhul_execution": "Executes CLINE task pipeline"
+      },
+      "TO_brain-02-specialized": {
+        "@tokenization": "Shares n-gram patterns with existing tokenizers",
+        "@api": "Extends gRPC mesh with WorkspaceService",
+        "@compression": "Can compress AST representations with SCXQ2"
+      },
+      "TO_brain-03-python": {
+        "@complementary": "Python Janus handles multimodal, CLINE handles code editing",
+        "@coordination": "Both are AI assistants with different specializations"
+      }
+    }
+  },
+
+  "PERFORMANCE_METRICS": {
+    "@jar_size": "208MB total (184MB main JAR)",
+    "@memory_footprint": "~300MB JVM heap for server",
+    "@startup_time": "~2-3s for gRPC server",
+    "@response_time": "50-500ms per RPC call",
+    "@throughput": "100+ concurrent RPC calls",
+    "@plugin_overhead": "<100MB in IDE"
+  },
+
+  "@xcfe_integration": {
+    "@perception": "User task + project analysis",
+    "@representation": "AST + file structure",
+    "@reasoning": "LLM-based code understanding",
+    "@decision": "Determine file edits and commands",
+    "@action": "Execute with human approval",
+    "@reflection": "Monitor errors and self-correct"
+  },
+
+  "@kuhul_pipeline": {
+    "@Pop": "Load task and project context",
+    "@Wo": "Bind files, commands, and permissions",
+    "@Sek": "Execute changes (file ops, terminal, browser)",
+    "@Xul": "Transform output (diffs, results)",
+    "@Ch'en": "Emit result for user approval"
+  }
+}

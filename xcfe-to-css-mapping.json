@@ -1,0 +1,209 @@
+{
+  "@context": "xjson://atomic/runtime/xcfe_css/v1",
+  "@n": "XCFE_TO_ATOMIC_CSS_RUNTIME",
+  "@d": "Mapping XCFE @control/@flow/@view/@variable vectors to Atomic CSS classes and variables.",
+  "@version": "1.0.0",
+
+  "@xcfe_css_runtime": {
+    "@control": [
+      {
+        "vector": "@control.nav",
+        "description": "Navigation control (menus, tabs, sidebars)",
+        "classes": ["asx-control-nav", "asx-flex-row", "asx-gap-sm"],
+        "vars": ["--asx-nav-active", "--asx-nav-hover-scale"]
+      },
+      {
+        "vector": "@control.layout",
+        "description": "High-level layout control",
+        "classes": ["asx-layout-shell", "asx-grid", "asx-grid-12"],
+        "vars": ["--asx-layout-width", "--asx-layout-max-width"]
+      },
+      {
+        "vector": "@control.state-machine",
+        "description": "App state machine / view switching",
+        "classes": ["asx-stateful", "asx-view-switch"],
+        "vars": ["--asx-state-current", "--asx-state-prev"]
+      },
+      {
+        "vector": "@control.form",
+        "description": "Form validation and submission control",
+        "classes": ["asx-form-control", "asx-validation"],
+        "vars": ["--asx-form-status", "--asx-form-error-color"]
+      },
+      {
+        "vector": "@control.auth",
+        "description": "Authentication and authorization control",
+        "classes": ["asx-auth-required", "asx-role-check"],
+        "vars": ["--asx-auth-state", "--asx-user-role"]
+      }
+    ],
+
+    "@flow": [
+      {
+        "vector": "@flow.scroll",
+        "description": "Scrolling / vertical flow surfaces",
+        "classes": ["asx-scroll-y", "asx-panel-scroll"],
+        "vars": ["--asx-scroll-shadow-intensity"]
+      },
+      {
+        "vector": "@flow.transition",
+        "description": "Animated transitions between states",
+        "classes": ["asx-transition-all", "asx-ease-soft"],
+        "vars": ["--asx-transition-duration", "--asx-transition-delay"]
+      },
+      {
+        "vector": "@flow.data",
+        "description": "Data-flow visualization (pipelines, arrows)",
+        "classes": ["asx-flow-line", "asx-flow-node"],
+        "vars": ["--asx-flow-speed", "--asx-flow-direction"]
+      },
+      {
+        "vector": "@flow.animation",
+        "description": "Animation flow and keyframes",
+        "classes": ["asx-animate", "asx-pulse", "asx-fade"],
+        "vars": ["--asx-animation-duration", "--asx-animation-iterations"]
+      },
+      {
+        "vector": "@flow.route",
+        "description": "Routing and navigation flow",
+        "classes": ["asx-route-active", "asx-route-pending"],
+        "vars": ["--asx-route-transition", "--asx-route-delay"]
+      }
+    ],
+
+    "@view": [
+      {
+        "vector": "@view.surface.primary",
+        "description": "Primary surfaces / panels",
+        "classes": ["asx-surface", "asx-card", "asx-elevated"],
+        "vars": ["--asx-surface-bg", "--asx-surface-border"]
+      },
+      {
+        "vector": "@view.hud",
+        "description": "Game HUD / fixed overlays",
+        "classes": ["asx-hud", "asx-fixed-top", "asx-flex-row"],
+        "vars": ["--asx-hud-opacity", "--asx-hud-blur"]
+      },
+      {
+        "vector": "@view.form",
+        "description": "Forms and input clusters",
+        "classes": ["asx-form", "asx-stack-md", "asx-field-group"],
+        "vars": ["--asx-field-gap", "--asx-label-opacity"]
+      },
+      {
+        "vector": "@view.grid",
+        "description": "Grid layout system",
+        "classes": ["asx-grid", "asx-grid-12", "asx-grid-gap"],
+        "vars": ["--asx-grid-columns", "--asx-grid-gap"]
+      },
+      {
+        "vector": "@view.modal",
+        "description": "Modal dialogs and overlays",
+        "classes": ["asx-modal", "asx-overlay", "asx-centered"],
+        "vars": ["--asx-modal-backdrop", "--asx-modal-z-index"]
+      },
+      {
+        "vector": "@view.table",
+        "description": "Data tables and lists",
+        "classes": ["asx-table", "asx-row", "asx-cell"],
+        "vars": ["--asx-table-border", "--asx-row-hover"]
+      }
+    ],
+
+    "@variable": [
+      {
+        "vector": "@variable.theme",
+        "description": "Theme-level tokens",
+        "vars": [
+          "--asx-color-bg",
+          "--asx-color-fg",
+          "--asx-color-accent",
+          "--asx-radius-lg",
+          "--asx-shadow-elevated"
+        ]
+      },
+      {
+        "vector": "@variable.state",
+        "description": "UI state controls",
+        "vars": [
+          "--asx-state-active",
+          "--asx-state-error",
+          "--asx-state-warning",
+          "--asx-state-success"
+        ]
+      },
+      {
+        "vector": "@variable.metrics",
+        "description": "Runtime metrics, entropy, innovation, etc.",
+        "vars": [
+          "--asx-metric-entropy",
+          "--asx-metric-innovation",
+          "--asx-metric-stability",
+          "--asx-metric-load"
+        ]
+      },
+      {
+        "vector": "@variable.spacing",
+        "description": "Spacing scale system",
+        "vars": [
+          "--asx-space-xs",
+          "--asx-space-sm",
+          "--asx-space-md",
+          "--asx-space-lg",
+          "--asx-space-xl"
+        ]
+      },
+      {
+        "vector": "@variable.typography",
+        "description": "Typography scale and settings",
+        "vars": [
+          "--asx-font-family",
+          "--asx-font-size-base",
+          "--asx-line-height",
+          "--asx-font-weight"
+        ]
+      }
+    ]
+  },
+
+  "runtime_examples": {
+    "example_1_nav_bar": {
+      "xcfe_vectors": ["@control.nav", "@view.surface.primary"],
+      "html": "<nav class=\"asx-control-nav asx-surface asx-flex-row asx-gap-sm\">...</nav>",
+      "css_vars": {
+        "--asx-nav-active": "var(--asx-color-accent)",
+        "--asx-surface-bg": "var(--asx-color-bg)"
+      }
+    },
+
+    "example_2_form_input": {
+      "xcfe_vectors": ["@control.form", "@view.form", "@variable.state"],
+      "html": "<div class=\"asx-form asx-form-control asx-stack-md\"><input class=\"asx-field-group\"></div>",
+      "css_vars": {
+        "--asx-form-status": "valid",
+        "--asx-state-error": "#ff4444",
+        "--asx-field-gap": "0.75rem"
+      }
+    },
+
+    "example_3_game_hud": {
+      "xcfe_vectors": ["@view.hud", "@variable.metrics"],
+      "html": "<div class=\"asx-hud asx-fixed-top asx-flex-row\"><span id=\"health\"></span></div>",
+      "css_vars": {
+        "--asx-hud-opacity": "0.9",
+        "--asx-hud-blur": "4px",
+        "--asx-metric-stability": "0.85"
+      }
+    },
+
+    "example_4_data_flow": {
+      "xcfe_vectors": ["@flow.data", "@flow.animation"],
+      "html": "<svg class=\"asx-flow-line asx-animate\"><path d=\"...\"></path></svg>",
+      "css_vars": {
+        "--asx-flow-speed": "2s",
+        "--asx-flow-direction": "forward",
+        "--asx-animation-iterations": "infinite"
+      }
+    }
+  }
+}
