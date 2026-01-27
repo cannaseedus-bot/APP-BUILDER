@@ -1,8 +1,13 @@
 
-
+```
 ⚛️ Atomic Glyph Language
+```
+```
 ⟁ - K'UHUL glyph delimiter for operations
+```
+```
 ☣ - SCXQ2 hazard cipher prefix
+```
 ---
 
 # ⚛️ FORGE: MICRO-ASXR DOM MASK SYSTEM (Ω)
