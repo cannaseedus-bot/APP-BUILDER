@@ -136,6 +136,7 @@ const result = await processor.processQuery("What is the capital of France?");
 | [GAS Infrastructure](docs/GAS-INFRASTRUCTURE-LAYERS.md) | Google Apps Script setup |
 | [Local API Setup](docs/LOCAL-REST-API-SETUP.md) | Local development |
 | [Design Philosophy](docs/DESIGN-PHILOSOPHY.md) | Design rationale |
+| [K'UHUL Grammar v7](docs/specs/KUHUL-GRAMMAR-v7.md) | EBNF grammar specification |
 
 ## Prerequisites
 
